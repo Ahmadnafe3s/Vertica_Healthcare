@@ -2,14 +2,13 @@ import AddAppointment from '@/components/AddAppointment'
 import { buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { FileText, Plus, Printer, ReceiptText } from 'lucide-react'
+import { ClipboardPlus, FileText, Plus, Printer, ReceiptText } from 'lucide-react'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const OPD = () => {
 
   const [isAppointmentModel, setAppointmentModel] = useState<boolean>(false)
-
 
   return (
     <div className='my-2 flex flex-col'>
@@ -78,12 +77,12 @@ const OPD = () => {
             </TableCell>
             <TableCell>No</TableCell>
             <TableCell className='flex gap-x-2 items-center'>
+              <ClipboardPlus className='cursor-pointer text-gray-600 w-5 h-5' />
               <FileText className='cursor-pointer text-gray-600 w-5 h-5' />
               <Printer className='cursor-pointer text-gray-600 w-5 h-5' />
               <ReceiptText className='cursor-pointer text-gray-600 w-5 h-5' />
             </TableCell>
           </TableRow>
-
         </TableBody>
       </Table>
 

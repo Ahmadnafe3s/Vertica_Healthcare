@@ -7,6 +7,7 @@ import { User } from "lucide-react"
 
 
 const Navbar = () => {
+    
     let isAsideOpen = false
     const dispatch = useAppDispatch()
 
@@ -25,9 +26,9 @@ const Navbar = () => {
                 <MaxWidthWrapper >
                     <header className="h-full border-b border-zinc-200 flex justify-between items-center">
 
-                        <p className="tracking-tight cursor-pointer z-[100] select-none"><span
+                        <Link to={{pathname : '/home'}} className="tracking-tight cursor-pointer z-[100] select-none"><span
                             className="text-blue-500 font-semibold">V</span>ertica <span
-                                className="text-blue-500 font-semibold">H</span>ealtcare</p>
+                                className="text-blue-500 font-semibold">H</span>ealtcare</Link>
 
 
                         <div className="flex h-full items-center gap-x-3 sm:gap-x-0">
