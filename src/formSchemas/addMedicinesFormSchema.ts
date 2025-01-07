@@ -41,6 +41,4 @@ export const AddMedicinesFormSchema = z.object({
 
     note: z.string()
         .optional(),
-
-
 })

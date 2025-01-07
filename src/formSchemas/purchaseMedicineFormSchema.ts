@@ -10,6 +10,9 @@ export const PurchaseMedicineFormSchema = z.object({
         .min(1, { message: 'Medicine name is required' })
         .default(''),
 
+    supplier_name: z.string()
+        .min(1, { message: 'Supplier name is required' }),
+
     batch_no: z.string()
         .min(1, { message: 'Batch no is required' }),
 
@@ -35,10 +38,14 @@ export const PurchaseMedicineFormSchema = z.object({
 
     amount: z.number().optional(),
 
-    note : z.string().optional(),
+    total_amount: z.number().optional(),
 
-    total : z.number().optional(),
+    discount_amount: z.number().optional(),
 
-    discount : z.number().optional()
+    net_amount: z.number().optional(),
 
+    payment_mode: z.string()
+        .min(1, { message: 'Select payment mode' }),
+
+    note: z.string().optional(),
 })

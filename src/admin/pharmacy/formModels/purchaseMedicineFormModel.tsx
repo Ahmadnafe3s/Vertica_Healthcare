@@ -1,32 +1,28 @@
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
-import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { categories, Companies, group, units } from '@/helpers/formSelectOptions'
-import { AddMedicinesFormSchema } from '@/formSchemas/addMedicinesFormSchema'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { PurchaseMedicineFormSchema } from '@/formSchemas/purchaseMedicineFormSchema'
+import { categories } from '@/helpers/formSelectOptions'
 import { X } from 'lucide-react'
-import React, { HTMLAttributes } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { HTMLAttributes } from 'react'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 
-interface AddMedicineFormModelProps extends HTMLAttributes<HTMLDivElement> { }
+interface purchaseMedicineFormModelProps extends HTMLAttributes<HTMLDivElement> { }
 
-const AddMedicineFormModel = ({ ...props }: AddMedicineFormModelProps) => {
 
-    const { register, reset, handleSubmit, control, formState: { errors } } = useForm<z.infer<typeof AddMedicinesFormSchema>>(
-        {
-            resolver: zodResolver(AddMedicinesFormSchema)
-        }
-    )
+const PurchaseMedicineFormModel = ({ ...props }: purchaseMedicineFormModelProps) => {
 
-    const onSubmit = (formData: z.infer<typeof AddMedicinesFormSchema>) => {
-        console.log(formData);
-    }
+    const { handleSubmit, control, register, formState: { errors } } = useForm<z.infer<typeof PurchaseMedicineFormSchema>>()
 
+    const { } = useFieldArray({
+        control,
+        name: 'medicines'
+    })
+
+    const onSubmit = () => { }
 
     return (
         <>
@@ -49,14 +45,6 @@ const AddMedicineFormModel = ({ ...props }: AddMedicineFormModelProps) => {
                     {/* mainGrid */}
 
                     <div className="grid md:grid-cols-3 gap-5 mt-5">
-
-                        {/* Name */}
-
-                        <div className="w-full flex flex-col gap-y-2">
-                            <Label>Medicine Name</Label>
-                            <Input type='text' {...register('name')} />
-                            {errors.name && <p className='text-sm text-red-500'>{errors.name.message}</p>}
-                        </div>
 
                         {/* category */}
 
@@ -82,11 +70,19 @@ const AddMedicineFormModel = ({ ...props }: AddMedicineFormModelProps) => {
                         </div>
 
 
+                        {/* Name */}
+
+                        <div className="w-full flex flex-col gap-y-2">
+                            <Label>Medicine Name</Label>
+                            <Input type='text' {...register('name')} />
+                            {errors.name && <p className='text-sm text-red-500'>{errors.name.message}</p>}
+                        </div>
+
 
                         {/* company */}
 
                         <div className="w-full flex flex-col gap-y-2">
-                            <Controller control={control} name='company' render={({ field }) => {
+                            <Controller control={control} name='' render={({ field }) => {
                                 return <>
                                     <Label>Company</Label>
                                     <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
@@ -216,7 +212,7 @@ const AddMedicineFormModel = ({ ...props }: AddMedicineFormModelProps) => {
 
                     </div>
                     <div className="flex mt-5 mb-2 gap-x-2 sm:justify-end">
-                        <Button type='button' size={'sm'} variant={'outline'} onClick={()=>{reset()}}>reset</Button>
+                        <Button type='button' size={'sm'} variant={'outline'} onClick={() => { reset() }}>reset</Button>
                         <Button type='submit' size={'sm'}>Save</Button>
                     </div>
 
@@ -226,4 +222,4 @@ const AddMedicineFormModel = ({ ...props }: AddMedicineFormModelProps) => {
     )
 }
 
-export default AddMedicineFormModel
+export default PurchaseMedicineFormModel

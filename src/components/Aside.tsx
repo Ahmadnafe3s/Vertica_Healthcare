@@ -1,6 +1,6 @@
 import { ScrollArea } from './ui/scroll-area'
 import { Link } from 'react-router-dom'
-import { Airplay, BriefcaseMedical, CalendarClock, HeartPulse } from 'lucide-react'
+import { Airplay, BriefcaseMedical, CalendarClock, HeartPulse, Network, Watch } from 'lucide-react'
 import { buttonVariants } from './ui/button'
 import { cn } from '@/lib/utils'
 import { useAppSelector } from '@/hooks'
@@ -44,6 +44,20 @@ const Aside = () => {
                             className: 'flex text-sm items-center'
                         })
                     }><BriefcaseMedical className='h-4 w-4' />Pharmacy</Link></li>
+
+                    <li><Link to={{ pathname: '/admin/humanresource/staff' }} className={
+                        buttonVariants({
+                            variant: 'ghost',
+                            className: 'flex text-sm items-center'
+                        })
+                    }><Network className='h-4 w-4' />Human Resource</Link></li>
+
+                    <li><Link to={{ pathname: '/admin/dutyroster/rosterreport' }} className={
+                        buttonVariants({
+                            variant: 'ghost',
+                            className: 'flex text-sm items-center'
+                        })
+                    }><Watch className='h-4 w-4' />Duty Roster</Link></li>
                 </ul>
             </ScrollArea>
         </div>
