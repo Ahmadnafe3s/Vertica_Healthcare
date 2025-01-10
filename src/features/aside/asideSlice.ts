@@ -18,5 +18,5 @@ export const asideSlice = createSlice({
 
 
 export const { openAside } = asideSlice.actions;
-export const userSelector = (state: RootState) => state.asideReducer;
+export const asideSelector = (state: RootState) => state.asideReducer;
 export default asideSlice.reducer;

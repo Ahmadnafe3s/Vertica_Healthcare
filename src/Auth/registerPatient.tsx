@@ -8,12 +8,15 @@ import { useForm } from 'react-hook-form'
 import { patientRegistrationSchema, DefaultValues } from '@/formSchemas/patientRegisterFormSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useState } from 'react'
+import axios from 'axios'
+import toast from 'react-hot-toast'
 
 
 
 const RegisterPatient = () => {
 
-    let isPending = false
+    const [isPending, setPending] = useState<boolean>(false)
 
     const patientRegistrationform = useForm<z.infer<typeof patientRegistrationSchema>>(
         {
@@ -22,8 +25,23 @@ const RegisterPatient = () => {
         }
     )
 
-    const onSubmit = (formData: z.infer<typeof patientRegistrationSchema>) => {
-        console.log({ ...formData, role: 'patient' });
+    const onSubmit = async (formData: z.infer<typeof patientRegistrationSchema>) => {
+
+        try {
+
+            setPending(true)
+
+            const response = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/patient`, formData)
+
+            toast.success(response.data.message)
+
+        } catch (error: any) {
+            toast.error(error.response.data.message)
+        }
+        finally{
+            setPending(false)
+        }
+
     }
 
 
@@ -46,7 +64,7 @@ const RegisterPatient = () => {
 
                         {/* Patient Name */}
 
-                        <FormField control={patientRegistrationform.control} name='patient_name' render={({ field }) => {
+                        <FormField control={patientRegistrationform.control} name='name' render={({ field }) => {
                             return <FormItem className="flex flex-col gap-3">
                                 <FormLabel>Patient Name</FormLabel>
                                 <FormControl>

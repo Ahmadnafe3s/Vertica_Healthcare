@@ -7,7 +7,7 @@ import { AssignRosterSchema } from '@/formSchemas/assignRosterFormSchema'
 import { departments } from '@/helpers/formSelectOptions'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { X } from 'lucide-react'
-import React, { HTMLAttributes, useState } from 'react'
+import { HTMLAttributes, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 

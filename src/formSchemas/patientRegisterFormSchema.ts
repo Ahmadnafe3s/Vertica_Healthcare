@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 export const patientRegistrationSchema = z.object({
 
-    patient_name: z.string()
+    name: z.string()
         .min(1, { message: 'Patient name is required' })
         .max(25, { message: 'Patient name must be less than 25 characters' }),
 

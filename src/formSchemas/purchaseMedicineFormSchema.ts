@@ -22,8 +22,6 @@ export const PurchaseMedicineFormSchema = z.object({
     MRP: z.string()
         .min(1, { message: 'MRP is required' }),
 
-    batch_amount: z.string().optional(),
-
     sale_price: z.string().optional(),
 
     packing_quantity: z.string().optional(),
@@ -31,18 +29,16 @@ export const PurchaseMedicineFormSchema = z.object({
     quantity: z.string()
         .min(1, { message: 'Quantity is required' }),
 
-    purchae_price: z.string()
+    purchase_price: z.string()
         .min(1, { message: 'Purchase price is required' }),
 
     tax: z.number().default(0),
 
-    amount: z.number().optional(),
+    discount: z.number().default(0),
 
-    total_amount: z.number().optional(),
+    amount: z.number().optional().default(0),
 
-    discount_amount: z.number().optional(),
-
-    net_amount: z.number().optional(),
+    total_amount: z.number().optional().default(0),
 
     payment_mode: z.string()
         .min(1, { message: 'Select payment mode' }),

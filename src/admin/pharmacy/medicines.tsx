@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Eye, FileText, ListMinus, Plus, Printer } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import AddMedicineFormModel from './formModels/addMedicineFormModel'
+import AddMedicineFormModel from './forms/addMedicineFormModel'
 import { useState } from 'react'
 
 const Medicines = () => {
