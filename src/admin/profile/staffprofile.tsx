@@ -6,7 +6,6 @@ import { Key, Pencil, Trash } from 'lucide-react';
 import { useAppSelector } from '@/hooks';
 import { authSelector } from '@/features/auth/authSlice';
 import { currencyFormat } from '@/lib/utils';
-import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const Staffprofile = () => {
