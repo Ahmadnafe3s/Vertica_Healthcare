@@ -12,8 +12,6 @@ const Aside = () => {
     return (
         <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all h-[calc(100vh-56px-1px)] top-14', { 'w-52 p-2.5': isSlideOpend })}>
 
-            <div className="h-16 bg-gradient-to-t from-white z-30 w-full absolute bottom-0" />
-
             <ScrollArea className='h-full  border-r border-zinc-200 '>
 
                 <ul className='flex flex-col gap-y-2'>
@@ -59,6 +57,8 @@ const Aside = () => {
                         })
                     }><Watch className='h-4 w-4' />Duty Roster</Link></li>
                 </ul>
+
+                <div className="h-16 bg-gradient-to-t from-white z-30 w-full absolute bottom-0" />
             </ScrollArea>
         </div>
     )

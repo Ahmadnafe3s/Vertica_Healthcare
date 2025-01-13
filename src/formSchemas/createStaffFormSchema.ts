@@ -3,9 +3,6 @@ import { z } from "zod";
 
 export const createStaffFormSchema = z.object({
 
-    staff_id: z.string()
-        .min(1, { message: "Staff id is required" }),
-
     role: z.string()
         .min(1, { message: "Role is required" })
         .default(''),
@@ -19,6 +16,19 @@ export const createStaffFormSchema = z.object({
 
     specialist: z.string()
         .optional(),
+
+
+    fees: z
+        .string()
+        .optional()
+        .refine((fees) => {
+            if (fees === undefined || fees.trim() === "") {
+                return true;
+            }
+
+            return +fees > 0;
+        }, { message: 'Fees must be a positive number.' }),
+
 
     name: z.string()
         .min(1, { message: "Name is required" }),
@@ -80,7 +90,5 @@ export const createStaffFormSchema = z.object({
     national_identification_number: z.string().optional(),
 
     local_identification_number: z.string().optional(),
-
-
 
 })

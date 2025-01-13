@@ -12,10 +12,10 @@ interface rectCardProps {
 
 const RectCard = ({ path, name, amount, children }: rectCardProps) => {
     return (
-        <div className="mx-auto w-full">
+        <div className="mx-auto w-full ">
             <Link to={{
                 pathname: path
-            }} className='flex items-center gap-x-4 p-2.5 active:scale-95 rounded-lg ring-1 transition-all ring-gray-200 hover:shadow-lg'>
+            }} className='flex items-center gap-x-4 p-2.5 bg-white active:scale-95 rounded-lg ring-1 transition-all ring-gray-200 hover:shadow-lg'>
                 {children}
                 <span className='mr-5 inline-block text-nowrap'>
                     <p>{name}</p>

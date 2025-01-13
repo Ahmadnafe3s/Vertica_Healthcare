@@ -5,18 +5,39 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { createStaffFormSchema } from '@/formSchemas/createStaffFormSchema'
 import { bloodGroups, departments, maritalStatus, roles } from '@/helpers/formSelectOptions'
 import { zodResolver } from '@hookform/resolvers/zod'
+import axios from 'axios'
+import { Loader } from 'lucide-react'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { z } from 'zod'
 
 const CreateStaff = () => {
 
-  const { handleSubmit, register, setValue, control, formState: { errors } } = useForm<z.infer<typeof createStaffFormSchema>>({
+  const [isPending, setPending] = useState<boolean>(false)
+
+  const { handleSubmit, reset, register, setValue, control, formState: { errors } } = useForm<z.infer<typeof createStaffFormSchema>>({
     resolver: zodResolver(createStaffFormSchema)
   })
 
 
-  function onSubmit(formData: z.infer<typeof createStaffFormSchema>) {
-    console.log(formData);
+  async function onSubmit(formData: z.infer<typeof createStaffFormSchema>) {
+
+    try {
+
+      setPending(true)
+
+      const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/staff`, formData)
+
+      toast.success(res.data.message)
+
+    } catch (error: any) {
+      toast.error(error.response.data.message)
+    }
+    finally {
+      setPending(false)
+    }
+
   }
 
   return (
@@ -32,12 +53,12 @@ const CreateStaff = () => {
         <div className="h-px bg-gray-200 col-span-full mt-3 mb-4" />
 
 
-        {/* staff iD */}
+        {/* name */}
 
         <div className="w-full flex flex-col gap-y-2">
-          <Label>Staff ID</Label>
-          <Input type='number' {...register('staff_id')} />
-          {errors.staff_id && <p className='text-sm text-red-500'>{errors.staff_id.message}</p>}
+          <Label>Name</Label>
+          <Input type='text' {...register('name')} />
+          {errors.name && <p className='text-sm text-red-500'>{errors.name.message}</p>}
         </div>
 
         {/* role */}
@@ -45,7 +66,7 @@ const CreateStaff = () => {
         <div className="w-full flex flex-col gap-y-2">
           <Controller control={control} name='role' render={({ field }) => {
             return <>
-              <Label>Doctor</Label>
+              <Label>Role</Label>
               <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
                 <SelectTrigger >
                   <SelectValue placeholder="Select" />
@@ -107,12 +128,12 @@ const CreateStaff = () => {
           }} />
         </div>
 
-        {/* name */}
+        {/* Fees */}
 
         <div className="w-full flex flex-col gap-y-2">
-          <Label>Name</Label>
-          <Input type='text' {...register('name')} />
-          {errors.name && <p className='text-sm text-red-500'>{errors.name.message}</p>}
+          <Label>Fees$</Label>
+          <Input type='number' {...register('fees')} />
+          {errors.fees && <p className='text-sm text-red-500'>{errors.fees.message}</p>}
         </div>
 
         {/*father name */}
@@ -310,8 +331,13 @@ const CreateStaff = () => {
           <Input type='text' {...register('local_identification_number')} />
         </div>
 
-        <div className="col-span-full">
-          <Button type='submit' className='w-full sm:w-auto'>Save</Button>
+        <div className="col-span-full flex gap-3 flex-col sm:flex-row">
+          <div className='order-2 sm:order-1'>
+            <Button className='w-full sm:w-auto' variant={'ghost'} onClick={()=>{reset()}}>Reset</Button>
+          </div>
+          <div className='sm:order-2'>
+            <Button type='submit' className='w-full sm:w-auto'>{isPending ? <Loader className='h-4 w-4 animate-spin' /> : 'Save'}</Button>
+          </div>
         </div>
 
       </form>

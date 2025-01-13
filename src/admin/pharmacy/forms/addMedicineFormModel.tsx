@@ -142,7 +142,7 @@ const AddMedicineFormModel = ({ ...props }: AddMedicineFormModelProps) => {
                         <div className="w-full flex flex-col gap-y-2">
                             <Controller control={control} name='unit' render={({ field }) => {
                                 return <>
-                                    <Label>Appointment priority</Label>
+                                    <Label>Unit</Label>
                                     <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
                                         <SelectTrigger >
                                             <SelectValue placeholder="Select" />

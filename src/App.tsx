@@ -25,6 +25,7 @@ import { checkSession } from "./features/auth/authSlice";
 import ProtectRoutes from "./guard/protectRoutes";
 import Not_found from "./error/not_found";
 import Unauthorized from "./error/unauthorized";
+import Staffprofile from "./admin/profile/staffprofile";
 
 
 
@@ -68,14 +69,18 @@ function App() {
             <Route path="create" element={<CreateStaff />} />
           </Route>
 
+          <Route path="admin/profile" element={<HumanResource />} >
+            <Route path="staff/:id" element={<Staffprofile />} />
+          </Route>
+
           <Route path="admin/dutyroster" element={<DutuRoster />}>
             <Route path="rosterreport" element={<RosterReport />} />
           </Route>
         </Route>
 
         {/* error handlers */}
-        <Route path="*" element={<Not_found />} />  
-        <Route path="/unauthorized" element={<Unauthorized />} />  
+        <Route path="*" element={<Not_found />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
 
       </Routes>
     </Router>

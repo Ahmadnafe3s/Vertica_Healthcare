@@ -4,31 +4,96 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AssignRosterSchema } from '@/formSchemas/assignRosterFormSchema'
-import { departments } from '@/helpers/formSelectOptions'
+import { Shift } from '@/types/type'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { X } from 'lucide-react'
-import { HTMLAttributes, useState } from 'react'
+import axios from 'axios'
+import { Loader, X } from 'lucide-react'
+import { HTMLAttributes, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { z } from 'zod'
+import { createRoster, fetchRosterDetails, fetchStaffs, updateRoster } from '../apihandlers'
 
-interface AssignRosterFormModelProps extends HTMLAttributes<HTMLDivElement> { }
 
-const AssignRosterFormModel = ({ ...props }: AssignRosterFormModelProps) => {
 
-  const [staffs, setStaff] = useState([{ id: '123', name: 'Dr. AJ' }])
+interface AssignRosterFormModelProps extends HTMLAttributes<HTMLDivElement> {
+  ID: number | null
+}
 
-  const { handleSubmit, control, register, formState: { errors }, reset } = useForm<z.infer<typeof AssignRosterSchema>>(
+interface staffs {
+  id: string,
+  name: string,
+  role: string
+}
+
+
+const AssignRosterFormModel = ({ ID, ...props }: AssignRosterFormModelProps) => {
+
+  const [staffs, setStaff] = useState<staffs[]>([])
+  const [isPending, setPending] = useState<boolean>(false)
+
+  const { handleSubmit, setValue, control, register, formState: { errors }, reset } = useForm<z.infer<typeof AssignRosterSchema>>(
     {
       resolver: zodResolver(AssignRosterSchema)
     }
   )
 
-  function onSubmit(formData: z.infer<typeof AssignRosterSchema>) {
 
-    console.log(formData);
+  // performing both works (create update)
 
+  const onSubmit = async (formData: z.infer<typeof AssignRosterSchema>) => {
+    try {
+      setPending(true)
+      let message = ''
+
+      if (!!ID) {  //id editmode then upadte
+        message = await updateRoster(formData, ID)
+      } else {
+        message = await createRoster(formData)
+      }
+
+      toast.success(message)
+
+    } catch ({ message }: any) {
+      toast.error(message)
+    }
+    finally {
+      setPending(false)
+    }
 
   }
+
+
+  useEffect(() => {
+
+    (async function () {
+
+      try {
+
+        const data = await fetchStaffs()   // it is required to keep at top
+        setStaff(data)
+
+        // if edit mode then set form values
+        if (!!ID) {
+          const data = await fetchRosterDetails(ID)
+          setValue('staffId', data.staffId.toString()) // this will select associated staff with roster
+          setValue('shiftStartTime', data.shiftStartTime)
+          setValue('shiftEndTime', data.shiftEndTime)
+          setValue('shiftStartDate', data.shiftStartDate)
+          setValue('shiftEndDate', data.shiftEndDate)
+          setValue('shift', data.shift)
+          setValue('note', data.note)
+        }
+
+      } catch ({ message }: any) {
+        toast.error(message)
+      }
+
+    })() //IIEF
+
+  }, [])
+
+
 
 
   return (
@@ -39,7 +104,7 @@ const AssignRosterFormModel = ({ ...props }: AssignRosterFormModelProps) => {
 
         <form className='p-3 bg-white rounded-md' onSubmit={handleSubmit(onSubmit)}>
 
-          <div className='flex justify-between pt-2 pb-3 border-b border-gray-200 col-span-full'>
+          <div className='flex justify-between pt-2 pb-3 mb-3 border-b border-gray-200 col-span-full'>
             <p className='font-semibold text-xl'>Assign Roster</p>
             <div {...props}>
               <X className='cursor-pointer' />
@@ -53,7 +118,7 @@ const AssignRosterFormModel = ({ ...props }: AssignRosterFormModelProps) => {
             {/* Staff */}
 
             <div className="w-full flex flex-col gap-y-2">
-              <Controller control={control} name='staff_id' render={({ field }) => {
+              <Controller control={control} name='staffId' render={({ field }) => {
                 return <>
                   <Label>Staff</Label>
                   <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
@@ -63,13 +128,13 @@ const AssignRosterFormModel = ({ ...props }: AssignRosterFormModelProps) => {
 
                     <SelectContent className='z-[200]'>
                       {staffs?.map((staff, index) => {
-                        return <SelectItem key={index} value={staff.id}>{staff.name}</SelectItem>
+                        return <SelectItem key={index} value={staff.id.toString()}>{`${staff.name} (${staff.role})`}</SelectItem>
                       })}
                     </SelectContent>
                   </Select>
                 </>
               }} />
-              {errors.staff_id && <p className='text-sm text-red-500'>{errors.staff_id.message}</p>}
+              {errors.staffId && <p className='text-sm text-red-500'>{errors.staffId.message}</p>}
             </div>
 
             {/* Shift Start Time */}
@@ -129,29 +194,6 @@ const AssignRosterFormModel = ({ ...props }: AssignRosterFormModelProps) => {
             </div>
 
 
-            {/* department */}
-
-            <div className="w-full flex flex-col gap-y-2">
-              <Controller control={control} name='department' render={({ field }) => {
-                return <>
-                  <Label>Department</Label>
-                  <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
-                    <SelectTrigger >
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-
-                    <SelectContent className='z-[200]'>
-                      {departments?.map((department, index) => {
-                        return <SelectItem key={index} value={department.value}>{department.label}</SelectItem>
-                      })}
-                    </SelectContent>
-                  </Select>
-                </>
-              }} />
-              {errors.department && <p className='text-sm text-red-500'>{errors.department.message}</p>}
-            </div>
-
-
             {/* note */}
 
             <div className="w-full flex flex-col gap-y-2">
@@ -162,8 +204,8 @@ const AssignRosterFormModel = ({ ...props }: AssignRosterFormModelProps) => {
           </div>
 
           <div className="flex mt-5 mb-2 gap-x-2 sm:justify-end">
-            <Button type='submit' size={'sm'} variant={'ghost'} onClick={() => { reset() }}>Reset</Button>
-            <Button type='submit' size={'sm'}>Save</Button>
+            <Button type='submit' size={'sm'} variant={'ghost'} onClick={() => { reset(); ID = null }}>Reset</Button>
+            <Button type='submit' size={'sm'}>Save Roster {isPending && <Loader className='h-4 w-4 animate-spin' />}</Button>
           </div>
 
         </form>
