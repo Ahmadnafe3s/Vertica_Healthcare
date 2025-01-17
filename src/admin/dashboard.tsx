@@ -38,7 +38,8 @@ const AdminDashboard = () => {
 
 
     return (
-        <div >
+
+        <div className='pt-4'>
 
             {/* total income section */}
             <div className='grid lg:grid-cols-4 sm:grid-cols-3 gap-4'>

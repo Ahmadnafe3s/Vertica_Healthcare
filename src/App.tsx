@@ -4,8 +4,8 @@ import Navbar from "./components/Navbar";
 import AsideLayout from "./Layouts/AsideLayout";
 import HomePage from "./home/HomePage";
 import AdminDashboard from "./admin/dashboard";
-import AdminAppointment from "./admin/appointmet";
-import QueueAppointment from "./admin/QueueAppointment";
+import AdminAppointment from "./admin/appointment/appointmet";
+import QueueAppointment from "./admin/appointment/QueueAppointment";
 import OPD from "./admin/OPD/OPD";
 import RegisterPatient from "./Auth/registerPatient";
 import Pharmacy from "./admin/pharmacy/pharmacy";
@@ -26,6 +26,7 @@ import ProtectRoutes from "./guard/protectRoutes";
 import Not_found from "./error/not_found";
 import Unauthorized from "./error/unauthorized";
 import Staffprofile from "./admin/profile/staffprofile";
+import ResetPassword from "./admin/profile/resetpassword";
 
 
 
@@ -71,6 +72,8 @@ function App() {
 
           <Route path="admin/profile" element={<HumanResource />} >
             <Route path="staff/:id" element={<Staffprofile />} />
+            <Route path="edit/:id" element={<CreateStaff />} />
+            <Route path="resetpassword/:id" element={<ResetPassword />} />
           </Route>
 
           <Route path="admin/dutyroster" element={<DutuRoster />}>

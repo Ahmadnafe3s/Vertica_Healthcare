@@ -16,7 +16,7 @@ const Medicines = () => {
 
         {/* top bar */}
         <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between border-b border-gray-200'>
-          <h1 className='font-semibold tracking-tight'>Pharmacy Bill</h1>
+          <h1 className='font-semibold tracking-tight'>Medicines</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
             <Button className='flex gap-x-1' variant={'outline'} size={'sm'} onClick={() => { setMedicineFormModel(true) }}>

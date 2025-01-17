@@ -10,9 +10,9 @@ const Aside = () => {
     const isSlideOpend = useAppSelector((state) => state.asideReducer)
 
     return (
-        <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all h-[calc(100vh-56px-1px)] top-14', { 'w-52 p-2.5': isSlideOpend })}>
+        <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all border-r border-zinc-200 h-[calc(100vh-56px-1px)] top-14', { 'w-52 p-2.5': isSlideOpend })}>
 
-            <ScrollArea className='h-full  border-r border-zinc-200 '>
+            <ScrollArea className='h-full '>
 
                 <ul className='flex flex-col gap-y-2'>
                     <li><Link to={{ pathname: '/admin/dashboard' }} className={

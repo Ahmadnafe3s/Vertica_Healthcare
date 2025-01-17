@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Pencil, Plus, SearchX, Trash } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import AssignRosterFormModel from './formModel/AssignRosterFormModel'
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -26,10 +26,11 @@ const RosterReport = () => {
 
     const period = useRef<{ startDate: string, endDate: string }>({ startDate: '', endDate: '' })
 
-    const [searchBy, setSearchBy] = useState<'date' | 'period' | 'id'>('id')
+    const [searchBy, setSearchBy] = useState<'date' | 'period' | 'credentials'>('credentials')
 
     const [rosterList, setRosterList] = useState<Shift[]>([])
 
+    const router = useNavigate()
 
 
     const fetchList = async () => {
@@ -48,7 +49,7 @@ const RosterReport = () => {
         try {
             let data: Shift[] = []
 
-            if (searchBy === 'id') {
+            if (searchBy === 'credentials') {
                 data = await searchBYid(value)
             }
 
@@ -71,7 +72,7 @@ const RosterReport = () => {
 
     const onDelete = async () => {
         try {
-            
+
             const data = await deleteRoster(id.current)
             toast.success(data.message)
             fetchList()
@@ -150,7 +151,7 @@ const RosterReport = () => {
                             }} />
                         </div>
                     }
-                    {searchBy === 'id' && <Input type='number' placeholder='staff id' onChange={(e) => { onSearch(e.target.value) }} />}
+                    {searchBy === 'credentials' && <Input type='text' placeholder='staff id , name' onChange={(e) => { onSearch(e.target.value) }} />}
                 </div>
 
 
@@ -158,8 +159,8 @@ const RosterReport = () => {
 
                 <div className='flex gap-x-6 pt-2'>
 
-                    <Radio text='Staff' id='id' name='search' className={searchBy === 'id' ? 'bg-gray-700' : ''}
-                        onClick={() => { setSearchBy('id') }}
+                    <Radio text='Credentials' id='id' name='search' className={searchBy === 'credentials' ? 'bg-gray-700' : ''}
+                        onClick={() => { setSearchBy('credentials') }}
                     />
 
                     <Radio text='Date' id='Date' name='search' className={searchBy === 'date' ? 'bg-gray-700' : ''}
@@ -198,7 +199,11 @@ const RosterReport = () => {
 
                     {rosterList?.map((roster, i) => {
                         return <TableRow key={i}>
-                            <TableCell>{roster.staffId}</TableCell>
+                            <TableCell
+                                className='font-semibold text-blue-600 cursor-pointer hover:text-blue-500'
+                                onClick={() => router(`/admin/profile/staff/${roster.staffId}`)}>
+                                {roster.staffId}
+                            </TableCell>
                             <TableCell className="font-medium cursor-pointer">{roster.staff.name}</TableCell>
                             <TableCell>{roster.shiftStartDate}</TableCell>
                             <TableCell>{roster.shiftEndDate}</TableCell>

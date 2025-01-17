@@ -1,3 +1,5 @@
+// for roster list
+
 export interface Shift {
     id: number;
     staffId: number;
@@ -14,7 +16,7 @@ export interface Shift {
 }
 
 
-
+// for profile
 
 export interface StaffProfile {
     id: number;
@@ -34,7 +36,6 @@ export interface StaffProfile {
     phone: string;
     emergency_contact: string;
     email: string;
-    password: string;
     image: string | null; // URL to image or null if not provided
     current_address: string;
     permanent_address: string;
@@ -47,3 +48,85 @@ export interface StaffProfile {
 }
 
 
+export interface Patients {
+    id: number,
+    name: string
+}
+
+
+export interface Doctors {
+    shift: string,
+    staff: {
+        id: number,
+        name: string,
+        fees: string,
+        specialist: string
+    }
+}
+
+
+
+export interface Appointments {
+    id: number,
+    doctorId: number,
+    patientId: number,
+    fees: string,
+    shift: string,
+    appointment_date: string,
+    appointment_priority: string,
+    symptom_type: string,
+    symptom_description: string,
+    payment_mode: string,
+    status: string,
+    discount: string,
+    alternative_address: string,
+    reference: string,
+    previous_medical_issue: string,
+    message: string,
+    doctor: {
+        name: string
+    },
+    patient: {
+        name: string,
+        phone: string,
+        gender: string
+    }
+}
+
+
+
+
+export interface AppointmentDetails {
+    id: number,
+    doctorId: number,
+    patientId: number,
+    fees: string,
+    shift: string,
+    appointment_date: string,
+    appointment_priority: string,
+    symptom_type: string,
+    symptom_description: string,
+    payment_mode: string,
+    status: string,
+    discount: string,
+    alternative_address: string,
+    reference: string,
+    previous_medical_issue: string,
+    message: string,
+    patient: {
+        name: string,
+        phone: string,
+        email: string,
+        gender: string,
+        age: string,
+        blood_group: string,
+        address: string
+    },
+    doctor: {
+        name: string,
+        gender: string,
+        phone: string,
+        department: string,
+        specialist: string
+    }
+}

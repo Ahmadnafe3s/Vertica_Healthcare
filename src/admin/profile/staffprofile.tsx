@@ -1,27 +1,45 @@
 import { StaffProfile } from '@/types/type';
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { getStaffDetails } from './apiHandlers';
+import { useNavigate, useParams } from 'react-router-dom'
+import { deleteStaffProfile, getStaffDetails } from './apiHandlers';
 import { Key, Pencil, Trash } from 'lucide-react';
 import { useAppSelector } from '@/hooks';
 import { authSelector } from '@/features/auth/authSlice';
 import { currencyFormat } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import AlertModel from '@/components/alertModel';
+import toast from 'react-hot-toast';
 
 const Staffprofile = () => {
 
     const { id } = useParams();
+    const router = useNavigate()
+    const [alert, setAlert] = useState<boolean>(false)
     const session = useAppSelector(authSelector)
-
     const [profile, setProfile] = useState<StaffProfile>()
+
+
+    const onDelete = async () => {
+        try {
+            const data = await deleteStaffProfile(Number(id))
+            toast.success(data.message)
+            router('/admin/humanresource/staff')
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
 
 
     useEffect(() => {
 
         (async function () {
-            if (!id) return null
-            const data = await getStaffDetails(+id)
-            setProfile(data)
+            try {
+                if (!id) return null
+                const data = await getStaffDetails(+id)
+                setProfile(data)
+            } catch ({ message }: any) {
+                toast.error(message)
+            }
         })() // IIFE
 
     }, [])
@@ -40,9 +58,9 @@ const Staffprofile = () => {
                     <div className='space-y-2'>
                         <h1 className='text-gray-900 text-2xl font-bold'>{profile?.name}</h1>
                         {session.user?.role === 'admin' && <div className='flex gap-x-2'>
-                            <Pencil className='text-yellow-600 w-4 h-4 cursor-pointer active:scale-95' />
-                            <Trash className='text-red-600 w-4 h-4 cursor-pointer active:scale-95' />
-                            <Key className='text-green-600 w-4 h-4 cursor-pointer active:scale-95' />
+                            <Key className='text-green-600 w-4 h-4 cursor-pointer active:scale-95' onClick={() => { router(`/admin/profile/resetpassword/${profile?.id}`) }} />
+                            <Pencil className='text-yellow-600 w-4 h-4 cursor-pointer active:scale-95' onClick={() => { router(`/admin/profile/edit/${profile?.id}`) }} />
+                            <Trash className='text-red-600 w-4 h-4 cursor-pointer active:scale-95' onClick={() => setAlert(true)} />
                         </div>}
                     </div>
                 </div>
@@ -105,6 +123,7 @@ const Staffprofile = () => {
                     </div>
                 </div>
             </div>
+
 
 
             {/* profile section */}
@@ -188,6 +207,16 @@ const Staffprofile = () => {
                     </div>
 
                     <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 border-b border-gray-200">
+                        <p className='font-semibold text-sm text-gray-900'>Current Address</p>
+                        <p className='text-gray-900 text-sm'>{profile?.current_address}</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 border-b border-gray-200">
+                        <p className='font-semibold text-sm text-gray-900'>Permanant Address</p>
+                        <p className='text-gray-900 text-sm'>{profile?.permanent_address}</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 border-b border-gray-200">
                         <p className='font-semibold text-sm text-gray-900'>National Identification Number</p>
                         <p className='text-gray-900 text-sm'>{profile?.national_identification_number}</p>
                     </div>
@@ -200,6 +229,8 @@ const Staffprofile = () => {
                     <ScrollBar orientation="horizontal" />
                 </ScrollArea>
             </div>
+
+            {alert && <AlertModel cancel={() => { setAlert(false) }} continue={() => { onDelete() }} />}
         </section>
     )
 }

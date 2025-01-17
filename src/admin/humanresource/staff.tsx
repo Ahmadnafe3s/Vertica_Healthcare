@@ -68,7 +68,7 @@ const Staff = () => {
           <Label>Search by keyword</Label>
 
           <div className='flex items-center gap-2 w-72 sm:w-96'>
-            <Input onChange={(e) => { onSearch(e.target.value) }} placeholder='role , name , specialization' />
+            <Input onChange={(e) => { onSearch(e.target.value) }} placeholder='id , role , name , specialization' />
           </div>
 
         </div>

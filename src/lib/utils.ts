@@ -8,9 +8,9 @@ export function cn(...inputs: ClassValue[]) {
 
 
 export const currencyFormat = (price: number) => {
-  const currency = Intl.NumberFormat('en-US', {
+  const currency = Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'INR',
   })
 
   return currency.format(price)

@@ -2,7 +2,10 @@ import { z } from 'zod'
 
 
 export const appointmentFormSchema = z.object({
-    doctor: z.string()
+    patientId: z.string()
+        .min(1, { message: 'Please select a patient' }).default(''),
+
+    doctorId: z.string()
         .min(1, { message: 'Please select a doctor' }).default(''),
 
     fees: z.string()
@@ -12,7 +15,14 @@ export const appointmentFormSchema = z.object({
         .min(1, { message: 'Please select shift' }).default(''),
 
     appointment_date: z.string()
-        .min(1, { message: 'Please enetr valid date' }),
+        .min(1, { message: 'Please enetr valid date' })
+        .refine(date => {
+            const inputDate = new Date(date);
+            const currentDate = new Date();
+            currentDate.setHours(0, 0, 0, 0);
+
+            return inputDate >= currentDate;  // if input date is equal or greater than should not happen annything
+        }, { message: 'Appointment date cannot be in the past' }),
 
     appointment_priority: z.string()
         .min(1, { message: 'Please select priority' }).default(''),

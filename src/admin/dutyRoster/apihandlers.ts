@@ -53,6 +53,10 @@ export const fetchRosterDetails = async (ID: number): Promise<Shift> => {
 
 
 
+
+
+
+
 // [ for roster report page ]
 
 
@@ -68,11 +72,12 @@ export const fetchRosterlist = async (): Promise<Shift[]> => {
 }
 
 
-//search by ID
+//search by credentials
 
-export const searchBYid = async (id: string): Promise<Shift[]> => {
+export const searchBYid = async (credentials: string): Promise<Shift[]> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/roster?id=${id}`)
+        const params = { credentials }
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/roster`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

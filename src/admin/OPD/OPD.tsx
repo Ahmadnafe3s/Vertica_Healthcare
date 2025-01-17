@@ -1,4 +1,4 @@
-import AddAppointment from '@/components/AddAppointment'
+import AddAppointment from '@/admin/appointment/AddAppointment'
 import { buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'

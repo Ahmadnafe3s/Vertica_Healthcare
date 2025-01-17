@@ -1,16 +1,20 @@
-import { HTMLAttributes, useState } from 'react'
-import MaxWidthWrapper from './MaxWidthWrapper'
-import { Label } from './ui/label'
-import { Input } from './ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
-import { Textarea } from './ui/textarea'
-import { Button, buttonVariants } from './ui/button'
-import { X } from 'lucide-react'
+import { HTMLAttributes, useEffect, useState } from 'react'
+import MaxWidthWrapper from '../../components/MaxWidthWrapper'
+import { Label } from '../../components/ui/label'
+import { Input } from '../../components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
+import { Textarea } from '../../components/ui/textarea'
+import { Button, buttonVariants } from '../../components/ui/button'
+import { Loader, X } from 'lucide-react'
 import { appointmentFormSchema } from '@/formSchemas/AppointmentFormSchema'
 import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from 'react-router-dom'
+import { Doctors, Patients } from '@/types/type'
+import toast from 'react-hot-toast'
+import { createAppointment, fetchDoctors, fetchPatients } from './appointmentAPIhandler'
+import { filterDoctors } from '@/helpers/filterDoctors'
 
 
 interface AddAppointmentProps extends HTMLAttributes<HTMLDivElement> { }
@@ -20,20 +24,64 @@ interface AddAppointmentProps extends HTMLAttributes<HTMLDivElement> { }
 function AddAppointment({ ...props }: AddAppointmentProps) {
 
 
-    const [doctors, setDoctors] = useState<string[]>(["Rahul", "Suleman"])
+    const [patients, setPatients] = useState<Patients[]>([])
+    const [doctors, setDoctors] = useState<Doctors[]>([])
+    const [isPending, setPending] = useState<boolean>()
 
-    const { control, register, reset, handleSubmit, formState: { errors } } = useForm<z.infer<typeof appointmentFormSchema>>({
+    const { control, register, reset, setValue, watch, handleSubmit, formState: { errors } } = useForm<z.infer<typeof appointmentFormSchema>>({
         resolver: zodResolver(appointmentFormSchema)
     })
 
 
-    const onSearch = (value: string) => {
-        console.log(value);
+    const onSearch = async (value: string) => {
+        try {
+            const data = await fetchPatients(value)
+            setPatients(data)
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
     }
 
-    const onSubmit = (formData: z.infer<typeof appointmentFormSchema>) => {
-        console.log(formData);
+
+
+    const onSubmit = async (formData: z.infer<typeof appointmentFormSchema>) => {
+        try {
+            setPending(true)
+            const data = await createAppointment(formData)
+            toast.success(data.message)
+        } catch ({ message }: any) {
+            toast.error(message)
+        } finally {
+            setPending(false)
+        }
     }
+
+
+
+    const setValues = (doctorId: string) => {
+        const data = filterDoctors(doctors, +doctorId)
+        if (!data) return null
+        setValue('fees', data.staff.fees)
+        setValue('shift', data.shift)
+    }
+
+
+    useEffect(() => {
+        try {
+            (async function () {
+                const appointmentDate = watch('appointment_date') as string
+                if (appointmentDate) {
+                    const data = await fetchDoctors(appointmentDate)
+                    setDoctors(data)
+                }
+            })() //IIFE
+
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }, [watch('appointment_date'),])
+
+
 
     return (
         <>
@@ -51,9 +99,26 @@ function AddAppointment({ ...props }: AddAppointmentProps) {
                             </div>
                         </div>
 
-                        <div className='flex items-center gap-2 mt-4'>
+                        <div className='flex  gap-2 mt-4'>
                             <div>
-                                <Input type='search' className='sm:w-[300px]' placeholder='search patient' onChange={(e) => { onSearch(e.target.value) }} />
+
+                                {/* Patient Section */}
+
+                                <Controller name='patientId' control={control} render={({ field }) => {
+                                    return <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                                        <SelectTrigger className='sm:w-[300px] w-40'>
+                                            <SelectValue placeholder="Search" />
+                                        </SelectTrigger>
+
+                                        <SelectContent className='z-[200]'>
+                                            <Input type='search' className='w-full' placeholder='search patient' onChange={(e) => { onSearch(e.target.value) }} />
+                                            {patients.map((patient, i) => {
+                                                return <SelectItem key={i} value={patient.id.toString()}>{`${patient.name} (${patient.id})`}</SelectItem>
+                                            })}
+                                        </SelectContent>
+                                    </Select>
+                                }} />
+                                {errors.patientId && <p className='text-sm text-red-500'>{errors.patientId.message}</p>}
                             </div>
                             <div>
                                 <Link to={{ pathname: '/registerPatient' }} className={buttonVariants(
@@ -68,29 +133,41 @@ function AddAppointment({ ...props }: AddAppointmentProps) {
                         <div className='h-px w-full bg-gray-200 my-3' />
                     </div>
 
+                    {/* grid for fields */}
 
                     <div className="grid lg:grid-cols-4 md:grid-cols-3 gap-5">
+
+                        {/* Appointment date */}
+
+                        <div className="w-full flex flex-col gap-y-2">
+                            <Label>Appointment Date</Label>
+                            <Input type='date' {...register('appointment_date')} />
+                            {errors.appointment_date && <p className='text-sm text-red-500'>{errors.appointment_date.message}</p>}
+                        </div>
+
 
                         {/* doctors */}
 
                         <div className="w-full flex flex-col gap-y-2">
-                            <Controller control={control} name='doctor' render={({ field }) => {
+                            <Controller control={control} name='doctorId' render={({ field }) => {
                                 return <>
                                     <Label>Doctor</Label>
-                                    <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                                    <Select value={field.value || ''} onValueChange={(value) => { setValues(value); field.onChange(value) }}>
                                         <SelectTrigger >
                                             <SelectValue placeholder="Select" />
                                         </SelectTrigger>
 
                                         <SelectContent className='z-[200]'>
                                             {doctors?.map((doctor, index) => {
-                                                return <SelectItem key={index} value={doctor}>{doctor}</SelectItem>
+                                                return <SelectItem key={index} value={doctor.staff.id.toString()}>
+                                                    {doctor.staff.name} <span className='text-sm text-gray-600'>{`(${doctor.staff.specialist})`}</span>
+                                                </SelectItem>
                                             })}
                                         </SelectContent>
                                     </Select>
                                 </>
                             }} />
-                            {errors.doctor && <p className='text-sm text-red-500'>{errors.doctor.message}</p>}
+                            {errors.doctorId && <p className='text-sm text-red-500'>{errors.doctorId.message}</p>}
                         </div>
 
 
@@ -106,31 +183,11 @@ function AddAppointment({ ...props }: AddAppointmentProps) {
                         {/* shift */}
 
                         <div className="w-full flex flex-col gap-y-2">
-                            <Controller control={control} name='shift' render={({ field }) => {
-                                return <>
-                                    <Label>Shift</Label>
-                                    <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
-                                        <SelectTrigger >
-                                            <SelectValue placeholder="Select" />
-                                        </SelectTrigger>
-
-                                        <SelectContent className='z-[200]'>
-                                            <SelectItem value='morning'>Morning</SelectItem>
-                                            <SelectItem value='evening'>Evening</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </>
-                            }} />
+                            <Label>Shift</Label>
+                            <Input {...register('shift')} disabled />
                             {errors.shift && <p className='text-sm text-red-500'>{errors.shift.message}</p>}
                         </div>
 
-                        {/* Appointment date */}
-
-                        <div className="w-full flex flex-col gap-y-2">
-                            <Label>Appointment Date</Label>
-                            <Input type='date' {...register('appointment_date')} />
-                            {errors.appointment_date && <p className='text-sm text-red-500'>{errors.appointment_date.message}</p>}
-                        </div>
 
                         {/* Appointment priority */}
 
@@ -210,7 +267,7 @@ function AddAppointment({ ...props }: AddAppointmentProps) {
                                         <SelectContent className='z-[200]'>
                                             <SelectItem value="approved">Approved</SelectItem>
                                             <SelectItem value="pending">Pending</SelectItem>
-                                            <SelectItem value="cancel">Cancel</SelectItem>
+                                            <SelectItem value="cancelled">Cancel</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </>
@@ -246,8 +303,8 @@ function AddAppointment({ ...props }: AddAppointmentProps) {
                     </div>
 
                     <div className="flex mt-5 mb-2 gap-x-2 sm:justify-end">
-                        <Button type='submit' size={'sm'} >Save & Print</Button>
-                        <Button type='submit' size={'sm'}>Save</Button>
+                        <Button type='button' variant={'ghost'} size={'sm'} onClick={() => reset()} >Reset</Button>
+                        <Button type='submit' size={'sm'}>Save Appointment {isPending && <Loader className='animate-spin' />}</Button>
                     </div>
 
                 </form>

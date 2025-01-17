@@ -71,7 +71,7 @@ const Navbar = () => {
 
             </section >
 
-            {isUserModel && <UserModel onLogout={onLogout} onProfile={() => { }} />}
+            {isUserModel && <UserModel onClick={() => setUserModel(false)} onLogout={onLogout} onProfile={() => { }} />}
 
         </>
 

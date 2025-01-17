@@ -12,6 +12,7 @@ export const createStaffFormSchema = z.object({
         .default(''),
 
     department: z.string()
+        .default('')
         .optional(),
 
     specialist: z.string()
@@ -44,9 +45,11 @@ export const createStaffFormSchema = z.object({
         .default(''),
 
     marital_status: z.string()
+        .default('')
         .optional(),
 
     blood_group: z.string()
+        .default('')
         .optional(),
 
     dob: z.string()
