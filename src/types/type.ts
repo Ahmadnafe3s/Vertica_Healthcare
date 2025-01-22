@@ -120,7 +120,7 @@ export interface AppointmentDetails {
         gender: string,
         age: string,
         blood_group: string,
-        address: string
+        address: string,
     },
     doctor: {
         name: string,
@@ -128,5 +128,106 @@ export interface AppointmentDetails {
         phone: string,
         department: string,
         specialist: string
+    }
+}
+
+
+
+
+export interface MedicineList {
+    id: number,
+    name: string,
+    company: string,
+    composition: string,
+    category: string,
+    group: string,
+    quantity: number,
+}
+
+
+export interface MedicineDetails {
+    id: number,
+    name: string,
+    category: string,
+    company: string,
+    composition: string,
+    group: string,
+    unit: string,
+    min_level: string,
+    reorder_level: string,
+    quantity: number,
+    vat: string,
+    rack_no: string,
+    note: string
+}
+
+
+export interface MedicinePurchaseList {
+    id: number,
+    purchase_date: string,
+    amount: number,
+    supplier_name: string,
+    tax: string,
+    quantity: number,
+    discount: string,
+    total_amount: number,
+    medicine: {
+        name: string,
+        group: string
+    }
+}
+
+
+
+
+export interface MedicinePurchaseDetails {
+    id: number,
+    category: string,
+    medicineId: number,
+    supplier_name: string,
+    batch_no: string,
+    purchase_date: string,
+    expiry_date: string,
+    MRP: string,
+    sale_price: string,
+    packing_quantity: string,
+    quantity: 100,
+    purchase_price: string,
+    tax: 18,
+    discount: string,
+    amount: 10000,
+    total_amount: 11446,
+    payment_mode: string,
+    note: string,
+    medicine: {
+        name: string,
+        group: string
+    }
+}
+
+
+
+export interface OPDs {  // it will be Array of objects
+
+    id: number,
+    caseId: number,
+    appointmentId: number,
+
+    appointment: {
+
+        appointment_date: string,
+        symptom_description: string,
+        previous_medical_issue: string,
+        reference: string,
+
+        patient: {
+            id: number,
+            name: string
+        },
+
+        doctor: {
+            id: number,
+            name: string
+        }
     }
 }

@@ -25,7 +25,7 @@ const Bill = () => {
                         </Link>
 
 
-                        <Link to={{ pathname: '/admin/pharmacy/medicines' }} className={buttonVariants({
+                        <Link to={'../medicines'} className={buttonVariants({
                             variant: 'outline',
                             size: 'sm',
                             className: 'flex gap-x-1'

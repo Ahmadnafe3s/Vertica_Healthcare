@@ -27,6 +27,12 @@ import Not_found from "./error/not_found";
 import Unauthorized from "./error/unauthorized";
 import Staffprofile from "./admin/profile/staffprofile";
 import ResetPassword from "./admin/profile/resetpassword";
+import OPDLIST from "./admin/OPD/opdList";
+import VisitDetails from "./admin/OPD/patient/visitDetails";
+import Patient from "./admin/OPD/patient/patient";
+import Medication from "./admin/OPD/patient/medication";
+
+
 
 
 
@@ -45,6 +51,7 @@ function App() {
 
 
       <Routes>
+
         <Route path="/" element={<HomePage />} />
         <Route path="signin" element={<SignIn />} />
         <Route path="registerPatient" element={<RegisterPatient />} />
@@ -56,7 +63,14 @@ function App() {
           <Route path="admin/dashboard" element={<ProtectRoutes protectElement={<AdminDashboard />} requiredRole="admin" />} />
           <Route path="admin/appointment" element={<AdminAppointment />} />
           <Route path="admin/QueueAppointment" element={<QueueAppointment />} />
-          <Route path="admin/OPD" element={<OPD />} />
+
+          <Route path="admin/OPD" element={<OPD />}>
+            <Route path="list" element={<OPDLIST />} />
+            <Route path="patient/:caseId" element={<Patient />}>
+              <Route path="visitdetails" element={<VisitDetails />} />
+              <Route path="medication" element={<Medication />} />
+            </Route>
+          </Route>
 
           <Route path="admin/pharmacy" element={<Pharmacy />} >
             <Route path="bill" element={<Bill />} />
@@ -80,6 +94,7 @@ function App() {
             <Route path="rosterreport" element={<RosterReport />} />
           </Route>
         </Route>
+
 
         {/* error handlers */}
         <Route path="*" element={<Not_found />} />

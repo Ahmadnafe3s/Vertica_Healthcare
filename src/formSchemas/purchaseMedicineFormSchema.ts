@@ -6,7 +6,7 @@ export const PurchaseMedicineFormSchema = z.object({
         .min(1, { message: 'Medicine category is required' })
         .default(''),
 
-    name: z.string()
+    medicineId: z.string()
         .min(1, { message: 'Medicine name is required' })
         .default(''),
 
@@ -15,6 +15,9 @@ export const PurchaseMedicineFormSchema = z.object({
 
     batch_no: z.string()
         .min(1, { message: 'Batch no is required' }),
+
+    purchase_date: z.string()
+        .min(1, { message: 'Purchase date is required' }),
 
     expiry_date: z.string()
         .min(1, { message: 'Expiry date is required' }),
@@ -26,19 +29,22 @@ export const PurchaseMedicineFormSchema = z.object({
 
     packing_quantity: z.string().optional(),
 
-    quantity: z.string()
-        .min(1, { message: 'Quantity is required' }),
+    quantity: z
+    .number()
+    .int('Quantity must be an integer')
+    .min(0, 'Quantity must be at least 0')
+    .max(10000, 'Quantity cannot exceed 10000'),
 
     purchase_price: z.string()
         .min(1, { message: 'Purchase price is required' }),
 
-    tax: z.number().default(0),
+    tax: z.string().optional(),
 
-    discount: z.number().default(0),
+    discount: z.string().optional(),
 
     amount: z.number().optional().default(0),
 
-    total_amount: z.number().optional().default(0),
+    total_amount: z.number().optional(),
 
     payment_mode: z.string()
         .min(1, { message: 'Select payment mode' }),

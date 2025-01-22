@@ -6,22 +6,52 @@ import { PurchaseMedicineFormSchema } from '@/formSchemas/purchaseMedicineFormSc
 import { calculateAmount } from '@/helpers/calculateAmount'
 import { categories } from '@/helpers/formSelectOptions'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { z } from 'zod'
+import { createPurchase, searchMedicine } from '../pharmacyApiHandler'
+import { MedicineList } from '@/types/type'
+import { Textarea } from '@/components/ui/textarea'
 
 const PurchaseMedicineForm = () => {
 
-    const [medicineNames, setMedicineName] = useState<{ id: string, name: string }[]>([{ id: 'paracitamol', name: 'Paracitamol' }])
+    const [medicines, setMedicines] = useState<MedicineList[]>([])
 
     const { register, watch, control, handleSubmit, setValue, formState: { errors } } = useForm<z.infer<typeof PurchaseMedicineFormSchema>>({
         resolver: zodResolver(PurchaseMedicineFormSchema)
     })
 
 
+    const fetchMedicinesList = async (value: string) => {
+        try {
+            const data = await searchMedicine(value)
+            setMedicines(data)
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+
+   
+
+
+    async function onSubmit(formData: z.infer<typeof PurchaseMedicineFormSchema>) {
+        try {
+            const data = await createPurchase(formData)
+            toast.success(data.message)
+
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+
+
+
     useEffect(() => {
 
-        const Amount = calculateAmount(+watch('quantity'), +watch('purchase_price'), +watch('tax'), +watch('discount'))
+        const Amount = calculateAmount(+watch('quantity'), +watch('purchase_price'), +watch('tax')!, +watch('discount')!)
 
         setValue('amount', Amount.amount)
         setValue('total_amount', Amount.total_amount)
@@ -30,12 +60,10 @@ const PurchaseMedicineForm = () => {
     }, [watch('tax'), watch('discount'), watch('quantity'), watch('purchase_price')])
 
 
-    function onSubmit(formData: z.infer<typeof PurchaseMedicineFormSchema>) { }
-
 
     return (
-        <section className='bg-slate-50 pt-2 pb-20'>
-            <form className='p-5 grid lg:grid-cols-4 md:grid-cols-3 ring-1 ring-gray-200 rounded-lg gap-4' onSubmit={handleSubmit(onSubmit)}>
+        <section className='bg-slate-50 pt-5 pb-20'>
+            <form className='p-5 grid  sm:grid-cols-2 lg:grid-cols-3 ring-1 ring-gray-200 rounded-lg gap-4' onSubmit={handleSubmit(onSubmit)}>
 
                 {/* header */}
                 <div className="col-span-full">
@@ -52,7 +80,7 @@ const PurchaseMedicineForm = () => {
                     <Controller control={control} name='category' render={({ field }) => {
                         return <>
                             <Label>Category</Label>
-                            <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                            <Select value={field.value || ''} onValueChange={(value) => { fetchMedicinesList(value); field.onChange(value) }}>
                                 <SelectTrigger >
                                     <SelectValue placeholder="Select" />
                                 </SelectTrigger>
@@ -72,7 +100,7 @@ const PurchaseMedicineForm = () => {
                 {/* medicine names */}
 
                 <div className="w-full flex flex-col gap-y-2">
-                    <Controller control={control} name='name' render={({ field }) => {
+                    <Controller control={control} name='medicineId' render={({ field }) => {
                         return <>
                             <Label>Medicine Name</Label>
                             <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
@@ -81,14 +109,14 @@ const PurchaseMedicineForm = () => {
                                 </SelectTrigger>
 
                                 <SelectContent className='z-[200]'>
-                                    {medicineNames?.map((medicine, index) => {
-                                        return <SelectItem key={index} value={medicine.id}>{medicine.name}</SelectItem>
+                                    {medicines?.map((medicine, index) => {
+                                        return <SelectItem key={index} value={String(medicine.id)}>{medicine.name}</SelectItem>
                                     })}
                                 </SelectContent>
                             </Select>
                         </>
                     }} />
-                    {errors.name && <p className='text-sm text-red-500'>{errors.name.message}</p>}
+                    {errors.medicineId && <p className='text-sm text-red-500'>{errors.medicineId.message}</p>}
                 </div>
 
 
@@ -112,6 +140,14 @@ const PurchaseMedicineForm = () => {
                 {/* Expiry date */}
 
                 <div className="w-full flex flex-col gap-y-2">
+                    <Label>Purcahse Date</Label>
+                    <Input type='date' {...register('purchase_date')} />
+                    {errors.purchase_date && <p className='text-sm text-red-500'>{errors.purchase_date.message}</p>}
+                </div>
+
+                {/* Expiry date */}
+
+                <div className="w-full flex flex-col gap-y-2">
                     <Label>Expiry Date</Label>
                     <Input type='date' {...register('expiry_date')} />
                     {errors.expiry_date && <p className='text-sm text-red-500'>{errors.expiry_date.message}</p>}
@@ -130,6 +166,7 @@ const PurchaseMedicineForm = () => {
                 <div className="w-full flex flex-col gap-y-2">
                     <Label>Sale Price</Label>
                     <Input type='number' {...register('sale_price')} />
+                    {errors.sale_price && <p className='text-sm text-red-500'>{errors.sale_price.message}</p>}
                 </div>
 
                 {/*Packing Quantity */}
@@ -137,6 +174,7 @@ const PurchaseMedicineForm = () => {
                 <div className="w-full flex flex-col gap-y-2">
                     <Label>Packing Quantity</Label>
                     <Input type='number' {...register('packing_quantity')} />
+                    {errors.packing_quantity && <p className='text-sm text-red-500'>{errors.packing_quantity.message}</p>}
                 </div>
 
 
@@ -144,7 +182,7 @@ const PurchaseMedicineForm = () => {
 
                 <div className="w-full flex flex-col gap-y-2">
                     <Label>Quantity</Label>
-                    <Input type='number' {...register('quantity')} />
+                    <Input type='number' {...register('quantity' , {valueAsNumber : true})} />
                     {errors.quantity && <p className='text-sm text-red-500'>{errors.quantity.message}</p>}
                 </div>
 
@@ -162,6 +200,7 @@ const PurchaseMedicineForm = () => {
                 <div className="w-full flex flex-col gap-y-2">
                     <Label>Amount</Label>
                     <Input type='number' {...register('amount')} disabled />
+                    {errors.amount && <p className='text-sm text-red-500'>{errors.amount.message}</p>}
                 </div>
 
                 {/* Tax% */}
@@ -169,6 +208,7 @@ const PurchaseMedicineForm = () => {
                 <div className="w-full flex flex-col gap-y-2">
                     <Label>Tax%</Label>
                     <Input type='number' {...register('tax')} />
+                    {errors.tax && <p className='text-sm text-red-500'>{errors.tax.message}</p>}
                 </div>
 
                 {/* Discount% */}
@@ -176,6 +216,7 @@ const PurchaseMedicineForm = () => {
                 <div className="w-full flex flex-col gap-y-2">
                     <Label>Discount%</Label>
                     <Input type='number' {...register('discount')} />
+                    {errors.discount && <p className='text-sm text-red-500'>{errors.discount.message}</p>}
                 </div>
 
 
@@ -184,6 +225,7 @@ const PurchaseMedicineForm = () => {
                 <div className="w-full flex flex-col gap-y-2">
                     <Label>Total Amount</Label>
                     <Input type='number' {...register('total_amount')} disabled />
+                    {errors.total_amount && <p className='text-sm text-red-500'>{errors.total_amount.message}</p>}
                 </div>
 
                 {/* total AMount */}
@@ -210,6 +252,13 @@ const PurchaseMedicineForm = () => {
                     }} />
                     {errors.payment_mode && <p className='text-sm text-red-500'>{errors.payment_mode.message}</p>}
                 </div >
+
+
+                <div className="w-full flex flex-col gap-y-2">
+                    <Label>Note</Label>
+                    <Textarea {...register('note')} placeholder='Write note here' />
+                    {errors.note && <p className='text-sm text-red-500'>{errors.note.message}</p>}
+                </div>
 
                 <div className="col-span-full">
                     <Button type='submit' className='w-full sm:w-auto'>Save</Button>

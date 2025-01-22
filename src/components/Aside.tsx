@@ -29,7 +29,7 @@ const Aside = () => {
                         })
                     }><CalendarClock className='h-4 w-4' /> Appointment</Link></li>
 
-                    <li><Link to={{ pathname: '/admin/OPD' }} className={
+                    <li><Link to={{ pathname: '/admin/OPD/list' }} className={
                         buttonVariants({
                             variant: 'ghost',
                             className: 'flex text-sm items-center'

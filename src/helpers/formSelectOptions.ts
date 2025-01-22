@@ -55,7 +55,6 @@ export const units = [
   { label: 'Gram (g)', value: 'g' },
   { label: 'Liter (L)', value: 'l' },
   { label: 'Microgram (mcg)', value: 'mcg' },
-  { label: 'Unit (U)', value: 'u' },
   { label: 'Pill', value: 'pill' },
   { label: 'Tablet', value: 'tablet' },
   { label: 'Capsule', value: 'capsule' },
@@ -65,6 +64,25 @@ export const units = [
   { label: 'Teaspoon (tsp)', value: 'tsp' },
   { label: 'Tablespoon (tbsp)', value: 'tbsp' }
 ];
+
+
+export const compositions = [
+  { value: 'Paracetamol 500mg', label: 'Paracetamol 500mg' },
+  { value: 'Amoxicillin 250mg', label: 'Amoxicillin 250mg' },
+  { value: 'Ibuprofen 200mg', label: 'Ibuprofen 200mg' },
+  { value: 'Ciprofloxacin 500mg', label: 'Ciprofloxacin 500mg' },
+  { value: 'Loratadine 10mg', label: 'Loratadine 10mg' },
+  { value: 'Omeprazole 20mg', label: 'Omeprazole 20mg' },
+  { value: 'Metformin 500mg', label: 'Metformin 500mg' },
+  { value: 'Fluoxetine 20mg', label: 'Fluoxetine 20mg' },
+  { value: 'Vitamin C 1000mg', label: 'Vitamin C 1000mg' },
+  { value: 'Furosemide 40mg', label: 'Furosemide 40mg' },
+  { value: 'Diphenhydramine 25mg', label: 'Diphenhydramine 25mg' },
+  { value: 'Salbutamol 100mcg', label: 'Salbutamol 100mcg' },
+  { value: 'Atorvastatin 10mg', label: 'Atorvastatin 10mg' },
+  { value: 'Hydrochlorothiazide 25mg', label: 'Hydrochlorothiazide 25mg' }
+];
+
 
 
 export const roles = [

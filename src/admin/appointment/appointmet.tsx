@@ -92,14 +92,8 @@ const AdminAppointment = () => {
                             <Plus /> Appointment
                         </Button>
 
-                        {/* <Link to={''} className={buttonVariants({
-                            variant: 'outline',
-                            size: 'sm',
-                            className: 'flex gap-x-1'
-                        })}>
-                            <ListMinus />
-                            Doctor wise
-                        </Link> */}
+                        
+                        
 
                         <Link to={{ pathname: '/admin/QueueAppointment' }} className={buttonVariants({
                             variant: 'outline',

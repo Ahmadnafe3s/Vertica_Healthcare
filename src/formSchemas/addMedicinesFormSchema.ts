@@ -27,12 +27,6 @@ export const AddMedicinesFormSchema = z.object({
     reorder_level: z.string()
         .optional(),
 
-    tax: z.string()
-        .optional(),
-
-    packing: z.string()
-        .min(1, { message: 'Packing field is required' }),
-
     vat: z.string()
         .optional(),
 

@@ -50,7 +50,7 @@ const Staff = () => {
           <h1 className='font-semibold tracking-tight'>Staff List</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
-            <Link to={'/admin/humanresource/create'} className={buttonVariants({
+            <Link to={'../create'} className={buttonVariants({   // on step back
               variant: 'outline',
               size: 'sm',
               className: 'flex gap-x-1'

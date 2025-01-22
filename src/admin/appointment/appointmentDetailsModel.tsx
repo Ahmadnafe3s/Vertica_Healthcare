@@ -3,7 +3,7 @@ import { HTMLAttributes, useEffect, useState } from 'react'
 import { fetchAppointmentDetails } from './appointmentAPIhandler'
 import { AppointmentDetails } from '@/types/type'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Printer, Trash, X } from 'lucide-react'
+import { CalendarDays, Cross, PersonStanding, Printer, Trash, X } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { cn, currencyFormat } from '@/lib/utils'
 import toast from 'react-hot-toast'
@@ -37,7 +37,7 @@ const AppointmentDetailsModel = ({ onDelete, ID, ...props }: AppointmentDetailsM
         <>
             <div {...props} className='fixed top-0 left-0 h-screen w-full transition-all z-[120]' style={{ background: '#0000009c' }}></div>
 
-            <MaxWidthWrapper className='fixed h-auto max-h-[90vh] top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-[200] '>
+            <MaxWidthWrapper className='fixed h-auto top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-[200] '>
 
                 <div className='bg-white rounded-lg'>
 
@@ -61,166 +61,211 @@ const AppointmentDetailsModel = ({ onDelete, ID, ...props }: AppointmentDetailsM
 
                     <ScrollArea className='relative pt-3 h-[75vh] sm:h-[60vh] w-full'>
 
-                        <div className="grid lg:grid-cols-2 gap-y-3 px-2.5 pb-10">
+                        <div className="grid lg:grid-cols-2 gap-x-4 gap-y-8 px-2.5 pb-14">
+
 
                             {/* grid col-1 */}
 
-                            <div className='flex flex-col gap-4'>
+                            <div className='gap-2 grid sm:grid-cols-2 lg:grid-cols-4 sm:col-span-full'>
 
-                                {/* patient details */}
+                                {/* Appointment details */}
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Patient ID</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.patientId}</p>
+                                <div className="flex items-center gap-2 sm:col-span-2 mb-4">
+                                    <div className='p-3 bg-yellow-500 rounded-full'>
+                                        <CalendarDays className='w-10 h-10 text-white' />
+                                    </div>
+                                    <div className=''>
+                                        <p className='font-semibold text-lg text-gray-900'>{appointmentDetails?.appointment_date}</p>
+                                        <p className='text-sm text-gray-500'>Appointment Date</p>
+                                    </div>
                                 </div>
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Patient Name</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.patient.name}</p>
-                                </div>
+                                <div className="sm:col-span-2 grid grid-cols-2 gap-2">
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Age</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.patient.age}</p>
-                                </div>
+                                    <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
+                                        <p className='text-gray-700 text-sm'>Appointment No.</p>
+                                        <p className='font-semibold'>{appointmentDetails?.id}</p>
+                                    </div>
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Email</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.patient.email}</p>
-                                </div>
+                                    <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
+                                        <p className='text-gray-700 '>Status</p>
+                                        <p className={cn('text-white rounded-md bg-green-600 w-fit px-2 font-semibold',
+                                            { 'bg-red-500': appointmentDetails?.status === 'cancelled', 'bg-yellow-500': appointmentDetails?.status === 'pending' })}>
+                                            {appointmentDetails?.status}
+                                        </p>
+                                    </div>
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Phone</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.patient.phone}</p>
-                                </div>
-
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Gender</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.patient.gender}</p>
-                                </div>
-
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Blood Group</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.patient.blood_group}</p>
-                                </div>
-
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Address</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.patient.address}</p>
-                                </div>
-
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Alternative Address</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.alternative_address}</p>
-                                </div>
-
-                                {/* doctor details */}
-
-                                <Separator />
-
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Doctor ID</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.doctorId}</p>
-                                </div>
-
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Doctor Name</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.doctor.name}</p>
-                                </div>
-
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Department</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.doctor.department}</p>
                                 </div>
 
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Specialization</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.doctor.specialist}</p>
+                                <div className="col-span-full grid sm:grid-cols-3 gap-2">
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>Shift</p>
+                                        <p className='font-semibold'>{appointmentDetails?.shift}</p>
+                                    </div>
+
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>Priority</p>
+                                        <p className='font-semibold'>{appointmentDetails?.appointment_priority}</p>
+                                    </div>
+
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>Fees</p>
+                                        <p className='font-semibold'>{currencyFormat(Number(appointmentDetails?.fees))}</p>
+                                    </div>
+
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>Symptom Type</p>
+                                        <p className='font-semibold'>{appointmentDetails?.symptom_type}</p>
+                                    </div>
+
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>Description</p>
+                                        <p className='font-semibold'>{appointmentDetails?.symptom_description}</p>
+                                    </div>
+
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>Reference</p>
+                                        <p className='font-semibold'>{appointmentDetails?.reference}</p>
+                                    </div>
+
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>Previous Issue</p>
+                                        <p className='font-semibold'>{appointmentDetails?.previous_medical_issue}</p>
+                                    </div>
+
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>Payment Mode</p>
+                                        <p className='font-semibold'>{appointmentDetails?.payment_mode}</p>
+                                    </div>
+
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>Discount</p>
+                                        <p className='font-semibold'>{appointmentDetails?.discount}%</p>
+                                    </div>
+
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>Alternative Address</p>
+                                        <p className='font-semibold'>{appointmentDetails?.alternative_address}</p>
+                                    </div>
+
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>Message</p>
+                                        <p className='font-semibold'>{appointmentDetails?.message}</p>
+                                    </div>
                                 </div>
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Gender</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.doctor.gender}</p>
-                                </div>
-
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Phone</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.doctor.phone}</p>
-                                </div>
                             </div>
+
+
 
 
                             {/* grid col-2 */}
 
-                            <div className="flex flex-col gap-4">
-                                <Separator className='sm:hidden block' />
+                            <div className='gap-2 grid sm:grid-cols-2'>
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Appointment No.</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.id}</p>
+                                {/* patient details */}
+
+                                <div className="flex items-center gap-2 col-span-full mb-4">
+                                    <div className='p-3 bg-green-500 rounded-full'>
+                                        <PersonStanding className='w-10 h-10 text-white' />
+                                    </div>
+                                    <div className=''>
+                                        <p className='font-semibold text-lg text-gray-900'>{appointmentDetails?.patient.name}</p>
+                                        <p className='text-sm text-gray-500 '>Patient</p>
+                                    </div>
                                 </div>
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Appointment Date</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.appointment_date}</p>
+                                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                    <p className='text-gray-700'>Patient ID</p>
+                                    <p className='font-semibold'>{appointmentDetails?.patientId}</p>
                                 </div>
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Appointment Priority</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.appointment_priority}</p>
+                                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                    <p className='text-gray-700'>Age</p>
+                                    <p className='font-semibold'>{appointmentDetails?.patient.age}</p>
                                 </div>
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Status</p>
-                                    <p className={cn('text-white rounded-md bg-green-500 w-fit px-2 font-semibold',
-                                        { 'bg-red-400 text-black': appointmentDetails?.status === 'cancelled', 'bg-yellow-500': appointmentDetails?.status === 'pending' })}>
-                                        {appointmentDetails?.status}
-                                    </p>
+                                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                    <p className='text-gray-700'>Email</p>
+                                    <p className='font-semibold'>{appointmentDetails?.patient.email}</p>
                                 </div>
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Shift</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.shift}</p>
+                                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                    <p className='text-gray-700'>Phone</p>
+                                    <p className='font-semibold'>{appointmentDetails?.patient.phone}</p>
                                 </div>
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Fees</p>
-                                    <p className='text-gray-800'>{currencyFormat(Number(appointmentDetails?.fees))}</p>
+                                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                    <p className='text-gray-700'>Gender</p>
+                                    <p className='font-semibold'>{appointmentDetails?.patient.gender}</p>
                                 </div>
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Payment Mode</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.payment_mode}</p>
+                                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                    <p className='text-gray-700'>Blood Group</p>
+                                    <p className='font-semibold'>{appointmentDetails?.patient.blood_group}</p>
                                 </div>
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Previous Issue</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.previous_medical_issue}</p>
+                                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                    <p className='text-gray-700'>Address</p>
+                                    <p className='font-semibold'>{appointmentDetails?.patient.address}</p>
                                 </div>
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Symptom Type</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.symptom_type}</p>
-                                </div>
+                            </div>
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Description</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.symptom_description}</p>
-                                </div>
 
-                                <div className="grid grid-cols-2">
-                                    <p className='font-semibold text-gray-900'>Message</p>
-                                    <p className='text-gray-800'>{appointmentDetails?.message}</p>
-                                </div>
 
+                            {/* grid col-3 */}
+
+                            <div>
+                                <div className='gap-2 grid sm:grid-cols-2'>
+
+                                    {/* Doctor details */}
+
+                                    <div className="flex items-center gap-2 col-span-full mb-4">
+                                        <div className='p-3 bg-red-500 rounded-full'>
+                                            <Cross className='w-10 h-10 text-white' />
+                                        </div>
+                                        <div className=''>
+                                            <p className='font-semibold text-lg text-gray-900'>{appointmentDetails?.doctor.name}</p>
+                                            <p className='text-sm text-gray-500 '>Doctor</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>Doctor ID</p>
+                                        <p className='font-semibold'>{appointmentDetails?.doctorId}</p>
+                                    </div>
+
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>Department</p>
+                                        <p className='font-semibold'>{appointmentDetails?.doctor.department}</p>
+                                    </div>
+
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>specialist</p>
+                                        <p className='font-semibold'>{appointmentDetails?.doctor.specialist}</p>
+                                    </div>
+
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>Gender</p>
+                                        <p className='font-semibold'>{appointmentDetails?.doctor.gender}</p>
+                                    </div>
+
+                                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                        <p className='text-gray-700'>Phone</p>
+                                        <p className='font-semibold'>{appointmentDetails?.doctor.phone}</p>
+                                    </div>
+
+
+                                </div>
                             </div>
                         </div>
 
                         <div className="h-14 bg-gradient-to-t from-white z-30 w-full absolute bottom-0" />
                     </ScrollArea>
-                </div>
-            </MaxWidthWrapper>
+                </div >
+            </MaxWidthWrapper >
 
 
 

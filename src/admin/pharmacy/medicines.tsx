@@ -1,14 +1,74 @@
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Eye, FileText, ListMinus, Plus, Printer } from 'lucide-react'
+import { Eye, FileText, ListMinus, Pencil, Plus, Printer, SearchX, Trash } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import AddMedicineFormModel from './forms/addMedicineFormModel'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { MedicineList } from '@/types/type'
+import toast from 'react-hot-toast'
+import { deleteMedicine, getMedicineList, searchMedicine } from './pharmacyApiHandler'
+import AlertModel from '@/components/alertModel'
+import MedicineDetailsModel from './medicineDetailsModel'
 
 const Medicines = () => {
 
-  const [isAddMedicineFormModel, setMedicineFormModel] = useState<boolean>(false)
+  const [model, setModel] = useState<{ addMedicineForm: boolean, alert: boolean, medicineDetails: boolean }>({
+    addMedicineForm: false,
+    alert: false,
+    medicineDetails: false
+  })
+
+  const [medicines, setMedicines] = useState<MedicineList[]>([])
+  const id = useRef<number | undefined>(undefined)
+
+
+  const fetchMedicineList = async () => {
+    try {
+      const data = await getMedicineList()
+      setMedicines(data)
+    } catch ({ message }: any) {
+      toast.error(message)
+    }
+  }
+
+
+  const onSearch = async (value: string) => {
+    try {
+      const data = await searchMedicine(value)
+      setMedicines(data)
+    } catch ({ message }: any) {
+      toast.error(message)
+    }
+  }
+
+
+
+  const onDelete = async () => {
+    try {
+      const data = await deleteMedicine(Number(id.current))
+      toast.success(data.message)
+      fetchMedicineList();   // after deleting refetch data
+    } catch ({ message }: any) {
+      toast.error(message)
+    } finally {
+      setModel((rest) => {
+        return {
+          ...rest,
+          alert: false
+        }
+      });
+      id.current = undefined
+    }
+  }
+
+
+
+  useEffect(() => {
+    fetchMedicineList();
+  }, [])
+
+
 
   return (
     <>
@@ -19,13 +79,21 @@ const Medicines = () => {
           <h1 className='font-semibold tracking-tight'>Medicines</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
-            <Button className='flex gap-x-1' variant={'outline'} size={'sm'} onClick={() => { setMedicineFormModel(true) }}>
+            <Button className='flex gap-x-1' variant={'outline'} size={'sm'}
+              onClick={() => {
+                setModel((rest) => {
+                  return {
+                    ...rest,
+                    addMedicineForm: true
+                  }
+                })
+              }}>
               <Plus />
               Add Medicine
             </Button>
 
 
-            <Link to={{ pathname: '/admin/pharmacy/purchase' }} className={buttonVariants({
+            <Link to={'../purchase'} className={buttonVariants({
               variant: 'outline',
               size: 'sm',
               className: 'flex gap-x-1'
@@ -39,10 +107,10 @@ const Medicines = () => {
 
         {/* search bar */}
 
-        <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between border-b border-gray-200'>
+        <div className='flex py-3 items-center justify-between border-b border-gray-200'>
 
-          <div className='flex gap-x-2'>
-            <Input type='text' height='10px' placeholder='search' />
+          <div className='flex gap-x-2 w-56'>
+            <Input type='text' height='10px' placeholder='name , category , company' onChange={(e) => onSearch(e.target.value)} />
           </div>
 
           <div className='flex gap-x-2'>
@@ -69,26 +137,121 @@ const Medicines = () => {
           </TableHeader>
 
           <TableBody>
-            <TableRow>
-              <TableCell className="font-medium">PHARM4568</TableCell>
-              <TableCell>7859</TableCell>
-              <TableCell>Meraj Khan</TableCell>
-              <TableCell>Dr. Saurabh joshi</TableCell>
-              <TableCell>5</TableCell>
-              <TableCell>500</TableCell>
-              <TableCell className='flex gap-2'>
-                <Eye className='cursor-pointer text-gray-600 w-5 h-5' />
-              </TableCell>
-            </TableRow>
+            {medicines.map((med, i) => {
+              return <TableRow key={i} >
+                <TableCell className='text-gray-800 font-semibold'>{med.name}</TableCell>
+                <TableCell>{med.company}</TableCell>
+                <TableCell>{med.composition}</TableCell>
+                <TableCell>{med.category}</TableCell>
+                <TableCell>{med.group}</TableCell>
+                <TableCell>
+                  {med.quantity === 0 ? (<span className='text-red-600'>out of stock</span>) : med.quantity}
+                </TableCell>
+                <TableCell className='flex gap-2'>
+
+
+                  <Eye className='cursor-pointer text-gray-500 w-4  active:scale-95'
+                    onClick={() => {
+                      id.current = med.id;
+                      setModel((rest) => {
+                        return {
+                          ...rest,
+                          medicineDetails: true
+                        }
+                      })
+                    }}
+                  />
+                  
+                  {/* edit mode */}
+
+                  <Pencil className='cursor-pointer text-gray-500 w-4  active:scale-95'
+                    onClick={() => {
+                      setModel((rest) => {
+                        return {
+                          ...rest,
+                          addMedicineForm: true
+                        }
+                      });
+                      id.current = med.id
+                    }}
+                  />
+
+                  {/* DELETE MEDICINE */}
+
+                  <Trash className='cursor-pointer text-gray-500 w-4 active:scale-95 '
+                    onClick={() => {
+                      setModel((rest) => {
+                        return {
+                          ...rest,
+                          alert: true
+                        }
+                      });
+                      id.current = med.id
+                    }}
+                  />
+
+                </TableCell>
+              </TableRow>
+            })}
           </TableBody>
 
         </Table>
 
       </div >
 
+
+      {/* if list is empty */}
+
+      {medicines.length < 1 && <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>Not found <SearchX className='h-5 w-5' /></h1>}
+
+
       {/* Model */}
 
-      {isAddMedicineFormModel && <AddMedicineFormModel onClick={() => { setMedicineFormModel(false) }} />}
+      {model.addMedicineForm && <AddMedicineFormModel ID={id.current}
+        onClick={() => {
+          setModel((rest) => {
+            return {
+              ...rest,
+              addMedicineForm: false
+            }
+          });
+          id.current = undefined;
+          fetchMedicineList()
+        }}
+      />}
+
+
+      {/* Alert Model */}
+
+      {model.alert && <AlertModel
+        cancel={() => {
+          setModel((rest) => {
+            return {
+              ...rest,
+              alert: false
+            }
+          });
+          id.current = undefined;
+        }}
+
+        continue={() => { onDelete() }}
+      />}
+
+
+      {/* Medicine Details Model */}
+
+      {model.medicineDetails && <MedicineDetailsModel
+        onClick={() => {
+          setModel((rest) => {
+            return {
+              ...rest,
+              medicineDetails: false
+            }
+          });
+          id.current = undefined
+        }}
+        ID={Number(id.current)}
+      />}
 
     </>
 
