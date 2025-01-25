@@ -87,7 +87,7 @@ const AddMedicineFormModel = ({ ID, ...props }: AddMedicineFormModelProps) => {
 
                     {/* Header */}
 
-                    <div className='flex justify-between p-3 rounded-t-lg bg-zinc-200  col-span-full'>
+                    <div className='flex justify-between p-3 rounded-t-lg bg-orange-200  col-span-full'>
                         <p className='font-semibold text-xl'>Add Medicine</p>
                         <div {...props}>
                             <X className='cursor-pointer' />
@@ -275,8 +275,8 @@ const AddMedicineFormModel = ({ ID, ...props }: AddMedicineFormModelProps) => {
                     </ScrollArea>
 
                     <div className="flex mt-5 mb-2 p-3 gap-x-2 sm:justify-end">
-                        <Button type='button' size={'sm'} variant={'outline'} onClick={() => { reset() }}>reset</Button>
-                        <Button type='submit' className='flex-1 sm:flex-none' size={'sm'}>{ID ? 'Update' : 'Save Medicine'} {isPending && <Loader className='animate-spin' />}</Button>
+                        <Button type='button'  variant={'outline'} onClick={() => { reset() }}>reset</Button>
+                        <Button type='submit' className='flex-1 sm:flex-none' >{ID ? 'Update' : 'Save Medicine'} {isPending && <Loader className='animate-spin' />}</Button>
                     </div>
 
                 </form>

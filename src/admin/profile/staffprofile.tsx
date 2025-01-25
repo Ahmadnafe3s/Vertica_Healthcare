@@ -9,6 +9,7 @@ import { currencyFormat } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import AlertModel from '@/components/alertModel';
 import toast from 'react-hot-toast';
+import { currencySymbol } from '@/helpers/currencySymbol';
 
 const Staffprofile = () => {
 
@@ -118,7 +119,7 @@ const Staffprofile = () => {
                         <p className='font-semibold'>{profile?.date_of_joining}</p>
                     </div>
                     <div className='space-y-1 bg-white p-2 ring-1 ring-gray-200'>
-                        <p className='text-gray-700'>Fees$</p>
+                        <p className='text-gray-700'>Fees {currencySymbol()}</p>
                         <p className='font-semibold'>{currencyFormat(Number(profile?.fees))}</p>
                     </div>
                 </div>

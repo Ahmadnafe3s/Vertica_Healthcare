@@ -1,5 +1,7 @@
 // for roster list
 
+import { number } from "zod";
+
 export interface Shift {
     id: number;
     staffId: number;
@@ -211,6 +213,7 @@ export interface OPDs {  // it will be Array of objects
 
     id: number,
     caseId: number,
+    patientId: number,
     appointmentId: number,
 
     appointment: {
@@ -231,3 +234,102 @@ export interface OPDs {  // it will be Array of objects
         }
     }
 }
+
+
+
+export interface opdMedications {
+    id: number,
+    caseId: number,
+    medicineId: number,
+    date: string,
+    time: string,
+    dose: string,
+    note: string,
+    medicine: {
+        name: string,
+        category: string,
+        unit: string
+    }
+}
+
+
+export interface Vitals_List {
+    id: number,
+    caseId: number,
+    name: string,
+    value: string,
+    date: string
+}
+
+
+
+export interface Operation_list {
+    id: string,
+    caseId: number,
+    name: string,
+    category: string,
+    date: string,
+    ot_technician: string,
+}
+
+
+export interface Operation_Details {  // it is only object (return by server)
+    id: string,
+    patientId: number,
+    caseId: number,
+    category: string,
+    name: string,
+    date: string,
+    doctorId: number,
+    assistant_1: string,
+    assistant_2: string,
+    anesthetist: string,
+    anesthesia_type: string,
+    ot_technician: string,
+    ot_assistant: string,
+    note: string,
+    result: string,
+    patient: {
+        name: string,
+    },
+    doctor: {
+        name: string,
+    }
+}
+
+
+export interface opdDetails {
+    id: number,
+    caseId: number,
+    appointmentId: number,
+    appointment: {
+        symptom_description: string,
+        doctor: {
+            id: number,
+            name: string,
+            image: string,
+            gender: string
+        },
+        patient: {
+            id: number,
+            name: string,
+            gender: string,
+            guardian_name: string,
+            aadhar: string,
+            address: string,
+            phone: string,
+            blood_group: string,
+            age: string,
+            image: null | string,
+            alergies: string
+        }
+    },
+    medication: opdMedications[],
+    Vitals: Vitals_List[],
+    Operation: Operation_list[]
+}
+
+
+
+
+

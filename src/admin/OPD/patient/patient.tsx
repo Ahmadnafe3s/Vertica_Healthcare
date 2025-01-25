@@ -1,7 +1,7 @@
-import { Button, buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { BriefcaseMedical, Menu, ReceiptText } from 'lucide-react'
-import { Link, Outlet} from 'react-router-dom'
+import { BriefcaseMedical, ForkKnife, HeartPulse, Menu, PocketKnife, ReceiptText } from 'lucide-react'
+import { Link, Outlet } from 'react-router-dom'
 
 const Patient = () => {
 
@@ -27,10 +27,22 @@ const Patient = () => {
                             <BriefcaseMedical /> Medication
                         </Link>
 
+                        <Link to={`operation`} className={buttonVariants({
+                            variant: 'outline'
+                        })}>
+                            <PocketKnife /> Operation
+                        </Link>
+
                         <Link to={`visitdetails`} className={buttonVariants({
                             variant: 'outline'
                         })}>
-                           <ReceiptText /> Charges
+                            <ReceiptText /> Charges
+                        </Link>
+
+                        <Link to={`vital`} className={buttonVariants({
+                            variant: 'outline'
+                        })}>
+                            <HeartPulse /> Vital
                         </Link>
 
                     </div>
@@ -45,3 +57,5 @@ const Patient = () => {
 }
 
 export default Patient
+
+// NOTE : IT IS PARENT COMPONENT FOR ALL COMPONENTS INSIDE THIS DIRECTORY

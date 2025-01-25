@@ -122,3 +122,27 @@ export const bloodGroups = [
   { label: "O+", value: "O+" },
   { label: "O-", value: "O-" }
 ];
+
+
+export const Vitals = [
+  { label: "Height (1 - 200 CM)", value: "Height" },
+  { label: "Weight (kg)", value: "Weight" },
+  { label: "Blood Pressure (mm Hg)", value: "BloodPressure" },
+  { label: "Temperature (°C)", value: "Temperature" },
+  { label: "Respiratory Rate (breaths per minute)", value: "RespiratoryRate" },
+  { label: "Oxygen Saturation (%)", value: "OxygenSaturation" },
+  { label: "Blood Sugar (mg/dL)", value: "BloodSugar" },
+]
+
+
+export const OPERATION_CATEGORIES = [
+  { label: 'Surgery', value: 'Surgery' },
+  { label: 'Radiology', value: 'Radiology' },
+  { label: 'Cardiology', value: 'Cardiology' },
+  { label: 'Orthopedics', value: 'Orthopedics' },
+  { label: 'Pediatrics', value: 'Pediatrics' },
+  { label: 'Neurology', value: 'Neurology' },
+  { label: 'Plastic Surgery', value: 'Plastic Surgery' } // Added Plastic Surgery
+];
+
+

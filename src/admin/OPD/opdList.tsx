@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ClipboardPlus, FileText, Plus, Printer, ReceiptText } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getOPDList } from './opdApiHandler'
+import { getOPDList, searchOPDs } from './opdApiHandler'
 import toast from 'react-hot-toast'
 import { OPDs } from '@/types/type'
 
@@ -13,6 +13,7 @@ const OPDLIST = () => {
 
   const [isAppointmentModel, setAppointmentModel] = useState<boolean>(false)
   const [OPD_list, setOPD_list] = useState<OPDs[]>([])
+
 
 
   const fetOPDlist = async () => {
@@ -24,6 +25,18 @@ const OPDLIST = () => {
       toast.error(message)
     }
   }
+
+
+
+  const onSerach = async (search: string) => {
+    try {
+      const data = await searchOPDs(search)
+      setOPD_list(data)
+    } catch ({ message }: any) {
+      toast.error(message)
+    }
+  }
+
 
 
   useEffect(() => {
@@ -61,7 +74,7 @@ const OPDLIST = () => {
       <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between border-b border-gray-200'>
 
         <div className='flex gap-x-2'>
-          <Input type='text' height='10px' placeholder='search' />
+          <Input type='text' height='10px' placeholder='caseId , patient , doctor' onChange={(e) => { onSerach(e.target.value) }} />
         </div>
 
         <div className='flex gap-x-2'>
@@ -82,7 +95,7 @@ const OPDLIST = () => {
             <TableHead>Appointment Date</TableHead>
             <TableHead>Consultant</TableHead>
             <TableHead>Reference</TableHead>
-            <TableHead>Symptoms</TableHead>
+            <TableHead>Symptom Type</TableHead>
             <TableHead>Previous medical Issue</TableHead>
             <TableHead>Action</TableHead>
           </TableRow>
@@ -96,7 +109,7 @@ const OPDLIST = () => {
               <TableCell>{opd.appointment.patient.name}</TableCell>
               <TableCell>
                 <Link
-                  to={`../patient/${opd.caseId}/visitdetails`}
+                  to={`../patient/${opd.patientId}/${opd.caseId}/visitdetails`}
                   className="font-medium text-blue-500 hover:text-blue-400 cursor-pointer"
                 >
                   {opd.caseId}

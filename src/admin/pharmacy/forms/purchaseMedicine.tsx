@@ -13,6 +13,7 @@ import { z } from 'zod'
 import { createPurchase, searchMedicine } from '../pharmacyApiHandler'
 import { MedicineList } from '@/types/type'
 import { Textarea } from '@/components/ui/textarea'
+import { currencySymbol } from '@/helpers/currencySymbol'
 
 const PurchaseMedicineForm = () => {
 
@@ -33,7 +34,7 @@ const PurchaseMedicineForm = () => {
     }
 
 
-   
+
 
 
     async function onSubmit(formData: z.infer<typeof PurchaseMedicineFormSchema>) {
@@ -156,7 +157,7 @@ const PurchaseMedicineForm = () => {
                 {/*MRP */}
 
                 <div className="w-full flex flex-col gap-y-2">
-                    <Label>MRP</Label>
+                    <Label>MRP {currencySymbol()}</Label>
                     <Input type='number' step="0.01" {...register('MRP')} />
                     {errors.MRP && <p className='text-sm text-red-500'>{errors.MRP.message}</p>}
                 </div>
@@ -164,7 +165,7 @@ const PurchaseMedicineForm = () => {
                 {/*Sale Price */}
 
                 <div className="w-full flex flex-col gap-y-2">
-                    <Label>Sale Price</Label>
+                    <Label>Sale Price {currencySymbol()}</Label>
                     <Input type='number' {...register('sale_price')} />
                     {errors.sale_price && <p className='text-sm text-red-500'>{errors.sale_price.message}</p>}
                 </div>
@@ -182,7 +183,7 @@ const PurchaseMedicineForm = () => {
 
                 <div className="w-full flex flex-col gap-y-2">
                     <Label>Quantity</Label>
-                    <Input type='number' {...register('quantity' , {valueAsNumber : true})} />
+                    <Input type='number' {...register('quantity', { valueAsNumber: true })} />
                     {errors.quantity && <p className='text-sm text-red-500'>{errors.quantity.message}</p>}
                 </div>
 
@@ -190,7 +191,7 @@ const PurchaseMedicineForm = () => {
                 {/* Purcahse Price */}
 
                 <div className="w-full flex flex-col gap-y-2">
-                    <Label>Purcahse Price</Label>
+                    <Label>Purcahse Price {currencySymbol()}</Label>
                     <Input type='number' {...register('purchase_price')} />
                     {errors.purchase_price && <p className='text-sm text-red-500'>{errors.purchase_price.message}</p>}
                 </div>
@@ -198,7 +199,7 @@ const PurchaseMedicineForm = () => {
                 {/*  Amount */}
 
                 <div className="w-full flex flex-col gap-y-2">
-                    <Label>Amount</Label>
+                    <Label>Amount {currencySymbol()}</Label>
                     <Input type='number' {...register('amount')} disabled />
                     {errors.amount && <p className='text-sm text-red-500'>{errors.amount.message}</p>}
                 </div>
@@ -223,12 +224,12 @@ const PurchaseMedicineForm = () => {
                 {/* Total Amount */}
 
                 <div className="w-full flex flex-col gap-y-2">
-                    <Label>Total Amount</Label>
+                    <Label>Total Amount {currencySymbol()}</Label>
                     <Input type='number' {...register('total_amount')} disabled />
                     {errors.total_amount && <p className='text-sm text-red-500'>{errors.total_amount.message}</p>}
                 </div>
 
-                {/* total AMount */}
+                {/* Payment mode */}
 
                 <div className="w-full flex flex-col gap-y-2">
                     <Controller control={control} name='payment_mode' render={({ field }) => {

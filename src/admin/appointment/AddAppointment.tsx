@@ -16,6 +16,8 @@ import toast from 'react-hot-toast'
 import { createAppointment, fetchDoctors, fetchPatients } from './appointmentAPIhandler'
 import { filterDoctors } from '@/helpers/filterDoctors'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { currencySymbol } from '@/helpers/currencySymbol'
+
 
 
 interface AddAppointmentProps extends HTMLAttributes<HTMLDivElement> { }
@@ -94,7 +96,7 @@ function AddAppointment({ ...props }: AddAppointmentProps) {
 
                     <div>
                         <div className='flex justify-between pt-2 pb-3 border-b border-gray-200 col-span-full'>
-                            <p className='font-semibold text-xl'>Add Appointment</p>
+                            <p className='font-semibold text-xl text-white bg-green-500 py-1 px-4 rounded-xl'>Add Appointment</p>
                             <div {...props}>
                                 <X className='cursor-pointer' />
                             </div>
@@ -179,7 +181,7 @@ function AddAppointment({ ...props }: AddAppointmentProps) {
                             {/* fees */}
 
                             <div className="w-full flex flex-col gap-y-2">
-                                <Label>Doctor Fees$</Label>
+                                <Label>Doctor Fees {currencySymbol()}</Label>
                                 <Input type='number' {...register('fees')} />
                                 {errors.fees && <p className='text-sm text-red-500'>{errors.fees.message}</p>}
                             </div>
@@ -309,8 +311,8 @@ function AddAppointment({ ...props }: AddAppointmentProps) {
                     </ScrollArea>
 
                     <div className="flex mt-5 mb-2 gap-x-2 sm:justify-end">
-                        <Button type='button' variant={'ghost'} size={'sm'} onClick={() => reset()} >Reset</Button>
-                        <Button type='submit' className='flex-1 sm:flex-none' size={'sm'}>Save Appointment {isPending && <Loader className='animate-spin' />}</Button>
+                        <Button type='button' variant={'ghost'}  onClick={() => reset()} >Reset</Button>
+                        <Button type='submit' className='flex-1 sm:flex-none' >Save Appointment {isPending && <Loader className='animate-spin' />}</Button>
                     </div>
 
                 </form>

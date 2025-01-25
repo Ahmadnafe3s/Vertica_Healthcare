@@ -1,10 +1,202 @@
-import { OPDs } from "@/types/type"
+import { operationFormSchema } from "@/formSchemas/addOperationFormSchema"
+import { medicationFormSchema } from "@/formSchemas/medicationFormSchema"
+import { vitalFormSchema } from "@/formSchemas/vitalFormSchema"
+import { opdDetails, opdMedications, OPDs, Operation_Details, Operation_list, Vitals_List } from "@/types/type"
 import axios from "axios"
+import { z } from "zod"
 
 
 export const getOPDList = async (): Promise<OPDs[]> => {
     try {
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const searchOPDs = async (search: string) => {
+    try {
+        const params = { search }
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd`, { params })
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const getOPD_Details = async (caseId: number): Promise<opdDetails> => {
+
+    try {
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd/${caseId}`)
+        return res.data
+
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+// for medication page
+
+export const createMedication = async (caseId: number, formData: z.infer<typeof medicationFormSchema>) => {
+    try {
+        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/medication/${caseId}`, formData)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+export const getMedications = async (caseId: number): Promise<opdMedications[]> => {
+
+    try {
+        const params = { caseId }
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/medication`, { params })
+        return res.data
+
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+export const deleteMedication = async (id: number) => {
+    try {
+        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/medication/${id}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const searchMedications = async (caseId: number, date: string): Promise<opdMedications[]> => {
+    try {
+        const params = { caseId, date }
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/medication`, { params })
+        return res.data
+
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+
+
+
+// [For Vital pages]
+
+export const createVital = async (patientId: number, caseId: number, formData: z.infer<typeof vitalFormSchema>) => {
+    try {
+        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/vital/${patientId}/${caseId}`, formData)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+export const getVitals = async (caseId: number): Promise<Vitals_List[]> => {
+    try {
+        const params = { caseId }
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/vital`, { params })
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+export const deleteVitals = async (id: number) => {
+    try {
+        console.log(id);
+
+        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/vital/${id}`,)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+export const searchVital = async (caseId: number, date: string): Promise<Vitals_List[]> => {
+    try {
+        const params = { caseId, date }
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/vital`, { params })
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+
+
+
+
+//  API Handlers for operation section
+
+
+export const createOperation = async (patientId: number, caseId: number, formData: z.infer<typeof operationFormSchema>) => {
+    try {
+        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/operation/${patientId}/${caseId}`, formData)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+
+export const getOperation_List = async (caseId: number): Promise<Operation_list[]> => {
+    try {
+        const params = { caseId }
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/operation`, { params })
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+export const getOperation_Details = async (id: string): Promise<Operation_Details> => {
+    try {
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/operation/${id}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+export const deleteOperation = async (id: string) => {
+    try {
+        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/operation/${id}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const updateOperation = async (id: string, formData: z.infer<typeof operationFormSchema>) => {
+    try {
+        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/operation/${id}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

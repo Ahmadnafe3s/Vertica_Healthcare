@@ -12,6 +12,7 @@ import toast from 'react-hot-toast'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 import { fetchStaffProfile, post, update } from './HRApiHandler'
+import { currencySymbol } from '@/helpers/currencySymbol'
 
 const CreateStaff = () => {
 
@@ -186,7 +187,7 @@ const CreateStaff = () => {
         {/* Fees */}
 
         <div className="w-full flex flex-col gap-y-2">
-          <Label>Fees$</Label>
+          <Label>Fees {currencySymbol()}</Label>
           <Input type='number' {...register('fees')} />
           {errors.fees && <p className='text-sm text-red-500'>{errors.fees.message}</p>}
         </div>

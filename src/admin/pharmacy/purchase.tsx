@@ -9,7 +9,10 @@ import { getPurchaseList } from './pharmacyApiHandler'
 import { useEffect, useRef, useState } from 'react'
 import { MedicinePurchaseList } from '@/types/type'
 import PurchaseMedicineDetailsModel from './purchaseMedicineDetailsModel'
-import { symbolForHeaders } from '@/helpers/symbolForHeaders'
+import { currencySymbol } from '@/helpers/currencySymbol'
+
+
+
 
 const Purchase = () => {
 
@@ -88,10 +91,10 @@ const Purchase = () => {
               <TableHead>Purchase Date</TableHead>
               <TableHead>Supplier Name</TableHead>
               <TableHead>Quantity</TableHead>
-              <TableHead>Total{symbolForHeaders()}</TableHead>
+              <TableHead>Total {currencySymbol()}</TableHead>
               <TableHead>Tax</TableHead>
               <TableHead>Discount</TableHead>
-              <TableHead>Net Amount{symbolForHeaders()}</TableHead>
+              <TableHead>Net Amount {currencySymbol()}</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>

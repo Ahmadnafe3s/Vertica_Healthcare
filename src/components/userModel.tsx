@@ -26,7 +26,7 @@ const UserModel = ({ onLogout, onProfile, ...props }: userModelProps) => {
                 </div>
                 <div className="h-px bg-gray-200"></div>
                 <div className="my-2 text-sm text-gray-800 cursor-pointer flex flex-col gap-y-4">
-                    <p className="flex items-center"><CircleUser className='h-4 w-4 mr-1'/>Account</p>
+                    <p className="flex items-center" onClick={onProfile}><CircleUser className='h-4 w-4 mr-1'/>Account</p>
                     <Button size={'sm'} variant={'destructive'} onClick={onLogout}>logout</Button>
                 </div>
             </div>

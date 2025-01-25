@@ -37,13 +37,13 @@ const PurchaseMedicineDetailsModel = ({ ID, ...props }: PurchaseMedicineDetailsM
 
             <MaxWidthWrapper className='fixed h-auto top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-[200] '>
 
-                <div className='bg-white rounded-lg'>
+                <div className='bg-white rounded-lg p-1'>
 
                     {/* hearder */}
 
-                    <div className='flex justify-between bg-zinc-200 items-center p-2 rounded-t-lg'>
+                    <div className='flex justify-between items-center p-2 border-b border-gray-200'>
 
-                        <h1 className=' text-xl font-semibold '>Medicine Details</h1>
+                        <h1 className='text-sm sm:text-lg font-semibold text-white bg-green-500 rounded-lg py-1 px-4'>Purchase Details</h1>
 
                         <div className='flex gap-x-4'>
                             <div {...props}>

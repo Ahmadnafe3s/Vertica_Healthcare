@@ -6,18 +6,21 @@ import { Plus, SearchX } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
+import { searchStaffs } from './HRApiHandler'
 
-interface staffList {
+export interface staffList {
   name: string, id: number, role: string, phone: string, image: string, gender: string
 }
 
 const Staff = () => {
 
+  const [staffList, setStaffs] = useState<staffList[]>()
+
+
   const onSearch = async (value: any) => {
     try {
-
-      const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/staff?search=${value}`)
-      setStaffs(response.data)
+      const data = await searchStaffs(value)
+      setStaffs(data)
 
     } catch (error: any) {
 
@@ -27,7 +30,6 @@ const Staff = () => {
 
   }
 
-  const [staffList, setStaffs] = useState<staffList[]>()
 
 
   const fetchStaffs = async () => {

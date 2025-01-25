@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom'
 import { deleteAppointment, fetchAppointments, searchAppointment } from './appointmentAPIhandler'
 import AppointmentDetailsModel from './appointmentDetailsModel'
 import AlertModel from '@/components/alertModel'
+import { currencySymbol } from '@/helpers/currencySymbol'
 
 const AdminAppointment = () => {
 
@@ -139,7 +140,7 @@ const AdminAppointment = () => {
                             <TableHead>Priority</TableHead>
                             <TableHead>Alternative Address</TableHead>
                             <TableHead>Discount%</TableHead>
-                            <TableHead>Fees</TableHead>
+                            <TableHead>Fees {currencySymbol()}</TableHead>
                             <TableHead>Status</TableHead>
                         </TableRow>
                     </TableHeader>

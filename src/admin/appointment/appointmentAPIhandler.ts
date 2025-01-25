@@ -19,9 +19,10 @@ export const fetchPatients = async (value: string): Promise<Patients[]> => {
 
 // fetching doctors according to appointment date
 
-export const fetchDoctors = async (appointmentDate: string) => {
+export const fetchDoctors = async (appointmentDate?: string) => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/staff/doctor/${appointmentDate}`)
+        const params = { appointmentDate }
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/staff/doctor/list`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

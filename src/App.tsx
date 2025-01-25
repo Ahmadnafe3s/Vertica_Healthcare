@@ -30,7 +30,9 @@ import ResetPassword from "./admin/profile/resetpassword";
 import OPDLIST from "./admin/OPD/opdList";
 import VisitDetails from "./admin/OPD/patient/visitDetails";
 import Patient from "./admin/OPD/patient/patient";
-import Medication from "./admin/OPD/patient/medication";
+import Medication from "./admin/OPD/patient/medication/medication";
+import Vital from "./admin/OPD/patient/vital/vital";
+import OperationList from "./admin/OPD/patient/operation/operationList";
 
 
 
@@ -66,9 +68,11 @@ function App() {
 
           <Route path="admin/OPD" element={<OPD />}>
             <Route path="list" element={<OPDLIST />} />
-            <Route path="patient/:caseId" element={<Patient />}>
+            <Route path="patient/:patientId/:caseId" element={<Patient />}>
               <Route path="visitdetails" element={<VisitDetails />} />
               <Route path="medication" element={<Medication />} />
+              <Route path="vital" element={<Vital />} />
+              <Route path="operation" element={<OperationList />} />
             </Route>
           </Route>
 

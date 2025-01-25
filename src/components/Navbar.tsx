@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import MaxWidthWrapper from "./MaxWidthWrapper"
 import { buttonVariants } from "./ui/button"
 import { useAppDispatch, useAppSelector } from "@/hooks"
@@ -12,6 +12,8 @@ import UserModel from "./userModel"
 const Navbar = () => {
 
     let isAsideOpen = false
+    const router = useNavigate()
+
     const dispatch = useAppDispatch()
     const session = useAppSelector(authSelector)
     const [isUserModel, setUserModel] = useState<boolean>(false)
@@ -35,8 +37,8 @@ const Navbar = () => {
                     <header className="h-full border-b border-zinc-200 flex justify-between items-center">
 
                         <Link to={{ pathname: '/home' }} className="tracking-tight cursor-pointer z-[100] select-none"><span
-                            className="text-blue-500 font-semibold">V</span>ertica <span
-                                className="text-blue-500 font-semibold">H</span>ealtcare</Link>
+                            className="text-orange-500 font-semibold">V</span>ertica <span
+                                className="text-orange-500 font-semibold">H</span>ealtcare</Link>
 
 
                         <div className="flex h-full items-center gap-x-3 sm:gap-x-0">
@@ -71,7 +73,14 @@ const Navbar = () => {
 
             </section >
 
-            {isUserModel && <UserModel onClick={() => setUserModel(false)} onLogout={onLogout} onProfile={() => { }} />}
+            {isUserModel && <UserModel onClick={() => setUserModel(false)} onLogout={onLogout}
+                onProfile={() => {
+                    session.user?.role === 'admin' ? router(`/admin/profile/staff/${session.user.id}`)
+                        :
+                        alert('user not created yet')
+                    setUserModel(false)
+                }}
+            />}
 
         </>
 

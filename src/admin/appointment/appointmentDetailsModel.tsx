@@ -4,7 +4,6 @@ import { fetchAppointmentDetails } from './appointmentAPIhandler'
 import { AppointmentDetails } from '@/types/type'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { CalendarDays, Cross, PersonStanding, Printer, Trash, X } from 'lucide-react'
-import { Separator } from '@/components/ui/separator'
 import { cn, currencyFormat } from '@/lib/utils'
 import toast from 'react-hot-toast'
 
@@ -39,13 +38,13 @@ const AppointmentDetailsModel = ({ onDelete, ID, ...props }: AppointmentDetailsM
 
             <MaxWidthWrapper className='fixed h-auto top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-[200] '>
 
-                <div className='bg-white rounded-lg'>
+                <div className='bg-white rounded-lg pb-2'>
 
                     {/* hearder */}
 
-                    <div className='flex justify-between bg-zinc-200 items-center p-2 rounded-t-lg'>
+                    <div className='flex justify-between items-center p-3'>
 
-                        <h1 className=' text-xl font-semibold '>Appointment Details</h1>
+                        <h1 className=' text-sm sm:text-lg font-semibold text-white bg-green-500 py-1 px-4 rounded-xl'>Appointment Details</h1>
 
                         <div className='flex gap-x-4'>
                             <Printer className='cursor-pointer  active:scale-95 text-gray-800 w-5' />
@@ -101,57 +100,57 @@ const AppointmentDetailsModel = ({ onDelete, ID, ...props }: AppointmentDetailsM
                                 <div className="col-span-full grid sm:grid-cols-3 gap-2">
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>Shift</p>
-                                        <p className='font-semibold'>{appointmentDetails?.shift}</p>
+                                        <p className='text-sm'>{appointmentDetails?.shift}</p>
                                     </div>
 
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>Priority</p>
-                                        <p className='font-semibold'>{appointmentDetails?.appointment_priority}</p>
+                                        <p className='text-sm'>{appointmentDetails?.appointment_priority}</p>
                                     </div>
 
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>Fees</p>
-                                        <p className='font-semibold'>{currencyFormat(Number(appointmentDetails?.fees))}</p>
+                                        <p className='text-sm'>{currencyFormat(Number(appointmentDetails?.fees))}</p>
                                     </div>
 
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>Symptom Type</p>
-                                        <p className='font-semibold'>{appointmentDetails?.symptom_type}</p>
+                                        <p className='text-sm'>{appointmentDetails?.symptom_type}</p>
                                     </div>
 
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>Description</p>
-                                        <p className='font-semibold'>{appointmentDetails?.symptom_description}</p>
+                                        <p className='text-sm'>{appointmentDetails?.symptom_description}</p>
                                     </div>
 
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>Reference</p>
-                                        <p className='font-semibold'>{appointmentDetails?.reference}</p>
+                                        <p className='text-sm'>{appointmentDetails?.reference}</p>
                                     </div>
 
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>Previous Issue</p>
-                                        <p className='font-semibold'>{appointmentDetails?.previous_medical_issue}</p>
+                                        <p className='text-sm'>{appointmentDetails?.previous_medical_issue}</p>
                                     </div>
 
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>Payment Mode</p>
-                                        <p className='font-semibold'>{appointmentDetails?.payment_mode}</p>
+                                        <p className='text-sm'>{appointmentDetails?.payment_mode}</p>
                                     </div>
 
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>Discount</p>
-                                        <p className='font-semibold'>{appointmentDetails?.discount}%</p>
+                                        <p className='text-sm'>{appointmentDetails?.discount}%</p>
                                     </div>
 
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>Alternative Address</p>
-                                        <p className='font-semibold'>{appointmentDetails?.alternative_address}</p>
+                                        <p className='text-sm'>{appointmentDetails?.alternative_address}</p>
                                     </div>
 
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>Message</p>
-                                        <p className='font-semibold'>{appointmentDetails?.message}</p>
+                                        <p className='text-sm'>{appointmentDetails?.message}</p>
                                     </div>
                                 </div>
 
@@ -178,37 +177,37 @@ const AppointmentDetailsModel = ({ onDelete, ID, ...props }: AppointmentDetailsM
 
                                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                     <p className='text-gray-700'>Patient ID</p>
-                                    <p className='font-semibold'>{appointmentDetails?.patientId}</p>
+                                    <p className='text-sm'>{appointmentDetails?.patientId}</p>
                                 </div>
 
                                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                     <p className='text-gray-700'>Age</p>
-                                    <p className='font-semibold'>{appointmentDetails?.patient.age}</p>
+                                    <p className='text-sm'>{appointmentDetails?.patient.age}</p>
                                 </div>
 
                                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                     <p className='text-gray-700'>Email</p>
-                                    <p className='font-semibold'>{appointmentDetails?.patient.email}</p>
+                                    <p className='text-sm'>{appointmentDetails?.patient.email}</p>
                                 </div>
 
                                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                     <p className='text-gray-700'>Phone</p>
-                                    <p className='font-semibold'>{appointmentDetails?.patient.phone}</p>
+                                    <p className='text-sm'>{appointmentDetails?.patient.phone}</p>
                                 </div>
 
                                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                     <p className='text-gray-700'>Gender</p>
-                                    <p className='font-semibold'>{appointmentDetails?.patient.gender}</p>
+                                    <p className='text-sm'>{appointmentDetails?.patient.gender}</p>
                                 </div>
 
                                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                     <p className='text-gray-700'>Blood Group</p>
-                                    <p className='font-semibold'>{appointmentDetails?.patient.blood_group}</p>
+                                    <p className='text-sm'>{appointmentDetails?.patient.blood_group}</p>
                                 </div>
 
                                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                     <p className='text-gray-700'>Address</p>
-                                    <p className='font-semibold'>{appointmentDetails?.patient.address}</p>
+                                    <p className='text-sm'>{appointmentDetails?.patient.address}</p>
                                 </div>
 
                             </div>
@@ -234,27 +233,27 @@ const AppointmentDetailsModel = ({ onDelete, ID, ...props }: AppointmentDetailsM
 
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>Doctor ID</p>
-                                        <p className='font-semibold'>{appointmentDetails?.doctorId}</p>
+                                        <p className='text-sm'>{appointmentDetails?.doctorId}</p>
                                     </div>
 
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>Department</p>
-                                        <p className='font-semibold'>{appointmentDetails?.doctor.department}</p>
+                                        <p className='text-sm'>{appointmentDetails?.doctor.department}</p>
                                     </div>
 
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>specialist</p>
-                                        <p className='font-semibold'>{appointmentDetails?.doctor.specialist}</p>
+                                        <p className='text-sm'>{appointmentDetails?.doctor.specialist}</p>
                                     </div>
 
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>Gender</p>
-                                        <p className='font-semibold'>{appointmentDetails?.doctor.gender}</p>
+                                        <p className='text-sm'>{appointmentDetails?.doctor.gender}</p>
                                     </div>
 
                                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                         <p className='text-gray-700'>Phone</p>
-                                        <p className='font-semibold'>{appointmentDetails?.doctor.phone}</p>
+                                        <p className='text-sm'>{appointmentDetails?.doctor.phone}</p>
                                     </div>
 
 
