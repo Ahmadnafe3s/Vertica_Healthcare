@@ -1,7 +1,7 @@
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { HTMLAttributes, useEffect, useState, } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { CalendarDays, Cross, PersonStanding, X } from 'lucide-react'
+import { CalendarDays, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { Operation_Details } from '@/types/type'
 import { getOperation_Details } from '../../opdApiHandler'
@@ -45,7 +45,7 @@ const OperationDetailsModel = ({ ID, ...props }: OperationDetailsModelProps) => 
 
                     <div className='flex justify-between items-center p-3 border-b border-gray-200'>
 
-                        <h1 className=' text-sm sm:text-lg font-semibold text-white bg-green-500 py-1 px-4 rounded-xl'>Operation Details</h1>
+                        <h1 className=' text-sm sm:text-lg font-semibold text-white bg-primary py-1 px-4 rounded-xl'>Operation Details</h1>
 
                         <div className='flex gap-x-4'>
                             <div {...props}>

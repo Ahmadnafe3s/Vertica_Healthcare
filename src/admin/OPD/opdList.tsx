@@ -3,11 +3,13 @@ import { buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ClipboardPlus, FileText, Plus, Printer, ReceiptText } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getOPDList, searchOPDs } from './opdApiHandler'
 import toast from 'react-hot-toast'
 import { OPDs } from '@/types/type'
+
+
 
 const OPDLIST = () => {
 
@@ -106,7 +108,7 @@ const OPDLIST = () => {
           {OPD_list.map((opd, i) => {
             return <TableRow key={i}>
               <TableCell className="text-gray-900">{opd.id}</TableCell>
-              <TableCell>{opd.appointment.patient.name}</TableCell>
+              <TableCell className='whitespace-nowrap'>{opd.appointment.patient.name}</TableCell>
               <TableCell>
                 <Link
                   to={`../patient/${opd.patientId}/${opd.caseId}/visitdetails`}
@@ -119,13 +121,13 @@ const OPDLIST = () => {
               <TableCell>{opd.appointment.appointment_date}</TableCell>
 
               <TableCell>
-                <Link className='text-blue-500 font-medium' to={{ pathname: `/admin/profile/staff/${opd.appointment.doctor.id}` }}>
+                <Link className='text-blue-500 font-medium whitespace-nowrap' to={{ pathname: `/admin/profile/staff/${opd.appointment.doctor.id}` }}>
                   {opd.appointment.doctor.name}
                 </Link>
               </TableCell>
 
               <TableCell>{opd.appointment.reference}</TableCell>
-              <TableCell>{opd.appointment.symptom_description}</TableCell>
+              <TableCell>{opd.appointment.symptom_type}</TableCell>
               <TableCell>{opd.appointment.previous_medical_issue}</TableCell>
 
               <TableCell className='flex gap-x-2 items-center'>

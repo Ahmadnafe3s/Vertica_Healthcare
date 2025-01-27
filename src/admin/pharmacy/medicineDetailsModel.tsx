@@ -41,7 +41,7 @@ const MedicineDetailsModel = ({ ID, ...props }: MedicineDetailsModelProps) => {
 
                     <div className='flex justify-between items-center p-2 border-b border-gray-200'>
 
-                        <h1 className='px-4 py-1 text-white bg-green-500 text-sm sm:text-lg font-semibold rounded-lg '>Medicine Details</h1>
+                        <h1 className='px-4 py-1 text-white bg-primary text-sm sm:text-lg font-semibold rounded-lg '>Medicine Details</h1>
 
                         <div className='flex gap-x-4'>
                             <div {...props}>

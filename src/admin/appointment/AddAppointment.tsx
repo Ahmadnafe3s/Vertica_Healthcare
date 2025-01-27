@@ -96,7 +96,7 @@ function AddAppointment({ ...props }: AddAppointmentProps) {
 
                     <div>
                         <div className='flex justify-between pt-2 pb-3 border-b border-gray-200 col-span-full'>
-                            <p className='font-semibold text-xl text-white bg-green-500 py-1 px-4 rounded-xl'>Add Appointment</p>
+                            <p className='font-semibold text-xl text-white bg-primary py-1 px-4 rounded-xl'>Add Appointment</p>
                             <div {...props}>
                                 <X className='cursor-pointer' />
                             </div>

@@ -66,7 +66,7 @@ const MedicationForm = ({ ID, ...props }: MedicationFormProps) => {
                     {/* Header */}
 
                     <div className='flex justify-between p-3 rounded-t-lg  col-span-full'>
-                        <p className='font-semibold text-xl rounded-xl py-1 px-4 bg-green-500 text-white'>Medication</p>
+                        <p className='font-semibold text-xl rounded-xl py-1 px-4 bg-primary text-white'>Medication</p>
                         <div {...props}>
                             <X className='cursor-pointer' />
                         </div>

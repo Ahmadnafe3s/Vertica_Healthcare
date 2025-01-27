@@ -29,10 +29,13 @@ import Staffprofile from "./admin/profile/staffprofile";
 import ResetPassword from "./admin/profile/resetpassword";
 import OPDLIST from "./admin/OPD/opdList";
 import VisitDetails from "./admin/OPD/patient/visitDetails";
-import Patient from "./admin/OPD/patient/patient";
+import Patient from "./admin/OPD/patient/patientNavigations";
 import Medication from "./admin/OPD/patient/medication/medication";
 import Vital from "./admin/OPD/patient/vital/vital";
 import OperationList from "./admin/OPD/patient/operation/operationList";
+import Timeline from "./admin/OPD/patient/timeline/timelineList";
+import CahrgesList from "./admin/OPD/patient/charges/cahrgesList";
+
 
 
 
@@ -46,11 +49,11 @@ function App() {
     dispatch(checkSession())
   }, [dispatch])
 
+  
   return (
     <Router>
       <Toaster toastOptions={{ duration: 2000 }} />
       <Navbar />
-
 
       <Routes>
 
@@ -62,9 +65,13 @@ function App() {
         {/* routes with aside */}
         <Route element={<AsideLayout />}>
 
-          <Route path="admin/dashboard" element={<ProtectRoutes protectElement={<AdminDashboard />} requiredRole="admin" />} />
+          <Route
+            path="admin/dashboard"
+            element={<ProtectRoutes requiredRole="admin" protectElement={<AdminDashboard />} />}
+          />
           <Route path="admin/appointment" element={<AdminAppointment />} />
           <Route path="admin/QueueAppointment" element={<QueueAppointment />} />
+
 
           <Route path="admin/OPD" element={<OPD />}>
             <Route path="list" element={<OPDLIST />} />
@@ -73,6 +80,8 @@ function App() {
               <Route path="medication" element={<Medication />} />
               <Route path="vital" element={<Vital />} />
               <Route path="operation" element={<OperationList />} />
+              <Route path="timeline" element={<Timeline />} />
+              <Route path="charges" element={<CahrgesList />} />
             </Route>
           </Route>
 

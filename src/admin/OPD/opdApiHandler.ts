@@ -1,7 +1,8 @@
 import { operationFormSchema } from "@/formSchemas/addOperationFormSchema"
 import { medicationFormSchema } from "@/formSchemas/medicationFormSchema"
+import { timelineFormSchema } from "@/formSchemas/timelineFormSchema"
 import { vitalFormSchema } from "@/formSchemas/vitalFormSchema"
-import { opdDetails, opdMedications, OPDs, Operation_Details, Operation_list, Vitals_List } from "@/types/type"
+import { opdDetails, opdMedications, OPDs, Operation_Details, Operation_list, Timeline_List, Vitals_List } from "@/types/type"
 import axios from "axios"
 import { z } from "zod"
 
@@ -197,6 +198,66 @@ export const deleteOperation = async (id: string) => {
 export const updateOperation = async (id: string, formData: z.infer<typeof operationFormSchema>) => {
     try {
         const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/operation/${id}`, formData)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+
+
+
+//  API handlers for timeline section
+
+export const createTimeline = async (caseId: number, patientId: number, formData: z.infer<typeof timelineFormSchema>) => {
+    try {
+        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/timeline/${patientId}/${caseId}`, formData)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+export const getTimelines = async (caseId: number): Promise<Timeline_List[]> => {
+    try {
+        const params = { caseId }
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/timeline`, { params })
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+export const deleteTimeline = async (id: number) => {
+    try {
+        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/timeline/${id}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+export const updateTimeine = async (id: number, formData: z.infer<typeof timelineFormSchema>) => {
+    try {
+        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/timeline/${id}`, formData)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const getTimelineDetails = async (id: number): Promise<Timeline_List> => {  // this api willl not return Array of objects but same time of object
+    try {
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/timeline/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

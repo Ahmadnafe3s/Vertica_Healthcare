@@ -219,7 +219,7 @@ export interface OPDs {  // it will be Array of objects
     appointment: {
 
         appointment_date: string,
-        symptom_description: string,
+        symptom_type: string,
         previous_medical_issue: string,
         reference: string,
 
@@ -326,10 +326,16 @@ export interface opdDetails {
     },
     medication: opdMedications[],
     Vitals: Vitals_List[],
-    Operation: Operation_list[]
+    Operation: Operation_list[],
+    timeline: Timeline_List[]
 }
 
 
 
 
-
+export interface Timeline_List {
+    id: 1,
+    date: string,
+    title: string,
+    description: string,
+}

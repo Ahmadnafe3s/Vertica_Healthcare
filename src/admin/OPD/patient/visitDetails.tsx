@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { getOPD_Details } from "../opdApiHandler";
 import { opdDetails } from "@/types/type";
-import { UserRound } from "lucide-react";
+import { Calendar, Clock, SearchX, UserRound } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -176,12 +176,61 @@ const VisitDetails = () => {
 
                 <Separator className="sm:col-span-full my-8" />
 
-                <h1 className="sm:col-span-full font-semibold text-gray-800">Timeline</h1>
+
+                {/* Timeline */}
+
+                <h1 className="sm:col-span-full font-semibold mb-2 text-gray-800">Timeline</h1>
+
+                {OPD_DETAILS?.timeline.length! > 0 ? (<ul className="sm:col-span-full relative before:absolute space-y-5 before:w-1 w-64 sm:w-[400px] mx-auto gap-3 before:h-full before:bg-gray-300 before:top-0 before:block">
+
+
+                    {OPD_DETAILS?.timeline.map((timeline, i) => {
+                        return <li className="space-y-4" key={i}>
+
+                            {/* Time section */}
+                            <span className="relative  text-sm my-2 -top-1 bg-slate-500 -left-[10%] sm:-left-[8%] text-white py-1 px-3 rounded-md">{timeline.date}</span>
+
+                            <div className="relative flex items-center space-x-3 -ml-3 z-10">
+
+                                {/* Calendor section */}
+                                <div className="p-1.5 bg-slate-500 rounded-full ">
+                                    <span ><Calendar className="w-4 h-4 text-white" /></span>
+                                </div>
+
+                                <div className="space-y-2 flex-1 border-2 border-dashed border-gray-200 p-2 rounded-lg">
+
+                                    <p className=" font-semibold text-gray-800">{timeline.title}</p>
+
+                                    <Separator />
+                                    {/* Description */}
+                                    <p className="text-sm text-gray-700">{timeline.description}</p>
+
+                                </div>
+                            </div>
+                        </li>
+                    })}
+
+                    {/* Static Secttion */}
+
+                    <li className="relative flex items-center space-x-2 -ml-3 z-10">
+                        <div className="p-1.5 bg-slate-400 rounded-full">
+                            <Clock className="w-4 h-4 text-white" />
+                        </div>
+                    </li>
+                </ul>)
+                    :
+                    // error message
+                    <h1 className="text-sm text-gray-600">No data found</h1>
+                }
 
                 <Separator className="sm:col-span-full my-8 lg:hidden" />
 
-
             </div>
+
+
+
+
+
 
 
             {/* grid col 2 */}

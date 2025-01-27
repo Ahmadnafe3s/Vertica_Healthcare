@@ -44,7 +44,7 @@ const AppointmentDetailsModel = ({ onDelete, ID, ...props }: AppointmentDetailsM
 
                     <div className='flex justify-between items-center p-3'>
 
-                        <h1 className=' text-sm sm:text-lg font-semibold text-white bg-green-500 py-1 px-4 rounded-xl'>Appointment Details</h1>
+                        <h1 className=' text-sm sm:text-lg font-semibold text-white bg-primary py-1 px-4 rounded-xl'>Appointment Details</h1>
 
                         <div className='flex gap-x-4'>
                             <Printer className='cursor-pointer  active:scale-95 text-gray-800 w-5' />
@@ -261,7 +261,7 @@ const AppointmentDetailsModel = ({ onDelete, ID, ...props }: AppointmentDetailsM
                             </div>
                         </div>
 
-                        <div className="h-14 bg-gradient-to-t from-white z-30 w-full absolute bottom-0" />
+                        {/* <div className="h-14 bg-gradient-to-t from-white z-30 w-full absolute bottom-0" /> */}
                     </ScrollArea>
                 </div >
             </MaxWidthWrapper >

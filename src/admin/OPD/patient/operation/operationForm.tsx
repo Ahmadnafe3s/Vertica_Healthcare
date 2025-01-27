@@ -139,7 +139,7 @@ const OperationForm = ({ ID, ...props }: OperationFormProps) => {
                     {/* Header */}
 
                     <div className='flex justify-between p-3 col-span-full border-b border-gray-200'>
-                        <p className='font-semibold text-sm sm:text-lg text-white bg-green-500 py-1 px-4 rounded-xl'>Operation</p>
+                        <p className='font-semibold text-sm sm:text-lg text-white bg-primary py-1 px-4 rounded-xl'>Operation</p>
                         <div {...props}>
                             <X className='cursor-pointer' />
                         </div>

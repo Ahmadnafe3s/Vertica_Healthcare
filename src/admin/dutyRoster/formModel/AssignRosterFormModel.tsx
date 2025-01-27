@@ -4,9 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AssignRosterSchema } from '@/formSchemas/assignRosterFormSchema'
-import { Shift } from '@/types/type'
 import { zodResolver } from '@hookform/resolvers/zod'
-import axios from 'axios'
 import { Loader, X } from 'lucide-react'
 import { HTMLAttributes, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -107,7 +105,7 @@ const AssignRosterFormModel = ({ ID, ...props }: AssignRosterFormModelProps) => 
         <form className='p-3 bg-white rounded-md sm:w-[600px] mx-auto' onSubmit={handleSubmit(onSubmit)}>
 
           <div className='flex justify-between pt-2 pb-3 mb-3 border-b border-gray-200 col-span-full'>
-            <p className='font-semibold text-sm sm:text-lg px-4 py-1 bg-green-500 rounded-lg text-white'>Assign Roster</p>
+            <p className='font-semibold text-sm sm:text-lg px-4 py-1 bg-primary rounded-lg text-white'>Assign Roster</p>
             <div {...props}>
               <X className='cursor-pointer' />
             </div>

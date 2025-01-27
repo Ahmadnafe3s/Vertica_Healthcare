@@ -29,17 +29,19 @@ const Navbar = () => {
         setUserModel(false)
     }
 
+    
 
     return (
         <>
-            <section className="h-14  bg-white/75 backdrop-blur-md w-full z-[100] sticky inset-x-0 top-0">
+            <section className="h-14 bg-white/75  backdrop-blur-md w-full z-[100] sticky inset-x-0 top-0">
                 <MaxWidthWrapper >
                     <header className="h-full border-b border-zinc-200 flex justify-between items-center">
 
-                        <Link to={{ pathname: '/home' }} className="tracking-tight cursor-pointer z-[100] select-none"><span
-                            className="text-orange-500 font-semibold">V</span>ertica <span
-                                className="text-orange-500 font-semibold">H</span>ealtcare</Link>
-
+                        <Link to={{ pathname: '/' }} className="tracking-tight cursor-pointer z-[100] select-none">
+                            <span className="text-primary font-semibold">V</span>ertica 
+                            {' '}
+                            <span className="text-primary font-semibold">H</span>ealtcare
+                        </Link>
 
                         <div className="flex h-full items-center gap-x-3 sm:gap-x-0">
 
