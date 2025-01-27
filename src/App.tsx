@@ -35,6 +35,7 @@ import Vital from "./admin/OPD/patient/vital/vital";
 import OperationList from "./admin/OPD/patient/operation/operationList";
 import Timeline from "./admin/OPD/patient/timeline/timelineList";
 import CahrgesList from "./admin/OPD/patient/charges/cahrgesList";
+import TreatmentsList from "./admin/OPD/patient/treatmentHistory/treatmentsList";
 
 
 
@@ -82,6 +83,7 @@ function App() {
               <Route path="operation" element={<OperationList />} />
               <Route path="timeline" element={<Timeline />} />
               <Route path="charges" element={<CahrgesList />} />
+              <Route path="treatmenthistory" element={<TreatmentsList />} />
             </Route>
           </Route>
 
