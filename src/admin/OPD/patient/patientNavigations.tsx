@@ -1,6 +1,6 @@
 import { buttonVariants } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { BriefcaseMedical, Clock, ForkKnife, HeartPulse, Menu, PocketKnife, ReceiptText } from 'lucide-react'
+import { BriefcaseMedical, Clock, ForkKnife, HeartPulse, Menu, PocketKnife, ReceiptText, SquareStack } from 'lucide-react'
 import { Link, Outlet } from 'react-router-dom'
 
 const Patient = () => {
@@ -49,6 +49,12 @@ const Patient = () => {
                             variant: 'outline'
                         })}>
                             <ReceiptText /> Charges
+                        </Link>
+
+                        <Link to={`treatmenthistory`} className={buttonVariants({
+                            variant: 'outline'
+                        })}>
+                             <SquareStack /> Treatment History
                         </Link>
 
 

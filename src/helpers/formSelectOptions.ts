@@ -142,7 +142,9 @@ export const OPERATION_CATEGORIES = [
   { label: 'Orthopedics', value: 'Orthopedics' },
   { label: 'Pediatrics', value: 'Pediatrics' },
   { label: 'Neurology', value: 'Neurology' },
-  { label: 'Plastic Surgery', value: 'Plastic Surgery' } // Added Plastic Surgery
+  { label: 'Plastic Surgery', value: 'Plastic Surgery' }
 ];
+
+
 
 

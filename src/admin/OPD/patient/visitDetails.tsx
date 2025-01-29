@@ -6,6 +6,8 @@ import { opdDetails } from "@/types/type";
 import { Calendar, Clock, SearchX, UserRound } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { currencySymbol } from "@/helpers/currencySymbol";
+import { currencyFormat } from "@/lib/utils";
 
 
 const VisitDetails = () => {
@@ -301,6 +303,35 @@ const VisitDetails = () => {
 
                 {OPD_DETAILS?.Operation.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
 
+                <Separator className="sm:col-span-full my-8" />
+
+                {/* Operation */}
+
+                <h1 className="font-semibold text-gray-800 mb-2">Charges</h1>
+
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Charge Date</TableHead>
+                            <TableHead>Charge Name</TableHead>
+                            <TableHead>Std Charge {currencySymbol()}</TableHead>
+                            <TableHead>TPA {currencySymbol()}</TableHead>
+                            <TableHead>Net Amount {currencySymbol()}</TableHead>
+                        </TableRow>
+                    </TableHeader>
+
+                    <TableBody>
+                        {OPD_DETAILS?.charges.map((charge, i) => {
+                            return <TableRow key={i}>
+                                <TableCell>{charge.date}</TableCell>
+                                <TableCell>{charge.name}</TableCell>
+                                <TableCell>{currencyFormat(charge.amount)}</TableCell>
+                                <TableCell>{currencyFormat(charge.tpa)}</TableCell>
+                                <TableCell>{currencyFormat(charge.net_amount)}</TableCell>
+                            </TableRow>
+                        })}
+                    </TableBody>
+                </Table>
 
             </div>
 

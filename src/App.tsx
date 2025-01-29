@@ -34,7 +34,7 @@ import Medication from "./admin/OPD/patient/medication/medication";
 import Vital from "./admin/OPD/patient/vital/vital";
 import OperationList from "./admin/OPD/patient/operation/operationList";
 import Timeline from "./admin/OPD/patient/timeline/timelineList";
-import CahrgesList from "./admin/OPD/patient/charges/cahrgesList";
+import CahrgesList from "./admin/OPD/patient/charges/chargesList";
 import TreatmentsList from "./admin/OPD/patient/treatmentHistory/treatmentsList";
 
 

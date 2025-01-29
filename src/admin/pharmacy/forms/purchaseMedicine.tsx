@@ -52,10 +52,12 @@ const PurchaseMedicineForm = () => {
 
     useEffect(() => {
 
-        const Amount = calculateAmount(+watch('quantity'), +watch('purchase_price'), +watch('tax')!, +watch('discount')!)
+        const total = +watch('quantity') + +watch('purchase_price')
 
-        setValue('amount', Amount.amount)
-        setValue('total_amount', Amount.total_amount)
+        const Amount = calculateAmount(total, +watch('tax')!, +watch('discount')!)
+
+        setValue('amount', Amount.total)
+        setValue('total_amount', Amount.net_amount)
 
 
     }, [watch('tax'), watch('discount'), watch('quantity'), watch('purchase_price')])

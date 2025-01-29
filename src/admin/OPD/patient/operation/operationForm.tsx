@@ -28,8 +28,7 @@ const OperationForm = ({ ID, ...props }: OperationFormProps) => {
 
     const [isPending, setPending] = useState<boolean>(false)
 
-    const [OPTIONS, SET_OPTIONS] = useState<{ operations: operationOptions[], doctors: Doctors[] }>({
-        operations: [],
+    const [OPTIONS, SET_OPTIONS] = useState<{ doctors: Doctors[] }>({
         doctors: []
     })
 
@@ -59,20 +58,6 @@ const OperationForm = ({ ID, ...props }: OperationFormProps) => {
     }
 
 
-    // This function returning array of objects for select options based on category
-
-    const setOperationOptions = (value: string) => {
-
-        const options = getOperationsOptions(value)
-        SET_OPTIONS((rest) => {
-            return {
-                ...rest,
-                operations: options
-            }
-        })
-
-    }
-
 
     const fetchDoctorsList = async () => {
         try {
@@ -100,7 +85,6 @@ const OperationForm = ({ ID, ...props }: OperationFormProps) => {
             const data = await getOperation_Details(String(ID))
 
             setValue('category', data.category)
-            setOperationOptions(data.category)
             setValue('name', data.name)
             setValue('date', data.date)
             setValue('doctorId', String(data.doctorId))
@@ -112,8 +96,6 @@ const OperationForm = ({ ID, ...props }: OperationFormProps) => {
             setValue('ot_assistant', data.ot_assistant)
             setValue('note', data.note)
             setValue('result', data.result)
-
-            return data.category
 
         } catch ({ message }: any) {
             toast.error(message)
@@ -158,7 +140,7 @@ const OperationForm = ({ ID, ...props }: OperationFormProps) => {
                                 <Controller control={control} name='category' render={({ field }) => {
                                     return <>
                                         <Label>Category</Label>
-                                        <Select value={field.value || ''} onValueChange={(value) => { setOperationOptions(value); field.onChange(value) }}>
+                                        <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
                                             <SelectTrigger >
                                                 <SelectValue placeholder="Select" />
                                             </SelectTrigger>
@@ -188,7 +170,7 @@ const OperationForm = ({ ID, ...props }: OperationFormProps) => {
                                             </SelectTrigger>
 
                                             <SelectContent className='z-[200]'>
-                                                {OPTIONS.operations.map((operation, i) => {
+                                                {getOperationsOptions(watch('category')).map((operation, i) => {
                                                     return <SelectItem key={i} value={operation.value}>{operation.label}</SelectItem>
                                                 })}
                                             </SelectContent>

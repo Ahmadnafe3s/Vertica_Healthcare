@@ -1,16 +1,13 @@
-export const calculateAmount = (Quantity: number, PurchasePrice: number, Tax: number, Discount: number) => {
+export const calculateAmount = (total: number, Tax: number, Discount: number) => {
 
-    const amount = Quantity * PurchasePrice
+    const discount = (Discount / 100) * total
 
-
-    const discount = (Discount / 100) * amount
-
-    const DiscountedAmount = amount - discount
+    const DiscountedAmount = total - discount
 
     const TaxAmount = (Tax / 100) * DiscountedAmount
 
-    const total_amount = DiscountedAmount + TaxAmount;
+    const net_amount = DiscountedAmount + TaxAmount;
 
-    return { amount, total_amount }
+    return { total, net_amount : Math.round(net_amount) }
 
 }

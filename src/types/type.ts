@@ -327,9 +327,9 @@ export interface opdDetails {
     medication: opdMedications[],
     Vitals: Vitals_List[],
     Operation: Operation_list[],
-    timeline: Timeline_List[]
+    timeline: Timeline_List[],
+    charges: ChargeListType[]
 }
-
 
 
 
@@ -338,4 +338,33 @@ export interface Timeline_List {
     date: string,
     title: string,
     description: string,
+}
+
+
+
+
+export interface ChargeListType {
+    id: number
+    date: string,
+    name: string,
+    charge_type: string,
+    tpa: number,
+    amount: number
+    net_amount: number
+}
+
+
+export interface ChargeDetails {
+    id: number,
+    caseId: number,
+    charge_type: string,
+    category: string,
+    name: string,
+    amount: number,
+    tpa: number,
+    date: string,
+    total: number,
+    tax: number,
+    discount: number,
+    net_amount: number,
 }

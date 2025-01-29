@@ -1,8 +1,9 @@
 import { operationFormSchema } from "@/formSchemas/addOperationFormSchema"
+import { chargeFormSchema } from "@/formSchemas/chargeFormSchema"
 import { medicationFormSchema } from "@/formSchemas/medicationFormSchema"
 import { timelineFormSchema } from "@/formSchemas/timelineFormSchema"
 import { vitalFormSchema } from "@/formSchemas/vitalFormSchema"
-import { opdDetails, opdMedications, OPDs, Operation_Details, Operation_list, Timeline_List, Vitals_List } from "@/types/type"
+import { ChargeDetails, opdDetails, opdMedications, OPDs, Operation_Details, Operation_list, Timeline_List, Vitals_List } from "@/types/type"
 import axios from "axios"
 import { z } from "zod"
 
@@ -258,6 +259,70 @@ export const updateTimeine = async (id: number, formData: z.infer<typeof timelin
 export const getTimelineDetails = async (id: number): Promise<Timeline_List> => {  // this api willl not return Array of objects but same time of object
     try {
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/timeline/${id}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+
+
+
+// API Handlers for charges section
+
+
+export const createCharges = async (caseId: number | string, formData: z.infer<typeof chargeFormSchema>) => {
+    try {
+
+        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/charge/${caseId}`, formData)
+        return res.data
+
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+
+export const updateCharge = async (id: string | number, formData: z.infer<typeof chargeFormSchema>) => {
+    try {
+        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/charge/${id}`, formData)
+        return res.data;
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+
+export const deleteCharge = async (id: string | number) => {
+    try {
+        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/charge/${id}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const getChargeDetails = async (id: number): Promise<ChargeDetails> => {
+    try {
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/charge/${id}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const getChargesList = async (caseId: string | number) => {
+    try {
+        const params = { caseId }
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/charge`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
