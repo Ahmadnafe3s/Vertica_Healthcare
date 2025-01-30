@@ -5,10 +5,11 @@ import OperationForm from './operationForm';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { deleteOperation, getOperation_List } from '../../opdApiHandler';
-import { Operation_list } from '@/types/type';
+import { deleteOperation, getOperation_Details, getOperation_List } from '../../opdApiHandler';
+import { Operation_Details, Operation_list } from '@/types/type';
 import AlertModel from '@/components/alertModel';
 import OperationDetailsModel from './operationDetails';
+import LoaderModel from '@/components/loader';
 
 
 
@@ -19,14 +20,38 @@ const OperationList = () => {
   const id = useRef<string | null>(null)
 
   const [OPERATION_LIST, SET_OPERATION] = useState<Operation_list[]>([])
+  const [OPERATION_DETAILS, SET_OPERATION_DETAILS] = useState<Operation_Details | undefined>(undefined)
 
 
-
-  const [MODEL, SET_MODEL] = useState<{ operationForm: boolean, alert: boolean, operationDetails: boolean }>({
+  const [MODEL, SET_MODEL] = useState<{ operationForm: boolean, alert: boolean, operationDetails: boolean, loader: boolean }>({
     operationForm: false,
     alert: false,
-    operationDetails: false
+    operationDetails: false,
+    loader: false
   })
+
+
+  const fetchOperationDetails = async (id: string) => {
+    try {
+      SET_MODEL((rest) => {
+        return {
+          ...rest,
+          loader: true
+        }
+      })
+      const data = await getOperation_Details(id)
+      SET_OPERATION_DETAILS(data)
+    } catch ({ message }: any) {
+      toast.error(message)
+    } finally {
+      SET_MODEL((rest) => {
+        return {
+          ...rest,
+          loader: false
+        }
+      })
+    }
+  }
 
 
 
@@ -34,6 +59,7 @@ const OperationList = () => {
     try {
       const data = await getOperation_List(Number(caseId))
       SET_OPERATION(data)
+
     } catch ({ message }: any) {
       toast.error(message)
     }
@@ -101,14 +127,14 @@ const OperationList = () => {
             {OPERATION_LIST?.map((opertion, i) => {
               return <TableRow key={i}>
                 <TableCell className='cursor-pointer font-semibold text-blue-500 hover:text-blue-400'
-                  onClick={() => {
+                  onClick={async () => {
+                    await fetchOperationDetails(opertion.id)
                     SET_MODEL((rest) => {
                       return {
                         ...rest,
                         operationDetails: true
                       }
                     });
-                    id.current = opertion.id
                   }}
                 >
                   {opertion.id}
@@ -120,14 +146,14 @@ const OperationList = () => {
                 <TableCell className='flex space-x-2'>
 
                   <Pencil className='w-4 text-gray-600 active:scale-95 cursor-pointer'
-                    onClick={() => {
+                    onClick={async () => {
+                      await fetchOperationDetails(opertion.id)
                       SET_MODEL((rest) => {
                         return {
                           ...rest,
                           operationForm: true
                         }
                       });
-                      id.current = opertion.id
                     }}
                   />
 
@@ -157,18 +183,21 @@ const OperationList = () => {
 
       {/* models */}
 
-      {MODEL.operationForm && <OperationForm ID={id.current}
-        onClick={() => {
-          SET_MODEL((rest) => {
-            return {
+      {MODEL.operationForm && (
+        <OperationForm
+          operationDetails={OPERATION_DETAILS}
+          onSubmitCapture={() => alert('hello')}
+          onClick={() => {
+            SET_MODEL((rest) => ({
               ...rest,
-              operationForm: false
-            }
-          });
-          fetchOPeration_list();
-          id.current = null
-        }}
-      />}
+              operationForm: false,
+            }));
+            fetchOPeration_list();
+            SET_OPERATION_DETAILS(undefined);
+          }}
+        />
+      )}
+
 
       {/* Alert Model */}
 
@@ -186,11 +215,11 @@ const OperationList = () => {
           continue={onDelete}
         />
       }
-      
+
 
       {/* Operation details model */}
 
-      {MODEL.operationDetails && <OperationDetailsModel ID={String(id.current)}
+      {MODEL.operationDetails && <OperationDetailsModel operationDetails={OPERATION_DETAILS}
         onClick={() => {
           SET_MODEL((rest) => {
             return {
@@ -198,9 +227,16 @@ const OperationList = () => {
               operationDetails: false
             }
           });
-          id.current = null
+          SET_OPERATION_DETAILS(undefined)
         }}
       />}
+
+
+      {/* loader */}
+
+      {MODEL.loader && (
+        <LoaderModel />
+      )}
     </>
   )
 }

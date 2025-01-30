@@ -55,7 +55,7 @@ const VitalFormModel = ({ ...props }: VitalFormModelProps) => {
                     {/* Header */}
 
                     <div className='flex justify-between p-3 col-span-full border-b border-gray-200'>
-                        <p className='font-semibold text-xl text-white bg-green-500 py-1 px-4 rounded-xl'>Vitals</p>
+                        <p className='font-semibold text-xl text-white bg-primary py-1 px-4 rounded-xl'>Vitals</p>
                         <div {...props}>
                             <X className='cursor-pointer' />
                         </div>

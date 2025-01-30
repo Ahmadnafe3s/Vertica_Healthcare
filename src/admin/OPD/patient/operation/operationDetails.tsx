@@ -1,37 +1,18 @@
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
-import { HTMLAttributes, useEffect, useState, } from 'react'
+import { HTMLAttributes } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { CalendarDays, X } from 'lucide-react'
-import toast from 'react-hot-toast'
 import { Operation_Details } from '@/types/type'
-import { getOperation_Details } from '../../opdApiHandler'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+
 
 
 interface OperationDetailsModelProps extends HTMLAttributes<HTMLDivElement> {
-    ID: string;
+    operationDetails: Operation_Details | undefined
 }
 
 
-const OperationDetailsModel = ({ ID, ...props }: OperationDetailsModelProps) => {
-
-    const [OPERATION_DETAILS, SET_OPERATION_DETAILS] = useState<Operation_Details>()
-
-
-
-    // fetching details
-
-    useEffect(() => {
-        try {
-            (async function fetchData() {
-                const data = await getOperation_Details(ID)
-                SET_OPERATION_DETAILS(data)
-            })() //IIFE
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }, [])
-
-
+const OperationDetailsModel = ({ operationDetails, ...props }: OperationDetailsModelProps) => {
 
     return (
         <>
@@ -49,7 +30,14 @@ const OperationDetailsModel = ({ ID, ...props }: OperationDetailsModelProps) => 
 
                         <div className='flex gap-x-4'>
                             <div {...props}>
-                                <X className='cursor-pointer  active:scale-95 w-5' />
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <X className='cursor-pointer' />
+                                        </TooltipTrigger>
+                                        <TooltipContent className="z-[200]">Close popup</TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
                             </div>
                         </div>
 
@@ -64,7 +52,7 @@ const OperationDetailsModel = ({ ID, ...props }: OperationDetailsModelProps) => 
                                     <CalendarDays className='w-10 h-10 text-white' />
                                 </div>
                                 <div className=''>
-                                    <p className='font-semibold text-lg text-gray-900'>{OPERATION_DETAILS?.date}</p>
+                                    <p className='font-semibold text-lg text-gray-900'>{operationDetails?.date}</p>
                                     <p className='text-sm text-gray-500'>Operation Date</p>
                                 </div>
                             </div>
@@ -73,69 +61,69 @@ const OperationDetailsModel = ({ ID, ...props }: OperationDetailsModelProps) => 
 
                                 <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
                                     <p className='text-gray-700 text-sm'>Reference No.</p>
-                                    <p className='font-semibold'>{OPERATION_DETAILS?.id}</p>
+                                    <p className='font-semibold'>{operationDetails?.id}</p>
                                 </div>
 
                                 <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
                                     <p className='text-gray-700 text-sm'>Operation Name</p>
-                                    <p className='font-semibold'>{OPERATION_DETAILS?.name}</p>
+                                    <p className='font-semibold'>{operationDetails?.name}</p>
                                 </div>
 
                             </div>
 
                             <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                                 <p className='text-gray-700'>Case ID</p>
-                                <p className='text-sm'>{OPERATION_DETAILS?.caseId}</p>
+                                <p className='text-sm'>{operationDetails?.caseId}</p>
                             </div>
 
                             <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                                 <p className='text-gray-700'>Category</p>
-                                <p className='text-sm'>{OPERATION_DETAILS?.category}</p>
+                                <p className='text-sm'>{operationDetails?.category}</p>
                             </div>
 
                             <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                                 <p className='text-gray-700'>Consultant</p>
-                                <p className='text-sm'>{OPERATION_DETAILS?.doctor.name}</p>
+                                <p className='text-sm'>{operationDetails?.doctor.name}</p>
                             </div>
 
                             <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                                 <p className='text-gray-700'>Consultant Assistant 1</p>
-                                <p className='text-sm'>{OPERATION_DETAILS?.assistant_1}</p>
+                                <p className='text-sm'>{operationDetails?.assistant_1}</p>
                             </div>
 
                             <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                                 <p className='text-gray-700'>Consultant Assistant 2</p>
-                                <p className='text-sm'>{OPERATION_DETAILS?.assistant_2}</p>
+                                <p className='text-sm'>{operationDetails?.assistant_2}</p>
                             </div>
 
                             <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                                 <p className='text-gray-700'>Anesthetist</p>
-                                <p className='text-sm'>{OPERATION_DETAILS?.anesthetist}</p>
+                                <p className='text-sm'>{operationDetails?.anesthetist}</p>
                             </div>
 
                             <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                                 <p className='text-gray-700'>Anesthesia Type</p>
-                                <p className='text-sm'>{OPERATION_DETAILS?.anesthesia_type}</p>
+                                <p className='text-sm'>{operationDetails?.anesthesia_type}</p>
                             </div>
 
                             <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                                 <p className='text-gray-700'>OT Technician</p>
-                                <p className='text-sm'>{OPERATION_DETAILS?.ot_technician}</p>
+                                <p className='text-sm'>{operationDetails?.ot_technician}</p>
                             </div>
 
                             <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                                 <p className='text-gray-700'>OT Assistant</p>
-                                <p className='text-sm'>{OPERATION_DETAILS?.ot_assistant}</p>
+                                <p className='text-sm'>{operationDetails?.ot_assistant}</p>
                             </div>
 
                             <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                                 <p className='text-gray-700'>Note</p>
-                                <p className='text-sm'>{OPERATION_DETAILS?.note}</p>
+                                <p className='text-sm'>{operationDetails?.note}</p>
                             </div>
 
                             <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                                 <p className='text-gray-700'>Result</p>
-                                <p className='text-sm'>{OPERATION_DETAILS?.result}</p>
+                                <p className='text-sm'>{operationDetails?.result}</p>
                             </div>
 
                         </div>

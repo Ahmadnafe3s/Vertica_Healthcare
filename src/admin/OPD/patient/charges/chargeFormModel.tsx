@@ -14,17 +14,18 @@ import { Loader, Plus, X } from "lucide-react"
 import { HTMLAttributes, useEffect, useState } from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
-import { number, z } from "zod"
-import { createCharges, getChargeDetails, updateCharge } from "../../opdApiHandler"
+import { z } from "zod"
+import { createCharges, updateCharge } from "../../opdApiHandler"
 import { useParams } from "react-router-dom"
+import { ChargeDetails } from "@/types/type"
 
 
 interface ChargeFormModelProps extends HTMLAttributes<HTMLDivElement> {
-    ID: number
+    chargeDetails?: ChargeDetails
 }
 
 
-const ChargeFormModel = ({ ID, ...props }: ChargeFormModelProps) => {
+const ChargeFormModel = ({ chargeDetails, ...props }: ChargeFormModelProps) => {
 
     const [isPending, setPending] = useState<boolean>(false)
     const [INDEX, SET_INDEX] = useState<number>(0)
@@ -32,7 +33,7 @@ const ChargeFormModel = ({ ID, ...props }: ChargeFormModelProps) => {
 
     const { register, control, watch, reset, setValue, handleSubmit, formState: { errors } } = useForm<z.infer<typeof chargeFormSchema>>({
         resolver: zodResolver(chargeFormSchema),
-        defaultValues: valuesASdefault
+        defaultValues: chargeDetails ? { charge: [chargeDetails] } : valuesASdefault
     })
 
 
@@ -64,8 +65,8 @@ const ChargeFormModel = ({ ID, ...props }: ChargeFormModelProps) => {
         try {
             setPending(true)
             let data;
-            if (ID) {
-                data = await updateCharge(ID, formData)
+            if (chargeDetails) {
+                data = await updateCharge(chargeDetails.id, formData)
             } else {
                 data = await createCharges(Number(caseId), formData)
             }
@@ -89,49 +90,19 @@ const ChargeFormModel = ({ ID, ...props }: ChargeFormModelProps) => {
     }
 
 
-    // On edit mode
-    const setValues_to_form = async () => {
-        try {
-            if (!ID) return null
-            const data = await getChargeDetails(ID)
-            setValue(`charge.${INDEX}.charge_type`, data.charge_type)
-            setValue(`charge.${INDEX}.category`, data.category)
-            setValue(`charge.${INDEX}.name`, data.name)
-            setValue(`charge.${INDEX}.amount`, data.amount)
-            setValue(`charge.${INDEX}.tpa`, data.tpa)
-            setValue(`charge.${INDEX}.date`, data.date)
-            setValue(`charge.${INDEX}.total`, data.total)
-            setValue(`charge.${INDEX}.tax`, data.tax)
-            setValue(`charge.${INDEX}.discount`, data.discount)
-            setValue(`charge.${INDEX}.net_amount`, data.net_amount)
-
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }
-
-
-    // This hook i have used to  bind data to form on edit mode
-
-    useEffect(() => {
-        setValues_to_form()
-    }, [watch(`charge.${INDEX}.name`)])
-
-
     // returning sum of amount and tpa and trigger useEffect
     const chargeAmounts = (watch(`charge.${INDEX}.amount`) + watch(`charge.${INDEX}.tpa`));
 
-
+    
     // This hook i have used to calculate and bind amount to form
     useEffect(() => {
 
-        const total = chargeAmounts  // calculating sum of amount + tpa from all fields  (ex [10,20,10])
+        const total = chargeAmounts 
         const Amount = calculateAmount(total, watch(`charge.${INDEX}.tax`)!, watch(`charge.${INDEX}.discount`))
         setValue(`charge.${INDEX}.total`, Amount.total)
         setValue(`charge.${INDEX}.net_amount`, Amount.net_amount)
 
     }, [chargeAmounts, watch(`charge.${INDEX}.tax`), watch(`charge.${INDEX}.discount`)])
-
 
 
 
@@ -332,7 +303,7 @@ const ChargeFormModel = ({ ID, ...props }: ChargeFormModelProps) => {
 
                             {/* Button for Addding fields */}
 
-                            {!ID && <div className="col-span-full flex justify-end mr-2">
+                            {!chargeDetails && <div className="col-span-full flex justify-end mr-2">
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
@@ -351,7 +322,7 @@ const ChargeFormModel = ({ ID, ...props }: ChargeFormModelProps) => {
 
                     <div className="flex mt-5 mb-2 gap-x-2 sm:justify-end">
                         <Button type='button' variant={'ghost'} onClick={() => reset()} >Reset</Button>
-                        <Button type='submit' className='flex-1 sm:flex-none' >{ID ? ('Update') : ('Save Charges')} {isPending && <Loader className='animate-spin' />}</Button>
+                        <Button type='submit' className='flex-1 sm:flex-none' >{chargeDetails ? ('Update') : ('Save Charges')} {isPending && <Loader className='animate-spin' />}</Button>
                     </div>
 
                 </form>

@@ -6,24 +6,32 @@ import { Pencil, Plus, SearchX, Trash } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { currencySymbol } from "@/helpers/currencySymbol"
 import toast from "react-hot-toast"
-import { deleteCharge, getChargesList } from "../../opdApiHandler"
+import { deleteCharge, getChargeDetails, getChargesList, searchCharges } from "../../opdApiHandler"
 import { useParams } from "react-router-dom"
-import { ChargeListType } from "@/types/type"
+import { ChargeDetails, ChargeListType } from "@/types/type"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import AlertModel from "@/components/alertModel"
 import { currencyFormat } from "@/lib/utils"
 import ChargeDetailsModel from "./chargeDetailsModel"
+import { Separator } from "@/components/ui/separator"
+import { Input } from "@/components/ui/input"
+import LoaderModel from "@/components/loader"
 
 const CahrgesList = () => {
 
-  const id = useRef<number | null>(null)
+  const id = useRef<number>(0)
   const { caseId } = useParams()
+
+  // provides data to details MODEL and FORM (ON EDIT MODE)
+  const [CHARGE_DETAILS, SET_CHARGE_DETAILS] = useState<ChargeDetails | undefined>(undefined)
   const [CHARGES, SET_CHARGES] = useState<ChargeListType[]>([])
 
-  const [MODEL, SET_MODEL] = useState<{ chargeForm: boolean, alert: boolean, chargeDetails: boolean }>({
+
+  const [MODEL, SET_MODEL] = useState<{ chargeForm: boolean, alert: boolean, chargeDetails: boolean, loader: boolean }>({
     chargeForm: false,
     alert: false,
-    chargeDetails: false
+    chargeDetails: false,
+    loader: false
   })
 
 
@@ -35,6 +43,31 @@ const CahrgesList = () => {
       toast.error(message)
     }
   }
+
+
+
+  const fetchChargeDetails = async (id: number) => {
+    try {
+      SET_MODEL((rest) => {
+        return {
+          ...rest,
+          loader: true
+        }
+      })
+      const data = await getChargeDetails(id)
+      SET_CHARGE_DETAILS(data)
+    } catch ({ message }: any) {
+      toast.error(message)
+    } finally {
+      SET_MODEL((rest) => {
+        return {
+          ...rest,
+          loader: false
+        }
+      })
+    }
+  }
+
 
 
   const onDelete = async () => {
@@ -51,8 +84,17 @@ const CahrgesList = () => {
           ...rest,
           alert: false
         }
-      });
-      id.current = null
+      })
+    }
+  }
+
+
+  const onSearch = async (value: string) => {
+    try {
+      const data = await searchCharges(+caseId!, value)
+      SET_CHARGES(data)
+    } catch ({ message }: any) {
+      toast.error(message)
     }
   }
 
@@ -76,6 +118,14 @@ const CahrgesList = () => {
         </Button>
       </div>
 
+      <Separator />
+
+      <div className="sm:w-48 space-y-1">
+        <p className="text-sm text-gray-700">Search by date</p>
+        <Input type="date" onChange={(e) => { onSearch(e.target.value) }} />
+      </div>
+
+      <Separator />
 
       <Table>
         <TableHeader>
@@ -94,14 +144,14 @@ const CahrgesList = () => {
             return <TableRow key={i}>
               <TableCell>{charge.date}</TableCell>
               {/* to view details model */}
-              <TableCell className="text-blue-500 cursor-pointer hover:text-blue-400 font-semibold" onClick={() => {
+              <TableCell className="text-blue-500 cursor-pointer hover:text-blue-400 font-semibold" onClick={async () => {
+                await fetchChargeDetails(charge.id);
                 SET_MODEL((rest) => {
                   return {
                     ...rest,
                     chargeDetails: true
                   }
                 });
-                id.current = charge.id
               }} >
                 {charge.name}
               </TableCell>
@@ -115,14 +165,14 @@ const CahrgesList = () => {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Pencil className="w-4 cursor-pointer text-gray-600" onClick={() => {
+                      <Pencil className="w-4 cursor-pointer text-gray-600" onClick={async () => {
+                        await fetchChargeDetails(charge.id)
                         SET_MODEL((rest) => {
                           return {
                             ...rest,
                             chargeForm: true
                           }
-                        });
-                        id.current = charge.id
+                        })
                       }} />
                     </TooltipTrigger>
                     <TooltipContent>Edit</TooltipContent>
@@ -143,7 +193,7 @@ const CahrgesList = () => {
                         id.current = charge.id
                       }} />
                     </TooltipTrigger>
-                    <TooltipContent>Edit</TooltipContent>
+                    <TooltipContent>Delete</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
 
@@ -158,7 +208,7 @@ const CahrgesList = () => {
 
       {/* MODEL */}
 
-      {MODEL.chargeForm && <ChargeFormModel ID={Number(id.current)}
+      {MODEL.chargeForm && <ChargeFormModel chargeDetails={CHARGE_DETAILS}
         onClick={() => {
           SET_MODEL((rest) => {
             return {
@@ -167,7 +217,7 @@ const CahrgesList = () => {
             }
           });
           fetchChargeList();
-          id.current = null
+          SET_CHARGE_DETAILS(undefined)
         }}
       />}
 
@@ -181,18 +231,31 @@ const CahrgesList = () => {
               ...rest,
               alert: false
             }
-          });
-          id.current = null
+          })
         }}
 
         continue={onDelete}
       />}
 
 
-
       {/* Details Model */}
 
-      {MODEL.chargeDetails && <ChargeDetailsModel />}
+      {MODEL.chargeDetails && <ChargeDetailsModel
+        chargeDetails={CHARGE_DETAILS}
+        onClick={() => {
+          SET_MODEL((rest) => {
+            return {
+              ...rest,
+              chargeDetails: false
+            }
+          })
+        }}
+      />}
+
+
+      {/* loader */}
+
+      {MODEL.loader && <LoaderModel />}
 
     </section>
   )

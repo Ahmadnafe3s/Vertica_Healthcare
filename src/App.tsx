@@ -29,13 +29,14 @@ import Staffprofile from "./admin/profile/staffprofile";
 import ResetPassword from "./admin/profile/resetpassword";
 import OPDLIST from "./admin/OPD/opdList";
 import VisitDetails from "./admin/OPD/patient/visitDetails";
-import Patient from "./admin/OPD/patient/patientNavigations";
+import Patient from "./admin/OPD/patient/Navigations";
 import Medication from "./admin/OPD/patient/medication/medication";
 import Vital from "./admin/OPD/patient/vital/vital";
 import OperationList from "./admin/OPD/patient/operation/operationList";
 import Timeline from "./admin/OPD/patient/timeline/timelineList";
 import CahrgesList from "./admin/OPD/patient/charges/chargesList";
 import TreatmentsList from "./admin/OPD/patient/treatmentHistory/treatmentsList";
+import PaymentsList from "./admin/OPD/patient/payments/paymentsList";
 
 
 
@@ -84,6 +85,7 @@ function App() {
               <Route path="timeline" element={<Timeline />} />
               <Route path="charges" element={<CahrgesList />} />
               <Route path="treatmenthistory" element={<TreatmentsList />} />
+              <Route path="payment" element={<PaymentsList />} />
             </Route>
           </Route>
 

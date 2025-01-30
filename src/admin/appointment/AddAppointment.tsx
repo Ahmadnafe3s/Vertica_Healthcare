@@ -17,6 +17,8 @@ import { createAppointment, fetchDoctors, fetchPatients } from './appointmentAPI
 import { filterDoctors } from '@/helpers/filterDoctors'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { currencySymbol } from '@/helpers/currencySymbol'
+import { PaymentOptions } from '@/helpers/formSelectOptions'
+import { TableCell, TableRow } from '@/components/ui/table'
 
 
 
@@ -247,12 +249,9 @@ function AddAppointment({ ...props }: AddAppointmentProps) {
                                             </SelectTrigger>
 
                                             <SelectContent className='z-[200]'>
-                                                <SelectItem value="cash">Cash</SelectItem>
-                                                <SelectItem value="to bank">Transfer to Bank</SelectItem>
-                                                <SelectItem value="cheque">Cheque</SelectItem>
-                                                <SelectItem value="upi">UPI</SelectItem>
-                                                <SelectItem value="online">Online</SelectItem>
-                                                <SelectItem value="other">Other</SelectItem>
+                                                {PaymentOptions.map((payment, i) => {
+                                                    return <SelectItem key={i} value={payment.value}>{payment.label}</SelectItem>
+                                                })}
                                             </SelectContent>
                                         </Select>
                                     </>
@@ -311,7 +310,7 @@ function AddAppointment({ ...props }: AddAppointmentProps) {
                     </ScrollArea>
 
                     <div className="flex mt-5 mb-2 gap-x-2 sm:justify-end">
-                        <Button type='button' variant={'ghost'}  onClick={() => reset()} >Reset</Button>
+                        <Button type='button' variant={'ghost'} onClick={() => reset()} >Reset</Button>
                         <Button type='submit' className='flex-1 sm:flex-none' >Save Appointment {isPending && <Loader className='animate-spin' />}</Button>
                     </div>
 

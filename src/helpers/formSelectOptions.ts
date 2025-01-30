@@ -124,6 +124,16 @@ export const bloodGroups = [
 ];
 
 
+export const PaymentOptions = [
+  { label: "Transfer to Bank", value: "Transfer to Bank" },
+  { label: "Cash", value: "Cash" },
+  { label: "Cheque", value: "Cheque" },
+  { label: "UPI", value: "UPI" },
+  { label: "Online", value: "Online" },
+  { label: "Other", value: "Other" },
+
+]
+
 export const Vitals = [
   { label: "Height (1 - 200 CM)", value: "Height" },
   { label: "Weight (kg)", value: "Weight" },
@@ -144,7 +154,5 @@ export const OPERATION_CATEGORIES = [
   { label: 'Neurology', value: 'Neurology' },
   { label: 'Plastic Surgery', value: 'Plastic Surgery' }
 ];
-
-
 
 

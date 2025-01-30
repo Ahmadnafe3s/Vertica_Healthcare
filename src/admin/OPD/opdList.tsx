@@ -77,6 +77,7 @@ const OPDLIST = () => {
 
         <div className='flex gap-x-2'>
           <Input type='text' height='10px' placeholder='caseId , patient , doctor' onChange={(e) => { onSerach(e.target.value) }} />
+        {/* use debounce to prevent api call */}
         </div>
 
         <div className='flex gap-x-2'>

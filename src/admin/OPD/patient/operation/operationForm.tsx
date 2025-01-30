@@ -8,21 +8,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { operationFormSchema } from "@/formSchemas/addOperationFormSchema"
 import { OPERATION_CATEGORIES } from "@/helpers/formSelectOptions"
 import { getOperationsOptions, operationOptions } from "@/helpers/getOprationsOptions"
-import { Doctors } from "@/types/type"
+import { Doctors, Operation_Details } from "@/types/type"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader, X } from "lucide-react"
 import { HTMLAttributes, useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import { createOperation, getOperation_Details, updateOperation } from "../../opdApiHandler"
+import { createOperation, updateOperation } from "../../opdApiHandler"
 import { useParams } from "react-router-dom"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface OperationFormProps extends HTMLAttributes<HTMLDivElement> {
-    ID: string | null
+    operationDetails: Operation_Details | undefined
 }
 
-const OperationForm = ({ ID, ...props }: OperationFormProps) => {
+const OperationForm = ({ operationDetails, ...props }: OperationFormProps) => {
 
     const { patientId, caseId } = useParams()
 
@@ -33,8 +34,22 @@ const OperationForm = ({ ID, ...props }: OperationFormProps) => {
     })
 
 
-    const { register, reset, watch, setValue, handleSubmit, control, formState: { errors } } = useForm<z.infer<typeof operationFormSchema>>({
-        resolver: zodResolver(operationFormSchema)
+    const { register, reset, watch, handleSubmit, control, formState: { errors } } = useForm<z.infer<typeof operationFormSchema>>({
+        resolver: zodResolver(operationFormSchema),
+        defaultValues: {
+            category: operationDetails?.category,
+            name: operationDetails?.name,
+            date: operationDetails?.date,
+            doctorId: String(operationDetails?.doctorId),
+            assistant_1: operationDetails?.assistant_1,
+            assistant_2: operationDetails?.assistant_2,
+            ot_technician: operationDetails?.ot_technician,
+            ot_assistant: operationDetails?.ot_assistant,
+            anesthetist: operationDetails?.anesthetist,
+            anesthesia_type: operationDetails?.anesthesia_type,
+            note: operationDetails?.note,
+            result: operationDetails?.result
+        }
     })
 
 
@@ -43,8 +58,8 @@ const OperationForm = ({ ID, ...props }: OperationFormProps) => {
         try {
             setPending(true)
             let data;
-            if (ID) {
-                data = await updateOperation(ID, formData)
+            if (operationDetails) {
+                data = await updateOperation(operationDetails.id, formData)
             } else {
                 data = await createOperation(Number(patientId), Number(caseId), formData)
             }
@@ -77,37 +92,37 @@ const OperationForm = ({ ID, ...props }: OperationFormProps) => {
 
     // setting values on update
 
-    const setValuesTOform = async () => {
-        try {
+    // const setValuesTOform = async () => {
+    //     try {
 
-            if (!ID) return null // for protecting unecessary API call
+    //         if (!ID) return null // for protecting unecessary API call
 
-            const data = await getOperation_Details(String(ID))
+    //         const data = await getOperation_Details(String(ID))
 
-            setValue('category', data.category)
-            setValue('name', data.name)
-            setValue('date', data.date)
-            setValue('doctorId', String(data.doctorId))
-            setValue('assistant_1', data.assistant_1)
-            setValue('assistant_2', data.assistant_2)
-            setValue('anesthetist', data.anesthetist)
-            setValue('anesthesia_type', data.anesthesia_type)
-            setValue('ot_technician', data.ot_technician)
-            setValue('ot_assistant', data.ot_assistant)
-            setValue('note', data.note)
-            setValue('result', data.result)
+    //         setValue('category', data.category)
+    //         setValue('name', data.name)
+    //         setValue('date', data.date)
+    //         setValue('doctorId', String(data.doctorId))
+    //         setValue('assistant_1', data.assistant_1)
+    //         setValue('assistant_2', data.assistant_2)
+    //         setValue('anesthetist', data.anesthetist)
+    //         setValue('anesthesia_type', data.anesthesia_type)
+    //         setValue('ot_technician', data.ot_technician)
+    //         setValue('ot_assistant', data.ot_assistant)
+    //         setValue('note', data.note)
+    //         setValue('result', data.result)
 
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }
+    //     } catch ({ message }: any) {
+    //         toast.error(message)
+    //     }
+    // }
 
 
 
     useEffect(() => {
         fetchDoctorsList()
-        setValuesTOform()
-    }, [watch('category')])
+        // setValuesTOform()
+    }, [])
 
 
     return (
@@ -123,7 +138,14 @@ const OperationForm = ({ ID, ...props }: OperationFormProps) => {
                     <div className='flex justify-between p-3 col-span-full border-b border-gray-200'>
                         <p className='font-semibold text-sm sm:text-lg text-white bg-primary py-1 px-4 rounded-xl'>Operation</p>
                         <div {...props}>
-                            <X className='cursor-pointer' />
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <X className='cursor-pointer' />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="z-[200]">Close popup</TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                         </div>
                     </div>
 
@@ -132,7 +154,7 @@ const OperationForm = ({ ID, ...props }: OperationFormProps) => {
 
                     <ScrollArea className='h-[60vh]'>
 
-                        <div className="grid gap-5 sm:grid-cols-2 mt-5 px-3 pb-5">
+                        <div className="grid gap-5 sm:grid-cols-2 mt-5 px-4 pb-5">
 
                             {/* Category */}
 
@@ -292,7 +314,7 @@ const OperationForm = ({ ID, ...props }: OperationFormProps) => {
 
                     <div className="flex mt-5 mb-2 p-3 gap-x-2 sm:justify-end">
                         <Button variant='outline' onClick={() => reset()}>Reset</Button>
-                        <Button type='submit' className='flex-1'>{ID ? 'Update' : 'Save'} {isPending && <Loader className='animate-spin' />}</Button>
+                        <Button type='submit' className='flex-1'>{operationDetails ? 'Update' : 'Save'} {isPending && <Loader className='animate-spin' />}</Button>
                     </div>
 
                 </form>

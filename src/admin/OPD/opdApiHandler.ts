@@ -1,9 +1,10 @@
 import { operationFormSchema } from "@/formSchemas/addOperationFormSchema"
 import { chargeFormSchema } from "@/formSchemas/chargeFormSchema"
 import { medicationFormSchema } from "@/formSchemas/medicationFormSchema"
+import { paymentFormSchema } from "@/formSchemas/paymentFormSchema"
 import { timelineFormSchema } from "@/formSchemas/timelineFormSchema"
 import { vitalFormSchema } from "@/formSchemas/vitalFormSchema"
-import { ChargeDetails, opdDetails, opdMedications, OPDs, Operation_Details, Operation_list, Timeline_List, Vitals_List } from "@/types/type"
+import { ChargeDetails, opdDetails, opdMedications, OPDs, Operation_Details, Operation_list, PaymentType, Timeline_List, Vitals_List } from "@/types/type"
 import axios from "axios"
 import { z } from "zod"
 
@@ -11,6 +12,18 @@ import { z } from "zod"
 export const getOPDList = async (): Promise<OPDs[]> => {
     try {
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+// can filter list by date
+export const getOPDlistBYpatient = async (patientId: number, date?: string) => {
+    try {
+        const params = { date }
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd/patient/${patientId}`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -323,6 +336,73 @@ export const getChargesList = async (caseId: string | number) => {
     try {
         const params = { caseId }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/charge`, { params })
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const searchCharges = async (caseId: string | number, date: string) => {
+    try {
+        const params = { caseId, date }
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/charge`, { params })
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+
+// API handlers for payment section
+
+export const createPayment = async (caseId: number, formData: z.infer<typeof paymentFormSchema>) => {
+    try {
+        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/payment/${caseId}`, formData)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+// if we provide search it only will search with respective OPD caseId
+export const getPaymentsList = async (caseId: number, search?: string): Promise<PaymentType[]> => {
+    try {
+        const params = { caseId, search }
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/payment`, { params })
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const getPaymentDetails = async (id: string): Promise<PaymentType> => {
+    try {
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/payment/${id}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const updatePayment = async (id: string, formData: z.infer<typeof paymentFormSchema>) => {
+    try {
+        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/payment/${id}`, formData)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const deletePayment = async (id: string) => {
+    try {
+        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/payment/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

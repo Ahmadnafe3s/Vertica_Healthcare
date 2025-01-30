@@ -368,3 +368,13 @@ export interface ChargeDetails {
     discount: number,
     net_amount: number,
 }
+
+
+export interface PaymentType {
+    id: string,
+    caseId: number,
+    date: string,
+    amount: number,
+    payment_mode: string,
+    note: string,
+}
