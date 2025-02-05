@@ -1,9 +1,10 @@
 import { ScrollArea } from './ui/scroll-area'
 import { Link } from 'react-router-dom'
-import { Airplay, BriefcaseMedical, CalendarClock, HeartPulse, Network, Watch } from 'lucide-react'
+import { Airplay, BriefcaseMedical, CalendarClock, ChevronRight, HeartPulse, Network, Settings, Watch } from 'lucide-react'
 import { buttonVariants } from './ui/button'
 import { cn } from '@/lib/utils'
 import { useAppSelector } from '@/hooks'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion'
 
 const Aside = () => {
 
@@ -56,11 +57,40 @@ const Aside = () => {
                             className: 'flex text-sm items-center'
                         })
                     }><Watch className='h-4 w-4' />Duty Roster</Link></li>
+
+
+                    {/* Tree View Links */}
+
+                    <li>
+                        <Accordion type="single" collapsible >
+                            <AccordionItem value="item-1" className='border-none'>
+
+                                <AccordionTrigger className={buttonVariants({
+                                    variant: 'ghost',
+                                    className: 'justify-between items-center'
+                                })}>
+                                    <div className='flex gap-2'><Settings className='h-4 w-4' />  Setup</div>
+                                </AccordionTrigger>
+
+                                {/* Links */}
+
+                                <AccordionContent className='py-1'>
+                                    <Link to={{ pathname: '/admin/charges' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-center text-[13px]'>
+                                        <ChevronRight className='h-4 w-4' />Hospital Charges</Link>
+                                </AccordionContent>
+                                {/* <AccordionContent className='py-1'>
+                                    <Link to={{ pathname: '/admin/dutyroster/rosterreport' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-center text-[13px]'>
+                                        <ChevronRight className='h-4 w-4' />Hospital Charges</Link>
+                                </AccordionContent> */}
+                            </AccordionItem>
+                        </Accordion>
+                    </li>
+
                 </ul>
 
                 <div className="h-16 bg-gradient-to-t from-white z-30 w-full absolute bottom-0" />
             </ScrollArea>
-        </div>
+        </div >
     )
 }
 

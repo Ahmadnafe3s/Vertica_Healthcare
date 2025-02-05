@@ -3,11 +3,12 @@ import { buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ClipboardPlus, FileText, Plus, Printer, ReceiptText } from 'lucide-react'
-import  { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getOPDList, searchOPDs } from './opdApiHandler'
 import toast from 'react-hot-toast'
 import { OPDs } from '@/types/type'
+import CreatePrescriptionFormModel from './prescription/createPrescriptionFormModel'
 
 
 
@@ -16,7 +17,8 @@ const OPDLIST = () => {
   const [isAppointmentModel, setAppointmentModel] = useState<boolean>(false)
   const [OPD_list, setOPD_list] = useState<OPDs[]>([])
 
-
+  // Model States
+  const [isPrescriptionFormVisible, setPrescritionFormVisible] = useState<boolean>(false)
 
   const fetOPDlist = async () => {
     try {
@@ -77,7 +79,7 @@ const OPDLIST = () => {
 
         <div className='flex gap-x-2'>
           <Input type='text' height='10px' placeholder='caseId , patient , doctor' onChange={(e) => { onSerach(e.target.value) }} />
-        {/* use debounce to prevent api call */}
+          {/* use debounce to prevent api call */}
         </div>
 
         <div className='flex gap-x-2'>
@@ -132,7 +134,7 @@ const OPDLIST = () => {
               <TableCell>{opd.appointment.previous_medical_issue}</TableCell>
 
               <TableCell className='flex gap-x-2 items-center'>
-                <ClipboardPlus className='cursor-pointer text-gray-600 w-5 h-5' />
+                <ClipboardPlus className='cursor-pointer text-gray-600 w-5 h-5' onClick={() => setPrescritionFormVisible(true)} />
                 <FileText className='cursor-pointer text-gray-600 w-5 h-5' />
                 <Printer className='cursor-pointer text-gray-600 w-5 h-5' />
                 <ReceiptText className='cursor-pointer text-gray-600 w-5 h-5' />
@@ -146,6 +148,13 @@ const OPDLIST = () => {
 
       {isAppointmentModel && <AddAppointment onClick={() => { setAppointmentModel(false); fetOPDlist() }} />}
 
+      {/* Prescription Model */}
+
+      {isPrescriptionFormVisible && (
+        <CreatePrescriptionFormModel Submit={() => { }} isPending={true} 
+        onClick={()=>setPrescritionFormVisible(false)}
+        />
+      )}
     </div>
   )
 }

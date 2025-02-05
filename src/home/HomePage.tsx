@@ -4,9 +4,7 @@ import { Star } from 'lucide-react'
 import { Fade } from 'react-awesome-reveal'
 
 
-
 const HomePage = () => {
-
 
     const doctors = [
         { name: 'Dr. Isabella Grant, MD', speciality: 'Pediatric Cardiology', image: '/doctors/doctor-1.jpg' },
@@ -20,9 +18,9 @@ const HomePage = () => {
 
         <div>
 
-            <MaxWidthWrapper className="pt-14 md:pt-20 lg:pt-32 pb-20 lg:pb-32 grid lg:grid-cols-4">
+            <MaxWidthWrapper className="pt-14 md:pt-20 lg:pt-32 pb-20 lg:pb-32 grid lg:grid-cols-4" >
 
-                <div className="lg:col-span-2 flex flex-col justify-center gap-y-5">
+                <div className="lg:col-span-2 flex flex-col justify-center gap-y-5" >
 
                     <Fade damping={0.1} cascade triggerOnce>
                         <p className="font-bold text-4xl md:text-5xl lg:text-6xl text-gray-900 tracking-tight ">
@@ -46,10 +44,10 @@ const HomePage = () => {
                     </Fade>
                 </div>
 
-                <div className="lg:col-span-2 mx-auto flex flex-col justify-center">
-                    <Fade triggerOnce className='w-72 lg:w-[500px] '>
+                <div className="lg:col-span-2 mx-auto flex flex-col justify-center" >
+                    <div id='hospital' className='w-72 lg:w-[500px] hospital '>
                         <img src="/hospital-2.png" className="object-cover" />
-                    </Fade>
+                    </div>
                 </div>
 
             </MaxWidthWrapper>

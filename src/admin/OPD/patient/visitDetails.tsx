@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { getOPD_Details } from "../opdApiHandler";
 import { opdDetails } from "@/types/type";
-import { Calendar, Clock, SearchX, UserRound } from "lucide-react";
+import { Calendar, Clock, UserRound } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { currencySymbol } from "@/helpers/currencySymbol";
@@ -258,7 +258,7 @@ const VisitDetails = () => {
                     <TableBody>
                         {OPD_DETAILS?.medication.map((medication, i) => (
                             <TableRow key={i}>
-                                <TableCell className="text-gray-800 font-semibold">{medication.date}</TableCell>
+                                <TableCell className="text-gray-800 whitespace-nowrap">{medication.date}</TableCell>
                                 <TableCell>{medication?.medicine.name}</TableCell>
                                 <TableCell>{medication?.medicine.category}</TableCell>
                                 <TableCell>{medication.dose}</TableCell>
@@ -305,7 +305,7 @@ const VisitDetails = () => {
 
                 <Separator className="sm:col-span-full my-8" />
 
-                {/* Operation */}
+                {/* Charges */}
 
                 <h1 className="font-semibold text-gray-800 mb-2">Charges</h1>
 
@@ -323,7 +323,7 @@ const VisitDetails = () => {
                     <TableBody>
                         {OPD_DETAILS?.charges.map((charge, i) => {
                             return <TableRow key={i}>
-                                <TableCell>{charge.date}</TableCell>
+                                <TableCell className="whitespace-nowrap">{charge.date}</TableCell>
                                 <TableCell>{charge.name}</TableCell>
                                 <TableCell>{currencyFormat(charge.amount)}</TableCell>
                                 <TableCell>{currencyFormat(charge.tpa)}</TableCell>
@@ -333,6 +333,34 @@ const VisitDetails = () => {
                     </TableBody>
                 </Table>
 
+                {OPD_DETAILS?.charges.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
+
+                <Separator className="sm:col-span-full my-8" />
+
+                {/* Payments */}
+
+                <h1 className="font-semibold text-gray-800 mb-2">Payments</h1>
+
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Transaction ID</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Payment Mode</TableHead>
+                            <TableHead>Paid Amount {currencySymbol()}</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {OPD_DETAILS?.Payment.map((payment) => {
+                            return <TableRow key={payment.id}>
+                                <TableCell className="font-semibold">{payment.id}</TableCell>
+                                <TableCell >{payment.date}</TableCell>
+                                <TableCell >{payment.payment_mode}</TableCell>
+                                <TableCell >{currencyFormat(payment.amount)}</TableCell>
+                            </TableRow>
+                        })}
+                    </TableBody>
+                </Table>
             </div>
 
 

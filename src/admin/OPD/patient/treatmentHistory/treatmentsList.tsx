@@ -43,7 +43,7 @@ const TreatmentsList = () => {
     <section className="flex flex-col gap-y-5">
 
       <div className="flex justify-between">
-        <h1 className="text-lg text-gray-800 font-semibold">Charges</h1>
+        <h1 className="text-lg text-gray-800 font-semibold">Treatment History</h1>
       </div>
 
       <Separator />

@@ -328,7 +328,8 @@ export interface opdDetails {
     Vitals: Vitals_List[],
     Operation: Operation_list[],
     timeline: Timeline_List[],
-    charges: ChargeListType[]
+    charges: ChargeListType[],
+    Payment: PaymentType[]
 }
 
 

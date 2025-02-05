@@ -1,15 +1,17 @@
-import { BadgeAlert } from "lucide-react"
+import { BadgeAlert, Loader } from "lucide-react"
 import { Button } from "./ui/button"
 import { HTMLAttributes } from "react";
+
 
 
 interface alertModelProps extends HTMLAttributes<HTMLDivElement> {
   cancel: () => void;
   continue: () => void;
+  isPending?: boolean
 }
 
 
-const AlertModel = ({ cancel, continue: continueAction }: alertModelProps) => {
+const AlertModel = ({ isPending, cancel, continue: continueAction }: alertModelProps) => {
 
 
   return (
@@ -34,7 +36,7 @@ const AlertModel = ({ cancel, continue: continueAction }: alertModelProps) => {
 
 
         <div className="mt-2 space-y-2">
-          <Button type="button" variant={'destructive'} size={'sm'} className="w-full" onClick={continueAction} >Continue</Button>
+          <Button type="button" variant={'destructive'} size={'sm'} className="w-full" onClick={continueAction} >{isPending ? <Loader className="animate-spin" /> : 'Continue'}</Button>
           <Button type="button" variant={'outline'} size={'sm'} className="w-full" onClick={cancel}>Cancel</Button>
         </div>
       </div>

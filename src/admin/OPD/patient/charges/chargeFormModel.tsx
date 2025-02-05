@@ -13,23 +13,21 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader, Plus, X } from "lucide-react"
 import { HTMLAttributes, useEffect, useState } from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
-import toast from "react-hot-toast"
 import { z } from "zod"
-import { createCharges, updateCharge } from "../../opdApiHandler"
-import { useParams } from "react-router-dom"
 import { ChargeDetails } from "@/types/type"
 
 
 interface ChargeFormModelProps extends HTMLAttributes<HTMLDivElement> {
-    chargeDetails?: ChargeDetails
+    chargeDetails: ChargeDetails;
+    isPending: boolean;
+    Submit: (formData: z.infer<typeof chargeFormSchema>) => void
 }
 
 
-const ChargeFormModel = ({ chargeDetails, ...props }: ChargeFormModelProps) => {
+const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeFormModelProps) => {
 
-    const [isPending, setPending] = useState<boolean>(false)
     const [INDEX, SET_INDEX] = useState<number>(0)
-    const { caseId } = useParams()
+
 
     const { register, control, watch, reset, setValue, handleSubmit, formState: { errors } } = useForm<z.infer<typeof chargeFormSchema>>({
         resolver: zodResolver(chargeFormSchema),
@@ -60,26 +58,6 @@ const ChargeFormModel = ({ chargeDetails, ...props }: ChargeFormModelProps) => {
 
 
 
-    // Performing upsert
-    const onSubmit = async (formData: z.infer<typeof chargeFormSchema>) => {
-        try {
-            setPending(true)
-            let data;
-            if (chargeDetails) {
-                data = await updateCharge(chargeDetails.id, formData)
-            } else {
-                data = await createCharges(Number(caseId), formData)
-            }
-            toast.success(data.message)
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally {
-            setPending(false)
-        }
-    }
-
-
-
     // binding values dynamically to form
 
     const setAmount_and_tpa = (NID: string, index: number) => {
@@ -93,11 +71,11 @@ const ChargeFormModel = ({ chargeDetails, ...props }: ChargeFormModelProps) => {
     // returning sum of amount and tpa and trigger useEffect
     const chargeAmounts = (watch(`charge.${INDEX}.amount`) + watch(`charge.${INDEX}.tpa`));
 
-    
+
     // This hook i have used to calculate and bind amount to form
     useEffect(() => {
 
-        const total = chargeAmounts 
+        const total = chargeAmounts
         const Amount = calculateAmount(total, watch(`charge.${INDEX}.tax`)!, watch(`charge.${INDEX}.discount`))
         setValue(`charge.${INDEX}.total`, Amount.total)
         setValue(`charge.${INDEX}.net_amount`, Amount.net_amount)
@@ -112,13 +90,13 @@ const ChargeFormModel = ({ chargeDetails, ...props }: ChargeFormModelProps) => {
 
             <MaxWidthWrapper className='fixed h-auto top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-[200] '>
 
-                <form className='p-3 bg-white rounded-md' onSubmit={handleSubmit(onSubmit)}>
+                <form className='p-3 bg-white rounded-md' onSubmit={handleSubmit(Submit)}>
 
                     <div>
                         <div className='flex justify-between pt-2 pb-3 border-b border-gray-200 col-span-full'>
                             <p className='font-semibold text-xl text-white bg-primary py-1 px-4 rounded-xl'>Add Charges</p>
                             <div {...props}>
-                                <TooltipProvider>
+                                <TooltipProvider delayDuration={200}>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <X className='cursor-pointer' />
@@ -136,7 +114,7 @@ const ChargeFormModel = ({ chargeDetails, ...props }: ChargeFormModelProps) => {
 
                     <ScrollArea className='h-[60vh] sm:h-[55vh]'>
 
-                        <div className="grid lg:grid-cols-4 md:grid-cols-3 gap-5 p-1">
+                        <div className="grid lg:grid-cols-4 md:grid-cols-3 gap-5 p-1" onSubmit={handleSubmit(Submit)}>
 
 
                             {fields.map((charge, index) => {
@@ -283,7 +261,7 @@ const ChargeFormModel = ({ chargeDetails, ...props }: ChargeFormModelProps) => {
 
                                     {fields.length !== 1 &&
                                         <div className="h-full flex items-center gap-x-2 col-span-2 justify-end sm:justify-normal">
-                                            <TooltipProvider>
+                                            <TooltipProvider delayDuration={200}>
                                                 <Tooltip>
                                                     <TooltipTrigger asChild>
                                                         <div className="p-1 bg-red-500 rounded-full text-white mt-2 sm:mt-4">
@@ -304,7 +282,7 @@ const ChargeFormModel = ({ chargeDetails, ...props }: ChargeFormModelProps) => {
                             {/* Button for Addding fields */}
 
                             {!chargeDetails && <div className="col-span-full flex justify-end mr-2">
-                                <TooltipProvider>
+                                <TooltipProvider delayDuration={200}>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <div className="p-1 bg-slate-500 rounded-full text-white">

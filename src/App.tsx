@@ -6,7 +6,7 @@ import HomePage from "./home/HomePage";
 import AdminDashboard from "./admin/dashboard";
 import AdminAppointment from "./admin/appointment/appointmet";
 import QueueAppointment from "./admin/appointment/QueueAppointment";
-import OPD from "./admin/OPD/OPD";
+import OPD from "./admin/OPD/opd-layout";
 import RegisterPatient from "./Auth/registerPatient";
 import Pharmacy from "./admin/pharmacy/pharmacy";
 import Bill from "./admin/pharmacy/bills";
@@ -29,7 +29,7 @@ import Staffprofile from "./admin/profile/staffprofile";
 import ResetPassword from "./admin/profile/resetpassword";
 import OPDLIST from "./admin/OPD/opdList";
 import VisitDetails from "./admin/OPD/patient/visitDetails";
-import Patient from "./admin/OPD/patient/Navigations";
+import Patient from "./admin/OPD/patient/patient-layout";
 import Medication from "./admin/OPD/patient/medication/medication";
 import Vital from "./admin/OPD/patient/vital/vital";
 import OperationList from "./admin/OPD/patient/operation/operationList";
@@ -37,6 +37,12 @@ import Timeline from "./admin/OPD/patient/timeline/timelineList";
 import CahrgesList from "./admin/OPD/patient/charges/chargesList";
 import TreatmentsList from "./admin/OPD/patient/treatmentHistory/treatmentsList";
 import PaymentsList from "./admin/OPD/patient/payments/paymentsList";
+import ChargesList from "./admin/setup/hospital-charges/chargeName/chargesNameList";
+import ChargesLayout from "./admin/setup/hospital-charges/charges-layout";
+import CategoryList from "./admin/setup/hospital-charges/chargesCategory/categoryList";
+import ChargeTypes from "./admin/setup/hospital-charges/chargeType/chargeTypes";
+import ChargeUnitList from "./admin/setup/hospital-charges/chargeUnit/chargeUnitList";
+import TaxList from "./admin/setup/hospital-charges/taxes/taxList";
 
 
 
@@ -51,7 +57,7 @@ function App() {
     dispatch(checkSession())
   }, [dispatch])
 
-  
+
   return (
     <Router>
       <Toaster toastOptions={{ duration: 2000 }} />
@@ -73,6 +79,17 @@ function App() {
           />
           <Route path="admin/appointment" element={<AdminAppointment />} />
           <Route path="admin/QueueAppointment" element={<QueueAppointment />} />
+
+
+          {/* Setup routes for charges*/}
+
+          <Route path="admin/charges" element={<ProtectRoutes requiredRole="admin" protectElement={<ChargesLayout />} />}>
+            <Route path="" element={<ChargesList />} />
+            <Route path="category" element={<CategoryList />} />
+            <Route path="types" element={<ChargeTypes />} />
+            <Route path="units" element={<ChargeUnitList />} />
+            <Route path="tax" element={<TaxList />} />
+          </Route>
 
 
           <Route path="admin/OPD" element={<OPD />}>

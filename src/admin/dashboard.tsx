@@ -1,11 +1,8 @@
 import { chartConfig, incomeExpenseConfig } from '@/chartConfig/chartConfig'
 import RectCard from '@/components/rectCard'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
-import { currencyFormat } from '@/lib/utils'
-import { Ambulance, DollarSign, HeartPulse, Pill, Radiation, TestTubeDiagonal, TrendingUp } from 'lucide-react'
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
+import { Ambulance, DollarSign, HeartPulse, Pill, Radiation, TestTubeDiagonal } from 'lucide-react'
 import { Area, AreaChart, Pie, PieChart, XAxis } from 'recharts'
 
 
@@ -49,7 +46,7 @@ const AdminDashboard = () => {
                 </RectCard>
 
                 <RectCard name='Pharmacy Income' path={''} amount={45600}>
-                    <Pill  className='h-8 w-8' />
+                    <Pill className='h-8 w-8' />
                 </RectCard>
 
                 <RectCard name='Pathylogy Income' path={''} amount={85400}>
@@ -57,7 +54,7 @@ const AdminDashboard = () => {
                 </RectCard>
 
                 <RectCard name='Radiology Income' path={''} amount={780}>
-                    <Radiation  className='h-8 w-8' />
+                    <Radiation className='h-8 w-8' />
                 </RectCard>
 
                 <RectCard name='Ambulance Income' path={''} amount={6900}>
@@ -67,7 +64,7 @@ const AdminDashboard = () => {
                 <RectCard name='Expenses' path={''} amount={1200}>
                     <DollarSign className='h-8 w-8' />
                 </RectCard>
-        
+
             </div>
 
 

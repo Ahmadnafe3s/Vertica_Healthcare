@@ -4,24 +4,41 @@ import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { currencySymbol } from "@/helpers/currencySymbol"
 import { Pencil, Plus, SearchX, Trash } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import PaymentFormModel from "./paymentFormModel"
 import toast from "react-hot-toast"
-import { getPaymentsList } from "../../opdApiHandler"
+import { createPayment, deletePayment, getPaymentDetails, getPaymentsList, updatePayment } from "../../opdApiHandler"
 import { useParams } from "react-router-dom"
 import { PaymentType } from "@/types/type"
 import { currencyFormat } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { paymentFormSchema } from "@/formSchemas/paymentFormSchema"
+import { z } from "zod"
+import LoaderModel from "@/components/loader"
+import AlertModel from "@/components/alertModel"
+import { useDebouncedCallback } from 'use-debounce'
+
+
+
+
 
 const PaymentsList = () => {
 
   const { caseId } = useParams()
+  const [isPending, setPending] = useState<boolean>(false)
+  const ID = useRef<string>()
+
+  // API States
   const [paymensList, setPaymentList] = useState<PaymentType[]>([])
+  const [paymentDetails, setPaymentDetails] = useState<PaymentType | undefined>(undefined)
 
-  const [Model, setModel] = useState<{ paymentForm: boolean }>({
-    paymentForm: false
-  })
+  // Models State
+  const [isPaymentFormVisible, setIsPaymentFormVisible] = useState<boolean>(false);
+  const [isPaymentLoading, setIsPaymentLoading] = useState<boolean>(false);
+  const [isAlert, setAlert] = useState<boolean>(false)
 
+
+  // Fetching list
   const fetchPaymetsList = async () => {
     try {
       const data = await getPaymentsList(Number(caseId))
@@ -32,28 +49,87 @@ const PaymentsList = () => {
   }
 
 
-  function onSearch(value: any) {
-    throw new Error("Function not implemented.")
+  // fetching payment details for edit mode
+  const fetchPaymetDetails = async (id: string) => {
+    try {
+      setIsPaymentLoading(true)
+      const data = await getPaymentDetails(id)
+      setPaymentDetails(data)
+      setIsPaymentFormVisible(true)
+    } catch ({ message }: any) {
+      toast.error(message)
+    } finally {
+      setIsPaymentLoading(false)
+    }
   }
 
 
+  // This handler handling both (insert and update as well as updates list)
+  const handleSubmit = async (formData: z.infer<typeof paymentFormSchema>) => {
+    try {
+      setPending(true)
+      let data;
+      if (paymentDetails) {
+        data = await updatePayment(paymentDetails.id, formData)
+        setPaymentDetails(undefined)
+      } else {
+        data = await createPayment(Number(caseId), formData)
+      }
+      toast.success(data.message)
+      fetchPaymetsList()
+      setIsPaymentFormVisible(false)
+    } catch ({ message }: any) {
+      toast.error(message)
+    } finally {
+      setPending(false)
+    }
+  }
+
+
+  // Delete payment
+  const onDelete = async () => {
+    try {
+      const data = await deletePayment(String(ID.current))
+      toast.success(data.message)
+      fetchPaymetsList()
+    } catch ({ message }: any) {
+      toast.error(message)
+    } finally {
+      setAlert(false)
+    }
+  }
+
+
+  
+  // prevent unnecessary api calls
+  const onSearch = useDebouncedCallback(async (search: string) => {
+    try {
+      const data = await getPaymentsList(Number(caseId), search)
+      setPaymentList(data)
+    } catch ({ message }: any) {
+      toast.error(message)
+    }
+  }, 500)
+
+
+
+  // fetching list initially on load
   useEffect(() => {
     fetchPaymetsList()
   }, [])
 
   return (
-    <section className="flex flex-col gap-y-5">
 
+    <section className="flex flex-col gap-y-5 pb-14">
       <div className="flex justify-between">
         <h1 className="text-lg text-gray-800 font-semibold">Payments</h1>
-        <Button variant='outline' size='sm' onClick={() =>
-          setModel((rest) => {
-            return {
-              ...rest,
-              paymentForm: true
-            }
-          })
-        }>
+        <Button
+          variant='outline'
+          size='sm'
+          onClick={() =>
+            setIsPaymentFormVisible(true)
+          }
+        >
           <Plus /> Add Payment
         </Button>
       </div>
@@ -86,13 +162,14 @@ const PaymentsList = () => {
               <TableCell >{payment.payment_mode}</TableCell>
               <TableCell >{currencyFormat(payment.amount)}</TableCell>
               <TableCell >{payment.note}</TableCell>
-              <TableCell className="space-x-1">
+              <TableCell className="space-x-2">
 
                 {/* Edit */}
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
                       <Pencil className="w-4 cursor-pointer active:scale-90 text-gray-600" onClick={async () => {
+                        fetchPaymetDetails(payment.id)
                       }} />
                     </TooltipTrigger>
                     <TooltipContent>Edit</TooltipContent>
@@ -105,6 +182,8 @@ const PaymentsList = () => {
                   <Tooltip>
                     <TooltipTrigger>
                       <Trash className="w-4 cursor-pointer active:scale-90 text-gray-600" onClick={async () => {
+                        ID.current = payment.id
+                        setAlert(true)
                       }} />
                     </TooltipTrigger>
                     <TooltipContent>Delete</TooltipContent>
@@ -118,23 +197,30 @@ const PaymentsList = () => {
       </Table>
 
 
+
       {/* error on emply list */}
 
       {paymensList.length < 1 && <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
 
-      {Model.paymentForm && (
-        <PaymentFormModel
+
+      {/* Models */}
+
+      {isPaymentFormVisible && (
+        <PaymentFormModel Submit={handleSubmit} isPending={isPending} paymentDetails={paymentDetails!}
           onClick={() => {
-            setModel((rest) => {
-              return {
-                ...rest,
-                paymentForm: false
-              }
-            })
+            setIsPaymentFormVisible(false)
+            setPaymentDetails(undefined)
           }}
         />
       )}
 
+      {/* Loader */}
+
+      {isPaymentLoading && <LoaderModel />}
+
+      {/* Alert Model */}
+
+      {isAlert && <AlertModel cancel={() => setAlert(false)} continue={onDelete} />}
     </section>
   )
 }

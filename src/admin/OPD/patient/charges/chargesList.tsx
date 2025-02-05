@@ -6,7 +6,7 @@ import { Pencil, Plus, SearchX, Trash } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { currencySymbol } from "@/helpers/currencySymbol"
 import toast from "react-hot-toast"
-import { deleteCharge, getChargeDetails, getChargesList, searchCharges } from "../../opdApiHandler"
+import { createCharges, deleteCharge, getChargeDetails, getChargesList, searchCharges, updateCharge } from "../../opdApiHandler"
 import { useParams } from "react-router-dom"
 import { ChargeDetails, ChargeListType } from "@/types/type"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -16,23 +16,28 @@ import ChargeDetailsModel from "./chargeDetailsModel"
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import LoaderModel from "@/components/loader"
+import { chargeFormSchema } from "@/formSchemas/chargeFormSchema"
+import { z } from "zod"
 
 const CahrgesList = () => {
 
   const id = useRef<number>(0)
   const { caseId } = useParams()
+  const [isPending, setPending] = useState<boolean>(false)
 
-  // provides data to details MODEL and FORM (ON EDIT MODE)
-  const [CHARGE_DETAILS, SET_CHARGE_DETAILS] = useState<ChargeDetails | undefined>(undefined)
+
+  // Api states
+  //chargeDetails provides data to details MODEL and FORM (ON EDIT MODE)
+  const [chargeDetails, setChargeDetails] = useState<ChargeDetails | undefined>(undefined)
   const [CHARGES, SET_CHARGES] = useState<ChargeListType[]>([])
 
 
-  const [MODEL, SET_MODEL] = useState<{ chargeForm: boolean, alert: boolean, chargeDetails: boolean, loader: boolean }>({
-    chargeForm: false,
-    alert: false,
-    chargeDetails: false,
-    loader: false
-  })
+  // Models State
+  const [isAlert, setAlert] = useState<boolean>(false)
+  const [isChargeLoading, setIsChargeLoading] = useState<boolean>(false)
+  const [isChargeDetailsVisible, setIsChargeDetailsVisible] = useState<boolean>(false)
+  const [isChargeFormVisible, setIsChargeFormVisible] = useState<boolean>(false)
+
 
 
   const fetchChargeList = async () => {
@@ -45,26 +50,16 @@ const CahrgesList = () => {
   }
 
 
-
+  // Fetching details for Details model and form on edit mode
   const fetchChargeDetails = async (id: number) => {
     try {
-      SET_MODEL((rest) => {
-        return {
-          ...rest,
-          loader: true
-        }
-      })
+      setIsChargeLoading(true)
       const data = await getChargeDetails(id)
-      SET_CHARGE_DETAILS(data)
+      setChargeDetails(data)
     } catch ({ message }: any) {
       toast.error(message)
     } finally {
-      SET_MODEL((rest) => {
-        return {
-          ...rest,
-          loader: false
-        }
-      })
+      setIsChargeLoading(false)
     }
   }
 
@@ -79,14 +74,10 @@ const CahrgesList = () => {
     } catch ({ message }: any) {
       toast.error(message)
     } finally {
-      SET_MODEL((rest) => {
-        return {
-          ...rest,
-          alert: false
-        }
-      })
+      setAlert(false)
     }
   }
+
 
 
   const onSearch = async (value: string) => {
@@ -98,22 +89,43 @@ const CahrgesList = () => {
     }
   }
 
+  
+
+  // handling create and update both
+  const handleSubmit = async (formData: z.infer<typeof chargeFormSchema>) => {
+    try {
+      setPending(true)
+      let data;
+      if (chargeDetails) {
+        data = await updateCharge(chargeDetails.id, formData)
+        setChargeDetails(undefined)
+      } else {
+        data = await createCharges(Number(caseId), formData)
+      }
+      toast.success(data.message)
+      fetchChargeList()
+      setIsChargeFormVisible(false)
+    } catch ({ message }: any) {
+      toast.error(message)
+    } finally {
+      setPending(false)
+    }
+  }
+
+
 
   useEffect(() => {
     fetchChargeList()
   }, [])
+
+
 
   return (
     <section className="flex flex-col gap-y-5">
 
       <div className="flex justify-between">
         <h1 className="text-lg text-gray-800 font-semibold">Charges</h1>
-        <Button variant='outline' size='sm' onClick={() => SET_MODEL((rest) => {
-          return {
-            ...rest,
-            chargeForm: true
-          }
-        })}>
+        <Button variant='outline' size='sm' onClick={() => setIsChargeFormVisible(true)} >
           <Plus /> Add Charge
         </Button>
       </div>
@@ -146,12 +158,7 @@ const CahrgesList = () => {
               {/* to view details model */}
               <TableCell className="text-blue-500 cursor-pointer hover:text-blue-400 font-semibold" onClick={async () => {
                 await fetchChargeDetails(charge.id);
-                SET_MODEL((rest) => {
-                  return {
-                    ...rest,
-                    chargeDetails: true
-                  }
-                });
+                setIsChargeDetailsVisible(true)
               }} >
                 {charge.name}
               </TableCell>
@@ -167,12 +174,7 @@ const CahrgesList = () => {
                     <TooltipTrigger>
                       <Pencil className="w-4 cursor-pointer text-gray-600" onClick={async () => {
                         await fetchChargeDetails(charge.id)
-                        SET_MODEL((rest) => {
-                          return {
-                            ...rest,
-                            chargeForm: true
-                          }
-                        })
+                        setIsChargeFormVisible(true)
                       }} />
                     </TooltipTrigger>
                     <TooltipContent>Edit</TooltipContent>
@@ -184,12 +186,7 @@ const CahrgesList = () => {
                   <Tooltip>
                     <TooltipTrigger>
                       <Trash className="w-4 cursor-pointer text-gray-600" onClick={() => {
-                        SET_MODEL((rest) => {
-                          return {
-                            ...rest,
-                            alert: true
-                          }
-                        });
+                        setAlert(true)
                         id.current = charge.id
                       }} />
                     </TooltipTrigger>
@@ -208,54 +205,38 @@ const CahrgesList = () => {
 
       {/* MODEL */}
 
-      {MODEL.chargeForm && <ChargeFormModel chargeDetails={CHARGE_DETAILS}
+      {isChargeFormVisible && <ChargeFormModel isPending={isPending} chargeDetails={chargeDetails!} Submit={handleSubmit}
         onClick={() => {
-          SET_MODEL((rest) => {
-            return {
-              ...rest,
-              chargeForm: false
-            }
-          });
-          fetchChargeList();
-          SET_CHARGE_DETAILS(undefined)
+          setIsChargeFormVisible(false);
+          setChargeDetails(undefined)
         }}
       />}
 
 
       {/* Alert Model */}
 
-      {MODEL.alert && <AlertModel
-        cancel={() => {
-          SET_MODEL((rest) => {
-            return {
-              ...rest,
-              alert: false
-            }
-          })
-        }}
-
-        continue={onDelete}
-      />}
+      {isAlert && (
+        <AlertModel
+          cancel={() => setAlert(false)}
+          continue={onDelete}
+        />
+      )}
 
 
       {/* Details Model */}
 
-      {MODEL.chargeDetails && <ChargeDetailsModel
-        chargeDetails={CHARGE_DETAILS}
+      {isChargeDetailsVisible && <ChargeDetailsModel
+        chargeDetails={chargeDetails}
         onClick={() => {
-          SET_MODEL((rest) => {
-            return {
-              ...rest,
-              chargeDetails: false
-            }
-          })
+          setIsChargeDetailsVisible(false);
+          setChargeDetails(undefined)
         }}
       />}
 
 
       {/* loader */}
 
-      {MODEL.loader && <LoaderModel />}
+      {isChargeLoading && <LoaderModel />}
 
     </section>
   )
