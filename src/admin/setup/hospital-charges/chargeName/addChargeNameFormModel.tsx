@@ -17,13 +17,14 @@ import { currencySymbol } from '@/helpers/currencySymbol'
 import { Button } from '@/components/ui/button'
 import { Loader } from 'lucide-react'
 import { chargeNameFormSchema } from '@/formSchemas/setupSectionSchemas/ChargeNameFormSchema'
-import { chargeNameType } from '@/types/setupTypes/chargeName'
+import { chargeNameDetailsType } from '@/types/setupTypes/chargeName'
+
 
 
 interface AddChargesFormModelProps extends HTMLAttributes<HTMLDivElement> {
   Submit: (formData: z.infer<typeof chargeNameFormSchema>) => void
   isPending: boolean,
-  chargeNameDetails: chargeNameType
+  chargeNameDetails: chargeNameDetailsType
 }
 
 

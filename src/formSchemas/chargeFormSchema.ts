@@ -1,18 +1,18 @@
 import { z } from "zod";
 
 const charges = z.object({
-    charge_type: z.string()
+    chargeTypeId: z.string()
         .min(1, { message: 'Select charge type' })
         .default(''),
 
-    category: z.string()
+    categoryId: z.string()
         .min(1, { message: 'Select charge category' })
         .default(''),
 
-    name: z.string()
+    chargeNameId: z.string()
         .min(1, { message: 'Select charge name' }),
 
-    amount: z.number()
+    standard_charge: z.number()
         .int()
         .min(1, 'Amount must be at least 1'),
 

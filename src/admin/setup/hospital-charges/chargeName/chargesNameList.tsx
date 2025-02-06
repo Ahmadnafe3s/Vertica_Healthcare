@@ -1,9 +1,9 @@
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { currencySymbol } from "@/helpers/currencySymbol"
-import { Ghost, Pencil, Plus, SearchX, Trash } from "lucide-react"
+import { Pencil, Plus, SearchX, Trash } from "lucide-react"
 import { useDebouncedCallback } from "use-debounce"
 import AddChargesFormModel from "./addChargeNameFormModel"
 import { useEffect, useRef, useState } from "react"
@@ -12,12 +12,12 @@ import { chargeNameFormSchema } from "@/formSchemas/setupSectionSchemas/ChargeNa
 import toast from "react-hot-toast"
 import { chargeNameDetailsType, chargeNamesType } from "@/types/setupTypes/chargeName"
 import { createChargeName, deleteChargeName, getChargeNameDetails, getChargeNames, updateChargeName } from "../chargesAPIhandlers"
-import { cn, currencyFormat } from "@/lib/utils"
+import { currencyFormat } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import AlertModel from "@/components/alertModel"
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
-import { Link, useLocation } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import CustomPagination from "@/components/customPagination"
+import LoaderModel from "@/components/loader"
 
 
 
@@ -27,7 +27,7 @@ const ChargesList = () => {
 
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
-  let page = parseInt(queryParams.get('page')!)
+  let page = parseInt(queryParams.get('page') || '1', 10);
 
   // credentials
   const itemID = useRef<number>(0)
@@ -109,8 +109,13 @@ const ChargesList = () => {
   }
 
 
-  const onSearch = useDebouncedCallback((value) => {
-    console.log(value);
+  const onSearch = useDebouncedCallback(async (value) => {
+    try {
+      const data = await getChargeNames(page, value)
+      setchargeNames(data)
+    } catch ({ message }: any) {
+      toast.error(message)
+    }
   }, 400)
 
 
@@ -136,7 +141,7 @@ const ChargesList = () => {
 
       <div className="sm:w-48 space-y-1">
         <p className="text-sm text-gray-700">Search</p>
-        <Input type="text" onChange={(e) => { onSearch(e.target.value) }} placeholder="id , name , category" />
+        <Input type="text" onChange={(e) => { onSearch(e.target.value) }} placeholder="name , category" />
       </div>
 
       <Separator />
@@ -147,7 +152,6 @@ const ChargesList = () => {
           <Table >
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Charge Category</TableHead>
                 <TableHead>Charge Type</TableHead>
@@ -161,7 +165,6 @@ const ChargesList = () => {
             <TableBody>
               {chargeNames?.data.map((chargeName) => {
                 return <TableRow key={chargeName.id}>
-                  <TableCell>{chargeName.id}</TableCell>
                   <TableCell>{chargeName.name}</TableCell>
                   <TableCell>{chargeName.chargeCategory.category}</TableCell>
                   <TableCell>{chargeName.chargeCategory.chargeType.charge_type}</TableCell>
@@ -212,9 +215,7 @@ const ChargesList = () => {
 
         {/* child 2 */}
         <div>
-
           <CustomPagination currentPage={page} total_pages={Number(chargeNames?.total_pages)} />
-          {/* <p className="text-sm text-center">total pages {(chargeNames?.total_pages!)}</p> */}
         </div>
       </div>
 
@@ -248,6 +249,9 @@ const ChargesList = () => {
         />
       }
 
+      {/* Loader */}
+
+      {loaderModel && <LoaderModel />}
     </section >
   )
 }

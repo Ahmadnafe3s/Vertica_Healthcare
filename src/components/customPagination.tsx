@@ -15,7 +15,8 @@ const CustomPagination = ({ currentPage, total_pages }: { currentPage: number, t
                     <Link
                         to={`?page=${currentPage - 1}`}
                         className={cn(buttonVariants({
-                            variant: 'outline'
+                            variant: 'outline',
+                            size : 'sm'
                         }), { 'hidden': currentPage === 1 })}
                     >
                         Previous
@@ -27,6 +28,7 @@ const CustomPagination = ({ currentPage, total_pages }: { currentPage: number, t
                     <Link
                         className={buttonVariants({
                             variant: currentPage === 1 ? 'outline' : 'ghost',
+                            size : 'sm'
                         })}
                         to="?page=1"
                     >
@@ -49,6 +51,7 @@ const CustomPagination = ({ currentPage, total_pages }: { currentPage: number, t
                             <Link
                                 className={buttonVariants({
                                     variant: currentPage === pageNumber ? 'outline' : 'ghost',
+                                    size : 'sm'
                                 })}
                                 to={`?page=${pageNumber}`}
                             >
@@ -70,6 +73,7 @@ const CustomPagination = ({ currentPage, total_pages }: { currentPage: number, t
                         <Link
                             className={buttonVariants({
                                 variant: currentPage === total_pages ? 'outline' : 'ghost',
+                                size : 'sm'
                             })}
                             to={`?page=${total_pages}`}
                         >
@@ -83,7 +87,8 @@ const CustomPagination = ({ currentPage, total_pages }: { currentPage: number, t
                     <Link
                         to={`?page=${currentPage + 1}`}
                         className={cn(buttonVariants({
-                            variant: 'outline'
+                            variant: 'outline',
+                            size : 'sm'
                         }), { 'hidden': currentPage === total_pages })}
                     >
                         Next

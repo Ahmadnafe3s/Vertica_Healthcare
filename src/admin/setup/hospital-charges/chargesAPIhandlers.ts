@@ -155,10 +155,12 @@ export const deleteChargeType = async (id: number) => {
 }
 
 
+type moduleType = 'opd' | 'appointment' | 'radiology' | 'pathylogy' | 'blood_bank' | 'ambulance'
 
-export const getChargeTypes = async (): Promise<Charge_Type_Interface[]> => {
+export const getChargeTypes = async (module?: moduleType): Promise<Charge_Type_Interface[]> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/type`)
+        const params = { module }
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/type`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

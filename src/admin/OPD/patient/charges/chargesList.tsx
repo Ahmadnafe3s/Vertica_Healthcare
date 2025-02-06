@@ -7,8 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { currencySymbol } from "@/helpers/currencySymbol"
 import toast from "react-hot-toast"
 import { createCharges, deleteCharge, getChargeDetails, getChargesList, searchCharges, updateCharge } from "../../opdApiHandler"
-import { useParams } from "react-router-dom"
-import { ChargeDetails, ChargeListType } from "@/types/type"
+import { useLocation, useParams } from "react-router-dom"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import AlertModel from "@/components/alertModel"
 import { currencyFormat } from "@/lib/utils"
@@ -18,8 +17,15 @@ import { Input } from "@/components/ui/input"
 import LoaderModel from "@/components/loader"
 import { chargeFormSchema } from "@/formSchemas/chargeFormSchema"
 import { z } from "zod"
+import { ChargeDetailsType, ChargeListType } from "@/types/opd_section/charges"
+import CustomPagination from "@/components/customPagination"
 
 const CahrgesList = () => {
+
+  // Query params
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const page = parseInt(queryParams.get('page') || '1', 10)
 
   const id = useRef<number>(0)
   const { caseId } = useParams()
@@ -28,8 +34,8 @@ const CahrgesList = () => {
 
   // Api states
   //chargeDetails provides data to details MODEL and FORM (ON EDIT MODE)
-  const [chargeDetails, setChargeDetails] = useState<ChargeDetails | undefined>(undefined)
-  const [CHARGES, SET_CHARGES] = useState<ChargeListType[]>([])
+  const [chargeDetails, setChargeDetails] = useState<ChargeDetailsType | undefined>(undefined)
+  const [CHARGES, SET_CHARGES] = useState<ChargeListType>()
 
 
   // Models State
@@ -42,7 +48,9 @@ const CahrgesList = () => {
 
   const fetchChargeList = async () => {
     try {
-      const data = await getChargesList(Number(caseId))
+      console.log(page);
+
+      const data = await getChargesList(Number(caseId), page)
       SET_CHARGES(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -89,7 +97,7 @@ const CahrgesList = () => {
     }
   }
 
-  
+
 
   // handling create and update both
   const handleSubmit = async (formData: z.infer<typeof chargeFormSchema>) => {
@@ -116,8 +124,7 @@ const CahrgesList = () => {
 
   useEffect(() => {
     fetchChargeList()
-  }, [])
-
+  }, [page])
 
 
   return (
@@ -139,69 +146,80 @@ const CahrgesList = () => {
 
       <Separator />
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Charge Name</TableHead>
-            <TableHead>Charge Type</TableHead>
-            <TableHead>Standard Charge {currencySymbol()}</TableHead>
-            <TableHead>TPA Charge {currencySymbol()}</TableHead>
-            <TableHead>Net Amount {currencySymbol()}</TableHead>
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {CHARGES.map((charge, i) => {
-            return <TableRow key={i}>
-              <TableCell>{charge.date}</TableCell>
-              {/* to view details model */}
-              <TableCell className="text-blue-500 cursor-pointer hover:text-blue-400 font-semibold" onClick={async () => {
-                await fetchChargeDetails(charge.id);
-                setIsChargeDetailsVisible(true)
-              }} >
-                {charge.name}
-              </TableCell>
-              <TableCell>{charge.charge_type}</TableCell>
-              <TableCell>{currencyFormat(charge.amount)}</TableCell>
-              <TableCell>{currencyFormat(charge.tpa)}</TableCell>
-              <TableCell>{currencyFormat(charge.net_amount)}</TableCell>
-              <TableCell className="space-x-2">
+      <div className="flex flex-col min-h-[60vh]">
+        <div className="flex-1">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Charge Name</TableHead>
+                <TableHead>Charge Type</TableHead>
+                <TableHead>Standard Charge {currencySymbol()}</TableHead>
+                <TableHead>TPA Charge {currencySymbol()}</TableHead>
+                <TableHead>Net Amount {currencySymbol()}</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {CHARGES?.data.map((charge, i) => {
+                return <TableRow key={i}>
+                  <TableCell>{charge.date}</TableCell>
+                  {/* to view details model */}
+                  <TableCell className="text-blue-500 cursor-pointer hover:text-blue-400 font-semibold" onClick={async () => {
+                    await fetchChargeDetails(charge.id);
+                    setIsChargeDetailsVisible(true)
+                  }} >
+                    {charge.chargeNames.name}
+                  </TableCell>
+                  <TableCell>{charge.chargeType.charge_type}</TableCell>
+                  <TableCell>{currencyFormat(charge.standard_charge)}</TableCell>
+                  <TableCell>{currencyFormat(charge.tpa)}</TableCell>
+                  <TableCell>{currencyFormat(charge.net_amount)}</TableCell>
+                  <TableCell className="space-x-2">
 
-                {/* EDIT  */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Pencil className="w-4 cursor-pointer text-gray-600" onClick={async () => {
-                        await fetchChargeDetails(charge.id)
-                        setIsChargeFormVisible(true)
-                      }} />
-                    </TooltipTrigger>
-                    <TooltipContent>Edit</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                    {/* EDIT  */}
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Pencil className="w-4 cursor-pointer text-gray-600" onClick={async () => {
+                            await fetchChargeDetails(charge.id)
+                            setIsChargeFormVisible(true)
+                          }} />
+                        </TooltipTrigger>
+                        <TooltipContent>Edit</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
 
-                {/* DELETE */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Trash className="w-4 cursor-pointer text-gray-600" onClick={() => {
-                        setAlert(true)
-                        id.current = charge.id
-                      }} />
-                    </TooltipTrigger>
-                    <TooltipContent>Delete</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                    {/* DELETE */}
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Trash className="w-4 cursor-pointer text-gray-600" onClick={() => {
+                            setAlert(true)
+                            id.current = charge.id
+                          }} />
+                        </TooltipTrigger>
+                        <TooltipContent>Delete</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
 
-              </TableCell>
-            </TableRow>
-          })}
-        </TableBody>
-      </Table>
+                  </TableCell>
+                </TableRow>
+              })}
+            </TableBody>
+          </Table>
 
+          {CHARGES?.data.length! < 1 && <h1 className='text-gray-900 mt-5 sm:mt-1 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
 
-      {CHARGES.length < 1 && <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
+        </div>
+
+        {/* Pagination */}
+
+        <div>
+          <CustomPagination total_pages={CHARGES?.total_pages!} currentPage={page} />
+        </div>
+      </div>
+
 
       {/* MODEL */}
 

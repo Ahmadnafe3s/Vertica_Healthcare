@@ -8,17 +8,21 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { chargeFormSchema, valuesASdefault } from "@/formSchemas/chargeFormSchema"
 import { calculateAmount } from "@/helpers/calculateAmount"
 import { currencySymbol } from "@/helpers/currencySymbol"
-import { CHARGE_TYPES, getChargeCategories, getChargeAmount, getChargeNames } from "@/helpers/getChargeOptions"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader, Plus, X } from "lucide-react"
 import { HTMLAttributes, useEffect, useState } from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { z } from "zod"
-import { ChargeDetails } from "@/types/type"
+import toast from "react-hot-toast"
+import { getChargeCategories, getChargeNameDetails, getChargeNames, getChargeTypes } from "@/admin/setup/hospital-charges/chargesAPIhandlers"
+import { Charge_Type_Interface } from "@/admin/setup/hospital-charges/chargeType/chargeTypes"
+import { categoryType } from "@/admin/setup/hospital-charges/chargesCategory/categoryList"
+import { chargeNamesType } from "@/types/setupTypes/chargeName"
+import { ChargeDetailsType } from "@/types/opd_section/charges"
 
 
 interface ChargeFormModelProps extends HTMLAttributes<HTMLDivElement> {
-    chargeDetails: ChargeDetails;
+    chargeDetails: ChargeDetailsType;
     isPending: boolean;
     Submit: (formData: z.infer<typeof chargeFormSchema>) => void
 }
@@ -28,10 +32,29 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
     const [INDEX, SET_INDEX] = useState<number>(0)
 
+    // API states
+    const [types, setTypes] = useState<Charge_Type_Interface[]>([])
+    const [categories, setCategories] = useState<{ [key: number]: categoryType[] }>()
+    const [names, setNames] = useState<{ [key: number]: chargeNamesType }>()
+
+
 
     const { register, control, watch, reset, setValue, handleSubmit, formState: { errors } } = useForm<z.infer<typeof chargeFormSchema>>({
         resolver: zodResolver(chargeFormSchema),
-        defaultValues: chargeDetails ? { charge: [chargeDetails] } : valuesASdefault
+        defaultValues: chargeDetails ? {
+            charge: [{
+                categoryId: String(chargeDetails?.categoryId),
+                chargeTypeId: String(chargeDetails?.chargeTypeId),
+                chargeNameId: String(chargeDetails?.chargeNameId),
+                standard_charge: chargeDetails?.standard_charge,
+                tpa: chargeDetails?.tpa,
+                date: chargeDetails?.date,
+                tax: chargeDetails?.tax,
+                discount: chargeDetails?.discount,
+                total: chargeDetails?.total,
+                net_amount: chargeDetails?.net_amount,
+            }]
+        } : valuesASdefault  // default one Array field if not edit mode
     })
 
 
@@ -43,10 +66,10 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
     const AppendFields = () => {
         AppendChargeField({
-            charge_type: '',
-            category: '',
-            name: '',
-            amount: 0,
+            chargeTypeId: '',
+            categoryId: '',
+            chargeNameId: '',
+            standard_charge: 0,
             tpa: 0,
             date: '',
             total: 0,
@@ -57,30 +80,86 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
     }
 
 
+    // Binding options to form
 
-    // binding values dynamically to form
-
-    const setAmount_and_tpa = (NID: string, index: number) => {
-        const details = getChargeAmount(NID) // from helpers
-        setValue(`charge.${index}.amount`, Number(details?.amount))
-        setValue(`charge.${index}.tpa`, Number(details?.tpa))
-        SET_INDEX(index)
+    const fetchChargeTypes = async () => {
+        try {
+            const data = await getChargeTypes('opd')
+            setTypes(data)
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
     }
 
 
+    // getting category options based upon chargeType
+    const handleTypeChange = async (index: number, chargeTypeId: number) => {
+        try {
+            const data = await getChargeCategories(Number(chargeTypeId))
+            setCategories((rest) => {
+                return {
+                    ...rest,
+                    [index]: data
+                }
+            })
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+
+    // getting charge Names options based upon chargeCategory
+    const handleCategoryChange = async (index: number, categoryId: string) => {
+        try {
+            const data = await getChargeNames(1, categoryId)
+            setNames((rest) => {
+                return {
+                    ...rest,
+                    [index]: data
+                }
+            })
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+
+    // fetching chargeName details and binding into form
+    const handleChargeNameChange = async (index: number, id: number) => {
+        try {
+            const data = await getChargeNameDetails(id)
+            setValue(`charge.${index}.standard_charge`, Number(data?.standard_charge))
+            setValue(`charge.${index}.tpa`, Number(data?.tpa))
+            setValue(`charge.${index}.tax`, Number(data?.tax_percentage))
+            SET_INDEX(index)
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+
+    useEffect(() => {
+        fetchChargeTypes()
+        // on edit mode this will work
+        if (chargeDetails) {
+            handleTypeChange(0, chargeDetails.chargeTypeId) // cause we can update one index Array field at a time so index will always 0
+            handleCategoryChange(0, String(chargeDetails.categoryId))
+        }
+    }, [])
+
+
     // returning sum of amount and tpa and trigger useEffect
-    const chargeAmounts = (watch(`charge.${INDEX}.amount`) + watch(`charge.${INDEX}.tpa`));
+    const chargeAmounts = (watch(`charge.${INDEX}.standard_charge`) + watch(`charge.${INDEX}.tpa`));
 
 
     // This hook i have used to calculate and bind amount to form
     useEffect(() => {
-
         const total = chargeAmounts
         const Amount = calculateAmount(total, watch(`charge.${INDEX}.tax`)!, watch(`charge.${INDEX}.discount`))
         setValue(`charge.${INDEX}.total`, Amount.total)
         setValue(`charge.${INDEX}.net_amount`, Amount.net_amount)
 
-    }, [chargeAmounts, watch(`charge.${INDEX}.tax`), watch(`charge.${INDEX}.discount`)])
+    }, [chargeAmounts, watch(`charge.${INDEX}.discount`)])
 
 
 
@@ -124,23 +203,23 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
                                     {/* Cahrge Type */}
 
                                     <div className="w-full flex flex-col gap-y-2">
-                                        <Controller control={control} name={`charge.${index}.charge_type`} render={({ field }) => {
+                                        <Controller control={control} name={`charge.${index}.chargeTypeId`} render={({ field }) => {
                                             return <>
                                                 <Label>Charge Type</Label>
-                                                <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                                                <Select value={field.value || ''} onValueChange={(value) => { handleTypeChange(index, Number(value)); field.onChange(value) }}>
                                                     <SelectTrigger >
                                                         <SelectValue placeholder="Select" />
                                                     </SelectTrigger>
 
                                                     <SelectContent className='z-[200]'>
-                                                        {CHARGE_TYPES?.map((type, index) => {
-                                                            return <SelectItem key={index} value={type.value}>{type.label}</SelectItem>
+                                                        {types.map((type, index) => {
+                                                            return <SelectItem key={index} value={String(type.id)}>{type.charge_type}</SelectItem>
                                                         })}
                                                     </SelectContent>
                                                 </Select>
                                             </>
                                         }} />
-                                        {errors.charge?.[index]?.charge_type && <p className='text-sm text-red-500'>{errors.charge?.[index].charge_type?.message}</p>}
+                                        {errors.charge?.[index]?.chargeTypeId && <p className='text-sm text-red-500'>{errors.charge?.[index].chargeTypeId?.message}</p>}
                                     </div>
 
 
@@ -148,46 +227,48 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
                                     {/* Charge Category */}
 
                                     <div className="w-full flex flex-col gap-y-2">
-                                        <Controller control={control} name={`charge.${index}.category`} render={({ field }) => {
+                                        <Controller control={control} name={`charge.${index}.categoryId`} render={({ field }) => {
+                                            const Categories = categories?.[index] || []; // Get categories specific to the current field index getting from the object key
                                             return <>
                                                 <Label>Charge Category</Label>
-                                                <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                                                <Select value={field.value || ''} onValueChange={(value) => { handleCategoryChange(index, value); field.onChange(value) }}>
                                                     <SelectTrigger >
                                                         <SelectValue placeholder="Select" />
                                                     </SelectTrigger>
 
                                                     <SelectContent className='z-[200]'>
-                                                        {getChargeCategories(watch(`charge.${index}.charge_type`))?.map((category, index) => {
-                                                            return <SelectItem key={index} value={category.value}>{category.label}</SelectItem>
+                                                        {Categories.map((category, index) => {
+                                                            return <SelectItem key={index} value={String(category.id)}>{category.category}</SelectItem>
                                                         })}
                                                     </SelectContent>
                                                 </Select>
                                             </>
                                         }} />
-                                        {errors.charge?.[index]?.category && <p className='text-sm text-red-500'>{errors.charge?.[index].category?.message}</p>}
+                                        {errors.charge?.[index]?.categoryId && <p className='text-sm text-red-500'>{errors.charge?.[index].categoryId?.message}</p>}
                                     </div>
 
 
                                     {/* Charge Name */}
 
                                     <div className="w-full flex flex-col gap-y-2">
-                                        <Controller control={control} name={`charge.${index}.name`} render={({ field }) => {
+                                        <Controller control={control} name={`charge.${index}.chargeNameId`} render={({ field }) => {
+                                            const ChargeNames = names?.[index]?.data || []
                                             return <>
                                                 <Label>Charge Name</Label>
-                                                <Select value={field.value || ''} onValueChange={(value) => { setAmount_and_tpa(value, index); field.onChange(value) }}>
+                                                <Select value={field.value || ''} onValueChange={(value) => { handleChargeNameChange(index, Number(value)); field.onChange(value) }}>
                                                     <SelectTrigger >
                                                         <SelectValue placeholder="Select" />
                                                     </SelectTrigger>
 
                                                     <SelectContent className='z-[200]'>
-                                                        {getChargeNames(watch(`charge.${index}.category`)).map((type, index) => {
-                                                            return <SelectItem key={index} value={type.value}>{type.label}</SelectItem>
+                                                        {ChargeNames.map((chargeName) => {
+                                                            return <SelectItem key={chargeName.id} value={String(chargeName.id)}>{chargeName.name}</SelectItem>
                                                         })}
                                                     </SelectContent>
                                                 </Select>
                                             </>
                                         }} />
-                                        {errors.charge?.[index]?.name && <p className='text-sm text-red-500'>{errors.charge?.[index]?.name?.message}</p>}
+                                        {errors.charge?.[index]?.chargeNameId && <p className='text-sm text-red-500'>{errors.charge?.[index]?.chargeNameId?.message}</p>}
                                     </div>
 
 
@@ -195,8 +276,8 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
                                     <div className="w-full flex flex-col gap-y-2">
                                         <Label>Standard Charge {currencySymbol()}</Label>
-                                        <Input type='number' {...register(`charge.${index}.amount`, { valueAsNumber: true })} /> {/*assigning values automatically */}
-                                        {errors?.charge?.[index]?.amount && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.amount.message}</p>}
+                                        <Input type='number' {...register(`charge.${index}.standard_charge`, { valueAsNumber: true })} /> {/*assigning values automatically */}
+                                        {errors?.charge?.[index]?.standard_charge && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.standard_charge.message}</p>}
                                     </div>
 
 
@@ -231,7 +312,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
                                     <div className="w-full flex flex-col gap-y-2">
                                         <Label>Tax %</Label>
-                                        <Input type="number" {...register(`charge.${index}.tax`, { valueAsNumber: true })} />
+                                        <Input type="number" {...register(`charge.${index}.tax`, { valueAsNumber: true })} disabled />
                                         {errors?.charge?.[index]?.tax && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.tax.message}</p>}
                                     </div>
 

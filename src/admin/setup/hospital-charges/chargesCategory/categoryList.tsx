@@ -6,11 +6,13 @@ import { useEffect, useRef, useState } from 'react'
 import AddChargeCategoryFormModel, { ChargeCategoryFormSchema } from './addChargeCategoryFormModel'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { createChargeCategory, getChargeCategories, getChargeCategoryDetails, updateChargeCategory } from '../chargesAPIhandlers'
+import { createChargeCategory, deleteChargeCategory, getChargeCategories, getChargeCategoryDetails, updateChargeCategory } from '../chargesAPIhandlers'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import AlertModel from '@/components/alertModel'
 
 
 export interface categoryType {
+    [x: string]: any
     id: number,
     chargeTypeId: string,
     chargeType: {
@@ -88,6 +90,21 @@ const CategoryList = () => {
     }
 
 
+    const onDelete = async () => {
+        try {
+            const data = await deleteChargeCategory(itemID.current);
+            toast.success(data.message)
+            fetchChargeCategories()
+        } catch ({ message }: any) {
+            toast.error(message)
+            setLoaderModel(false)
+        } finally {
+            setPending(false);
+            setAlert(false)
+        }
+    }
+
+
     useEffect(() => {
         fetchChargeCategories()
     }, [])
@@ -155,7 +172,9 @@ const CategoryList = () => {
                 </TableBody>
             </Table>
 
+            {/* Models */}
 
+            {/* Form Model */}
             {
                 isCategroyFormVisible && (
                     <AddChargeCategoryFormModel
@@ -166,6 +185,16 @@ const CategoryList = () => {
                     />
                 )
             }
+
+            {/* Alert Model */}
+
+            {isAlert && (
+                <AlertModel
+                    continue={onDelete}
+                    cancel={() => { setCategoryeDetails(undefined); setAlert(false) }}
+                    isPending={isPending}
+                />
+            )}
         </section >
 
     )

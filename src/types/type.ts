@@ -1,6 +1,7 @@
 // for roster list
 
 import { number } from "zod";
+import { chargeListDataType } from "./opd_section/charges";
 
 export interface Shift {
     id: number;
@@ -328,7 +329,7 @@ export interface opdDetails {
     Vitals: Vitals_List[],
     Operation: Operation_list[],
     timeline: Timeline_List[],
-    charges: ChargeListType[],
+    charges: chargeListDataType[],
     Payment: PaymentType[]
 }
 
@@ -343,16 +344,16 @@ export interface Timeline_List {
 
 
 
-
-export interface ChargeListType {
-    id: number
-    date: string,
-    name: string,
-    charge_type: string,
-    tpa: number,
-    amount: number
-    net_amount: number
-}
+// // Have to delete
+// export interface ChargeListType {
+//     id: number
+//     date: string,
+//     name: string,
+//     charge_type: string,
+//     tpa: number,
+//     amount: number
+//     net_amount: number
+// }
 
 
 export interface ChargeDetails {

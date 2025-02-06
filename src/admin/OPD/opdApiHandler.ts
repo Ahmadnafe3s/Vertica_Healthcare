@@ -4,7 +4,8 @@ import { medicationFormSchema } from "@/formSchemas/medicationFormSchema"
 import { paymentFormSchema } from "@/formSchemas/paymentFormSchema"
 import { timelineFormSchema } from "@/formSchemas/timelineFormSchema"
 import { vitalFormSchema } from "@/formSchemas/vitalFormSchema"
-import { ChargeDetails, opdDetails, opdMedications, OPDs, Operation_Details, Operation_list, PaymentType, Timeline_List, Vitals_List } from "@/types/type"
+import { ChargeDetailsType } from "@/types/opd_section/charges"
+import { opdDetails, opdMedications, OPDs, Operation_Details, Operation_list, PaymentType, Timeline_List, Vitals_List } from "@/types/type"
 import axios from "axios"
 import { z } from "zod"
 
@@ -322,7 +323,7 @@ export const deleteCharge = async (id: string | number) => {
 }
 
 
-export const getChargeDetails = async (id: number): Promise<ChargeDetails> => {
+export const getChargeDetails = async (id: number): Promise<ChargeDetailsType> => {
     try {
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/charge/${id}`)
         return res.data
@@ -332,9 +333,9 @@ export const getChargeDetails = async (id: number): Promise<ChargeDetails> => {
 }
 
 
-export const getChargesList = async (caseId: string | number) => {
+export const getChargesList = async (caseId: string | number, page: number) => {
     try {
-        const params = { caseId }
+        const params = { caseId, page }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/charge`, { params })
         return res.data
     } catch (error: any) {

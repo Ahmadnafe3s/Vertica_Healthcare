@@ -2,20 +2,20 @@ import Dialog from "@/components/Dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { currencySymbol } from "@/helpers/currencySymbol"
 import { currencyFormat } from "@/lib/utils"
-import { ChargeDetails } from "@/types/type"
+import { ChargeDetailsType } from "@/types/opd_section/charges"
 import { CalendarDays } from "lucide-react"
 import { HTMLAttributes } from "react"
 
 
 interface ChargeDetailsModelProps extends HTMLAttributes<HTMLDivElement> {
-    chargeDetails: ChargeDetails | undefined
+    chargeDetails: ChargeDetailsType | undefined
 }
 
 
 const ChargeDetailsModel = ({ chargeDetails, ...props }: ChargeDetailsModelProps) => {
 
     return (
-        <Dialog isOpen={false} pageTitle="Charge Details" {...props}>
+        <Dialog pageTitle="Charge Details" {...props}>
             <ScrollArea className={'relative h-[75vh] sm:h-[60vh] w-full'}>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 px-2.5 pb-14">
 
@@ -38,24 +38,24 @@ const ChargeDetailsModel = ({ chargeDetails, ...props }: ChargeDetailsModelProps
 
                         <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
                             <p className='text-gray-700 text-sm'>Charge Name</p>
-                            <p className='font-semibold'>{chargeDetails?.name}</p>
+                            <p className='font-semibold'>{chargeDetails?.chargeNames.name}</p>
                         </div>
 
                     </div>
 
                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                         <p className='text-gray-700'>Charge Type</p>
-                        <p className='text-sm'>{chargeDetails?.charge_type}</p>
+                        <p className='text-sm'>{chargeDetails?.chargeType.charge_type}</p>
                     </div>
 
                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                         <p className='text-gray-700'>Charge Category</p>
-                        <p className='text-sm'>{chargeDetails?.category}</p>
+                        <p className='text-sm'>{chargeDetails?.chargeCategory.category}</p>
                     </div>
 
                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                         <p className='text-gray-700'>Standard Amount {currencySymbol()}</p>
-                        <p className='text-sm'>{currencyFormat(Number(chargeDetails?.amount))}</p>
+                        <p className='text-sm'>{currencyFormat(Number(chargeDetails?.standard_charge))}</p>
                     </div>
 
                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>

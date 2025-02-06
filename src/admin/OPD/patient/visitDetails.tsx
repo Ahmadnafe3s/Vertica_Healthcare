@@ -324,8 +324,8 @@ const VisitDetails = () => {
                         {OPD_DETAILS?.charges.map((charge, i) => {
                             return <TableRow key={i}>
                                 <TableCell className="whitespace-nowrap">{charge.date}</TableCell>
-                                <TableCell>{charge.name}</TableCell>
-                                <TableCell>{currencyFormat(charge.amount)}</TableCell>
+                                <TableCell>{charge.chargeNames.name}</TableCell>
+                                <TableCell>{currencyFormat(charge.standard_charge)}</TableCell>
                                 <TableCell>{currencyFormat(charge.tpa)}</TableCell>
                                 <TableCell>{currencyFormat(charge.net_amount)}</TableCell>
                             </TableRow>
