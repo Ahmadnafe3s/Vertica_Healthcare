@@ -2,7 +2,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { currencyFormat } from '@/lib/utils'
-import { Eye, FileText, ListMinus, Pencil, Plus, Printer, ReceiptIndianRupee } from 'lucide-react'
+import { FileText, ListMinus, Pencil, Plus, Printer, ReceiptIndianRupee } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const Bill = () => {
@@ -16,7 +16,7 @@ const Bill = () => {
                     <div className='flex gap-x-2 overflow-x-auto'>
 
                         <Link to={''} className={buttonVariants({
-                            variant: 'outline',
+                            variant: 'default',
                             size: 'sm',
                             className: 'flex gap-x-1'
                         })}>
@@ -26,7 +26,7 @@ const Bill = () => {
 
 
                         <Link to={'../medicines'} className={buttonVariants({
-                            variant: 'outline',
+                            variant: 'default',
                             size: 'sm',
                             className: 'flex gap-x-1'
                         })}>
@@ -54,9 +54,8 @@ const Bill = () => {
                 </div>
 
 
-                <Table className='my-10'>
-
-                    <TableHeader>
+                <Table className='border rounded-lg my-10'>
+                    <TableHeader className='bg-slate-100'>
                         <TableRow>
                             <TableHead>Bill No.</TableHead>
                             <TableHead>Case ID</TableHead>

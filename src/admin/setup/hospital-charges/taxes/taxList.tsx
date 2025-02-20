@@ -7,9 +7,9 @@ import toast from "react-hot-toast"
 import { createTax, deleteTax, getTaxDetails, getTaxesList, updateTax } from "../chargesAPIhandlers"
 import { z } from "zod"
 import { useEffect, useRef, useState } from "react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import AlertModel from "@/components/alertModel"
 import LoaderModel from "@/components/loader"
+import CustomTooltip from "@/components/customTooltip"
 
 export interface TaxType {
   id: number,
@@ -112,15 +112,15 @@ const TaxList = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg text-gray-800 font-semibold">Taxes List</h1>
-        <Button variant='outline' size='sm' onClick={() => setAddTaxFormVisible(true)}>
+        <Button size='sm' onClick={() => setAddTaxFormVisible(true)}>
           <Plus /> Add Tax
         </Button>
       </div>
 
       <Separator />
 
-      <Table>
-        <TableHeader>
+      <Table className="rounded-lg border">
+        <TableHeader className="bg-zinc-100">
           <TableRow>
             <TableHead >Name</TableHead>
             <TableHead >Percentage %</TableHead>
@@ -132,34 +132,25 @@ const TaxList = () => {
             return <TableRow key={tax.id}>
               <TableCell>{tax.name}</TableCell>
               <TableCell>{tax.percentage}%</TableCell>
-              <TableCell className='space-x-2'>
+              <TableCell className='flex space-x-2'>
 
                 {/* EDIT  */}
-                <TooltipProvider delayDuration={200}>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
-                        await fetchTaxdetails(tax.id)
-                        setAddTaxFormVisible(true)
-                      }} />
-                    </TooltipTrigger>
-                    <TooltipContent>Edit</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
 
+                <CustomTooltip message="EDIT">
+                  <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                    await fetchTaxdetails(tax.id)
+                    setAddTaxFormVisible(true)
+                  }} />
+                </CustomTooltip>
 
                 {/* DELETE  */}
-                <TooltipProvider delayDuration={200}>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
-                        setAlert(true);
-                        itemID.current = tax.id
-                      }} />
-                    </TooltipTrigger>
-                    <TooltipContent>DELETE</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+
+                <CustomTooltip message="DELETE">
+                  <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                    setAlert(true);
+                    itemID.current = tax.id
+                  }} />
+                </CustomTooltip>
 
               </TableCell>
             </TableRow>

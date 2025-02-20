@@ -1,15 +1,15 @@
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Pencil, Plus, Trash } from 'lucide-react'
+import { Plus, Trash } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { z } from 'zod'
 import AddChargeTypeformModel, { ChargeTypeformModelSchema } from './addChargeTypeformModel'
 import toast from 'react-hot-toast'
 import { createChargeType, deleteChargeType, getChargeTypes, updateChargeType, updateChargeTypeModule } from '../chargesAPIhandlers'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import AlertModel from '@/components/alertModel'
+import CustomTooltip from '@/components/customTooltip'
 
 
 
@@ -114,15 +114,15 @@ const ChargeTypes = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg text-gray-800 font-semibold">Charge Types</h1>
-        <Button variant='outline' size='sm' onClick={() => { setChargeTypeFormVisible(true) }}>
+        <Button size='sm' onClick={() => { setChargeTypeFormVisible(true) }}>
           <Plus /> Add Charge Type
         </Button>
       </div>
 
       <Separator />
 
-      <Table>
-        <TableHeader>
+      <Table className="rounded-lg border">
+        <TableHeader className='bg-zinc-100'>
           <TableRow>
             <TableHead >Charge Types</TableHead>
             <TableHead >Appointment</TableHead>
@@ -160,17 +160,13 @@ const ChargeTypes = () => {
 
 
                 {/* DELETE  */}
-                <TooltipProvider delayDuration={200}>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
-                        setAlert(true);
-                        itemID.current = type.id
-                      }} />
-                    </TooltipTrigger>
-                    <TooltipContent>DELETE</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+
+                <CustomTooltip message='DELETE'>
+                  <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                    setAlert(true);
+                    itemID.current = type.id
+                  }} />
+                </CustomTooltip>
 
               </TableCell>
             </TableRow>

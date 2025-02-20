@@ -7,8 +7,9 @@ import AddChargeCategoryFormModel, { ChargeCategoryFormSchema } from './addCharg
 import toast from 'react-hot-toast'
 import { z } from 'zod'
 import { createChargeCategory, deleteChargeCategory, getChargeCategories, getChargeCategoryDetails, updateChargeCategory } from '../chargesAPIhandlers'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import AlertModel from '@/components/alertModel'
+import CustomTooltip from '@/components/customTooltip'
+import LoaderModel from '@/components/loader'
 
 
 export interface categoryType {
@@ -115,15 +116,15 @@ const CategoryList = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg text-gray-800 font-semibold">Charge Category</h1>
-                <Button variant='outline' size='sm' onClick={() => { setCategroyFormVisible(true) }}>
+                <Button size='sm' onClick={() => { setCategroyFormVisible(true) }}>
                     <Plus /> Add Categories
                 </Button>
             </div>
 
             <Separator />
 
-            <Table>
-                <TableHeader>
+            <Table className="rounded-lg border">
+                <TableHeader className='bg-zinc-100'>
                     <TableRow>
                         <TableHead >Name</TableHead>
                         <TableHead >Charge Type</TableHead>
@@ -137,40 +138,28 @@ const CategoryList = () => {
                             <TableCell>{category.category}</TableCell>
                             <TableCell>{category.chargeType.charge_type}</TableCell>
                             <TableCell>{category.description}</TableCell>
-                            <TableCell className='space-x-2'>
-
+                            <TableCell className='flex space-x-2'>
                                 {/* EDIT */}
-                                <TooltipProvider delayDuration={200}>
-                                    <Tooltip>
-                                        <TooltipTrigger>
-                                            <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
-                                                await fetchChargeCategoryDetails(category.id);
-                                                setCategroyFormVisible(true)
-                                            }} />
-                                        </TooltipTrigger>
-                                        <TooltipContent>Edit</TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-
+                                <CustomTooltip message='EDIT'>
+                                    <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                                        await fetchChargeCategoryDetails(category.id);
+                                        setCategroyFormVisible(true)
+                                    }} />
+                                </CustomTooltip>
 
                                 {/* DELETE  */}
-                                <TooltipProvider delayDuration={200}>
-                                    <Tooltip>
-                                        <TooltipTrigger>
-                                            <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
-                                                setAlert(true);
-                                                itemID.current = category.id
-                                            }} />
-                                        </TooltipTrigger>
-                                        <TooltipContent>DELETE</TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-
+                                <CustomTooltip message='DELETE'>
+                                    <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                                        setAlert(true);
+                                        itemID.current = category.id
+                                    }} />
+                                </CustomTooltip>
                             </TableCell>
                         </TableRow>
                     })}
                 </TableBody>
             </Table>
+
 
             {/* Models */}
 
@@ -195,6 +184,8 @@ const CategoryList = () => {
                     isPending={isPending}
                 />
             )}
+
+            {loaderModel && <LoaderModel />}
         </section >
 
     )

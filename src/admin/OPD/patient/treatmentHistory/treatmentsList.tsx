@@ -1,11 +1,11 @@
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { OPDs } from "@/types/type"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { getOPDlistBYpatient } from "../../opdApiHandler"
 import { Link, useParams } from "react-router-dom"
+import { OPDs } from "@/types/opd_section/opd"
 
 
 const TreatmentsList = () => {
@@ -53,11 +53,10 @@ const TreatmentsList = () => {
         <Input type="date" onChange={(e) => { onSearch(e.target.value) }} />
       </div>
 
-
-      <Table>
-        <TableHeader>
+      <Table className="rounded-lg border">
+        <TableHeader className="bg-zinc-100">
           <TableRow>
-            <TableHead>Case Id</TableHead>
+            <TableHead>OPD ID</TableHead>
             <TableHead>Patient Name</TableHead>
             <TableHead>Appointment Date</TableHead>
             <TableHead>Consultant</TableHead>
@@ -69,7 +68,7 @@ const TreatmentsList = () => {
           {OPD_LIST?.map((opd, i) => {
             return <TableRow key={i}>
               <TableCell>
-                <Link className="text-blue-500 hover:text-blue-400 font-semibold" to={{ pathname: `/admin/OPD/patient/${opd.patientId}/${opd.caseId}/visitdetails` }}>{opd.caseId}</Link>
+                <Link className="text-blue-500 hover:text-blue-400 font-semibold" to={{ pathname: `/admin/OPD/patient/${opd.patientId}/${opd.id}/visitdetails` }}>{opd.id}</Link>
               </TableCell>
               <TableCell>{opd.appointment.patient.name}</TableCell>
               <TableCell>{opd.appointment.appointment_date}</TableCell>
@@ -80,6 +79,7 @@ const TreatmentsList = () => {
           })}
         </TableBody>
       </Table>
+
     </section>
   )
 }

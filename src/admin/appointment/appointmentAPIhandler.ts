@@ -1,5 +1,6 @@
 import { appointmentFormSchema } from "@/formSchemas/AppointmentFormSchema"
-import { AppointmentDetails, Appointments, Patients } from "@/types/type"
+import { AppointmentDetails, Appointments } from "@/types/appointment/appointment"
+import { Patients } from "@/types/type"
 import axios from "axios"
 import { z } from "zod"
 
@@ -58,7 +59,7 @@ export const fetchAppointments = async (status?: string): Promise<Appointments[]
 
 // for updating staus
 
-export const updateStatus = async (id: number, status: string) => {
+export const updateStatus = async (id: string, status: string) => {
     try {
         const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/appointment/status/${id}`, { status })
         return res.data
@@ -83,7 +84,7 @@ export const searchAppointment = async (search: string) => {
 
 // for getting appointment details
 
-export const fetchAppointmentDetails = async (id: number): Promise<AppointmentDetails> => {
+export const getAppointmentDetails = async (id: string): Promise<AppointmentDetails> => {
     try {
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/appointment/${id}`)
         return res.data
@@ -95,7 +96,7 @@ export const fetchAppointmentDetails = async (id: number): Promise<AppointmentDe
 
 // delete appointment 
 
-export const deleteAppointment = async (id: number) => {
+export const deleteAppointment = async (id: string) => {
     try {
         const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/appointment/${id}`)
         return res.data

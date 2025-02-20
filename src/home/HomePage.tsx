@@ -2,27 +2,68 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { buttonVariants } from '@/components/ui/button'
 import { Star } from 'lucide-react'
 import { Fade } from 'react-awesome-reveal'
+import gsap from 'gsap'
+import { useGSAP } from '@gsap/react'
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useRef } from 'react'
+
+const doctors = [
+    { name: 'Dr. Isabella Grant, MD', speciality: 'Pediatric Cardiology', image: '/doctors/doctor-1.jpg' },
+    { name: 'Dr. Theo Carter, DO', speciality: 'Orthopedic Surgery and Sports Medicine', image: '/doctors/doctor-2.jpg' },
+    { name: 'Dr. Emily Harper, MD', speciality: 'Internal Medicine & Preventative Healthcare', image: '/doctors/doctor-3.jpg' },
+    // you can add more
+]
+
+gsap.registerPlugin(useGSAP)
+gsap.registerPlugin(ScrollTrigger)
 
 
 const HomePage = () => {
 
-    const doctors = [
-        { name: 'Dr. Isabella Grant, MD', speciality: 'Pediatric Cardiology', image: '/doctors/doctor-1.jpg' },
-        { name: 'Dr. Theo Carter, DO', speciality: 'Orthopedic Surgery and Sports Medicine', image: '/doctors/doctor-2.jpg' },
-        { name: 'Dr. Emily Harper, MD', speciality: 'Internal Medicine & Preventative Healthcare', image: '/doctors/doctor-3.jpg' },
-        // you can add more
-    ]
+    const container = useRef(null)
+
+    useGSAP(() => {
+
+        gsap.to('.hospital', {
+            // opacity: 0,
+            scale: 0.80,
+            y: -200,
+            duration: 2,
+            scrollTrigger: ({
+                trigger: '.hospital',
+                start: 'top 25%',
+                end: 'bottom 25%',
+                scrub: true
+            })
+        }),
+
+            gsap.to('#services', {
+                opacity: 0,
+                scale: 0.80,
+                duration: 2,
+                scrollTrigger: ({
+                    trigger: '.hospital',
+                    start: 'top -40%',
+                    end: 'bottom -40%%',
+                    scrub: true
+                })
+            })
+
+    }, { scope: container })
+
 
 
     return (
 
-        <div>
 
-            <MaxWidthWrapper className="pt-14 md:pt-20 lg:pt-32 pb-20 lg:pb-32 grid lg:grid-cols-4" >
+
+        <div ref={container}>
+
+            <MaxWidthWrapper className="pt-14 md:pt-20 lg:pt-32 pb-20 lg:pb-32 grid lg:grid-cols-4">
 
                 <div className="lg:col-span-2 flex flex-col justify-center gap-y-5" >
 
-                    <Fade damping={0.1} cascade triggerOnce>
+                    <div className='space-y-5'>
                         <p className="font-bold text-4xl md:text-5xl lg:text-6xl text-gray-900 tracking-tight ">
                             Welcome to Vertica Healthcare
                         </p>
@@ -41,7 +82,7 @@ const HomePage = () => {
                                 Know More
                             </button>
                         </div>
-                    </Fade>
+                    </div>
                 </div>
 
                 <div className="lg:col-span-2 mx-auto flex flex-col justify-center" >
@@ -57,9 +98,9 @@ const HomePage = () => {
             {/* Services Section */}
             <section className=" bg-slate-50">
                 <MaxWidthWrapper className="pt-14 md:pt-20 lg:pt-32 pb-20 lg:pb-32">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-gray-900 mb-16">Our Services</h2>
+                    <h2 id='services' className="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-gray-900 mb-16">Our Services</h2>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+                    <div id='services' className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
                         <div className="bg-gray-50 p-8 rounded-lg shadow border-2 border-dashed border-gray-200">
                             <h3 className="text-xl font-semibold text-blue-600 mb-4">Emergency Care</h3>
                             <p className="text-gray-600">Our emergency services are available 24/7 with state-of-the-art facilities and expert care.</p>

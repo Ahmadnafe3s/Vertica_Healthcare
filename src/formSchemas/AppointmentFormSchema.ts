@@ -2,11 +2,11 @@ import { z } from 'zod'
 
 
 export const appointmentFormSchema = z.object({
-    patientId: z.string()
-        .min(1, { message: 'Please select a patient' }).default(''),
+    patientId: z.number()
+        .min(1, { message: 'Please select a patient' }).default(0),
 
-    doctorId: z.string()
-        .min(1, { message: 'Please select a doctor' }).default(''),
+    doctorId: z.number()
+        .min(1, { message: 'Please select a doctor' }).default(0),
 
     fees: z.string()
         .min(1, { message: 'Please enter fees' }),

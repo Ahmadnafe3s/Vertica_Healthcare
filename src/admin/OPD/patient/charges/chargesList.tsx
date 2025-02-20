@@ -8,7 +8,6 @@ import { currencySymbol } from "@/helpers/currencySymbol"
 import toast from "react-hot-toast"
 import { createCharges, deleteCharge, getChargeDetails, getChargesList, searchCharges, updateCharge } from "../../opdApiHandler"
 import { useLocation, useParams } from "react-router-dom"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import AlertModel from "@/components/alertModel"
 import { currencyFormat } from "@/lib/utils"
 import ChargeDetailsModel from "./chargeDetailsModel"
@@ -19,6 +18,7 @@ import { chargeFormSchema } from "@/formSchemas/chargeFormSchema"
 import { z } from "zod"
 import { ChargeDetailsType, ChargeListType } from "@/types/opd_section/charges"
 import CustomPagination from "@/components/customPagination"
+import CustomTooltip from "@/components/customTooltip"
 
 const CahrgesList = () => {
 
@@ -28,7 +28,7 @@ const CahrgesList = () => {
   const page = parseInt(queryParams.get('page') || '1', 10)
 
   const id = useRef<number>(0)
-  const { caseId } = useParams()
+  const { opdId } = useParams()
   const [isPending, setPending] = useState<boolean>(false)
 
 
@@ -48,9 +48,7 @@ const CahrgesList = () => {
 
   const fetchChargeList = async () => {
     try {
-      console.log(page);
-
-      const data = await getChargesList(Number(caseId), page)
+      const data = await getChargesList(opdId!, page) // opdId is here string
       SET_CHARGES(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -90,7 +88,7 @@ const CahrgesList = () => {
 
   const onSearch = async (value: string) => {
     try {
-      const data = await searchCharges(+caseId!, value)
+      const data = await searchCharges(opdId!, value)
       SET_CHARGES(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -104,12 +102,10 @@ const CahrgesList = () => {
     try {
       setPending(true)
       let data;
-      if (chargeDetails) {
-        data = await updateCharge(chargeDetails.id, formData)
-        setChargeDetails(undefined)
-      } else {
-        data = await createCharges(Number(caseId), formData)
-      }
+      chargeDetails ? (data = await updateCharge(chargeDetails.id, formData), setChargeDetails(undefined))
+        :
+        (data = await createCharges(opdId!, formData))
+
       toast.success(data.message)
       fetchChargeList()
       setIsChargeFormVisible(false)
@@ -132,7 +128,7 @@ const CahrgesList = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg text-gray-800 font-semibold">Charges</h1>
-        <Button variant='outline' size='sm' onClick={() => setIsChargeFormVisible(true)} >
+        <Button size='sm' onClick={() => setIsChargeFormVisible(true)} >
           <Plus /> Add Charge
         </Button>
       </div>
@@ -148,8 +144,8 @@ const CahrgesList = () => {
 
       <div className="flex flex-col min-h-[60vh]">
         <div className="flex-1">
-          <Table>
-            <TableHeader>
+          <Table className="rounded-lg border">
+            <TableHeader className="bg-zinc-100">
               <TableRow>
                 <TableHead>Date</TableHead>
                 <TableHead>Charge Name</TableHead>
@@ -175,33 +171,23 @@ const CahrgesList = () => {
                   <TableCell>{currencyFormat(charge.standard_charge)}</TableCell>
                   <TableCell>{currencyFormat(charge.tpa)}</TableCell>
                   <TableCell>{currencyFormat(charge.net_amount)}</TableCell>
-                  <TableCell className="space-x-2">
+                  <TableCell className="flex space-x-2">
 
                     {/* EDIT  */}
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Pencil className="w-4 cursor-pointer text-gray-600" onClick={async () => {
-                            await fetchChargeDetails(charge.id)
-                            setIsChargeFormVisible(true)
-                          }} />
-                        </TooltipTrigger>
-                        <TooltipContent>Edit</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <CustomTooltip message="EDIT">
+                      <Pencil className="w-4 cursor-pointer text-gray-600" onClick={async () => {
+                        await fetchChargeDetails(charge.id)
+                        setIsChargeFormVisible(true)
+                      }} />
+                    </CustomTooltip>
 
                     {/* DELETE */}
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Trash className="w-4 cursor-pointer text-gray-600" onClick={() => {
-                            setAlert(true)
-                            id.current = charge.id
-                          }} />
-                        </TooltipTrigger>
-                        <TooltipContent>Delete</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <CustomTooltip message="DELETE">
+                      <Trash className="w-4 cursor-pointer text-gray-600" onClick={() => {
+                        setAlert(true)
+                        id.current = charge.id
+                      }} />
+                    </CustomTooltip>
 
                   </TableCell>
                 </TableRow>

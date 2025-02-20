@@ -1,7 +1,7 @@
 
 export interface chargeListDataType {
     id: number
-    caseId: number
+    opdId: number
     standard_charge: number,
     tpa: number,
     date: string,
@@ -31,7 +31,7 @@ export interface ChargeListType {
 
 export interface ChargeDetailsType {
     id: number,
-    caseId: number,
+    opdId: number,
     chargeTypeId: number,
     categoryId: number,
     chargeNameId: number,

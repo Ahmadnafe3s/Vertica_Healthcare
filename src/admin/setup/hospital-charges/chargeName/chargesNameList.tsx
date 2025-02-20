@@ -13,11 +13,11 @@ import toast from "react-hot-toast"
 import { chargeNameDetailsType, chargeNamesType } from "@/types/setupTypes/chargeName"
 import { createChargeName, deleteChargeName, getChargeNameDetails, getChargeNames, updateChargeName } from "../chargesAPIhandlers"
 import { currencyFormat } from "@/lib/utils"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import AlertModel from "@/components/alertModel"
 import { useLocation } from "react-router-dom"
 import CustomPagination from "@/components/customPagination"
 import LoaderModel from "@/components/loader"
+import CustomTooltip from "@/components/customTooltip"
 
 
 
@@ -132,7 +132,7 @@ const ChargesList = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg text-gray-800 font-semibold">Charges</h1>
-        <Button variant='outline' size='sm' onClick={() => { setChargeNameFormVisible(true) }}>
+        <Button size='sm' onClick={() => { setChargeNameFormVisible(true) }}>
           <Plus /> Add Charge
         </Button>
       </div>
@@ -149,9 +149,9 @@ const ChargesList = () => {
       <div className="flex flex-col min-h-[70vh] gap-y-16">
         {/* child 1 */}
         <div className="flex-1">
-          <Table >
-            <TableHeader>
-              <TableRow>
+          <Table className="rounded-lg border">
+            <TableHeader className="bg-zinc-100">
+              <TableRow >
                 <TableHead>Name</TableHead>
                 <TableHead>Charge Category</TableHead>
                 <TableHead>Charge Type</TableHead>
@@ -175,37 +175,27 @@ const ChargesList = () => {
                   <TableCell className='flex space-x-2'>
 
                     {/* EDIT */}
-                    <TooltipProvider delayDuration={200}>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
-                            await fetchChargeNameDetails(chargeName.id);
-                            setChargeNameFormVisible(true)
-                          }} />
-                        </TooltipTrigger>
-                        <TooltipContent>Edit</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-
+                    <CustomTooltip message="EDIT">
+                      <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                        await fetchChargeNameDetails(chargeName.id);
+                        setChargeNameFormVisible(true)
+                      }} />
+                    </CustomTooltip>
 
                     {/* DELETE  */}
-                    <TooltipProvider delayDuration={200}>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
-                            setAlert(true);
-                            itemID.current = chargeName.id
-                          }} />
-                        </TooltipTrigger>
-                        <TooltipContent>DELETE</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <CustomTooltip message="DELETE">
+                      <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                        setAlert(true);
+                        itemID.current = chargeName.id
+                      }} />
+                    </CustomTooltip>
 
                   </TableCell>
                 </TableRow>
               })}
             </TableBody>
           </Table>
+
 
           {/* On no data */}
 

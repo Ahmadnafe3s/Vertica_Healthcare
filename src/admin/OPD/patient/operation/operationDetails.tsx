@@ -1,20 +1,20 @@
 import { HTMLAttributes } from 'react'
-import { CalendarDays, X } from 'lucide-react'
-import { Operation_Details } from '@/types/type'
+import { CalendarDays} from 'lucide-react'
 import Dialog from '@/components/Dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { operationDetailsType } from '@/types/opd_section/operationType'
 
 
 
 interface OperationDetailsModelProps extends HTMLAttributes<HTMLDivElement> {
-    operationDetails: Operation_Details | undefined
+    operationDetails: operationDetailsType | undefined
 }
 
 
 const OperationDetailsModel = ({ operationDetails, ...props }: OperationDetailsModelProps) => {
 
     return (
-        <Dialog isOpen={false} pageTitle='Opration Details' {...props}>
+        <Dialog pageTitle='Opration Details' {...props}>
             <ScrollArea className={'relative h-[75vh] sm:h-[60vh] w-full'}>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 px-2.5 pb-14">
 
@@ -37,19 +37,19 @@ const OperationDetailsModel = ({ operationDetails, ...props }: OperationDetailsM
 
                         <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
                             <p className='text-gray-700 text-sm'>Operation Name</p>
-                            <p className='font-semibold'>{operationDetails?.name}</p>
+                            <p className='font-semibold'>{operationDetails?.operationName.name}</p>
                         </div>
 
                     </div>
 
                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                        <p className='text-gray-700'>Case ID</p>
-                        <p className='text-sm'>{operationDetails?.caseId}</p>
+                        <p className='text-gray-700'>OPD ID</p>
+                        <p className='text-sm'>{operationDetails?.opdId}</p>
                     </div>
 
                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                         <p className='text-gray-700'>Category</p>
-                        <p className='text-sm'>{operationDetails?.category}</p>
+                        <p className='text-sm'>{operationDetails?.operationCategory.name}</p>
                     </div>
 
                     <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>

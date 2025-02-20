@@ -1,4 +1,4 @@
-import { Button, buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import axios from 'axios'
@@ -53,7 +53,7 @@ const Staff = () => {
           <div className='flex gap-x-2 overflow-x-auto'>
 
             <Link to={'../create'} className={buttonVariants({   // on step back
-              variant: 'outline',
+              variant: 'default',
               size: 'sm',
               className: 'flex gap-x-1'
             })}>

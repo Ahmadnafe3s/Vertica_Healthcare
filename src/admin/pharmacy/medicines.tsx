@@ -1,26 +1,64 @@
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Eye, FileText, ListMinus, Pencil, Plus, Printer, SearchX, Trash } from 'lucide-react'
+import { FileText, ListMinus, Pencil, Plus, Printer, SearchX, Trash } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import AddMedicineFormModel from './forms/addMedicineFormModel'
+import AddMedicineFormModel from './formModels/createMedicineForm'
 import { useEffect, useRef, useState } from 'react'
-import { MedicineList } from '@/types/type'
 import toast from 'react-hot-toast'
-import { deleteMedicine, getMedicineList, searchMedicine } from './pharmacyApiHandler'
+import { createMedicine, deleteMedicine, getMedicinedetails, getMedicineList, updateMedicine } from './pharmacyApiHandler'
 import AlertModel from '@/components/alertModel'
+import { AddMedicinesFormSchema } from '@/formSchemas/addMedicinesFormSchema'
+import { z } from 'zod'
+import LoaderModel from '@/components/loader'
+import { medicineDetails, medicines } from '@/types/pharmacy/pharmacy'
 import MedicineDetailsModel from './medicineDetailsModel'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useDebouncedCallback } from 'use-debounce'
+import CustomTooltip from '@/components/customTooltip'
 
 const Medicines = () => {
 
-  const [model, setModel] = useState<{ addMedicineForm: boolean, alert: boolean, medicineDetails: boolean }>({
-    addMedicineForm: false,
+  const itemID = useRef(0)
+
+  //pending states
+  const [loading, setLoading] = useState<{ inline: boolean, model: boolean }>({ inline: false, model: false })
+
+  // Model states
+  const [model, setModel] = useState<{ MedicineForm: boolean, alert: boolean, medicineDetails: boolean }>({
+    MedicineForm: false,
     alert: false,
     medicineDetails: false
   })
 
-  const [medicines, setMedicines] = useState<MedicineList[]>([])
-  const id = useRef<number | undefined>(undefined)
+
+  // API States
+  const [medicines, setMedicines] = useState<medicines[]>([])
+  const [medicineDetails, setMedicineDetails] = useState<medicineDetails>()
+
+
+
+
+  // performing both upsert
+  const handleSubmit = async (formData: z.infer<typeof AddMedicinesFormSchema>) => {
+    try {
+      let data;
+      setLoading(rest => ({ ...rest, inline: true }))
+      // conditionally check is we have details
+      medicineDetails ?
+        (data = await updateMedicine(medicineDetails.id, formData), setMedicineDetails(undefined))
+        :
+        (data = await createMedicine(formData))
+      setModel(rest => ({ ...rest, MedicineForm: false }))
+      toast.success(data.message)
+      fetchMedicineList()
+    } catch ({ message }: any) {
+      toast.error(message)
+    } finally {
+      setLoading(rest => ({ ...rest, inline: false }))
+    }
+  }
+
 
 
   const fetchMedicineList = async () => {
@@ -33,35 +71,43 @@ const Medicines = () => {
   }
 
 
-  const onSearch = async (value: string) => {
+  const onSearch = useDebouncedCallback(async (value: string) => {
     try {
-      const data = await searchMedicine(value)
+      const data = await getMedicineList(value)
       setMedicines(data)
     } catch ({ message }: any) {
       toast.error(message)
     }
-  }
+  }, 400)
 
 
 
   const onDelete = async () => {
     try {
-      const data = await deleteMedicine(Number(id.current))
+      setLoading(rest => ({ ...rest, inline: true }))
+      const data = await deleteMedicine(itemID.current)
       toast.success(data.message)
       fetchMedicineList();   // after deleting refetch data
     } catch ({ message }: any) {
       toast.error(message)
     } finally {
-      setModel((rest) => {
-        return {
-          ...rest,
-          alert: false
-        }
-      });
-      id.current = undefined
+      setModel(rest => ({ ...rest, alert: false }))
+      setLoading(rest => ({ ...rest, inline: false }))
     }
   }
 
+
+  const fetchMedicineDetails = async (id: number) => {
+    try {
+      setLoading(rest => ({ ...rest, model: true }))
+      const data = await getMedicinedetails(id)
+      setMedicineDetails(data)
+    } catch ({ message }: any) {
+      toast.error(message)
+    } finally {
+      setLoading(rest => ({ ...rest, model: false }))
+    }
+  }
 
 
   useEffect(() => {
@@ -79,22 +125,15 @@ const Medicines = () => {
           <h1 className='font-semibold tracking-tight'>Medicines</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
-            <Button className='flex gap-x-1' variant={'outline'} size={'sm'}
-              onClick={() => {
-                setModel((rest) => {
-                  return {
-                    ...rest,
-                    addMedicineForm: true
-                  }
-                })
-              }}>
+            <Button className='flex gap-x-1' size={'sm'}
+              onClick={() => setModel(rest => ({ ...rest, MedicineForm: true }))}>
               <Plus />
               Add Medicine
             </Button>
 
 
             <Link to={'../purchase'} className={buttonVariants({
-              variant: 'outline',
+              variant: 'default',
               size: 'sm',
               className: 'flex gap-x-1'
             })}>
@@ -121,10 +160,8 @@ const Medicines = () => {
           </div>
         </div>
 
-
-        <Table className='my-10'>
-
-          <TableHeader>
+        <Table className="rounded-lg border my-10">
+          <TableHeader className='bg-zinc-100'>
             <TableRow>
               <TableHead>Medicine Name</TableHead>
               <TableHead>Medicine Company</TableHead>
@@ -137,58 +174,47 @@ const Medicines = () => {
           </TableHeader>
 
           <TableBody>
-            {medicines.map((med, i) => {
-              return <TableRow key={i} >
-                <TableCell className='text-gray-800 font-semibold'>{med.name}</TableCell>
-                <TableCell>{med.company}</TableCell>
-                <TableCell>{med.composition}</TableCell>
-                <TableCell>{med.category}</TableCell>
-                <TableCell>{med.group}</TableCell>
+            {medicines.map((medicine) => {
+              return <TableRow key={medicine.id} >
+                <TableCell className='text-blue-500 hover:text-blue-400 cursor-pointer font-semibold'
+                  onClick={async () => {
+                    await fetchMedicineDetails(medicine.id)
+                    setModel(rest => ({ ...rest, medicineDetails: true }))
+                  }}
+                >
+                  {medicine.name}
+                </TableCell>
+                <TableCell>{medicine.company.name}</TableCell>
+                <TableCell>{medicine.composition}</TableCell>
+                <TableCell>{medicine.category.name}</TableCell>
+                <TableCell>{medicine.group.name}</TableCell>
                 <TableCell>
-                  {med.quantity === 0 ? (<span className='text-red-600'>out of stock</span>) : med.quantity}
+                  {medicine.quantity === 0 ? (<span className='text-red-600 animate-pulse'>out of stock</span>) : medicine.quantity}
                 </TableCell>
                 <TableCell className='flex gap-2'>
 
-
-                  <Eye className='cursor-pointer text-gray-500 w-4  active:scale-95'
-                    onClick={() => {
-                      id.current = med.id;
-                      setModel((rest) => {
-                        return {
-                          ...rest,
-                          medicineDetails: true
-                        }
-                      })
-                    }}
-                  />
-                  
                   {/* edit mode */}
 
-                  <Pencil className='cursor-pointer text-gray-500 w-4  active:scale-95'
-                    onClick={() => {
-                      setModel((rest) => {
-                        return {
-                          ...rest,
-                          addMedicineForm: true
-                        }
-                      });
-                      id.current = med.id
-                    }}
-                  />
+                  <CustomTooltip message='EDIT'>
+                    <Pencil className='cursor-pointer text-gray-500 w-4  active:scale-95'
+                      onClick={async () => {
+                        await fetchMedicineDetails(medicine.id)
+                        setModel((rest) => ({ ...rest, MedicineForm: true }))
+                      }}
+                    />
+                  </CustomTooltip>
 
                   {/* DELETE MEDICINE */}
 
-                  <Trash className='cursor-pointer text-gray-500 w-4 active:scale-95 '
-                    onClick={() => {
-                      setModel((rest) => {
-                        return {
-                          ...rest,
-                          alert: true
-                        }
-                      });
-                      id.current = med.id
-                    }}
-                  />
+                  <CustomTooltip message='DELETE'>
+                    <Trash className='cursor-pointer text-gray-500 w-4 active:scale-95 '
+                      onClick={() => {
+                        setModel(rest => ({ ...rest, alert: true }));
+                        itemID.current = medicine.id
+                      }}
+                    />
+                  </CustomTooltip>
+
 
                 </TableCell>
               </TableRow>
@@ -207,16 +233,13 @@ const Medicines = () => {
 
       {/* Model */}
 
-      {model.addMedicineForm && <AddMedicineFormModel ID={id.current}
+      {model.MedicineForm && <AddMedicineFormModel
+        Submit={handleSubmit}
+        isPending={loading.inline}
+        medicineDetails={medicineDetails!}
         onClick={() => {
-          setModel((rest) => {
-            return {
-              ...rest,
-              addMedicineForm: false
-            }
-          });
-          id.current = undefined;
-          fetchMedicineList()
+          setModel((rest) => ({ ...rest, MedicineForm: false }))
+          setMedicineDetails(undefined)
         }}
       />}
 
@@ -224,34 +247,23 @@ const Medicines = () => {
       {/* Alert Model */}
 
       {model.alert && <AlertModel
-        cancel={() => {
-          setModel((rest) => {
-            return {
-              ...rest,
-              alert: false
-            }
-          });
-          id.current = undefined;
-        }}
-
-        continue={() => { onDelete() }}
+        cancel={() => setModel((rest) => ({ ...rest, alert: false }))}
+        isPending={loading.inline}
+        continue={onDelete}
       />}
 
 
       {/* Medicine Details Model */}
 
       {model.medicineDetails && <MedicineDetailsModel
-        onClick={() => {
-          setModel((rest) => {
-            return {
-              ...rest,
-              medicineDetails: false
-            }
-          });
-          id.current = undefined
-        }}
-        ID={Number(id.current)}
+        medicineDetails={medicineDetails!}
+        onClick={() => { setModel((rest) => ({ ...rest, medicineDetails: false })), setMedicineDetails(undefined) }}
       />}
+
+
+      {/* loader model */}
+
+      {loading.model && <LoaderModel />}
 
     </>
 

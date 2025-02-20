@@ -1,12 +1,12 @@
 import { buttonVariants } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Appointments } from '@/types/type'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { fetchAppointments, updateStatus } from './appointmentAPIhandler'
 import { Loader } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { Appointments } from '@/types/appointment/appointment'
 
 const QueueAppointment = () => {
 
@@ -16,7 +16,7 @@ const QueueAppointment = () => {
 
     // onchange it updates the appointment
 
-    const onUpdateStatus = async (id: number, status: string) => {
+    const onUpdateStatus = async (id: string, status: string) => {
         try {
 
             setPending(true)
@@ -51,12 +51,12 @@ const QueueAppointment = () => {
                 <h1 className='text-xl text-gray-900 font-semibold'>Queue Appointments</h1>
             </div>
 
-            <Table className='my-10'>
+            <Table className='rounded-lg border my-10'>
 
-                <TableHeader>
+                <TableHeader className='bg-slate-100'>
                     <TableRow>
-                        <TableHead>Patient Name</TableHead>
                         <TableHead>Appointment No</TableHead>
+                        <TableHead>Patient Name</TableHead>
                         <TableHead>Appointment Date</TableHead>
                         <TableHead>Shift</TableHead>
                         <TableHead>Phone</TableHead>
@@ -73,8 +73,8 @@ const QueueAppointment = () => {
 
                     {appointments.map((appointment, index) => {
                         return <TableRow key={index}>
-                            <TableCell className="font-medium">{appointment.patient.name}</TableCell>
-                            <TableCell>{appointment.id}</TableCell>
+                            <TableCell className="font-medium">{appointment.id}</TableCell>
+                            <TableCell >{appointment.patient.name}</TableCell>
                             <TableCell>{appointment.appointment_date}</TableCell>
                             <TableCell>{appointment.shift}</TableCell>
                             <TableCell>{appointment.patient.phone}</TableCell>

@@ -4,52 +4,34 @@ import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { vitalFormSchema } from '@/formSchemas/vitalFormSchema'
-import { Vitals } from '@/helpers/formSelectOptions'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from 'lucide-react'
-import { HTMLAttributes, useState } from 'react'
+import { HTMLAttributes } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { createVital } from '../../opdApiHandler'
-import { useParams } from 'react-router-dom'
 import Dialog from '@/components/Dialog'
+import { SetupVital } from '@/types/setupTypes/vital'
 
 
 
-interface VitalFormModelProps extends HTMLAttributes<HTMLDivElement> { }
+interface VitalFormModelProps extends HTMLAttributes<HTMLDivElement> {
+    Submit: (formData: any) => void
+    isPending: boolean
+    vitalOptions: SetupVital[]
+}
 
 
-const VitalFormModel = ({ ...props }: VitalFormModelProps) => {
-
-    const { patientId, caseId } = useParams()
-
-    const [isPending, setPending] = useState<boolean>(false)
+const VitalFormModel = ({ vitalOptions, Submit, isPending, ...props }: VitalFormModelProps) => {
 
     const { register, control, handleSubmit, formState: { errors } } = useForm<z.infer<typeof vitalFormSchema>>({
         resolver: zodResolver(vitalFormSchema)
     })
 
 
-    const onSubmit = async (formData: z.infer<typeof vitalFormSchema>) => {
-        try {
-            console.log(patientId);
-
-            setPending(true)
-            const data = await createVital(Number(patientId), Number(caseId), formData)
-            toast.success(data.message)
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally {
-            setPending(false)
-        }
-    }
-
-
     return (
 
         <Dialog pageTitle='Add Payment' {...props} className='sm:w-[400px] mx-auto'>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(Submit)}>
                 <ScrollArea className={'relative h-[50vh] w-full'}>
                     <div className="grid gap-5 mt-5 px-3 pb-5 ">
 
@@ -65,23 +47,25 @@ const VitalFormModel = ({ ...props }: VitalFormModelProps) => {
                         {/* name */}
 
                         <div className="w-full flex flex-col gap-y-2">
-                            <Controller control={control} name='name' render={({ field }) => {
+                            <Controller control={control} name='setup_VitalId' render={({ field }) => {
+                                console.log(field.value);
+
                                 return <>
                                     <Label>Vital Name</Label>
-                                    <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                                    <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(Number(value)) }}>
                                         <SelectTrigger >
                                             <SelectValue placeholder="Select" />
                                         </SelectTrigger>
 
                                         <SelectContent className='z-[200]'>
-                                            {Vitals.map((vital, i) => {
-                                                return <SelectItem key={i} value={vital.value}>{vital.label}</SelectItem>
+                                            {vitalOptions.map((vital) => {
+                                                return <SelectItem key={vital.id} value={String(vital.id)}>{`${vital.name} ( ${vital.from} - ${vital.to} )`}</SelectItem>
                                             })}
                                         </SelectContent>
                                     </Select>
                                 </>
                             }} />
-                            {errors.name && <p className='text-sm text-red-500'>{errors.name.message}</p>}
+                            {errors.setup_VitalId && <p className='text-sm text-red-500'>{errors.setup_VitalId.message}</p>}
 
                         </div>
 

@@ -3,30 +3,45 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { cn, currencyFormat } from '@/lib/utils'
-import { Appointments } from '@/types/type'
-import { FileText, ListMinus, Plus, Printer } from 'lucide-react'
+import { FileText, ListMinus, Plus, Printer, Trash } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
-import { deleteAppointment, fetchAppointments, searchAppointment } from './appointmentAPIhandler'
+import { createAppointment, deleteAppointment, fetchAppointments, getAppointmentDetails, searchAppointment } from './appointmentAPIhandler'
 import AppointmentDetailsModel from './appointmentDetailsModel'
 import AlertModel from '@/components/alertModel'
 import { currencySymbol } from '@/helpers/currencySymbol'
+import { AppointmentDetails, Appointments } from '@/types/appointment/appointment'
+import LoaderModel from '@/components/loader'
+import { appointmentFormSchema } from '@/formSchemas/AppointmentFormSchema'
+import { z } from 'zod'
+import CustomTooltip from '@/components/customTooltip'
+import { useDebouncedCallback } from 'use-debounce'
+
+
 
 const AdminAppointment = () => {
 
-    const [model, setModel] = useState<{ appointmentDetails: boolean, addAppointmentForm: boolean, alert: boolean }>({
+    // Pending states
+    const [isPending, setPending] = useState<boolean>(false)
+
+    // Model States
+    const [model, setModel] = useState<{ appointmentDetails: boolean, addAppointmentForm: boolean, alert: boolean, loader: boolean }>({
         appointmentDetails: false,
         addAppointmentForm: false,
-        alert: false
+        alert: false,
+        loader: false
     })
 
-    const id = useRef<number>()
+    const itemID = useRef<string>()
 
+    // API States
     const [Appointments, setAppointments] = useState<Appointments[]>([])
+    const [AppointmentDetails, setAppointmentDetails] = useState<AppointmentDetails | undefined>(undefined)
 
 
-    const getAppointmentsList = async () => {
+
+    const getAppointments = async () => {
         try {
             const data = await fetchAppointments()
             setAppointments(data)
@@ -36,37 +51,85 @@ const AdminAppointment = () => {
     }
 
 
-    const onSearch = async (value: string) => {
-        try {
-            const data = await searchAppointment(value)
-            setAppointments(data)
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }
+    // fetching appointment details
 
-
-    const onDelete = async () => {
+    const fetchAppoinmentDetails = async (id: string) => {
         try {
-            const data = await deleteAppointment(Number(id.current))
-            toast.success(data.message)
-            getAppointmentsList()
+            setModel((rest) => {
+                return {
+                    ...rest,
+                    loader: true
+                }
+            })
+            const data = await getAppointmentDetails(id)
+            setAppointmentDetails(data)
         } catch ({ message }: any) {
             toast.error(message)
         } finally {
-            setModel((reset) => {
+            setModel((rest) => {
                 return {
-                    ...reset,
-                    alert: false,
-                    appointmentDetails: false
+                    ...rest,
+                    loader: false
                 }
             })
         }
     }
 
 
+
+    const onSearch = useDebouncedCallback(async (value: string) => {
+        try {
+            const data = await searchAppointment(value)
+            setAppointments(data)
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }, 400)
+
+
+    const onDelete = async () => {
+        try {
+            setPending(true)
+            const data = await deleteAppointment(itemID.current!)
+            toast.success(data.message)
+            getAppointments()
+        } catch ({ message }: any) {
+            toast.error(message)
+        } finally {
+            setPending(false)
+            setModel((reset) => {
+                return {
+                    ...reset,
+                    alert: false,
+                }
+            })
+        }
+    }
+
+
+    // performing only insert
+    const handleSubmit = async (formData: z.infer<typeof appointmentFormSchema>) => {
+        try {
+            setPending(true)
+            const data = await createAppointment(formData)
+            toast.success(data.message)
+            fetchAppointments()
+            setModel((reset) => {
+                return {
+                    ...reset,
+                    addAppointmentForm: false,
+                }
+            })
+        } catch ({ message }: any) {
+            toast.error(message)
+        } finally {
+            setPending(false)
+        }
+    }
+
+
     useEffect(() => {
-        getAppointmentsList();
+        getAppointments();
     }, [])
 
 
@@ -77,27 +140,16 @@ const AdminAppointment = () => {
 
                 {/* top bar */}
                 <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between border-b border-gray-200'>
-                    <h1 className='font-semibold tracking-tight'>Appointment Details</h1>
+                    <h1 className='font-semibold tracking-tight'>Appointments</h1>
                     <div className='flex gap-x-2 overflow-x-auto'>
 
-
-                        <Button type='button' size={'sm'} variant={'outline'}
-                            onClick={() => {
-                                setModel((reset) => {
-                                    return {
-                                        ...reset,
-                                        addAppointmentForm: true
-                                    }
-                                })
-                            }} >
+                        <Button type='button' size={'sm'}
+                            onClick={() => { setModel((prev) => ({ ...prev, addAppointmentForm: true })) }} >
                             <Plus /> Appointment
                         </Button>
 
-                        
-                        
-
                         <Link to={{ pathname: '/admin/QueueAppointment' }} className={buttonVariants({
-                            variant: 'outline',
+                            variant: 'default',
                             size: 'sm',
                             className: 'flex gap-x-1'
                         })}>
@@ -124,13 +176,11 @@ const AdminAppointment = () => {
                     </div>
                 </div>
 
-
-                <Table className='my-10'>
-
-                    <TableHeader>
+                <Table className="border rounded-lg my-10">
+                    <TableHeader className='bg-slate-100'>
                         <TableRow>
-                            <TableHead>Patient Name</TableHead>
                             <TableHead>Appointment No</TableHead>
+                            <TableHead>Patient Name</TableHead>
                             <TableHead>Appointment Date</TableHead>
                             <TableHead>Shift</TableHead>
                             <TableHead>Phone</TableHead>
@@ -141,15 +191,17 @@ const AdminAppointment = () => {
                             <TableHead>Alternative Address</TableHead>
                             <TableHead>Discount%</TableHead>
                             <TableHead>Fees {currencySymbol()}</TableHead>
+                            <TableHead>Action</TableHead>
                             <TableHead>Status</TableHead>
                         </TableRow>
                     </TableHeader>
 
+
                     <TableBody>
-                        {Appointments.map((appointment, index) => {
-                            return <TableRow key={index} className='cursor-pointer'
-                                onClick={() => {
-                                    id.current = appointment.id;
+                        {Appointments.map((appointment) => {
+                            return <TableRow key={appointment.id}>
+                                <TableCell className="font-semibold cursor-pointer text-blue-500 hover:text-blue-400" onClick={async () => {
+                                    await fetchAppoinmentDetails(appointment.id)
                                     setModel((reset) => {
                                         return {
                                             ...reset,
@@ -157,8 +209,9 @@ const AdminAppointment = () => {
                                         }
                                     })
                                 }}>
-                                <TableCell className="font-medium">{appointment.patient.name}</TableCell>
-                                <TableCell>{appointment.id}</TableCell>
+                                    {appointment.id}
+                                </TableCell>
+                                <TableCell className='whitespace-nowrap'>{appointment.patient.name}</TableCell>
                                 <TableCell>{appointment.appointment_date}</TableCell>
                                 <TableCell>{appointment.shift}</TableCell>
                                 <TableCell>{appointment.patient.phone}</TableCell>
@@ -169,8 +222,32 @@ const AdminAppointment = () => {
                                 <TableCell>{appointment.alternative_address}</TableCell>
                                 <TableCell>{appointment.discount}</TableCell>
                                 <TableCell>{currencyFormat(+appointment.fees)}</TableCell>
+                                <TableCell className='space-x-2 px-2'>
+
+                                    {/* EDIT */}
+                                    {/* <TooltipProvider delayDuration={200}>
+                                        <Tooltip>
+                                            <TooltipTrigger>
+                                                <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+
+                                                }} />
+                                            </TooltipTrigger>
+                                            <TooltipContent>Edit</TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider> */}
+
+
+                                    {/* DELETE  */}
+                                    <CustomTooltip message='DELETE'>
+                                        <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                                            setModel((prev) => ({ ...prev, alert: true }))
+                                            itemID.current = appointment.id
+                                        }} />
+                                    </CustomTooltip>
+
+                                </TableCell>
                                 <TableCell>
-                                    <span className={cn('bg-green-600 text-white py-1 px-3 rounded-md', { 'bg-red-500': appointment.status === 'cancelled' })}>{appointment.status}</span>
+                                    <span className={cn('text-white py-1 px-3 block rounded-md group-hover:hidden', appointment.status === 'approved' ? 'bg-green-500' : appointment.status === 'pending' ? 'bg-yellow-500' : 'bg-red-500')}>{appointment.status}</span>
                                 </TableCell>
                             </TableRow>
                         })}
@@ -188,8 +265,10 @@ const AdminAppointment = () => {
 
             {
                 model.addAppointmentForm && <AddAppointment
+                    Submit={handleSubmit}
+                    isPending={isPending}
                     onClick={() => {
-                        getAppointmentsList();
+                        getAppointments();
                         setModel((reset) => {
                             return {
                                 ...reset,
@@ -205,16 +284,7 @@ const AdminAppointment = () => {
             {/* Appointment details model */}
 
             {model.appointmentDetails && <AppointmentDetailsModel
-
-                onDelete={() => {
-                    setModel((reset) => {
-                        return {
-                            ...reset,
-                            alert: true
-                        }
-                    })
-                }}
-
+                appointmentDetails={AppointmentDetails!}
                 onClick={() => {
                     setModel((reset) => {
                         return {
@@ -223,12 +293,12 @@ const AdminAppointment = () => {
                         }
                     })
                 }}
-                ID={Number(id.current)}
             />}
 
-            {/* Alert Model */}
 
+            {/* Alert Model */}
             {model.alert && <AlertModel
+                isPending={isPending}
                 cancel={() => {
                     setModel((reset) => {
                         return {
@@ -237,8 +307,14 @@ const AdminAppointment = () => {
                         }
                     })
                 }}
-                continue={() => { onDelete(); }}
+                continue={onDelete}
             />}
+
+
+            {/* Loader model */}
+            {model.loader && (
+                <LoaderModel />
+            )}
         </>
 
     )

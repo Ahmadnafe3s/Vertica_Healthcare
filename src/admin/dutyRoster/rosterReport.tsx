@@ -1,4 +1,4 @@
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -12,6 +12,7 @@ import calculateShiftDuration from '@/helpers/calculateHours'
 import AlertModel from '@/components/alertModel'
 import Radio from '@/components/radio'
 import { deleteRoster, fetchRosterlist, searchBYdate, searchBYid, searchBYPeriod } from './apihandlers'
+import CustomTooltip from '@/components/customTooltip'
 
 
 
@@ -110,21 +111,9 @@ const RosterReport = () => {
                 <h1 className='font-semibold tracking-tight'>Duty Roster</h1>
 
                 <div className='flex gap-x-2 overflow-x-auto'>
-                    <Link to={''} onClick={() => {
-                        setModel((rest) => {
-                            return {
-                                ...rest,
-                                rosterFormModel: true
-                            }
-                        })
-                    }} className={buttonVariants({
-                        variant: 'outline',
-                        size: 'sm',
-                        className: 'flex gap-x-1'
-                    })}>
-                        <Plus />
-                        Add Roster
-                    </Link>
+                    <Button size='sm' onClick={() => setModel((prev) => ({ ...prev, rosterFormModel: true }))}>
+                        <Plus /> Add Roster
+                    </Button>
                 </div>
 
             </div>
@@ -177,9 +166,9 @@ const RosterReport = () => {
 
             {/* Table */}
 
-            <Table className='my-10'>
 
-                <TableHeader>
+            <Table className="rounded-lg border my-10">
+                <TableHeader className='bg-zinc-100'>
                     <TableRow>
                         <TableHead>Staff ID</TableHead>
                         <TableHead>Staff</TableHead>
@@ -216,30 +205,25 @@ const RosterReport = () => {
                             <TableCell className='flex gap-x-2'>
 
                                 {/* Edit button */}
-                                <Pencil className='text-gray-600 w-4 h-4 cursor-pointer active:scale-95'
-                                    onClick={() => {
-                                        setModel((rest) => {
-                                            return {
-                                                ...rest,
-                                                rosterFormModel: true
-                                            }
-                                        });
-                                        id.current = roster.id
-                                    }}
-                                />
+                                <CustomTooltip message='EDIT'>
+                                    <Pencil className='text-gray-600 w-4 h-4 cursor-pointer active:scale-95'
+                                        onClick={() => {
+                                            setModel((prev) => ({ ...prev, rosterFormModel: true }));
+                                            id.current = roster.id
+                                        }}
+                                    />
+                                </CustomTooltip>
 
                                 {/* Delete */}
-                                <Trash className='text-gray-600 w-4 h-4 cursor-pointer active:scale-95'
-                                    onClick={() => {
-                                        setModel((rest) => {
-                                            return {
-                                                ...rest,
-                                                AlertModel: true
-                                            }
-                                        });
-                                        id.current = roster.id
-                                    }}
-                                />
+
+                                <CustomTooltip message='DELETE'>
+                                    <Trash className='text-gray-600 w-4 h-4 cursor-pointer active:scale-95'
+                                        onClick={() => {
+                                            setModel((prev) => ({ ...prev, AlertModel: true }));
+                                            id.current = roster.id
+                                        }}
+                                    />
+                                </CustomTooltip>
 
                             </TableCell>
                         </TableRow>
@@ -248,7 +232,6 @@ const RosterReport = () => {
                 </TableBody>
             </Table>
 
-
             {/* error on emply list */}
 
             {rosterList.length < 1 && <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>Not found <SearchX className='h-5 w-5' /></h1>}
@@ -256,37 +239,41 @@ const RosterReport = () => {
 
             {/* roster form model */}
 
-            {model.rosterFormModel && <AssignRosterFormModel ID={id.current}
-                onClick={() => {
-                    setModel((rest) => {
-                        return {
-                            ...rest,
-                            rosterFormModel: false
-                        }
-                    });
-                    fetchList()
-                    id.current = null
-                }}
-            />}
+            {
+                model.rosterFormModel && <AssignRosterFormModel ID={id.current}
+                    onClick={() => {
+                        setModel((rest) => {
+                            return {
+                                ...rest,
+                                rosterFormModel: false
+                            }
+                        });
+                        fetchList()
+                        id.current = null
+                    }}
+                />
+            }
 
 
             {/* alert model */}
 
-            {model.AlertModel && <AlertModel
-                cancel={() => {
-                    setModel((rest) => {
-                        return {
-                            ...rest,
-                            AlertModel: false
-                        }
-                    });
-                    id.current = null
-                }}
+            {
+                model.AlertModel && <AlertModel
+                    cancel={() => {
+                        setModel((rest) => {
+                            return {
+                                ...rest,
+                                AlertModel: false
+                            }
+                        });
+                        id.current = null
+                    }}
 
-                continue={onDelete}
-            />}
+                    continue={onDelete}
+                />
+            }
 
-        </div>
+        </div >
     )
 }
 

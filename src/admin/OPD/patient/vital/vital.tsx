@@ -5,30 +5,71 @@ import VitalFormModel from "./vitalFormModel";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { deleteVitals, getVitals, searchVital } from "../../opdApiHandler";
-import { Vitals_List } from "@/types/type";
+import { createVital, deleteVitals, getVitals, searchVital } from "../../opdApiHandler";
 import groupedBYdate from "@/helpers/groupVitals";
-import { Vitals } from "@/helpers/formSelectOptions";
 import AlertModel from "@/components/alertModel";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
+import { z } from "zod";
+import { vitalFormSchema } from "@/formSchemas/vitalFormSchema";
+import CustomTooltip from "@/components/customTooltip";
+import { SetupVital } from "@/types/setupTypes/vital";
+import { getSetupVitals } from "@/admin/setup/vitals/apiHandler";
+import { VitalType } from "@/types/opd_section/vitals";
+
 
 const Vital = () => {
     const id = useRef<number | null>(null)
 
-    const { caseId } = useParams()
+    const { patientId, opdId } = useParams()
 
-    const [VITALS, SET_VITALS] = useState<Vitals_List[]>([])
+    const [VITALS, SET_VITALS] = useState<VitalType[]>([])
+    const [setupVitals, setSetupVitals] = useState<SetupVital[]>([])
 
+    // pending STate
+    const [isPending, setPending] = useState<boolean>(false)
+
+
+    // models State
     const [model, setModel] = useState<{ vitalForm: boolean, alert: boolean }>({
         vitalForm: false,
         alert: false
     })
 
+
+
+    // creating vital
+    const handleSubmit = async (formData: z.infer<typeof vitalFormSchema>) => {
+        try {
+            setPending(true)
+            const data = await createVital(Number(patientId), opdId!, formData)
+            toast.success(data.message)
+            setModel({
+                ...model,
+                vitalForm: false
+            })
+            fetchVitalsList()
+        } catch ({ message }: any) {
+            toast.error(message)
+        } finally {
+            setPending(false)
+        }
+    }
+
+
     const fetchVitalsList = async () => {
         try {
-            const data = await getVitals(Number(caseId))
+            const data = await getVitals(opdId!)
             SET_VITALS(data)
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+    const fetchSetupVitals = async () => {
+        try {
+            const data = await getSetupVitals()
+            setSetupVitals(data)
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -42,11 +83,9 @@ const Vital = () => {
         } catch ({ message }: any) {
             toast.error(message)
         } finally {
-            setModel((rest) => {
-                return {
-                    ...rest,
-                    alert: false
-                }
+            setModel({
+                ...model,
+                alert: false
             });
             id.current = null;
             fetchVitalsList()
@@ -58,7 +97,7 @@ const Vital = () => {
 
     const onSearch = async (date: string) => {
         try {
-            const data = await searchVital(Number(caseId), date)
+            const data = await searchVital(opdId!, date)
             SET_VITALS(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -68,6 +107,7 @@ const Vital = () => {
 
     useEffect(() => {
         fetchVitalsList()
+        fetchSetupVitals()
     }, [])
 
 
@@ -76,12 +116,10 @@ const Vital = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg text-gray-800 font-semibold">Vitals</h1>
-                <Button variant='outline' size='sm' onClick={() => {
-                    setModel((rest) => {
-                        return {
-                            ...rest,
-                            vitalForm: true
-                        }
+                <Button size='sm' onClick={() => {
+                    setModel({
+                        ...model,
+                        vitalForm: true
                     })
                 }}>
                     <Plus /> Add Vital
@@ -98,9 +136,8 @@ const Vital = () => {
 
             <Separator />
 
-
-            <Table>
-                <TableHeader>
+            <Table className="rounded-lg border">
+                <TableHeader className="bg-zinc-100">
                     <TableRow>
                         <TableHead>Date</TableHead>
                         <TableHead>Height (1-200 CM)</TableHead>
@@ -121,25 +158,22 @@ const Vital = () => {
 
                                 {/* Render each specific value under its respective column */}
 
-                                {Vitals.map((measure) => {  // Vitals is from select options
-                                    const detail = vital.measure.find((item) => item.name === measure.value);
+                                {setupVitals.map((measure) => {  // Vitals is from select options
+                                    const detail = vital.measure.find((item) => item.vital.name === measure.name);
 
                                     return (
-                                        <TableCell key={measure.value}>
+                                        <TableCell key={measure.name}>
                                             {detail ? (
                                                 <div className="flex space-x-1 group">
-                                                    <span>{detail.name} {detail.value}</span>
-                                                    <Trash className="w-3 text-gray-700 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                                                        onClick={() => {
-                                                            setModel((rest) => {
-                                                                return {
-                                                                    ...rest,
-                                                                    alert: true
-                                                                }
-                                                            });
-                                                            id.current = detail.id
-                                                        }}
-                                                    />
+                                                    <span>{detail.vital.name} {detail.value}</span>
+                                                    <CustomTooltip message="DELETE">
+                                                        <Trash className="w-3 text-gray-700 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            onClick={() => {
+                                                                setModel({ ...model, alert: true });
+                                                                id.current = detail.id
+                                                            }}
+                                                        />
+                                                    </CustomTooltip>
                                                 </div>
                                             )
                                                 : ""} {/* Render the value or an empty string if missing */}
@@ -150,7 +184,6 @@ const Vital = () => {
                         );
                     })}
                 </TableBody>
-
             </Table>
 
 
@@ -161,14 +194,14 @@ const Vital = () => {
             {/* model */}
 
             {model.vitalForm && <VitalFormModel
+                vitalOptions={setupVitals}
+                Submit={handleSubmit}
+                isPending={isPending}
                 onClick={() => {
-                    setModel((rest) => {
-                        return {
-                            ...rest,
-                            vitalForm: false
-                        }
+                    setModel({
+                        ...model,
+                        vitalForm: false
                     });
-                    fetchVitalsList()
                 }}
             />}
 
@@ -177,12 +210,10 @@ const Vital = () => {
 
             {model.alert && <AlertModel
                 cancel={() => {
-                    setModel((rest) => {
-                        return {
-                            ...rest,
-                            alert: false
-                        }
-                    });
+                    setModel((rest) => ({
+                        ...rest,
+                        alert: false
+                    }));
                     id.current = null
                 }}
                 continue={onDelete}

@@ -6,73 +6,26 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { timelineFormSchema } from "@/formSchemas/timelineFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader, X } from "lucide-react";
-import { HTMLAttributes, useEffect, useState } from "react";
+import { HTMLAttributes } from "react";
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 import { z } from "zod";
-import { createTimeline, getTimelineDetails, updateTimeine } from "../../opdApiHandler";
-import { useParams } from "react-router-dom";
 import { Textarea } from "@/components/ui/textarea";
+import { timeline } from "@/types/opd_section/timeline";
 
 
 interface TimelineFormModelProps extends HTMLAttributes<HTMLDivElement> {
-    ID: number
+    Submit: (FormData: any) => void
+    isPending: boolean
+    timelineDetails: timeline
 }
 
 
-const TimelineFormModel = ({ ID, ...props }: TimelineFormModelProps) => {
+const TimelineFormModel = ({ Submit, timelineDetails, isPending, ...props }: TimelineFormModelProps) => {
 
-    const { caseId, patientId } = useParams()
-
-    const [isPending, setPending] = useState<boolean>()
-
-    const { register, reset, setValue, handleSubmit, formState: { errors } } = useForm<z.infer<typeof timelineFormSchema>>({
-        resolver: zodResolver(timelineFormSchema)
+    const { register, reset, handleSubmit, formState: { errors } } = useForm<z.infer<typeof timelineFormSchema>>({
+        resolver: zodResolver(timelineFormSchema),
+        defaultValues: timelineDetails
     })
-
-
-    const onSubmit = async (formData: z.infer<typeof timelineFormSchema>) => {
-        try {
-
-            setPending(true)
-
-            let data;
-
-            if (ID) {
-                data = await updateTimeine(Number(ID), formData)
-            } else {
-                data = await createTimeline(Number(caseId), Number(patientId), formData)
-            }
-
-            toast.success(data.message)
-
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally {
-            setPending(false)
-        }
-    }
-
-
-
-    const setValuesTOform = async () => {
-        try {
-            if (!ID) return null
-            const data = await getTimelineDetails(ID)
-            setValue('title', data.title)
-            setValue('description', data.description)
-            setValue('date', data.date)
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }
-
-
-
-    useEffect(() => {
-        setValuesTOform()
-    }, [])
-
 
 
     return (
@@ -81,7 +34,7 @@ const TimelineFormModel = ({ ID, ...props }: TimelineFormModelProps) => {
 
             <MaxWidthWrapper className='fixed h-auto  top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-[200] '>
 
-                <form className=' bg-white rounded-md sm:w-[400px] mx-auto' onSubmit={handleSubmit(onSubmit)}>
+                <form className=' bg-white rounded-md sm:w-[400px] mx-auto' onSubmit={handleSubmit(Submit)}>
 
                     {/* Header */}
 
@@ -132,7 +85,7 @@ const TimelineFormModel = ({ ID, ...props }: TimelineFormModelProps) => {
 
                     <div className="flex mt-5 mb-2 p-3 gap-x-2 sm:justify-end">
                         <Button variant='outline' onClick={() => reset()}>Reset</Button>
-                        <Button type='submit' className='flex-1'>{ID ? 'Update' : 'Save'} {isPending && <Loader className='animate-spin' />}</Button>
+                        <Button type='submit' className='flex-1'>{timelineDetails ? 'Update' : 'Save'} {isPending && <Loader className='animate-spin' />}</Button>
                     </div>
 
                 </form>

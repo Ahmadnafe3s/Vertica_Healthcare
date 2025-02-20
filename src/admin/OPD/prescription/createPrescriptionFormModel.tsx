@@ -1,41 +1,58 @@
+import { getMedicineList } from "@/admin/pharmacy/pharmacyApiHandler"
+import { getFindingCategories, getFindingNameDetails, getFindingNames } from "@/admin/setup/findings/apiHandler"
+import { getDoseDurations, getDoseIntervals, getMedicineCategories } from "@/admin/setup/pharmacy/apiHandler"
 import Dialog from "@/components/Dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { MultiSelect } from "@/components/ui/multi-select"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { createPrescriptionFormSchema, valuesASdefault } from "@/formSchemas/createPrescriptionFormSchema"
-import { FINDING_CATEGORIES } from "@/helpers/getFindingOptions"
+import { prescriptionDetail } from "@/types/opd_section/prescription"
+import { medicines } from "@/types/pharmacy/pharmacy"
+import { findingCategory, findingName } from "@/types/setupTypes/finding"
+import { doseDuration, doseInterval, medicineCategory } from "@/types/setupTypes/pharmacy"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader, Plus, X } from "lucide-react"
-import { HTMLAttributes } from "react"
+import { HTMLAttributes, useEffect, useState } from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
+import toast from "react-hot-toast"
 import { z } from "zod"
 
 
 interface PrescriptionFormModelProps extends HTMLAttributes<HTMLDivElement> {
-    Submit: () => void;
+    Submit: (formData: any) => void;
     isPending: boolean
+    prescDetails: prescriptionDetail
 }
 
-const frameworksList = [
-    { value: "react", label: "React", },
-    { value: "angular", label: "Angular", },
-    { value: "vue", label: "Vue", },
-    { value: "svelte", label: "Svelte", },
-    { value: "ember", label: "Ember", },
-];
 
 
-const CreatePrescriptionFormModel = ({ isPending, Submit, ...props }: PrescriptionFormModelProps) => {
+const CreatePrescriptionFormModel = ({ prescDetails: details, isPending, Submit, ...props }: PrescriptionFormModelProps) => {
 
-    const { control, handleSubmit, register, formState: { errors } } = useForm<z.infer<typeof createPrescriptionFormSchema>>({
-        resolver: zodResolver(createPrescriptionFormSchema),
-        defaultValues: valuesASdefault
+    // form select options state
+    const [findingCategories, setFindingCategories] = useState<findingCategory[]>([])
+    const [findingNames, setFindingNames] = useState<{ [key: number]: findingName[] }>([])
+    const [medicineCategories, setMedicineCategories] = useState<medicineCategory[]>([])
+    const [medicineNames, setMedicineNames] = useState<{ [key: number]: medicines[] }>([])
+    const [doseOption, setDoseOptions] = useState<{ doseIntervals: doseInterval[], doseDurations: doseDuration[] }>({
+        doseDurations: [],
+        doseIntervals: []
     })
+
+
+
+    const { control, handleSubmit, setValue, register, formState: { errors } } = useForm<z.infer<typeof createPrescriptionFormSchema>>({
+        resolver: zodResolver(createPrescriptionFormSchema),
+        defaultValues: details ? {
+            ...details,
+            medicine: details?.prescMedicines,
+            finding: details?.prescFindings
+        } : valuesASdefault
+    })
+
 
     const { fields: medicineFields, append: addMedicineFields, remove: removeMedicineFields } = useFieldArray({
         name: 'medicine',
@@ -43,15 +60,114 @@ const CreatePrescriptionFormModel = ({ isPending, Submit, ...props }: Prescripti
     })
 
 
+    const { fields: findingFields, append: addFindingFields, remove: removeFindingFields } = useFieldArray({
+        name: 'finding',
+        control
+    })
+
+
+    // fetching all medicine categories
+    const fetchMedCategories = async () => {
+        try {
+            const data = await getMedicineCategories()
+            setMedicineCategories(data)
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+    // handling category change
+    const handleMedCategoryChange = async (categroyId: string, index: number,) => {
+        try {
+            const data = await getMedicineList(categroyId)
+            setMedicineNames(rest => ({ ...rest, [index]: data }))
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+
+    // fetch finding categories
+    const fetchFindinCategories = async () => {
+        try {
+            const data = await getFindingCategories()
+            setFindingCategories(data)
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+
+    // handling finding category change or binding Finding names
+    const handleFindingCategoryChange = async (categoryId: string, index: number) => {
+        try {
+            const data = await getFindingNames(categoryId)
+            setFindingNames(rest => ({ ...rest, [index]: data }))
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+    // setting description
+    const handleFindingNameChange = async (id: number, index: number) => {
+        try {
+            const data = await getFindingNameDetails(id)
+            // setFindingDescription(rest => ({ ...rest, [index]: data.description }))
+            setValue(`finding.${index}.description`, data.description)
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+
+    // fetching dose options
+    const fetchDoseOptions = async () => {
+        try {
+            const [Intervals, Durations] = await Promise.all([
+                getDoseIntervals(),
+                getDoseDurations()
+            ])
+            setDoseOptions({
+                doseIntervals: Intervals,
+                doseDurations: Durations
+            })
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+
     const onMedicineFields = () => {
         addMedicineFields(valuesASdefault.medicine)
     }
+
+    const onFindingFields = () => {
+        addFindingFields(valuesASdefault.finding)
+    }
+
+
+
+    useEffect(() => {
+        console.log(details);
+        fetchFindinCategories()
+        fetchMedCategories()
+        fetchDoseOptions()
+        // on edit mode rebinding data
+        if (details) {
+            details.prescMedicines.forEach((elem, i) => {
+                handleMedCategoryChange(String(elem.categoryId), i)
+            })
+            details.prescFindings.forEach((elem, i) => {
+                handleFindingCategoryChange(String(elem.findingCategoryId), i)
+            })
+        }
+    }, [])
 
 
     return (
         <Dialog pageTitle="Add Prescription" {...props}>
             <form onSubmit={handleSubmit(Submit)}>
-                <ScrollArea className={'relative h-[60vh] sm:h-[50vh] w-full'}>
+                <ScrollArea className={'relative h-[60vh] sm:h-[65vh] w-full'}>
                     <div className="grid lg:grid-cols-4 sm:grid-cols-3 gap-4 mt-1 px-3 pb-5 ">
 
                         {/* Header Note */}
@@ -63,85 +179,112 @@ const CreatePrescriptionFormModel = ({ isPending, Submit, ...props }: Prescripti
                         </div>
 
 
-                        {/* Findings */}
+                        {/* Findings Array Section */}
 
-                        <div className="w-full flex flex-col gap-y-2">
-                            <Controller control={control} name='category' render={({ field }) => {
-                                return <>
-                                    <Label>Finding Category</Label>
-                                    {/* <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
-                                        <SelectTrigger >
-                                            <SelectValue placeholder="Select" />
-                                        </SelectTrigger>
+                        {findingFields.map((field, index) => (
+                            <section key={field.id} className="sm:col-span-full grid px-2 py-4 border-2 border-dashed border-gray-200 rounded-md gap-2 sm:grid-cols-3">
 
-                                        <SelectContent className='z-[200]'>
-                                            {FINDING_CATEGORIES.map((category, i) => {
-                                                return <SelectItem key={i} value={category.value}>{category.label}</SelectItem>
-                                            })}
-                                        </SelectContent>
-                                    </Select> */}
-                                    <MultiSelect
-                                        value={field.value || ''}
-                                        options={FINDING_CATEGORIES}
-                                        animation={2}
-                                        variant="inverted"
-                                        maxCount={3}
-                                        onValueChange={(value)=>field.onChange(value)} />
-                                </>
-                            }} />
-                            {errors.category && <p className='text-sm text-red-500'>{errors.category.message}</p>}
+                                {/* Finding */}
 
+                                <div className="w-full flex flex-col gap-y-2">
+                                    <Controller control={control} name={`finding.${index}.findingCategoryId`} render={({ field }) => {
+                                        console.log(field.value);
+
+                                        return <>
+                                            <Label>Finding Category</Label>
+                                           {/* cause value was initialy 0 that was then converted "0" so field was gets true that why place holder was not displaying */}
+                                            <Select value={field.value === 0 ? undefined : field.value.toString()} onValueChange={(value) => { handleFindingCategoryChange(value, index); field.onChange(Number(value)) }}>
+                                                <SelectTrigger >
+                                                    <SelectValue placeholder="Select" />
+                                                </SelectTrigger>
+
+                                                <SelectContent className='z-[200]'>
+                                                    {findingCategories?.map((category, i) => {
+                                                        return <SelectItem key={i} value={String(category.id)}>{category.name}</SelectItem>
+                                                    })}
+                                                </SelectContent>
+                                            </Select>
+                                        </>
+                                    }} />
+                                    {errors.finding?.[index]?.findingCategoryId && <p className='text-sm text-red-500'>{errors.finding?.[index]?.findingCategoryId.message}</p>}
+
+                                </div>
+
+
+                                {/* Finding List */}
+
+                                <div className="w-full flex flex-col gap-y-2">
+                                    <Controller control={control} name={`finding.${index}.findingNameId`} render={({ field }) => {
+                                        const findNames = findingNames?.[index]
+                                        return <>
+                                            <Label>Finding List</Label>
+                                            <Select value={field.value === 0 ? undefined : field.value.toString()} onValueChange={(value) => { handleFindingNameChange(Number(value), index); field.onChange(Number(value)) }}>
+                                                <SelectTrigger >
+                                                    <SelectValue placeholder="Select" />
+                                                </SelectTrigger>
+
+                                                <SelectContent className='z-[200]'>
+                                                    {findNames?.map((name) => {
+                                                        return <SelectItem key={name.id} value={String(name.id)}>{name.name}</SelectItem>
+                                                    })}
+                                                </SelectContent>
+                                            </Select>
+                                        </>
+                                    }} />
+                                    {errors.finding?.[index]?.findingNameId && <p className='text-sm text-red-500'>{errors.finding?.[index].findingNameId.message}</p>}
+                                </div>
+
+                                {/* Description */}
+
+                                <div className="w-full flex flex-col gap-y-2">
+                                    <Label>Description</Label>
+                                    <Textarea  {...register(`finding.${index}.description`)} placeholder="Write descroption" />
+                                    {errors?.finding?.[index]?.description && <p className='text-sm text-red-500'>{errors?.finding?.[index].description.message}</p>}
+                                </div>
+
+
+
+                                {/* Remove fields button */}
+
+                                <div className="h-full flex items-center gap-x-2 col-span-full sm:col-span-1 justify-center sm:justify-normal">
+                                    {findingFields.length > 1 && <TooltipProvider delayDuration={200}>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <div className="p-1 bg-red-500 rounded-full text-white mt-2 sm:mt-4">
+                                                    <X className="w-4 h-4 cursor-pointer" onClick={() => { removeFindingFields(index) }} />
+                                                </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent className="z-[200]">Remove</TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>}
+                                </div>
+
+                            </section>
+                        ))}
+
+
+
+
+                        {/* add more finding fields button */}
+
+                        <div className="h-full flex col-span-full justify-end mr-2">
+                            <TooltipProvider delayDuration={200}>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <div className="p-1 bg-slate-500 rounded-full active:scale-90 text-white mt-2 sm:mt-4">
+                                            <Plus className="w-4 h-4 cursor-pointer " onClick={onFindingFields} />
+                                        </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="z-[200]">Add more finding fields</TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                         </div>
 
 
-                        {/* Finding List */}
-
-                        <div className="w-full flex flex-col gap-y-2">
-                            <Controller control={control} name='name' render={({ field }) => {
-                                return <>
-                                    <Label>Finding List</Label>
-                                    <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
-                                        <SelectTrigger >
-                                            <SelectValue placeholder="Select" />
-                                        </SelectTrigger>
-
-                                        <SelectContent className='z-[200]'>
-                                            {FINDING_CATEGORIES.map((category, i) => {
-                                                return <SelectItem key={i} value={category.value}>{category.label}</SelectItem>
-                                            })}
-                                        </SelectContent>
-                                    </Select>
-                                </>
-                            }} />
-                            {errors.name && <p className='text-sm text-red-500'>{errors.name.message}</p>}
-                        </div>
-
-                        {/* Description */}
-
-                        <div className="w-full flex flex-col gap-y-2">
-                            <Label>Description</Label>
-                            <Textarea {...register('description')} placeholder="Write descroption" />
-                            {errors.description && <p className='text-sm text-red-500'>{errors.description.message}</p>}
-                        </div>
-
-
-                        {/* <div className="w-full flex flex-col gap-y-2 lg:col-span-2">
-                            <Label>Description</Label>
-                            <MultiSelect 
-                                options={FINDING_CATEGORIES}
-                                animation={2}
-                                variant="inverted"
-                                maxCount={3}
-                                onValueChange={(value) => {
-                                    console.log(value);
-                                }} />
-                        </div> */}
 
 
 
-
-
-                        {/* Array section */}
+                        {/* Medicine Array section */}
 
                         {medicineFields.map((field, index) => {
                             return <section key={field.id} className="sm:col-span-full grid-cols-2 grid px-2 py-4 border-2 border-dashed border-gray-200 rounded-md gap-2 sm:grid-cols-5">
@@ -149,23 +292,23 @@ const CreatePrescriptionFormModel = ({ isPending, Submit, ...props }: Prescripti
                                 {/* Medicine Category */}
 
                                 <div className="w-full flex flex-col gap-y-2">
-                                    <Controller control={control} name={`medicine.${index}.category`} render={({ field }) => {
+                                    <Controller control={control} name={`medicine.${index}.categoryId`} render={({ field }) => {
                                         return <>
                                             <Label>Medicine Category</Label>
-                                            <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                                            <Select value={field.value === 0 ? undefined : field.value.toString()} onValueChange={(value) => { handleMedCategoryChange(value, index); field.onChange(Number(value)) }}>
                                                 <SelectTrigger >
                                                     <SelectValue placeholder="Select" />
                                                 </SelectTrigger>
 
                                                 <SelectContent className='z-[200]'>
-                                                    {FINDING_CATEGORIES.map((category, i) => {
-                                                        return <SelectItem key={i} value={category.value}>{category.label}</SelectItem>
+                                                    {medicineCategories.map((category, i) => {
+                                                        return <SelectItem key={i} value={String(category.id)}>{category.name}</SelectItem>
                                                     })}
                                                 </SelectContent>
                                             </Select>
                                         </>
                                     }} />
-                                    {errors.medicine?.[index]?.category && <p className='text-sm text-red-500'>{errors.medicine?.[index]?.category?.message}</p>}
+                                    {errors.medicine?.[index]?.categoryId && <p className='text-sm text-red-500'>{errors.medicine?.[index]?.categoryId?.message}</p>}
                                 </div>
 
 
@@ -173,51 +316,76 @@ const CreatePrescriptionFormModel = ({ isPending, Submit, ...props }: Prescripti
 
                                 <div className="w-full flex flex-col gap-y-2">
                                     <Controller control={control} name={`medicine.${index}.medicineId`} render={({ field }) => {
+                                        const Names = medicineNames[index]
                                         return <>
                                             <Label>Medicine Name</Label>
-                                            <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                                            <Select value={field.value === 0 ? undefined : field.value.toString()} onValueChange={(value) => { field.onChange(Number(value)) }}>
                                                 <SelectTrigger >
                                                     <SelectValue placeholder="Select" />
                                                 </SelectTrigger>
 
                                                 <SelectContent className='z-[200]'>
-                                                    {FINDING_CATEGORIES.map((category, i) => {
-                                                        return <SelectItem key={i} value={category.value}>{category.label}</SelectItem>
+                                                    {Names?.map((medName) => {
+                                                        return <SelectItem key={medName.id} value={String(medName.id)}>{medName.name}</SelectItem>
                                                     })}
                                                 </SelectContent>
                                             </Select>
+
                                         </>
                                     }} />
                                     {errors.medicine?.[index]?.medicineId && <p className='text-sm text-red-500'>{errors.medicine?.[index]?.medicineId?.message}</p>}
                                 </div>
 
-                                {/* Dose */}
-
-                                <div className="w-full flex flex-col gap-y-2 ">
-                                    <Label>Dose</Label>
-                                    <Input {...register(`medicine.${index}.dose`)} />
-                                    {errors.medicine?.[index]?.dose && <p className='text-sm text-red-500'>{errors.medicine?.[index]?.dose.message}</p>}
-                                </div>
 
                                 {/* Dose Interval */}
 
                                 <div className="w-full flex flex-col gap-y-2 ">
-                                    <Label>Dose Interval</Label>
-                                    <Input {...register(`medicine.${index}.dose_interval`)} />
-                                    {errors.medicine?.[index]?.dose_interval && <p className='text-sm text-red-500'>{errors.medicine?.[index]?.dose_interval.message}</p>}
+                                    <Controller control={control} name={`medicine.${index}.doseIntervalId`} render={({ field }) => {
+                                        return <>
+                                            <Label>Dose Interval</Label>
+                                            <Select value={field.value === 0 ? undefined : field.value.toString()} onValueChange={(value) => { field.onChange(Number(value)) }}>
+                                                <SelectTrigger >
+                                                    <SelectValue placeholder="Select" />
+                                                </SelectTrigger>
+
+                                                <SelectContent className='z-[200]'>
+                                                    {doseOption.doseIntervals?.map((interval) => {
+                                                        return <SelectItem key={interval.id} value={String(interval.id)}>{interval.interval}</SelectItem>
+                                                    })}
+                                                </SelectContent>
+                                            </Select>
+
+                                        </>
+                                    }} />
+                                    {errors.medicine?.[index]?.doseIntervalId && <p className='text-sm text-red-500'>{errors.medicine?.[index]?.doseIntervalId.message}</p>}
                                 </div>
 
                                 {/* Dose Duration */}
 
                                 <div className="w-full flex flex-col gap-y-2 ">
-                                    <Label>Dose Duration</Label>
-                                    <Input {...register(`medicine.${index}.dose_duration`)} />
-                                    {errors.medicine?.[index]?.dose_duration && <p className='text-sm text-red-500'>{errors.medicine?.[index]?.dose_duration.message}</p>}
+                                    <Controller control={control} name={`medicine.${index}.doseDurationId`} render={({ field }) => {
+                                        return <>
+                                            <Label>Dose Duration</Label>
+                                            <Select value={field.value === 0 ? undefined : field.value.toString()} onValueChange={(value) => { field.onChange(Number(value)) }}>
+                                                <SelectTrigger >
+                                                    <SelectValue placeholder="Select" />
+                                                </SelectTrigger>
+
+                                                <SelectContent className='z-[200]'>
+                                                    {doseOption.doseDurations?.map((duration) => {
+                                                        return <SelectItem key={duration.id} value={String(duration.id)}>{duration.duration}</SelectItem>
+                                                    })}
+                                                </SelectContent>
+                                            </Select>
+
+                                        </>
+                                    }} />
+                                    {errors.medicine?.[index]?.doseDurationId && <p className='text-sm text-red-500'>{errors.medicine?.[index]?.doseDurationId.message}</p>}
                                 </div>
 
                                 {/* Instruction */}
 
-                                <div className="w-full flex flex-col gap-y-2 ">
+                                <div className="w-full flex flex-col gap-y-2 col-span-full sm:col-span-1">
                                     <Label>Instruction</Label>
                                     <Input {...register(`medicine.${index}.instruction`)} />
                                     {errors.medicine?.[index]?.instruction && <p className='text-sm text-red-500'>{errors.medicine?.[index]?.instruction.message}</p>}
@@ -241,7 +409,7 @@ const CreatePrescriptionFormModel = ({ isPending, Submit, ...props }: Prescripti
                         })}
 
 
-                        {/* add more fiels button */}
+                        {/* add more medicine fiels button */}
 
                         <div className="h-full flex col-span-full justify-end mr-2">
                             <TooltipProvider delayDuration={200}>
@@ -251,7 +419,7 @@ const CreatePrescriptionFormModel = ({ isPending, Submit, ...props }: Prescripti
                                             <Plus className="w-4 h-4 cursor-pointer " onClick={onMedicineFields} />
                                         </div>
                                     </TooltipTrigger>
-                                    <TooltipContent className="z-[200]">Add more fields</TooltipContent>
+                                    <TooltipContent className="z-[200]">Add more medicine fields</TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
                         </div>
@@ -261,7 +429,7 @@ const CreatePrescriptionFormModel = ({ isPending, Submit, ...props }: Prescripti
                     </div>
                 </ScrollArea>
                 <div className="flex mt-5 p-3 gap-x-2 sm:justify-end">
-                    <Button type='submit' className='flex-1 sm:flex-none'>Save Prescription {isPending && <Loader className='animate-spin' />}</Button>
+                    <Button type='submit' className='flex-1 sm:flex-none'>{details ? 'Update' : 'Save Prescription'} {isPending && <Loader className='animate-spin' />}</Button>
                 </div>
             </form>
         </Dialog>

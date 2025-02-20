@@ -12,6 +12,7 @@ import toast from 'react-hot-toast'
 import { z } from 'zod'
 import { createRoster, fetchRosterDetails, fetchStaffs, updateRoster } from '../apihandlers'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import Dialog from '@/components/Dialog'
 
 
 
@@ -97,122 +98,106 @@ const AssignRosterFormModel = ({ ID, ...props }: AssignRosterFormModelProps) => 
 
 
   return (
-    <>
-      <div {...props} className='fixed top-0 left-0 h-screen w-full transition-all z-[120]' style={{ background: '#0000009c' }}></div>
+    <Dialog pageTitle='Assign Roster' className='sm:w-[550px] mx-auto' {...props}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <ScrollArea className='h-[60vh] sm:h-[55vh]'>
+          <div className="grid sm:grid-cols-2 gap-5 pb-5 px-2.5">
 
-      <MaxWidthWrapper className='fixed lg:!px-40 h-auto max-h-[90vh] overflow-y-auto  top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-[200] '>
+            {/* Staff */}
 
-        <form className='p-3 bg-white rounded-md sm:w-[600px] mx-auto' onSubmit={handleSubmit(onSubmit)}>
+            <div className="w-full flex flex-col gap-y-2">
+              <Controller control={control} name='staffId' render={({ field }) => {
+                return <>
+                  <Label>Staff</Label>
+                  <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                    <SelectTrigger >
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
 
-          <div className='flex justify-between pt-2 pb-3 mb-3 border-b border-gray-200 col-span-full'>
-            <p className='font-semibold text-sm sm:text-lg px-4 py-1 bg-primary rounded-lg text-white'>Assign Roster</p>
-            <div {...props}>
-              <X className='cursor-pointer' />
+                    <SelectContent className='z-[200]'>
+                      {staffs?.map((staff, index) => {
+                        return <SelectItem key={index} value={staff.id.toString()}>{`${staff.name} (${staff.role})`}</SelectItem>
+                      })}
+                    </SelectContent>
+                  </Select>
+                </>
+              }} />
+              {errors.staffId && <p className='text-sm text-red-500'>{errors.staffId.message}</p>}
             </div>
-          </div>
 
+            {/* Shift Start Time */}
 
-
-          <ScrollArea className='h-[60vh] sm:h-[55vh]'>
-            <div className="grid sm:grid-cols-2 gap-5 pb-5 px-1">
-
-              {/* Staff */}
-
-              <div className="w-full flex flex-col gap-y-2">
-                <Controller control={control} name='staffId' render={({ field }) => {
-                  return <>
-                    <Label>Staff</Label>
-                    <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
-                      <SelectTrigger >
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-
-                      <SelectContent className='z-[200]'>
-                        {staffs?.map((staff, index) => {
-                          return <SelectItem key={index} value={staff.id.toString()}>{`${staff.name} (${staff.role})`}</SelectItem>
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </>
-                }} />
-                {errors.staffId && <p className='text-sm text-red-500'>{errors.staffId.message}</p>}
-              </div>
-
-              {/* Shift Start Time */}
-
-              <div className="w-full flex flex-col gap-y-2">
-                <Label>Shift Start Time</Label>
-                <Input type='time' {...register('shiftStartTime')} />
-                {errors.shiftStartTime && <p className='text-sm text-red-500'>{errors.shiftStartTime.message}</p>}
-              </div>
-
-              {/* Shift End Time */}
-
-              <div className="w-full flex flex-col gap-y-2">
-                <Label>Shift End Time</Label>
-                <Input type='time' {...register('shiftEndTime')} />
-                {errors.shiftEndTime && <p className='text-sm text-red-500'>{errors.shiftEndTime.message}</p>}
-              </div>
-
-              {/* Shift Start Date */}
-
-              <div className="w-full flex flex-col gap-y-2">
-                <Label>Shift Start Date</Label>
-                <Input type='date' {...register('shiftStartDate')} />
-                {errors.shiftStartDate && <p className='text-sm text-red-500'>{errors.shiftStartDate.message}</p>}
-              </div>
-
-
-              {/* Shift End Date */}
-
-              <div className="w-full flex flex-col gap-y-2">
-                <Label>Shift End Date</Label>
-                <Input type='date' {...register('shiftEndDate')} />
-                {errors.shiftEndDate && <p className='text-sm text-red-500'>{errors.shiftEndDate.message}</p>}
-              </div>
-
-
-              {/* Shift */}
-
-              <div className="w-full flex flex-col gap-y-2">
-                <Controller control={control} name='shift' render={({ field }) => {
-                  return <>
-                    <Label>Shift</Label>
-                    <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
-                      <SelectTrigger >
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-
-                      <SelectContent className='z-[200]'>
-                        <SelectItem value='morning'>Morning</SelectItem>
-                        <SelectItem value='evening'>Evening</SelectItem>
-                        <SelectItem value='night'>Night</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </>
-                }} />
-                {errors.shift && <p className='text-sm text-red-500'>{errors.shift.message}</p>}
-              </div>
-
-
-              {/* note */}
-
-              <div className="w-full flex flex-col gap-y-2">
-                <Label>Note</Label>
-                <Input type='text' {...register('note')} />
-              </div>
-
+            <div className="w-full flex flex-col gap-y-2">
+              <Label>Shift Start Time</Label>
+              <Input type='time' {...register('shiftStartTime')} />
+              {errors.shiftStartTime && <p className='text-sm text-red-500'>{errors.shiftStartTime.message}</p>}
             </div>
-          </ScrollArea>
 
-          <div className="flex mt-5 mb-2 gap-x-2 ">
-            <Button type='submit' variant='outline' onClick={() => { reset(); ID = null }}>Reset</Button>
-            <Button type='submit' className='flex-1'>{ID ? 'Update Roster' : 'Save Roster'} {isPending && <Loader className='h-4 w-4 animate-spin' />}</Button>
+            {/* Shift End Time */}
+
+            <div className="w-full flex flex-col gap-y-2">
+              <Label>Shift End Time</Label>
+              <Input type='time' {...register('shiftEndTime')} />
+              {errors.shiftEndTime && <p className='text-sm text-red-500'>{errors.shiftEndTime.message}</p>}
+            </div>
+
+            {/* Shift Start Date */}
+
+            <div className="w-full flex flex-col gap-y-2">
+              <Label>Shift Start Date</Label>
+              <Input type='date' {...register('shiftStartDate')} />
+              {errors.shiftStartDate && <p className='text-sm text-red-500'>{errors.shiftStartDate.message}</p>}
+            </div>
+
+
+            {/* Shift End Date */}
+
+            <div className="w-full flex flex-col gap-y-2">
+              <Label>Shift End Date</Label>
+              <Input type='date' {...register('shiftEndDate')} />
+              {errors.shiftEndDate && <p className='text-sm text-red-500'>{errors.shiftEndDate.message}</p>}
+            </div>
+
+
+            {/* Shift */}
+
+            <div className="w-full flex flex-col gap-y-2">
+              <Controller control={control} name='shift' render={({ field }) => {
+                return <>
+                  <Label>Shift</Label>
+                  <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                    <SelectTrigger >
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+
+                    <SelectContent className='z-[200]'>
+                      <SelectItem value='morning'>Morning</SelectItem>
+                      <SelectItem value='evening'>Evening</SelectItem>
+                      <SelectItem value='night'>Night</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </>
+              }} />
+              {errors.shift && <p className='text-sm text-red-500'>{errors.shift.message}</p>}
+            </div>
+
+
+            {/* note */}
+
+            <div className="w-full flex flex-col gap-y-2">
+              <Label>Note</Label>
+              <Input type='text' {...register('note')} />
+            </div>
+
           </div>
+        </ScrollArea>
 
-        </form>
-      </MaxWidthWrapper>
-    </>
+        <div className="flex mt-5 mb-2 gap-x-2 px-2.5">
+          <Button type='submit' variant='outline' onClick={() => { reset(); ID = null }}>Reset</Button>
+          <Button type='submit' className='flex-1'>{ID ? 'Update Roster' : 'Save Roster'} {isPending && <Loader className='h-4 w-4 animate-spin' />}</Button>
+        </div>
+      </form>
+    </Dialog>
   )
 }
 

@@ -11,7 +11,7 @@ export const vitalFormSchema = z.object({
             return inputDate >= currentDate;  // if input date is equal or greater than should not happen annything
         }, { message: 'Date cannot be in the past' }),
 
-    name: z.string()
+    setup_VitalId: z.number()
         .min(1, { message: 'Vital name is required' }),
 
     value: z.string()

@@ -1,0 +1,64 @@
+export interface Appointments {
+    id: string,
+    doctorId: number,
+    patientId: number,
+    fees: string,
+    shift: string,
+    appointment_date: string,
+    appointment_priority: string,
+    symptom_type: string,
+    symptom_description: string,
+    payment_mode: string,
+    status: string,
+    discount: string,
+    alternative_address: string,
+    reference: string,
+    previous_medical_issue: string,
+    message: string,
+    doctor: {
+        name: string
+    },
+    patient: {
+        name: string,
+        phone: string,
+        gender: string
+    }
+}
+
+
+
+
+export interface AppointmentDetails {
+    id: string,
+    doctorId: number,
+    patientId: number,
+    fees: string,
+    shift: string,
+    appointment_date: string,
+    appointment_priority: string,
+    symptom_type: string,
+    symptom_description: string,
+    payment_mode: string,
+    status: string,
+    discount: string,
+    alternative_address: string,
+    reference: string,
+    previous_medical_issue: string,
+    message: string,
+    patient: {
+        name: string,
+        phone: string,
+        email: string,
+        gender: string,
+        age: string,
+        blood_group: string,
+        address: string,
+    },
+    doctor: {
+        name: string,
+        gender: string,
+        phone: string,
+        department: string,
+        specialist: string
+    }
+}

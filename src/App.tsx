@@ -9,15 +9,14 @@ import QueueAppointment from "./admin/appointment/QueueAppointment";
 import OPD from "./admin/OPD/opd-layout";
 import RegisterPatient from "./Auth/registerPatient";
 import Pharmacy from "./admin/pharmacy/pharmacy";
-import Bill from "./admin/pharmacy/bills";
+import Bill from "./admin/pharmacy/pharmacyBills";
 import Medicines from "./admin/pharmacy/medicines";
 import Purchase from "./admin/pharmacy/purchase";
-import HumanResource from "./admin/humanresource/humanresource";
+import HumanResource from "./admin/humanresource/HRLayout";
 import Staff from "./admin/humanresource/staff";
 import CreateStaff from "./admin/humanresource/createStaff";
 import DutuRoster from "./admin/dutyRoster/dutyroster";
 import RosterReport from "./admin/dutyRoster/rosterReport";
-import PurchaseMedicineForm from "./admin/pharmacy/forms/purchaseMedicine";
 import { Toaster } from "react-hot-toast";
 import { useAppDispatch } from "./hooks";
 import { useEffect } from "react";
@@ -43,6 +42,20 @@ import CategoryList from "./admin/setup/hospital-charges/chargesCategory/categor
 import ChargeTypes from "./admin/setup/hospital-charges/chargeType/chargeTypes";
 import ChargeUnitList from "./admin/setup/hospital-charges/chargeUnit/chargeUnitList";
 import TaxList from "./admin/setup/hospital-charges/taxes/taxList";
+import OperationLayout from "./admin/setup/operation/operationLayout";
+import OperationNames from "./admin/setup/operation/operation_name/operationNames";
+import OperationCategories from "./admin/setup/operation/operation_category/operationCategories";
+import FindingNames from "./admin/setup/findings/finding_name/findingNames";
+import FindindngCategories from "./admin/setup/findings/finding_category/findindngCategory";
+import FindingsLayout from "./admin/setup/findings/findingsLayout";
+import PharmacyLayout from "./admin/setup/pharmacy/pharmacyLayout";
+import MedicineCategories from "./admin/setup/pharmacy/medicine_category/medicineCategories";
+import MedicineGroups from "./admin/setup/pharmacy/medicine_group/medicineGroups";
+import MedicineCompany from "./admin/setup/pharmacy/medicine_company/medicineCompany";
+import MedicineUnits from "./admin/setup/pharmacy/medicine_unit/medicineUnits";
+import DoseDuration from "./admin/setup/pharmacy/medicine_dose_duration/doseDuration";
+import DoseIntervals from "./admin/setup/pharmacy/medicine_dose_interval/doseIntervals";
+import SetupVitals from "./admin/setup/vitals/setupVitals";
 
 
 
@@ -83,7 +96,7 @@ function App() {
 
           {/* Setup routes for charges*/}
 
-          <Route path="admin/charges" element={<ProtectRoutes requiredRole="admin" protectElement={<ChargesLayout />} />}>
+          <Route path="admin/setup/charges" element={<ProtectRoutes requiredRole="admin" protectElement={<ChargesLayout />} />}>
             <Route path="" element={<ChargesList />} />
             <Route path="category" element={<CategoryList />} />
             <Route path="types" element={<ChargeTypes />} />
@@ -92,9 +105,42 @@ function App() {
           </Route>
 
 
+          {/* Setup routes for operations*/}
+
+          <Route path="admin/setup/operation" element={<ProtectRoutes requiredRole="admin" protectElement={<OperationLayout />} />}>
+            <Route path="" element={<OperationNames />} />
+            <Route path="category" element={<OperationCategories />} />
+          </Route>
+
+          {/* Setup routes for findings */}
+
+          <Route path="admin/setup/finding" element={<ProtectRoutes requiredRole="admin" protectElement={<FindingsLayout />} />}>
+            <Route path="" element={<FindingNames />} />
+            <Route path="category" element={<FindindngCategories />} />
+          </Route>
+
+
+          {/* Setup routes for pharmacy */}
+
+          <Route path="admin/setup/pharmacy" element={<ProtectRoutes requiredRole="admin" protectElement={<PharmacyLayout />} />}>
+            <Route path="" element={<MedicineCategories />} />
+            <Route path="group" element={<MedicineGroups />} />
+            <Route path="company" element={<MedicineCompany />} />
+            <Route path="unit" element={<MedicineUnits />} />
+            <Route path="duration" element={<DoseDuration />} />
+            <Route path="interval" element={<DoseIntervals />} />
+          </Route>
+
+
+          {/* Setup routes for vitals */}
+
+          <Route path="admin/setup/vital" element={<ProtectRoutes requiredRole="admin" protectElement={<SetupVitals />} />} />
+
+
+
           <Route path="admin/OPD" element={<OPD />}>
             <Route path="list" element={<OPDLIST />} />
-            <Route path="patient/:patientId/:caseId" element={<Patient />}>
+            <Route path="patient/:patientId/:opdId" element={<Patient />}>
               <Route path="visitdetails" element={<VisitDetails />} />
               <Route path="medication" element={<Medication />} />
               <Route path="vital" element={<Vital />} />
@@ -110,7 +156,6 @@ function App() {
             <Route path="bill" element={<Bill />} />
             <Route path="medicines" element={<Medicines />} />
             <Route path="purchase" element={<Purchase />} />
-            <Route path="createPurchase" element={<PurchaseMedicineForm />} />
           </Route>
 
           <Route path="admin/humanresource" element={<HumanResource />} >

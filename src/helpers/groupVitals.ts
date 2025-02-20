@@ -1,8 +1,9 @@
-import { Vitals_List } from "@/types/type";
+import { VitalType } from "@/types/opd_section/vitals";
 
-const groupedBYdate = (arr: Vitals_List[] ): { date: string; measure: Vitals_List[] }[] => {
 
-    const groupedArray: { date: string; measure: Vitals_List[] }[] = [];
+const groupedBYdate = (arr: VitalType[] ): { date: string; measure: VitalType[] }[] => {
+
+    const groupedArray: { date: string; measure: VitalType[] }[] = [];
 
     for (let elem of arr) {
 

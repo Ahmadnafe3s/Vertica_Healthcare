@@ -4,29 +4,79 @@ import { Calendar, Clock, Pencil, Plus, SearchX, Trash2 } from "lucide-react"
 import TimelineFormModel from "./timelineFormModel"
 import { useEffect, useRef, useState } from "react"
 import AlertModel from "@/components/alertModel"
-import { Timeline_List } from "@/types/type"
 import toast from "react-hot-toast"
-import { deleteTimeline, getTimelines } from "../../opdApiHandler"
+import { createTimeline, deleteTimeline, getTimelineDetails, getTimelines, updateTimeine } from "../../opdApiHandler"
 import { useParams } from "react-router-dom"
+import { timelineFormSchema } from "@/formSchemas/timelineFormSchema"
+import { z } from "zod"
+import { timeline } from "@/types/opd_section/timeline"
+import LoaderModel from "@/components/loader"
 
 const Timeline = () => {
 
     const id = useRef<null | number>(null)
 
-    const { caseId } = useParams()
+    const { patientId, opdId } = useParams()
 
-    const [TIMELINE, SET_TIMELINE] = useState<Timeline_List[]>([])
+    // pending states
+    const [isPending, setPending] = useState<boolean>(false)
 
-    const [MODEL, SET_MODEL] = useState<{ timelineForm: boolean, alert: boolean }>({
+
+    // API states
+    const [timelines, setTimelines] = useState<timeline[]>([])
+    const [timelineDetails, setTimelineDetails] = useState<timeline>()
+
+
+    // model state
+    const [model, setModel] = useState<{ timelineForm: boolean, alert: boolean, loaderModel: boolean }>({
         timelineForm: false,
-        alert: false
+        alert: false,
+        loaderModel: false,
     })
 
 
-    const fetchTimeline_list = async () => {
+    const handleSubmit = async (formData: z.infer<typeof timelineFormSchema>) => {
         try {
-            const data = await getTimelines(Number(caseId))
-            SET_TIMELINE(data)
+            setPending(true)
+            let data;
+
+            timelineDetails ? (
+                data = await updateTimeine(timelineDetails.id, formData), setTimelineDetails(undefined))
+                :
+                (data = await createTimeline(opdId!, Number(patientId), formData))
+
+            toast.success(data.message)
+            fetchTimelines()
+            setModel(rest => ({
+                ...rest,
+                timelineForm: false
+            }))
+
+        } catch ({ message }: any) {
+            toast.error(message)
+        } finally {
+            setPending(false)
+        }
+    }
+
+
+    const fetchTimelines = async () => {
+        try {
+            const data = await getTimelines(opdId!)
+            setTimelines(data)
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+
+    // fetching details for edir mode
+
+    const fetchTimelineDetails = async (id: number) => {
+        try {
+            setModel({ ...model, loaderModel: true })
+            const data = await getTimelineDetails(id)
+            setTimelineDetails(data)
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -37,23 +87,20 @@ const Timeline = () => {
         try {
             const data = await deleteTimeline(Number(id.current))  // timeline id
             toast.success(data.message)
-            fetchTimeline_list()
+            fetchTimelines()
         } catch ({ message }: any) {
             toast.error(message)
         } finally {
-            SET_MODEL((rest) => {
-                return {
-                    ...rest,
-                    alert: false
-                }
-            });
-            id.current = null
+            setModel({
+                ...model,
+                alert: false
+            })
         }
     }
 
 
     useEffect(() => {
-        fetchTimeline_list()
+        fetchTimelines()
     }, [])
 
 
@@ -62,12 +109,10 @@ const Timeline = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg text-gray-800 font-semibold">Timeline</h1>
-                <Button variant='outline' size='sm' onClick={() => {
-                    SET_MODEL((rest) => {
-                        return {
-                            ...rest,
-                            timelineForm: true
-                        }
+                <Button size='sm' onClick={() => {
+                    setModel({
+                        ...model,
+                        timelineForm: true
                     })
                 }}>
                     <Plus /> Add Timeline
@@ -76,11 +121,11 @@ const Timeline = () => {
 
             <Separator />
 
-            {TIMELINE.length > 0 ? (<ul className="relative before:absolute space-y-5 before:w-1 w-64 sm:w-[400px] lg:w-[550px] mx-auto gap-3 before:h-full before:bg-gray-300 before:top-0 before:block">
+            {timelines.length > 0 ? (<ul className="relative before:absolute space-y-5 before:w-1 w-64 sm:w-[400px] lg:w-[550px] mx-auto gap-3 before:h-full before:bg-gray-300 before:top-0 before:block">
 
 
 
-                {TIMELINE.map((timeline, i) => {
+                {timelines.map((timeline, i) => {
                     return <li className="space-y-4" key={i}>
 
                         {/* Time section */}
@@ -101,25 +146,21 @@ const Timeline = () => {
                                     <div className="flex gap-x-2">
 
                                         <Pencil className="w-4 h-4 text-gray-500 transition-all active:scale-90 opacity-0 group-hover:opacity-100 "
-                                            onClick={() => {
-                                                SET_MODEL((rest) => {
-                                                    return {
-                                                        ...rest,
-                                                        timelineForm: true
-                                                    }
-                                                });
-                                                id.current = timeline.id
+                                            onClick={async () => {
+                                                await fetchTimelineDetails(timeline.id)
+                                                setModel({
+                                                    ...model,
+                                                    timelineForm: true
+                                                })
                                             }}
                                         />
 
                                         <Trash2 className="w-4 h-4 text-gray-500 transition-all active:scale-90 opacity-0 group-hover:opacity-100 "
                                             onClick={() => {
-                                                SET_MODEL((rest) => {
-                                                    return {
-                                                        ...rest,
-                                                        alert: true
-                                                    }
-                                                });
+                                                setModel({
+                                                    ...model,
+                                                    alert: true
+                                                })
                                                 id.current = timeline.id
                                             }}
                                         />
@@ -157,34 +198,36 @@ const Timeline = () => {
 
             {/* Form model */}
 
-            {MODEL.timelineForm && <TimelineFormModel ID={Number(id.current)}
+            {model.timelineForm && <TimelineFormModel
+                Submit={handleSubmit}
+                timelineDetails={timelineDetails!}
+                isPending={isPending}
                 onClick={() => {
-                    SET_MODEL((rest) => {
-                        return {
-                            ...rest,
-                            timelineForm: false
-                        }
-                    });
-                    id.current = null;
-                    fetchTimeline_list()
+                    setModel({
+                        ...model,
+                        timelineForm: false
+                    })
+                    setTimelineDetails(undefined)
                 }}
             />}
 
 
             {/* Alert Model */}
 
-            {MODEL.alert && <AlertModel
+            {model.alert && <AlertModel
                 cancel={() => {
-                    SET_MODEL((rest) => {
-                        return {
-                            ...rest,
-                            alert: false
-                        }
-                    });
-                    id.current = null
+                    setModel({
+                        ...model,
+                        alert: false
+                    })
                 }}
                 continue={onDelete}
             />}
+
+
+            {/* Loader Model */}
+
+            {model.loaderModel && (<LoaderModel />)}
 
         </section>
     )

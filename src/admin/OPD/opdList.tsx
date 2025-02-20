@@ -1,24 +1,47 @@
-import AddAppointment from '@/admin/appointment/AddAppointment'
-import { buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ClipboardPlus, FileText, Plus, Printer, ReceiptText } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ClipboardPlus, FileText, Plus, Printer, ReceiptText, Syringe } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getOPDList, searchOPDs } from './opdApiHandler'
+import { createPrescription, deletePrescription, getOPDList, getPrescriptionDetails, searchOPDs, updatePrescription } from './opdApiHandler'
 import toast from 'react-hot-toast'
-import { OPDs } from '@/types/type'
 import CreatePrescriptionFormModel from './prescription/createPrescriptionFormModel'
+import { OPDs } from '@/types/opd_section/opd'
+import { createPrescriptionFormSchema } from '@/formSchemas/createPrescriptionFormSchema'
+import { boolean, z } from 'zod'
+import CustomTooltip from '@/components/customTooltip'
+import LoaderModel from '@/components/loader'
+import PrescriptionDetailsModel from './prescription/prescriptionDetailsModel'
+import { prescriptionDetail } from '@/types/opd_section/prescription'
+import AlertModel from '@/components/alertModel'
+import { useDebouncedCallback } from 'use-debounce'
+
 
 
 
 const OPDLIST = () => {
 
-  const [isAppointmentModel, setAppointmentModel] = useState<boolean>(false)
+  const opdId = useRef<string>('')
+
+  // loaders
+  const [isLoading, setLoading] = useState<{ inline: boolean, model: boolean }>({
+    inline: false,
+    model: false
+  })
+
+  // API states
   const [OPD_list, setOPD_list] = useState<OPDs[]>([])
+  const [prescDetails, setPrescDetails] = useState<prescriptionDetail>()
 
   // Model States
-  const [isPrescriptionFormVisible, setPrescritionFormVisible] = useState<boolean>(false)
+  const [model, setModel] = useState<{ prescriptionForm: boolean, appointmentForm: boolean, prescriptionDetails: boolean, alert: boolean }>({
+    prescriptionForm: false,
+    appointmentForm: false,
+    prescriptionDetails: false,
+    alert: false
+  })
+
 
   const fetOPDlist = async () => {
     try {
@@ -32,12 +55,71 @@ const OPDLIST = () => {
 
 
 
-  const onSerach = async (search: string) => {
+  const onSerach = useDebouncedCallback(async (search: string) => {
     try {
       const data = await searchOPDs(search)
       setOPD_list(data)
     } catch ({ message }: any) {
       toast.error(message)
+    }
+  }, 400)
+
+
+
+
+  // handling prescription
+  const handleSubmit = async (formData: z.infer<typeof createPrescriptionFormSchema>) => {
+    try {
+      let data;
+      setLoading(prev => ({ ...prev, inline: true }))
+      prescDetails ? (
+        data = await updatePrescription(prescDetails.id, formData),
+        setPrescDetails(undefined)
+      )
+        :
+        (data = await createPrescription(opdId.current, formData))
+      toast.success(data.message)
+      fetOPDlist()
+      setModel(prev => ({ ...prev, prescriptionForm: false }))
+    } catch ({ message }: any) {
+      toast.error(message)
+    } finally {
+      setLoading(prev => ({ ...prev, inline: false }))
+    }
+  }
+
+
+
+
+  // fetching prescription details
+  const fetchPrescriptionDetails = async (id: number) => {
+    try {
+      setLoading(prev => ({ ...prev, model: true }))
+      const data = await getPrescriptionDetails(id)
+      setPrescDetails(data)
+    } catch ({ message }: any) {
+      toast.error(message)
+    } finally {
+      setLoading(prev => ({ ...prev, model: false }))
+    }
+  }
+
+
+
+  // deleting prescription
+
+  const onDelete = async () => {
+    try {
+      setLoading(prev => ({ ...prev, inline: true }))
+      const data = await deletePrescription(prescDetails?.id!)
+      toast.success(data.message)
+      fetOPDlist()
+    } catch ({ message }: any) {
+      toast.error(message)
+    } finally {
+      setLoading(prev => ({ ...prev, inline: false }))
+      setModel(prev => ({ ...prev, alert: false }))
+      setPrescDetails(undefined)
     }
   }
 
@@ -46,10 +128,6 @@ const OPDLIST = () => {
   useEffect(() => {
     fetOPDlist()
   }, [])
-
-
-
-
 
 
   return (
@@ -61,14 +139,9 @@ const OPDLIST = () => {
         <h1 className='font-semibold tracking-tight'>OPD - out patient list</h1>
         <div className='flex gap-x-2 overflow-x-auto'>
 
-          <Link onClick={() => { setAppointmentModel(true) }} to={''} className={buttonVariants({
-            variant: 'outline',
-            size: 'sm',
-            className: 'flex gap-x-1'
-          })}>
-            <Plus />
-            Add Patient
-          </Link>
+          <Button size="sm"
+            onClick={() => setModel(prev => ({ ...prev, appointmentForm: true }))}
+          ><Plus />Add Patient</Button>
 
         </div>
       </div>
@@ -78,7 +151,7 @@ const OPDLIST = () => {
       <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between border-b border-gray-200'>
 
         <div className='flex gap-x-2'>
-          <Input type='text' height='10px' placeholder='caseId , patient , doctor' onChange={(e) => { onSerach(e.target.value) }} />
+          <Input type='text' height='10px' placeholder='opdId , patient , doctor' onChange={(e) => { onSerach(e.target.value) }} />
           {/* use debounce to prevent api call */}
         </div>
 
@@ -90,13 +163,12 @@ const OPDLIST = () => {
         </div>
       </div>
 
-      <Table className='my-10'>
 
-        <TableHeader>
+      <Table className="border rounded-lg my-10">
+        <TableHeader className='bg-gray-100 '>
           <TableRow>
             <TableHead>OPD No.</TableHead>
             <TableHead>Patient Name</TableHead>
-            <TableHead>Case ID</TableHead>
             <TableHead>Appointment Date</TableHead>
             <TableHead>Consultant</TableHead>
             <TableHead>Reference</TableHead>
@@ -110,19 +182,14 @@ const OPDLIST = () => {
 
           {OPD_list.map((opd, i) => {
             return <TableRow key={i}>
-              <TableCell className="text-gray-900">{opd.id}</TableCell>
-              <TableCell className='whitespace-nowrap'>{opd.appointment.patient.name}</TableCell>
               <TableCell>
-                <Link
-                  to={`../patient/${opd.patientId}/${opd.caseId}/visitdetails`}
-                  className="font-medium text-blue-500 hover:text-blue-400 cursor-pointer"
-                >
-                  {opd.caseId}
+                <Link to={`../patient/${opd.patientId}/${opd.id}/visitdetails`}
+                  className="font-medium text-blue-500 hover:text-blue-400 cursor-pointer">
+                  {opd.id}
                 </Link>
               </TableCell>
-
+              <TableCell className='whitespace-nowrap'>{opd.appointment.patient.name}</TableCell>
               <TableCell>{opd.appointment.appointment_date}</TableCell>
-
               <TableCell>
                 <Link className='text-blue-500 font-medium whitespace-nowrap' to={{ pathname: `/admin/profile/staff/${opd.appointment.doctor.id}` }}>
                   {opd.appointment.doctor.name}
@@ -134,7 +201,26 @@ const OPDLIST = () => {
               <TableCell>{opd.appointment.previous_medical_issue}</TableCell>
 
               <TableCell className='flex gap-x-2 items-center'>
-                <ClipboardPlus className='cursor-pointer text-gray-600 w-5 h-5' onClick={() => setPrescritionFormVisible(true)} />
+                {opd.prescriptions?.id ?
+                  (
+                    <CustomTooltip message='prescription'>
+                      <Syringe className='cursor-pointer text-gray-600 w-5 h-5'
+                        onClick={async () => {
+                          await fetchPrescriptionDetails(opd.prescriptions.id)
+                          setModel(prev => ({ ...prev, prescriptionDetails: true }))
+                        }}
+                      />
+                    </CustomTooltip>
+                  )
+                  :
+                  (
+                    <CustomTooltip message='Add prescription'>
+                      <ClipboardPlus className='cursor-pointer text-gray-600 w-5 h-5'
+                        onClick={() => { opdId.current = opd.id; setModel(prev => ({ ...prev, prescriptionForm: true })) }}
+                      />
+                    </CustomTooltip>
+                  )
+                }
                 <FileText className='cursor-pointer text-gray-600 w-5 h-5' />
                 <Printer className='cursor-pointer text-gray-600 w-5 h-5' />
                 <ReceiptText className='cursor-pointer text-gray-600 w-5 h-5' />
@@ -142,20 +228,51 @@ const OPDLIST = () => {
 
             </TableRow>
           })}
-
         </TableBody>
       </Table>
 
-      {isAppointmentModel && <AddAppointment onClick={() => { setAppointmentModel(false); fetOPDlist() }} />}
+
+      {/* {isAppointmentModel && <AddAppointment onClick={() => { setAppointmentModel(false); }} />} */}
 
       {/* Prescription Model */}
 
-      {isPrescriptionFormVisible && (
-        <CreatePrescriptionFormModel Submit={() => { }} isPending={true} 
-        onClick={()=>setPrescritionFormVisible(false)}
+      {
+        model.prescriptionForm && (
+          <CreatePrescriptionFormModel Submit={handleSubmit} isPending={isLoading.inline}
+            prescDetails={prescDetails!}
+            onClick={() => { setModel(prev => ({ ...prev, prescriptionForm: false })); setPrescDetails(undefined) }}
+          />
+        )
+      }
+
+      {/* Loader Model */}
+
+      {isLoading.model && (<LoaderModel />)}
+
+
+      {/* prescription detais */}
+
+      {model.prescriptionDetails && (
+        <PrescriptionDetailsModel
+          prescriptionDetails={prescDetails!}
+          onClick={() => { setModel(prev => ({ ...prev, prescriptionDetails: false })); setPrescDetails(undefined) }}
+          Delete={() => setModel(prev => ({ ...prev, prescriptionDetails: false, alert: true }))}
+          Edit={() => setModel(prev => ({ ...prev, prescriptionDetails: false, prescriptionForm: true }))}
         />
       )}
-    </div>
+
+
+      {/* Alert model */}
+
+      {model.alert && (
+        <AlertModel
+          cancel={() => { setModel(prev => ({ ...prev, alert: false })); setPrescDetails(undefined) }}
+          continue={onDelete}
+          isPending={isLoading.inline}
+        />
+      )}
+
+    </div >
   )
 }
 

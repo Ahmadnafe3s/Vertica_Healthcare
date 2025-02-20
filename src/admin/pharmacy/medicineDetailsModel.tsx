@@ -1,33 +1,18 @@
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { MedicineDetails } from '@/types/type'
 import { Pill, X } from 'lucide-react'
-import { HTMLAttributes, useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
-import { getMedicinedetails } from './pharmacyApiHandler'
+import { HTMLAttributes } from 'react'
+import { medicineDetails } from '@/types/pharmacy/pharmacy'
 
 
 interface MedicineDetailsModelProps extends HTMLAttributes<HTMLDivElement> {
-    ID: number
+    medicineDetails: medicineDetails
 }
 
 
 
-const MedicineDetailsModel = ({ ID, ...props }: MedicineDetailsModelProps) => {
+const MedicineDetailsModel = ({ medicineDetails, ...props }: MedicineDetailsModelProps) => {
 
-    const [medicineDetails, setMedicineDetails] = useState<MedicineDetails>()
-
-    useEffect(() => {
-        try {
-            (async function fetchData() {
-                const data = await getMedicinedetails(ID)
-                setMedicineDetails(data)
-            })()
-
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }, [])
 
     return (
         <>
@@ -63,7 +48,7 @@ const MedicineDetailsModel = ({ ID, ...props }: MedicineDetailsModelProps) => {
                                 </div>
                                 <div>
                                     <h1 className='font-semibold text-lg text-gray-900'>{medicineDetails?.name}</h1>
-                                    <p className='text-sm text-gray-500'>{medicineDetails?.group}</p>
+                                    <p className='text-sm text-gray-500'>{medicineDetails?.group.name}</p>
                                 </div>
                             </div>
 
@@ -78,12 +63,12 @@ const MedicineDetailsModel = ({ ID, ...props }: MedicineDetailsModelProps) => {
 
                                 <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
                                     <p className='text-gray-700'>Category</p>
-                                    <p className='font-semibold'>{medicineDetails?.category}</p>
+                                    <p className='font-semibold'>{medicineDetails?.category.name}</p>
                                 </div>
 
                                 <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
                                     <p className='text-gray-700'>Company</p>
-                                    <p className='font-semibold text-sm'>{medicineDetails?.company}</p>
+                                    <p className='font-semibold text-sm'>{medicineDetails?.company.name}</p>
                                 </div>
 
                                 <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
@@ -100,12 +85,12 @@ const MedicineDetailsModel = ({ ID, ...props }: MedicineDetailsModelProps) => {
 
                                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                     <p className='text-gray-700'>Group</p>
-                                    <p className='font-semibold'>{medicineDetails?.group}</p>
+                                    <p className='font-semibold'>{medicineDetails?.group.name}</p>
                                 </div>
 
                                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                     <p className='text-gray-700'>Unit</p>
-                                    <p className='font-semibold'>{medicineDetails?.unit}</p>
+                                    <p className='font-semibold'>{medicineDetails?.unit.name}</p>
                                 </div>
 
                                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>

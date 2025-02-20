@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 
 export const PurchaseMedicineFormSchema = z.object({
-    category: z.string()
+    categoryId: z.string()
         .min(1, { message: 'Medicine category is required' })
         .default(''),
 

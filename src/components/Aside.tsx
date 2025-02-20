@@ -19,7 +19,7 @@ const Aside = () => {
 
     return (
         <>
-            <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all border-r border-zinc-200 h-[calc(100vh-56px-35px)] top-14', { 'w-52 p-2.5': isSlideOpend })}>
+            <div className={cn('sticky w-0 sm:w-52 p-0 bg-white sm:p-2.5 transition-all border-r border-zinc-200 h-[calc(100vh-56px-35px)] top-14', { 'w-52 p-2.5': isSlideOpend })}>
 
                 <ScrollArea className='h-full '>
 
@@ -67,7 +67,7 @@ const Aside = () => {
                         }><Watch className='h-4 w-4' />Duty Roster</Link></li>
 
 
-                        {/* Tree View Links */}
+                        {/* Tree View Links setup links */}
 
                         <li>
                             <Accordion type="single" collapsible >
@@ -83,13 +83,40 @@ const Aside = () => {
                                     {/* Links */}
 
                                     <AccordionContent className='py-1'>
-                                        <Link to={{ pathname: '/admin/charges' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-center text-[13px]'>
-                                            <ChevronRight className='h-4 w-4' />Hospital Charges</Link>
+                                        <div className="pl-5">
+                                            <Link to={{ pathname: '/admin/setup/charges' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                <ChevronRight className='h-4 w-4' />Hospital Charges</Link>
+                                        </div>
                                     </AccordionContent>
-                                    {/* <AccordionContent className='py-1'>
-                                    <Link to={{ pathname: '/admin/dutyroster/rosterreport' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-center text-[13px]'>
-                                        <ChevronRight className='h-4 w-4' />Hospital Charges</Link>
-                                </AccordionContent> */}
+
+                                    <AccordionContent className='py-1'>
+                                        <div className="pl-5">
+                                            <Link to={{ pathname: '/admin/setup/operation' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                <ChevronRight className='h-4 w-4' />Operation</Link>
+                                        </div>
+                                    </AccordionContent>
+
+                                    <AccordionContent className='py-1'>
+                                        <div className="pl-5">
+                                            <Link to={{ pathname: '/admin/setup/finding' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                <ChevronRight className='h-4 w-4' />Findings</Link>
+                                        </div>
+                                    </AccordionContent>
+
+                                    <AccordionContent className='py-1'>
+                                        <div className="pl-5">
+                                            <Link to={{ pathname: '/admin/setup/pharmacy' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                <ChevronRight className='h-4 w-4' />Pharmacy</Link>
+                                        </div>
+                                    </AccordionContent>
+
+                                    <AccordionContent className='py-1'>
+                                        <div className="pl-5">
+                                            <Link to={{ pathname: '/admin/setup/vital' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                <ChevronRight className='h-4 w-4' />Vital</Link>
+                                        </div>
+                                    </AccordionContent>
+
                                 </AccordionItem>
                             </Accordion>
                         </li>

@@ -4,20 +4,20 @@ export const AddMedicinesFormSchema = z.object({
     name: z.string()
         .min(1, { message: 'Medicine Name is required' }),
 
-    category: z.string()
+    categoryId: z.string()
         .min(1, { message: 'Select medicine category' })
         .default(''),
 
-    company: z.string()
+    companyId: z.string()
         .optional(),
 
     composition: z.string()
         .optional(),
 
-    group: z.string()
+    groupId: z.string()
         .optional(),
 
-    unit: z.string()
+    unitId: z.string()
         .min(1, { message: 'Select medicine unit' })
         .default(''),
 

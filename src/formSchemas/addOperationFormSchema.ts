@@ -1,11 +1,11 @@
 import { z } from "zod";
 
 export const operationFormSchema = z.object({
-    category: z.string()
+    categoryId: z.string()
         .min(1, "Category is required")
         .default(''),
 
-    name: z.string()
+    oprNameId: z.string()
         .min(1, "Name is required")
         .default(''),
 

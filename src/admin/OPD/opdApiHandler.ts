@@ -1,11 +1,18 @@
 import { operationFormSchema } from "@/formSchemas/addOperationFormSchema"
 import { chargeFormSchema } from "@/formSchemas/chargeFormSchema"
+import { createPrescriptionFormSchema } from "@/formSchemas/createPrescriptionFormSchema"
 import { medicationFormSchema } from "@/formSchemas/medicationFormSchema"
 import { paymentFormSchema } from "@/formSchemas/paymentFormSchema"
 import { timelineFormSchema } from "@/formSchemas/timelineFormSchema"
 import { vitalFormSchema } from "@/formSchemas/vitalFormSchema"
 import { ChargeDetailsType } from "@/types/opd_section/charges"
-import { opdDetails, opdMedications, OPDs, Operation_Details, Operation_list, PaymentType, Timeline_List, Vitals_List } from "@/types/type"
+import { opdMedications } from "@/types/opd_section/medication"
+import { opdDetails, OPDs } from "@/types/opd_section/opd"
+import { operationDetailsType, PaginatedOperations } from "@/types/opd_section/operationType"
+import { Payment } from "@/types/opd_section/payment"
+import { prescription, prescriptionDetail } from "@/types/opd_section/prescription"
+import { timeline } from "@/types/opd_section/timeline"
+import { Vitals_List } from "@/types/type"
 import axios from "axios"
 import { z } from "zod"
 
@@ -43,10 +50,10 @@ export const searchOPDs = async (search: string) => {
 }
 
 
-export const getOPD_Details = async (caseId: number): Promise<opdDetails> => {
+export const getOPD_Details = async (opdId: string): Promise<opdDetails> => {
 
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd/${caseId}`)
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd/${opdId}`)
         return res.data
 
     } catch (error: any) {
@@ -57,9 +64,9 @@ export const getOPD_Details = async (caseId: number): Promise<opdDetails> => {
 
 // for medication page
 
-export const createMedication = async (caseId: number, formData: z.infer<typeof medicationFormSchema>) => {
+export const createMedication = async (opdId: string, formData: z.infer<typeof medicationFormSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/medication/${caseId}`, formData)
+        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/medication/${opdId}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -68,10 +75,10 @@ export const createMedication = async (caseId: number, formData: z.infer<typeof 
 
 
 
-export const getMedications = async (caseId: number): Promise<opdMedications[]> => {
+export const getMedications = async (opdId: string, date?: string): Promise<opdMedications[]> => {
 
     try {
-        const params = { caseId }
+        const params = { opdId, date }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/medication`, { params })
         return res.data
 
@@ -92,17 +99,24 @@ export const deleteMedication = async (id: number) => {
 }
 
 
-export const searchMedications = async (caseId: number, date: string): Promise<opdMedications[]> => {
+export const getMedicationDetails = async (id: number) => {
     try {
-        const params = { caseId, date }
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/medication`, { params })
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/medication/${id}`)
         return res.data
-
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
     }
 }
 
+
+export const updateMedication = async (id: number, formData: z.infer<typeof medicationFormSchema>) => {
+    try {
+        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/medication/${id}`, formData)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
 
 
 
@@ -110,9 +124,9 @@ export const searchMedications = async (caseId: number, date: string): Promise<o
 
 // [For Vital pages]
 
-export const createVital = async (patientId: number, caseId: number, formData: z.infer<typeof vitalFormSchema>) => {
+export const createVital = async (patientId: number, opdId: string, formData: z.infer<typeof vitalFormSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/vital/${patientId}/${caseId}`, formData)
+        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/vital/${patientId}/${opdId}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -121,9 +135,9 @@ export const createVital = async (patientId: number, caseId: number, formData: z
 
 
 
-export const getVitals = async (caseId: number): Promise<Vitals_List[]> => {
+export const getVitals = async (opdId: string): Promise<Vitals_List[]> => {
     try {
-        const params = { caseId }
+        const params = { opdId }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/vital`, { params })
         return res.data
     } catch (error: any) {
@@ -135,8 +149,6 @@ export const getVitals = async (caseId: number): Promise<Vitals_List[]> => {
 
 export const deleteVitals = async (id: number) => {
     try {
-        console.log(id);
-
         const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/vital/${id}`,)
         return res.data
     } catch (error: any) {
@@ -146,9 +158,9 @@ export const deleteVitals = async (id: number) => {
 
 
 
-export const searchVital = async (caseId: number, date: string): Promise<Vitals_List[]> => {
+export const searchVital = async (opdId: string, date: string): Promise<Vitals_List[]> => {
     try {
-        const params = { caseId, date }
+        const params = { opdId, date }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/vital`, { params })
         return res.data
     } catch (error: any) {
@@ -165,9 +177,10 @@ export const searchVital = async (caseId: number, date: string): Promise<Vitals_
 //  API Handlers for operation section
 
 
-export const createOperation = async (patientId: number, caseId: number, formData: z.infer<typeof operationFormSchema>) => {
+export const createOperation = async (patientId: number, opdId: string, formData: z.infer<typeof operationFormSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/operation/${patientId}/${caseId}`, formData)
+
+        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/operation/${patientId}/${opdId}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -177,9 +190,9 @@ export const createOperation = async (patientId: number, caseId: number, formDat
 
 
 
-export const getOperation_List = async (caseId: number): Promise<Operation_list[]> => {
+export const getOperation_List = async (page: number, opdId: string, search?: string): Promise<PaginatedOperations> => {
     try {
-        const params = { caseId }
+        const params = { page, opdId }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/operation`, { params })
         return res.data
     } catch (error: any) {
@@ -189,7 +202,7 @@ export const getOperation_List = async (caseId: number): Promise<Operation_list[
 
 
 
-export const getOperation_Details = async (id: string): Promise<Operation_Details> => {
+export const getOperation_Details = async (id: string): Promise<operationDetailsType> => {
     try {
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/operation/${id}`)
         return res.data
@@ -226,9 +239,9 @@ export const updateOperation = async (id: string, formData: z.infer<typeof opera
 
 //  API handlers for timeline section
 
-export const createTimeline = async (caseId: number, patientId: number, formData: z.infer<typeof timelineFormSchema>) => {
+export const createTimeline = async (opdId: string, patientId: number, formData: z.infer<typeof timelineFormSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/timeline/${patientId}/${caseId}`, formData)
+        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/timeline/${patientId}/${opdId}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -237,9 +250,9 @@ export const createTimeline = async (caseId: number, patientId: number, formData
 
 
 
-export const getTimelines = async (caseId: number): Promise<Timeline_List[]> => {
+export const getTimelines = async (opdId: string): Promise<timeline[]> => {
     try {
-        const params = { caseId }
+        const params = { opdId }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/timeline`, { params })
         return res.data
     } catch (error: any) {
@@ -270,7 +283,7 @@ export const updateTimeine = async (id: number, formData: z.infer<typeof timelin
 }
 
 
-export const getTimelineDetails = async (id: number): Promise<Timeline_List> => {  // this api willl not return Array of objects but same time of object
+export const getTimelineDetails = async (id: number): Promise<timeline> => {  // this api willl not return Array of objects but same time of object
     try {
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/timeline/${id}`)
         return res.data
@@ -333,9 +346,9 @@ export const getChargeDetails = async (id: number): Promise<ChargeDetailsType> =
 }
 
 
-export const getChargesList = async (caseId: string | number, page: number) => {
+export const getChargesList = async (opdId: string, page: number) => {
     try {
-        const params = { caseId, page }
+        const params = { opdId, page }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/charge`, { params })
         return res.data
     } catch (error: any) {
@@ -344,9 +357,9 @@ export const getChargesList = async (caseId: string | number, page: number) => {
 }
 
 
-export const searchCharges = async (caseId: string | number, date: string) => {
+export const searchCharges = async (opdId: string, date: string) => {
     try {
-        const params = { caseId, date }
+        const params = { opdId, date }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/charge`, { params })
         return res.data
     } catch (error: any) {
@@ -359,9 +372,9 @@ export const searchCharges = async (caseId: string | number, date: string) => {
 
 // API handlers for payment section
 
-export const createPayment = async (caseId: number, formData: z.infer<typeof paymentFormSchema>) => {
+export const createPayment = async (opdId: string, formData: z.infer<typeof paymentFormSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/payment/${caseId}`, formData)
+        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/payment/${opdId}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -370,9 +383,9 @@ export const createPayment = async (caseId: number, formData: z.infer<typeof pay
 
 
 // if we provide search it only will search with respective OPD caseId
-export const getPaymentsList = async (caseId: number, search?: string): Promise<PaymentType[]> => {
+export const getPaymentsList = async (opdId: string, search?: string): Promise<Payment[]> => {
     try {
-        const params = { caseId, search }
+        const params = { opdId, search }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/payment`, { params })
         return res.data
     } catch (error: any) {
@@ -381,7 +394,7 @@ export const getPaymentsList = async (caseId: number, search?: string): Promise<
 }
 
 
-export const getPaymentDetails = async (id: string): Promise<PaymentType> => {
+export const getPaymentDetails = async (id: string): Promise<Payment> => {
     try {
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/payment/${id}`)
         return res.data
@@ -404,6 +417,52 @@ export const updatePayment = async (id: string, formData: z.infer<typeof payment
 export const deletePayment = async (id: string) => {
     try {
         const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/payment/${id}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+
+
+// API handlers for prescription section
+
+
+export const createPrescription = async (opdId: string, formData: z.infer<typeof createPrescriptionFormSchema>) => {
+    try {
+        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/prescription/${opdId}`, formData)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const updatePrescription = async (id: number, formData: z.infer<typeof createPrescriptionFormSchema>) => {
+    try {
+        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/prescription/${id}`, formData)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const deletePrescription = async (id: number) => {
+    try {
+        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/prescription/${id}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const getPrescriptionDetails = async (id: number):Promise<prescriptionDetail> => {
+    try {
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/prescription/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

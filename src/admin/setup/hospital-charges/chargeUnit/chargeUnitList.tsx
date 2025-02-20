@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Pencil, Plus, Trash } from 'lucide-react'
 import AddUnitFormModel, { unitFormSchema } from './addUnitFormModel'
 import { useEffect, useRef, useState } from 'react'
@@ -9,6 +8,7 @@ import { z } from 'zod'
 import toast from 'react-hot-toast'
 import { createChargeUnit, deleteChargeUnit, getChargeUnitDetails, getChargeUnitList, updateChargeUnit } from '../chargesAPIhandlers'
 import AlertModel from '@/components/alertModel'
+import CustomTooltip from '@/components/customTooltip'
 
 
 export interface unitType {
@@ -108,15 +108,15 @@ const ChargeUnitList = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg text-gray-800 font-semibold">Unit List</h1>
-        <Button variant='outline' size='sm' onClick={() => { setAddUnitFormVisible(true) }}>
+        <Button size='sm' onClick={() => { setAddUnitFormVisible(true) }}>
           <Plus /> Add Unit
         </Button>
       </div>
 
       <Separator />
 
-      <Table>
-        <TableHeader>
+      <Table className="rounded-lg border">
+        <TableHeader className='bg-zinc-100'>
           <TableRow>
             <TableHead className=''>Unit Type</TableHead>
             <TableHead>Action</TableHead>
@@ -126,40 +126,26 @@ const ChargeUnitList = () => {
           {unitsList.map((unit) => {
             return <TableRow key={unit.id}>
               <TableCell>{unit.unit_type}</TableCell>
-              <TableCell className='space-x-2'>
-
+              <TableCell className='flex space-x-2'>
                 {/* EDIT  */}
-                <TooltipProvider delayDuration={200}>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
-                        fetchUnitdetails(unit.id)
-                      }} />
-                    </TooltipTrigger>
-                    <TooltipContent>Edit</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
+                <CustomTooltip message='EDIT'>
+                  <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                    fetchUnitdetails(unit.id)
+                  }} />
+                </CustomTooltip>
 
                 {/* DELETE  */}
-                <TooltipProvider delayDuration={200}>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
-                        setAlert(true);
-                        itemID.current = unit.id
-                      }} />
-                    </TooltipTrigger>
-                    <TooltipContent>DELETE</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
+                <CustomTooltip message='DELETE'>
+                  <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                    setAlert(true);
+                    itemID.current = unit.id
+                  }} />
+                </CustomTooltip>
               </TableCell>
             </TableRow>
           })}
         </TableBody>
       </Table>
-
 
       {/* Models */}
 

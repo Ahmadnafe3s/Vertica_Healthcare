@@ -9,14 +9,14 @@ import PaymentFormModel from "./paymentFormModel"
 import toast from "react-hot-toast"
 import { createPayment, deletePayment, getPaymentDetails, getPaymentsList, updatePayment } from "../../opdApiHandler"
 import { useParams } from "react-router-dom"
-import { PaymentType } from "@/types/type"
 import { currencyFormat } from "@/lib/utils"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { paymentFormSchema } from "@/formSchemas/paymentFormSchema"
 import { z } from "zod"
 import LoaderModel from "@/components/loader"
 import AlertModel from "@/components/alertModel"
 import { useDebouncedCallback } from 'use-debounce'
+import { Payment } from "@/types/opd_section/payment"
+import CustomTooltip from "@/components/customTooltip"
 
 
 
@@ -24,13 +24,13 @@ import { useDebouncedCallback } from 'use-debounce'
 
 const PaymentsList = () => {
 
-  const { caseId } = useParams()
+  const { opdId } = useParams()
   const [isPending, setPending] = useState<boolean>(false)
   const ID = useRef<string>()
 
   // API States
-  const [paymensList, setPaymentList] = useState<PaymentType[]>([])
-  const [paymentDetails, setPaymentDetails] = useState<PaymentType | undefined>(undefined)
+  const [paymensList, setPaymentList] = useState<Payment[]>([])
+  const [paymentDetails, setPaymentDetails] = useState<Payment | undefined>(undefined)
 
   // Models State
   const [isPaymentFormVisible, setIsPaymentFormVisible] = useState<boolean>(false);
@@ -41,7 +41,7 @@ const PaymentsList = () => {
   // Fetching list
   const fetchPaymetsList = async () => {
     try {
-      const data = await getPaymentsList(Number(caseId))
+      const data = await getPaymentsList(opdId!)
       setPaymentList(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -73,7 +73,7 @@ const PaymentsList = () => {
         data = await updatePayment(paymentDetails.id, formData)
         setPaymentDetails(undefined)
       } else {
-        data = await createPayment(Number(caseId), formData)
+        data = await createPayment(opdId!, formData)
       }
       toast.success(data.message)
       fetchPaymetsList()
@@ -100,11 +100,11 @@ const PaymentsList = () => {
   }
 
 
-  
+
   // prevent unnecessary api calls
   const onSearch = useDebouncedCallback(async (search: string) => {
     try {
-      const data = await getPaymentsList(Number(caseId), search)
+      const data = await getPaymentsList(opdId!, search)
       setPaymentList(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -124,11 +124,8 @@ const PaymentsList = () => {
       <div className="flex justify-between">
         <h1 className="text-lg text-gray-800 font-semibold">Payments</h1>
         <Button
-          variant='outline'
           size='sm'
-          onClick={() =>
-            setIsPaymentFormVisible(true)
-          }
+          onClick={() => setIsPaymentFormVisible(true)}
         >
           <Plus /> Add Payment
         </Button>
@@ -143,8 +140,8 @@ const PaymentsList = () => {
 
       <Separator />
 
-      <Table>
-        <TableHeader>
+      <Table className="rounded-lg border">
+        <TableHeader className="bg-zinc-100">
           <TableRow>
             <TableHead>Transaction ID</TableHead>
             <TableHead>Date</TableHead>
@@ -162,41 +159,29 @@ const PaymentsList = () => {
               <TableCell >{payment.payment_mode}</TableCell>
               <TableCell >{currencyFormat(payment.amount)}</TableCell>
               <TableCell >{payment.note}</TableCell>
-              <TableCell className="space-x-2">
+              <TableCell className="flex space-x-2">
 
                 {/* Edit */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Pencil className="w-4 cursor-pointer active:scale-90 text-gray-600" onClick={async () => {
-                        fetchPaymetDetails(payment.id)
-                      }} />
-                    </TooltipTrigger>
-                    <TooltipContent>Edit</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <CustomTooltip message="EDIT">
+                  <Pencil className="w-4 cursor-pointer active:scale-90 text-gray-600" onClick={async () => {
+                    fetchPaymetDetails(payment.id)
+                  }} />
+                </CustomTooltip>
 
                 {/* Delete */}
 
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Trash className="w-4 cursor-pointer active:scale-90 text-gray-600" onClick={async () => {
-                        ID.current = payment.id
-                        setAlert(true)
-                      }} />
-                    </TooltipTrigger>
-                    <TooltipContent>Delete</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <CustomTooltip message="DELETE">
+                  <Trash className="w-4 cursor-pointer active:scale-90 text-gray-600" onClick={async () => {
+                    ID.current = payment.id
+                    setAlert(true)
+                  }} />
+                </CustomTooltip>
 
               </TableCell>
             </TableRow>
           })}
         </TableBody>
       </Table>
-
-
 
       {/* error on emply list */}
 
