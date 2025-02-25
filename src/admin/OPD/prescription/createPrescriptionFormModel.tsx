@@ -19,7 +19,7 @@ import { Loader, Plus, X } from "lucide-react"
 import { HTMLAttributes, useEffect, useState } from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
-import { z } from "zod"
+import { string, z } from "zod"
 
 
 interface PrescriptionFormModelProps extends HTMLAttributes<HTMLDivElement> {
@@ -37,6 +37,7 @@ const CreatePrescriptionFormModel = ({ prescDetails: details, isPending, Submit,
     const [findingNames, setFindingNames] = useState<{ [key: number]: findingName[] }>([])
     const [medicineCategories, setMedicineCategories] = useState<medicineCategory[]>([])
     const [medicineNames, setMedicineNames] = useState<{ [key: number]: medicines[] }>([])
+    const [medicineQuantity, setMedicineQuantity] = useState<{ [key: number]: number }>([])
     const [doseOption, setDoseOptions] = useState<{ doseIntervals: doseInterval[], doseDurations: doseDuration[] }>({
         doseDurations: [],
         doseIntervals: []
@@ -145,6 +146,12 @@ const CreatePrescriptionFormModel = ({ prescDetails: details, isPending, Submit,
         addFindingFields(valuesASdefault.finding)
     }
 
+    // setting medicine quantity
+    const handleMedNameChange = (medicineId: number, index: number) => {
+        const medicineObject = medicineNames[index].find(item => (item.id === medicineId))
+        setMedicineQuantity(rest => ({ ...rest, [index]: medicineObject?.quantity! }))
+    }
+
 
 
     useEffect(() => {
@@ -192,7 +199,7 @@ const CreatePrescriptionFormModel = ({ prescDetails: details, isPending, Submit,
 
                                         return <>
                                             <Label>Finding Category</Label>
-                                           {/* cause value was initialy 0 that was then converted "0" so field was gets true that why place holder was not displaying */}
+                                            {/* cause value was initialy 0 that was then converted "0" so field was gets true that why place holder was not displaying */}
                                             <Select value={field.value === 0 ? undefined : field.value.toString()} onValueChange={(value) => { handleFindingCategoryChange(value, index); field.onChange(Number(value)) }}>
                                                 <SelectTrigger >
                                                     <SelectValue placeholder="Select" />
@@ -319,7 +326,7 @@ const CreatePrescriptionFormModel = ({ prescDetails: details, isPending, Submit,
                                         const Names = medicineNames[index]
                                         return <>
                                             <Label>Medicine Name</Label>
-                                            <Select value={field.value === 0 ? undefined : field.value.toString()} onValueChange={(value) => { field.onChange(Number(value)) }}>
+                                            <Select value={field.value === 0 ? undefined : field.value.toString()} onValueChange={(value) => { handleMedNameChange(Number(value), index); field.onChange(Number(value)) }}>
                                                 <SelectTrigger >
                                                     <SelectValue placeholder="Select" />
                                                 </SelectTrigger>
@@ -330,9 +337,10 @@ const CreatePrescriptionFormModel = ({ prescDetails: details, isPending, Submit,
                                                     })}
                                                 </SelectContent>
                                             </Select>
-
                                         </>
                                     }} />
+                                    {medicineQuantity[index] === 0 && <p className="text-sm text-red-500 italic">out of stock</p>}
+                                    {medicineQuantity[index] ? <p className="text-sm text-primary italic">Available Qty {medicineQuantity[index]}</p> : null}
                                     {errors.medicine?.[index]?.medicineId && <p className='text-sm text-red-500'>{errors.medicine?.[index]?.medicineId?.message}</p>}
                                 </div>
 

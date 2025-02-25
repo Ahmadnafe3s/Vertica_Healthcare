@@ -3,15 +3,13 @@ import SignIn from "./Auth/signin";
 import Navbar from "./components/Navbar";
 import AsideLayout from "./Layouts/AsideLayout";
 import HomePage from "./home/HomePage";
-import AdminDashboard from "./admin/dashboard";
+import AdminDashboard from "./admin/dashboard/dashboard";
 import AdminAppointment from "./admin/appointment/appointmet";
 import QueueAppointment from "./admin/appointment/QueueAppointment";
 import OPD from "./admin/OPD/opd-layout";
 import RegisterPatient from "./Auth/registerPatient";
-import Pharmacy from "./admin/pharmacy/pharmacy";
-import Bill from "./admin/pharmacy/pharmacyBills";
-import Medicines from "./admin/pharmacy/medicines";
-import Purchase from "./admin/pharmacy/purchase";
+import Pharmacy from "./admin/pharmacy/pharmacyLayout";
+import Bill from "./admin/pharmacy/pharmacyBill/pharmacyBills";
 import HumanResource from "./admin/humanresource/HRLayout";
 import Staff from "./admin/humanresource/staff";
 import CreateStaff from "./admin/humanresource/createStaff";
@@ -56,6 +54,10 @@ import MedicineUnits from "./admin/setup/pharmacy/medicine_unit/medicineUnits";
 import DoseDuration from "./admin/setup/pharmacy/medicine_dose_duration/doseDuration";
 import DoseIntervals from "./admin/setup/pharmacy/medicine_dose_interval/doseIntervals";
 import SetupVitals from "./admin/setup/vitals/setupVitals";
+import CancelledAppointments from "./admin/appointment/cancelledAppointments";
+import AppointmentLayout from "./admin/appointment/appointmentLayout";
+import Medicines from "./admin/pharmacy/medicines/medicines";
+import Purchase from "./admin/pharmacy/purchaseMedicine/purchase";
 
 
 
@@ -90,8 +92,12 @@ function App() {
             path="admin/dashboard"
             element={<ProtectRoutes requiredRole="admin" protectElement={<AdminDashboard />} />}
           />
-          <Route path="admin/appointment" element={<AdminAppointment />} />
-          <Route path="admin/QueueAppointment" element={<QueueAppointment />} />
+
+          <Route path="admin/appointment" element={<AppointmentLayout />}>
+            <Route path="" element={<AdminAppointment />} />
+            <Route path="queue" element={<QueueAppointment />} />
+            <Route path="cancelled" element={<CancelledAppointments />} />
+          </Route>
 
 
           {/* Setup routes for charges*/}

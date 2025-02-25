@@ -4,19 +4,20 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { currencyFormat } from '@/lib/utils'
 import { FileText, Plus, Printer, SearchX, Trash } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { createPurchase, deletePurchaseMedicine, getPurchaseDetails, getPurchaseList } from './pharmacyApiHandler'
+import { createPurchase, deletePurchaseMedicine, getPurchaseDetails, getPurchaseList } from '../pharmacyApiHandler'
 import { useEffect, useRef, useState } from 'react'
-import PurchaseMedicineDetailsModel from './purchaseMedicineDetailsModel'
 import { currencySymbol } from '@/helpers/currencySymbol'
 import { PurchaseMedicineFormSchema } from '@/formSchemas/purchaseMedicineFormSchema'
 import { z } from 'zod'
-import PurchaseMedicineForm from './formModels/purchaseMedicine'
 import { medicinePurchaseDetails, medicinePurchases } from '@/types/opd_section/purchaseMedicine'
 import { useLocation } from 'react-router-dom'
 import CustomPagination from '@/components/customPagination'
 import AlertModel from '@/components/alertModel'
 import LoaderModel from '@/components/loader'
 import CustomTooltip from '@/components/customTooltip'
+import PurchaseMedicineDetailsModel from './purchaseMedicineDetailsModel'
+import PurchaseMedicineForm from './purchaseMedicine'
+import { useDebouncedCallback } from 'use-debounce'
 
 
 
@@ -101,14 +102,16 @@ const Purchase = () => {
   }
 
 
-  const onSearch = async (value: string) => {
+  const onSearch = useDebouncedCallback(async (value: string) => {
     try {
-      const data = await getPurchaseList(page, 50, value)
+      const data = await getPurchaseList(page, 5, value)
       setPurchaseList(data)
+      console.log(data);
+
     } catch ({ message }: any) {
       toast.success(message)
     }
-  }
+  },400)
 
 
   useEffect(() => {

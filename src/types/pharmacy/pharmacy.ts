@@ -50,3 +50,78 @@ export interface medicineDetails {
         name: string,
     }
 }
+
+
+
+export type medicineBatch = {
+    "id": number,
+    "purchaseId": string,
+    "purchaseMedicine": {
+        "batch_no": string,
+    }
+}
+
+
+export type medicineBatchDetails = {
+    "id": number,
+    "medicineId": number,
+    "purchaseId": string,
+    "quantity": number,
+    "expiryDate": string,
+    "purchaseMedicine": {
+        "tax": string,
+        "expiry_date": string,
+        "sale_price": string,
+    }
+}
+
+
+export type pharmacyBills = {
+    "id": string,
+    "opdId": string,
+    "patientId": number,
+    "doctor": string,
+    "date": string,
+    "discount": number,
+    "net_amount": number,
+    "patient": {
+        "name": string,
+    }
+}
+
+type billItems = {
+    quantity: number,
+    tax: number,
+    salePrice: number,
+    amount: number,
+    batch: {
+        purchaseMedicine: {
+            batch_no: string
+        }
+    },
+    category: {
+        name: string
+    },
+    medicine: {
+        name: string,
+        unit: {
+            name: string
+        }
+    }
+}
+
+export type pharmacyBillDetail = {
+    id: string,
+    opdId: string,
+    patientId: number,
+    doctor: string,
+    date: string,
+    discount: number,
+    net_amount: number,
+    note: string,
+    createdAt: string,
+    patient: {
+        name: string,
+    },
+    items: billItems[]
+}

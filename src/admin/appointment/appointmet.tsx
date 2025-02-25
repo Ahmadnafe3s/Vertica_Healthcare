@@ -3,7 +3,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { cn, currencyFormat } from '@/lib/utils'
-import { FileText, ListMinus, Plus, Printer, Trash } from 'lucide-react'
+import { Ban, FileText, ListMinus, Plus, Printer, Trash } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
@@ -55,24 +55,12 @@ const AdminAppointment = () => {
 
     const fetchAppoinmentDetails = async (id: string) => {
         try {
-            setModel((rest) => {
-                return {
-                    ...rest,
-                    loader: true
-                }
-            })
+            setModel((rest) => ({ ...rest, loader: true }))
             const data = await getAppointmentDetails(id)
             setAppointmentDetails(data)
         } catch ({ message }: any) {
             toast.error(message)
-        } finally {
-            setModel((rest) => {
-                return {
-                    ...rest,
-                    loader: false
-                }
-            })
-        }
+        } finally { setModel((rest) => ({ ...rest, loader: false })) }
     }
 
 
@@ -97,12 +85,7 @@ const AdminAppointment = () => {
             toast.error(message)
         } finally {
             setPending(false)
-            setModel((reset) => {
-                return {
-                    ...reset,
-                    alert: false,
-                }
-            })
+            setModel((rest) => ({ ...rest, alert: false }))
         }
     }
 
@@ -113,13 +96,8 @@ const AdminAppointment = () => {
             setPending(true)
             const data = await createAppointment(formData)
             toast.success(data.message)
-            fetchAppointments()
-            setModel((reset) => {
-                return {
-                    ...reset,
-                    addAppointmentForm: false,
-                }
-            })
+            getAppointments()
+            setModel((rest) => ({ ...rest, addAppointmentForm: false }))
         } catch ({ message }: any) {
             toast.error(message)
         } finally {
@@ -148,13 +126,22 @@ const AdminAppointment = () => {
                             <Plus /> Appointment
                         </Button>
 
-                        <Link to={{ pathname: '/admin/QueueAppointment' }} className={buttonVariants({
+                        <Link to={'queue'} className={buttonVariants({
                             variant: 'default',
                             size: 'sm',
                             className: 'flex gap-x-1'
                         })}>
                             <ListMinus />
                             Queue
+                        </Link>
+
+                        <Link to={'cancelled'} className={buttonVariants({
+                            variant: 'destructive',
+                            size: 'sm',
+                            className: 'flex gap-x-1'
+                        })}>
+                            <Ban />
+                            Cancelled
                         </Link>
 
                     </div>

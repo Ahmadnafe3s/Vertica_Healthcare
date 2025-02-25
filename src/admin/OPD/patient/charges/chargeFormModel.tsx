@@ -148,7 +148,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
     }, [])
 
 
-    // returning sum of amount and tpa and trigger useEffect
+    // returning sum of amount and tpa and trigger useEffect (for specific array element (fields))
     const chargeAmounts = (watch(`charge.${INDEX}.standard_charge`) + watch(`charge.${INDEX}.tpa`));
 
 

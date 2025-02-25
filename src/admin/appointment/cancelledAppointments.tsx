@@ -1,14 +1,14 @@
 import { buttonVariants } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
-import { fetchAppointments, updateStatus } from './appointmentAPIhandler'
 import { Loader } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { fetchAppointments, updateStatus } from './appointmentAPIhandler'
+import toast from 'react-hot-toast'
 import { Appointments } from '@/types/appointment/appointment'
 
-const QueueAppointment = () => {
+const CancelledAppointments = () => {
 
     const [appointments, setAppointments] = useState<Appointments[]>([])
     const [isPending, setPending] = useState<boolean>(false)
@@ -18,24 +18,20 @@ const QueueAppointment = () => {
 
     const onUpdateStatus = async (id: string, status: string) => {
         try {
-
             setPending(true)
             const data = await updateStatus(id, status)
             toast.success(data.message)
             return router('/admin/appointment')
-
         } catch ({ message }: any) {
             toast.error(message)
-        } finally {
-            setPending(false)
-        }
+        } finally { setPending(false) }
     }
 
 
     useEffect(() => {
         try {
             (async function () {
-                const data = await fetchAppointments('pending')
+                const data = await fetchAppointments('cancelled')
                 setAppointments(data)
             })() //IIFE
 
@@ -48,7 +44,7 @@ const QueueAppointment = () => {
         <section className='bg-slate-50'>
 
             <div className='flex flex-col border-b border-gray-200 py-3'>
-                <h1 className='text-xl text-gray-900 font-semibold'>Queue Appointments</h1>
+                <h1 className='text-xl text-gray-900 font-semibold'>Cancelled Appointments</h1>
             </div>
 
             <Table className='rounded-lg border my-10'>
@@ -88,14 +84,14 @@ const QueueAppointment = () => {
                                     <SelectTrigger className={buttonVariants({
                                         variant: 'outline',
                                         size: 'sm',
-                                        className: 'bg-yellow-400'
+                                        className: 'bg-red-500 text-white'
                                     })}>
                                         <SelectValue placeholder={appointment.status} /> {isPending && <Loader className='animate-spin' />}
                                     </SelectTrigger>
 
                                     <SelectContent className='z-[200]'>
-                                        <SelectItem value="approved">Approve</SelectItem>
-                                        <SelectItem value="cancelled">Cancel</SelectItem>
+                                        <SelectItem value="approved">Approved</SelectItem>
+                                        <SelectItem value="pending">Pending</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </TableCell>
@@ -109,4 +105,4 @@ const QueueAppointment = () => {
     )
 }
 
-export default QueueAppointment
+export default CancelledAppointments

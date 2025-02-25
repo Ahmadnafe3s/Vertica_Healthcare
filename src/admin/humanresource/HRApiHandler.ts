@@ -16,7 +16,7 @@ export const fetchStaffProfile = async (id: number): Promise<StaffProfile> => {
 
 
 
-export const post = async (formData: z.infer<typeof createStaffFormSchema>) => {
+export const createStaff = async (formData: z.infer<typeof createStaffFormSchema>) => {
 
     try {
         const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/staff`, formData)
@@ -27,9 +27,19 @@ export const post = async (formData: z.infer<typeof createStaffFormSchema>) => {
 
 }
 
+export const getStaffs = async (search?: string): Promise<staffList[]> => {
+    try {
+        const params = { search }
+        const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/staff`, { params })
+        return response.data
+    } catch (error: any) {
+        throw new Error(error.response.data.message)
+    }
+}
+
 // staff id is coming from profile page passed here by createStaff component
 
-export const update = async (id: number, formData: z.infer<typeof createStaffFormSchema>) => {
+export const updateStaff = async (id: number, formData: z.infer<typeof createStaffFormSchema>) => {
     try {
         const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/staff/${id}`, formData)
         return res.data
@@ -39,13 +49,4 @@ export const update = async (id: number, formData: z.infer<typeof createStaffFor
 }
 
 
-//  search staffs
 
-export const searchStaffs = async (value: string): Promise<staffList[]> => {
-    try {
-        const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/staff?search=${value}`)
-        return response.data
-    } catch (error: any) {
-        throw new Error(error.response.data.message)
-    }
-}

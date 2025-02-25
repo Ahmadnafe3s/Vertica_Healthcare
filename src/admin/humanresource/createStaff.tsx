@@ -11,7 +11,7 @@ import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
-import { fetchStaffProfile, post, update } from './HRApiHandler'
+import { createStaff, fetchStaffProfile, updateStaff } from './HRApiHandler'
 import { currencySymbol } from '@/helpers/currencySymbol'
 
 const CreateStaff = () => {
@@ -34,9 +34,9 @@ const CreateStaff = () => {
       let data;
 
       if (editMode) {
-        data = await update(Number(id), formData)
+        data = await updateStaff(Number(id), formData)
       } else {
-        data = await post(formData)
+        data = await createStaff(formData)
       }
       toast.success(data.message)
 

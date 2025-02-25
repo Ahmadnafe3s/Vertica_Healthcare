@@ -1,12 +1,12 @@
 import { buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import axios from 'axios'
 import { Plus, SearchX } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
-import { searchStaffs } from './HRApiHandler'
+import { getStaffs } from './HRApiHandler'
+import { useDebouncedCallback } from 'use-debounce'
 
 export interface staffList {
   name: string, id: number, role: string, phone: string, image: string, gender: string
@@ -17,24 +17,25 @@ const Staff = () => {
   const [staffList, setStaffs] = useState<staffList[]>()
 
 
-  const onSearch = async (value: any) => {
+  // searching staffs 
+  const onSearch = useDebouncedCallback(async (value: any) => {
     try {
-      const data = await searchStaffs(value)
+      const data = await getStaffs(value)
       setStaffs(data)
-
-    } catch (error: any) {
-
-      toast.error(error.response.data.message)
-
+    } catch ({ message }: any) {
+      toast.error(message)
     }
-
-  }
-
+  }, 400)
 
 
+  // fetching staffs list
   const fetchStaffs = async () => {
-    const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/staff`)
-    setStaffs(response.data)
+    try {
+      const data = await getStaffs()
+      setStaffs(data)
+    } catch ({ message }: any) {
+      toast.error(message)
+    }
   }
 
 

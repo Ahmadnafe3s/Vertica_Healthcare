@@ -1,7 +1,8 @@
 import { AddMedicinesFormSchema } from "@/formSchemas/addMedicinesFormSchema"
+import { createPharmacyBillSchema } from "@/formSchemas/createPharmBillSchema"
 import { PurchaseMedicineFormSchema } from "@/formSchemas/purchaseMedicineFormSchema"
 import { medicinePurchaseDetails, medicinePurchases } from "@/types/opd_section/purchaseMedicine"
-import { medicineDetails, medicines } from "@/types/pharmacy/pharmacy"
+import { medicineBatchDetails, medicineDetails, medicines } from "@/types/pharmacy/pharmacy"
 import axios from "axios"
 import { z } from "zod"
 
@@ -109,3 +110,70 @@ export const deletePurchaseMedicine = async (id: string) => {
     }
 }
 
+
+
+// API handlers for medicine Batches
+
+export const getMedicinesBatches = async (medicineId: number) => {
+    try {
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/batch/${medicineId}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+export const getMedicinesBatchDetails = async (batchId: number): Promise<medicineBatchDetails> => {
+    try {
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/batch/details/${batchId}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+
+
+// API handlers for pharmacy bill
+
+export const createPharmacyBill = async (formData: z.infer<typeof createPharmacyBillSchema>) => {
+    try {
+        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/bill`, formData)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const getPharmacyBills = async () => {
+    try {
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/bill/list`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const getPharmacyBillDetails = async (id: string) => {
+    try {
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/bill/details/${id}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const deletePharmacyBill = async (id: string) => {
+    try {
+        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/bill/${id}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}

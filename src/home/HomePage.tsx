@@ -57,7 +57,11 @@ const HomePage = () => {
 
 
 
-        <div ref={container}>
+        <div ref={container} style={{
+            backgroundImage: `radial-gradient(circle at 0.5px 0.5px, rgba(6, 182, 212, 0.2) 1px, transparent 0)`,
+            backgroundSize: '8px 8px',
+            backgroundRepeat: "repeat"
+        }}>
 
             <MaxWidthWrapper className="pt-14 md:pt-20 lg:pt-32 pb-20 lg:pb-32 grid lg:grid-cols-4">
 
