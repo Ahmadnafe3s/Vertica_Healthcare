@@ -287,9 +287,8 @@ export const getChargeNameDetails = async (id: number) => {
 }
 
 
-export const getChargeNames = async (page?: number, search?: string): Promise<chargeNamesType> => {  // will recieve object that will contain data array and total_count 0bject
+export const getChargeNames = async (params: { page?: number, search?: string, limit?: number }): Promise<chargeNamesType> => {  // will recieve object that will contain data array and total_count 0bject
     try {
-        const params = { page, search }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/name`, { params })
         return res.data
     } catch (error: any) {

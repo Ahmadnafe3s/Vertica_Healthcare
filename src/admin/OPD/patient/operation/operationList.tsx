@@ -3,9 +3,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Pencil, Plus, SearchX, Trash } from 'lucide-react';
 import OperationForm from './operationForm';
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { createOperation, deleteOperation, getOperation_Details, getOperation_List, updateOperation } from '../../opdApiHandler';
+import { createOperation, deleteOperation, getOperation_Details, getOperations, updateOperation } from '../../opdApiHandler';
 import AlertModel from '@/components/alertModel';
 import OperationDetailsModel from './operationDetails';
 import LoaderModel from '@/components/loader';
@@ -14,6 +14,7 @@ import { operationFormSchema } from '@/formSchemas/addOperationFormSchema';
 import { operationDetailsType, PaginatedOperations } from '@/types/opd_section/operationType';
 import CustomPagination from '@/components/customPagination';
 import { Separator } from '@/components/ui/separator';
+import { useQueryState, parseAsInteger } from 'nuqs';
 
 
 
@@ -23,9 +24,7 @@ const OperationList = () => {
   const { patientId, opdId } = useParams()
 
   // search params
-  const location = useLocation()
-  const queryParams = new URLSearchParams(location.search)
-  const page = parseInt(queryParams.get('page') || '1', 10)
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
 
 
   const id = useRef<string | null>(null)
@@ -41,7 +40,7 @@ const OperationList = () => {
 
 
   // model state
-  const [MODEL, SET_MODEL] = useState<{ operationForm: boolean, alert: boolean, operationDetails: boolean, loader: boolean }>({
+  const [model, setModel] = useState<{ operationForm: boolean, alert: boolean, operationDetails: boolean, loader: boolean }>({
     operationForm: false,
     alert: false,
     operationDetails: false,
@@ -54,20 +53,15 @@ const OperationList = () => {
     try {
       setPending(true)
       let data;
-      if (OPERATION_DETAILS) {
-        data = await updateOperation(OPERATION_DETAILS.id, formData)
+
+      OPERATION_DETAILS ? (
+        data = await updateOperation(OPERATION_DETAILS.id, formData),
         SET_OPERATION_DETAILS(undefined)
-      } else {
-        data = await createOperation(Number(patientId), opdId!, formData) //opd is is string
-      }
+      ) : (data = await createOperation(Number(patientId), opdId!, formData))
+
       toast.success(data.message)
-      fetchOPeration_list() // refetching list
-      SET_MODEL((rest) => {
-        return {
-          ...rest,
-          operationForm: false
-        }
-      })
+      fetchOperations() // refetching list
+      setModel({ ...model, operationForm: false })
     } catch ({ message }: any) {
       toast.error(message)
     } finally {
@@ -79,31 +73,21 @@ const OperationList = () => {
   // fetching operation details
   const fetchOperationDetails = async (id: string) => {
     try {
-      SET_MODEL((rest) => {
-        return {
-          ...rest,
-          loader: true
-        }
-      })
+      setModel({ ...model, loader: true })
       const data = await getOperation_Details(id)
       SET_OPERATION_DETAILS(data)
     } catch ({ message }: any) {
       toast.error(message)
     } finally {
-      SET_MODEL((rest) => {
-        return {
-          ...rest,
-          loader: false
-        }
-      })
+      setModel({ ...model, loader: false })
     }
   }
 
 
 
-  const fetchOPeration_list = async () => {
+  const fetchOperations = async () => {
     try {
-      const data = await getOperation_List(page, opdId!)
+      const data = await getOperations({ opdId: opdId!, page, limit: 10 })
       SET_OPERATION(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -117,23 +101,18 @@ const OperationList = () => {
     try {
       const data = await deleteOperation(String(id.current))
       toast.success(data.message)
-      fetchOPeration_list()
+      fetchOperations()
     } catch ({ message }: any) {
       toast.error(message)
     } finally {
-      SET_MODEL((rest) => {
-        return {
-          ...rest,
-          alert: false
-        }
-      });
+      setModel({ ...model, alert: false });
       id.current = null
     }
   }
 
 
   useEffect(() => {
-    fetchOPeration_list()
+    fetchOperations()
   }, [page])
 
 
@@ -144,12 +123,7 @@ const OperationList = () => {
         <div className="flex justify-between">
           <h1 className="text-lg text-gray-800 font-semibold">Operations</h1>
           <Button size='sm' onClick={() => {
-            SET_MODEL((rest) => {
-              return {
-                ...rest,
-                operationForm: true
-              }
-            })
+            setModel({ ...model, operationForm: true })
           }}>
             <Plus /> Add Operation
           </Button>
@@ -159,7 +133,7 @@ const OperationList = () => {
 
         {/* with pagination */}
 
-        <div className="flex flex-col min-h-[80vh]">
+        <div className="flex flex-col min-h-[75vh] mb-20">
           <div className='flex-1'>
             <Table className="rounded-lg border">
               <TableHeader className='bg-zinc-100'>
@@ -179,12 +153,7 @@ const OperationList = () => {
                     <TableCell className='cursor-pointer font-semibold text-blue-500 hover:text-blue-400'
                       onClick={async () => {
                         await fetchOperationDetails(opertion.id)
-                        SET_MODEL((rest) => {
-                          return {
-                            ...rest,
-                            operationDetails: true
-                          }
-                        });
+                        setModel({ ...model, operationDetails: true })
                       }}
                     >
                       {opertion.id}
@@ -198,23 +167,13 @@ const OperationList = () => {
                       <Pencil className='w-4 text-gray-600 active:scale-95 cursor-pointer'
                         onClick={async () => {
                           await fetchOperationDetails(opertion.id)
-                          SET_MODEL((rest) => {
-                            return {
-                              ...rest,
-                              operationForm: true
-                            }
-                          });
+                          setModel({ ...model, operationForm: true });
                         }}
                       />
 
                       <Trash className='w-4 text-gray-600 active:scale-95 cursor-pointer'
                         onClick={() => {
-                          SET_MODEL((rest) => {
-                            return {
-                              ...rest,
-                              alert: true
-                            }
-                          });
+                          setModel({ ...model, alert: true });
                           id.current = opertion.id
                         }}
                       />
@@ -230,9 +189,15 @@ const OperationList = () => {
             {OPERATION_LIST?.data.length! < 1 && <h1 className='text-gray-900 mt-4 sm:mt-5 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
           </div>
 
-          <div className='my-10'>
-            <CustomPagination total_pages={OPERATION_LIST?.total_pages!} currentPage={page} />
-          </div>
+          <section>
+            <CustomPagination
+              total_pages={OPERATION_LIST?.total_pages!}
+              currentPage={page}
+              previous={(p) => setPage(p)}
+              goTo={(p) => setPage(p)}
+              next={(p) => setPage(p)}
+            />
+          </section>
         </div>
 
       </section>
@@ -240,18 +205,14 @@ const OperationList = () => {
 
       {/* models */}
 
-      {MODEL.operationForm && (
+      {model.operationForm && (
         <OperationForm
           Submit={handleSubmit}
           isPending={isPending}
           operationDetails={OPERATION_DETAILS}
           onSubmitCapture={() => alert('hello')}
           onClick={() => {
-            SET_MODEL((rest) => ({
-              ...rest,
-              operationForm: false,
-            }));
-            fetchOPeration_list();
+            setModel({ ...model, operationForm: false });
             SET_OPERATION_DETAILS(undefined);
           }}
         />
@@ -261,14 +222,9 @@ const OperationList = () => {
       {/* Alert Model */}
 
       {
-        MODEL.alert && <AlertModel
+        model.alert && <AlertModel
           cancel={() => {
-            SET_MODEL((rest) => {
-              return {
-                ...rest,
-                alert: false
-              }
-            });
+            setModel({ ...model, alert: false })
             id.current = null
           }}
           continue={onDelete}
@@ -278,14 +234,9 @@ const OperationList = () => {
 
       {/* Operation details model */}
 
-      {MODEL.operationDetails && <OperationDetailsModel operationDetails={OPERATION_DETAILS}
+      {model.operationDetails && <OperationDetailsModel operationDetails={OPERATION_DETAILS}
         onClick={() => {
-          SET_MODEL((rest) => {
-            return {
-              ...rest,
-              operationDetails: false
-            }
-          });
+          setModel({ ...model, operationDetails: false })
           SET_OPERATION_DETAILS(undefined)
         }}
       />}
@@ -293,7 +244,7 @@ const OperationList = () => {
 
       {/* loader */}
 
-      {MODEL.loader && (
+      {model.loader && (
         <LoaderModel />
       )}
     </>

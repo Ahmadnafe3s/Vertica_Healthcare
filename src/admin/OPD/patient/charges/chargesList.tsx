@@ -6,8 +6,8 @@ import { Pencil, Plus, SearchX, Trash } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { currencySymbol } from "@/helpers/currencySymbol"
 import toast from "react-hot-toast"
-import { createCharges, deleteCharge, getChargeDetails, getChargesList, searchCharges, updateCharge } from "../../opdApiHandler"
-import { useLocation, useParams } from "react-router-dom"
+import { createCharges, deleteCharge, getChargeDetails, getCharges, updateCharge } from "../../opdApiHandler"
+import { useParams } from "react-router-dom"
 import AlertModel from "@/components/alertModel"
 import { currencyFormat } from "@/lib/utils"
 import ChargeDetailsModel from "./chargeDetailsModel"
@@ -19,13 +19,14 @@ import { z } from "zod"
 import { ChargeDetailsType, ChargeListType } from "@/types/opd_section/charges"
 import CustomPagination from "@/components/customPagination"
 import CustomTooltip from "@/components/customTooltip"
+import { parseAsInteger, useQueryState } from "nuqs"
 
 const CahrgesList = () => {
 
   // Query params
-  const location = useLocation()
-  const queryParams = new URLSearchParams(location.search)
-  const page = parseInt(queryParams.get('page') || '1', 10)
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
+  const [search, setSearch] = useQueryState('search')
+
 
   const id = useRef<number>(0)
   const { opdId } = useParams()
@@ -35,7 +36,7 @@ const CahrgesList = () => {
   // Api states
   //chargeDetails provides data to details MODEL and FORM (ON EDIT MODE)
   const [chargeDetails, setChargeDetails] = useState<ChargeDetailsType | undefined>(undefined)
-  const [CHARGES, SET_CHARGES] = useState<ChargeListType>()
+  const [CHARGES, SET_CHARGES] = useState<ChargeListType>({ data: [], total_pages: 1 })
 
 
   // Models State
@@ -45,10 +46,12 @@ const CahrgesList = () => {
   const [isChargeFormVisible, setIsChargeFormVisible] = useState<boolean>(false)
 
 
+  //fetching charges list
 
-  const fetchChargeList = async () => {
+  const fetchCharges = async () => {
     try {
-      const data = await getChargesList(opdId!, page) // opdId is here string
+      //on search limit will be 100
+      const data = await getCharges({ opdId: opdId!, page, limit: search ? 100 : 10, date: search! }) // opdId is here string
       SET_CHARGES(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -76,7 +79,7 @@ const CahrgesList = () => {
       const data = await deleteCharge(Number(id.current))
       toast.success(data.message)
       // refetching list
-      fetchChargeList()
+      fetchCharges()
     } catch ({ message }: any) {
       toast.error(message)
     } finally {
@@ -86,13 +89,13 @@ const CahrgesList = () => {
 
 
 
-  const onSearch = async (value: string) => {
-    try {
-      const data = await searchCharges(opdId!, value)
-      SET_CHARGES(data)
-    } catch ({ message }: any) {
-      toast.error(message)
+  const onSearch = async (date: string) => {
+    if (date) {
+      setPage(1)
+      setSearch(date)
+      return
     }
+    setSearch(null)
   }
 
 
@@ -107,7 +110,7 @@ const CahrgesList = () => {
         (data = await createCharges(opdId!, formData))
 
       toast.success(data.message)
-      fetchChargeList()
+      fetchCharges()
       setIsChargeFormVisible(false)
     } catch ({ message }: any) {
       toast.error(message)
@@ -119,8 +122,8 @@ const CahrgesList = () => {
 
 
   useEffect(() => {
-    fetchChargeList()
-  }, [page])
+    fetchCharges()
+  }, [page, search])
 
 
   return (
@@ -137,12 +140,12 @@ const CahrgesList = () => {
 
       <div className="sm:w-48 space-y-1">
         <p className="text-sm text-gray-700">Search by date</p>
-        <Input type="date" onChange={(e) => { onSearch(e.target.value) }} />
+        <Input type="date" onChange={(e) => { onSearch(e.target.value) }} defaultValue={search!} />
       </div>
 
       <Separator />
 
-      <div className="flex flex-col min-h-[60vh]">
+      <div className="flex flex-col min-h-[60vh] mb-20">
         <div className="flex-1">
           <Table className="rounded-lg border">
             <TableHeader className="bg-zinc-100">
@@ -202,7 +205,15 @@ const CahrgesList = () => {
         {/* Pagination */}
 
         <div>
-          <CustomPagination total_pages={CHARGES?.total_pages!} currentPage={page} />
+          <section>
+            <CustomPagination
+              total_pages={CHARGES?.total_pages!}
+              currentPage={page}
+              previous={(p) => setPage(p)}
+              goTo={(p) => setPage(p)}
+              next={(p) => setPage(p)}
+            />
+          </section>
         </div>
       </div>
 

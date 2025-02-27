@@ -10,7 +10,6 @@ import { currencySymbol } from '@/helpers/currencySymbol'
 import { PurchaseMedicineFormSchema } from '@/formSchemas/purchaseMedicineFormSchema'
 import { z } from 'zod'
 import { medicinePurchaseDetails, medicinePurchases } from '@/types/opd_section/purchaseMedicine'
-import { useLocation } from 'react-router-dom'
 import CustomPagination from '@/components/customPagination'
 import AlertModel from '@/components/alertModel'
 import LoaderModel from '@/components/loader'
@@ -18,6 +17,7 @@ import CustomTooltip from '@/components/customTooltip'
 import PurchaseMedicineDetailsModel from './purchaseMedicineDetailsModel'
 import PurchaseMedicineForm from './purchaseMedicine'
 import { useDebouncedCallback } from 'use-debounce'
+import { useQueryState, parseAsInteger } from 'nuqs'
 
 
 
@@ -25,9 +25,9 @@ import { useDebouncedCallback } from 'use-debounce'
 const Purchase = () => {
 
   // query params
-  const location = useLocation()
-  const queryParams = new URLSearchParams(location.search)
-  const page = parseInt(queryParams.get('page') || '1', 10)
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
+  const [search, setSearch] = useQueryState('search')
+
 
   // credential
   const itemID = useRef('')
@@ -42,6 +42,7 @@ const Purchase = () => {
   // API state
   const [purcahseList, setPurchaseList] = useState<medicinePurchases>()
   const [purchaseDetails, setPurchaseDetails] = useState<medicinePurchaseDetails>()
+
 
   // Model State
   const [model, setModel] = useState<{ purchaseDetails: boolean, createPurchaseForm: boolean, alert: boolean }>({
@@ -64,9 +65,25 @@ const Purchase = () => {
   }
 
 
+  // just passing queries
+
+  const onSearch = useDebouncedCallback(async (value: string) => {
+    if (value) {
+      setPage(1)
+      setSearch(value)
+      return null
+    }
+    setSearch(null)
+  }, 400)
+
+
   const fetchPurchases = async () => {
     try {
-      const data = await getPurchaseList(page, 5)
+      const data = await getPurchaseList({
+        page,
+        limit: search ? 100 : 10,
+        search: search! // dont have to use string object otherwise null will become string
+      })
       setPurchaseList(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -74,6 +91,7 @@ const Purchase = () => {
   }
 
 
+  //deleting
   const onDelete = async () => {
     try {
       setLoading(rest => ({ ...rest, inline: true }))
@@ -102,21 +120,9 @@ const Purchase = () => {
   }
 
 
-  const onSearch = useDebouncedCallback(async (value: string) => {
-    try {
-      const data = await getPurchaseList(page, 5, value)
-      setPurchaseList(data)
-      console.log(data);
-
-    } catch ({ message }: any) {
-      toast.success(message)
-    }
-  },400)
-
-
   useEffect(() => {
     fetchPurchases()
-  }, [page])
+  }, [page, search])
 
 
 
@@ -129,7 +135,7 @@ const Purchase = () => {
           <h1 className='font-semibold tracking-tight'>Medicine Purchases</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
-            <Button className='flex gap-x-1' variant={'outline'} size={'sm'}
+            <Button className='flex gap-x-1' size={'sm'}
               onClick={() => setModel(rest => ({ ...rest, createPurchaseForm: true }))}>
               <Plus />
               Add Purchase
@@ -157,7 +163,7 @@ const Purchase = () => {
 
         {/* Paginated layout */}
 
-        <div className="flex flex-col space-y-5 min-h-[70vh]">
+        <div className="flex flex-col space-y-5 min-h-[75vh] mb-20">
           <div className='flex-1'>
             <Table className="rounded-lg border my-10">
               <TableHeader className='bg-zinc-100'>
@@ -221,7 +227,13 @@ const Purchase = () => {
           </div>
 
           <section>
-            <CustomPagination total_pages={purcahseList?.total_pages!} currentPage={page} />
+            <CustomPagination
+              total_pages={purcahseList?.total_pages!}
+              currentPage={page}
+              next={(p) => setPage(p)}
+              goTo={(p) => setPage(p)}
+              previous={(p) => setPage(p)}
+            />
           </section>
         </div>
 

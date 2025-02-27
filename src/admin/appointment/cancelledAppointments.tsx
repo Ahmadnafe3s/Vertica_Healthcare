@@ -6,16 +6,22 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { fetchAppointments, updateStatus } from './appointmentAPIhandler'
 import toast from 'react-hot-toast'
-import { Appointments } from '@/types/appointment/appointment'
+import { Appointment } from '@/types/appointment/appointment'
+import { useQueryState } from 'nuqs'
+import CustomPagination from '@/components/customPagination'
 
 const CancelledAppointments = () => {
 
-    const [appointments, setAppointments] = useState<Appointments[]>([])
+    // query params by nuqs
+    const [page, setPage] = useQueryState('page', { defaultValue: '1' })
+
+
+    // api states
+    const [appointments, setAppointments] = useState<Appointment>({ data: [], total_pages: 1 })
     const [isPending, setPending] = useState<boolean>(false)
     const router = useNavigate()
 
     // onchange it updates the appointment
-
     const onUpdateStatus = async (id: string, status: string) => {
         try {
             setPending(true)
@@ -31,7 +37,7 @@ const CancelledAppointments = () => {
     useEffect(() => {
         try {
             (async function () {
-                const data = await fetchAppointments('cancelled')
+                const data = await fetchAppointments({ page: +page, status: 'cancelled' })
                 setAppointments(data)
             })() //IIFE
 
@@ -47,60 +53,74 @@ const CancelledAppointments = () => {
                 <h1 className='text-xl text-gray-900 font-semibold'>Cancelled Appointments</h1>
             </div>
 
-            <Table className='rounded-lg border my-10'>
+            <div className="flex flex-col mb-16 min-h-[75vh]">
+                <div className="flex-1">
+                    <Table className='rounded-lg border my-10'>
+                        <TableHeader className='bg-slate-100'>
+                            <TableRow>
+                                <TableHead>Appointment No</TableHead>
+                                <TableHead>Patient Name</TableHead>
+                                <TableHead>Appointment Date</TableHead>
+                                <TableHead>Shift</TableHead>
+                                <TableHead>Phone</TableHead>
+                                <TableHead>Gender</TableHead>
+                                <TableHead>Doctor</TableHead>
+                                <TableHead>Source</TableHead>
+                                <TableHead>Priority</TableHead>
+                                <TableHead>Alternative Address</TableHead>
+                                <TableHead>Status</TableHead>
+                            </TableRow>
+                        </TableHeader>
 
-                <TableHeader className='bg-slate-100'>
-                    <TableRow>
-                        <TableHead>Appointment No</TableHead>
-                        <TableHead>Patient Name</TableHead>
-                        <TableHead>Appointment Date</TableHead>
-                        <TableHead>Shift</TableHead>
-                        <TableHead>Phone</TableHead>
-                        <TableHead>Gender</TableHead>
-                        <TableHead>Doctor</TableHead>
-                        <TableHead>Source</TableHead>
-                        <TableHead>Priority</TableHead>
-                        <TableHead>Alternative Address</TableHead>
-                        <TableHead>Status</TableHead>
-                    </TableRow>
-                </TableHeader>
+                        <TableBody>
 
-                <TableBody>
+                            {appointments.data.map((appointment, index) => {
+                                return <TableRow key={index}>
+                                    <TableCell className="font-medium">{appointment.id}</TableCell>
+                                    <TableCell >{appointment.patient.name}</TableCell>
+                                    <TableCell>{appointment.appointment_date}</TableCell>
+                                    <TableCell>{appointment.shift}</TableCell>
+                                    <TableCell>{appointment.patient.phone}</TableCell>
+                                    <TableCell>{appointment.patient.gender}</TableCell>
+                                    <TableCell>{appointment.doctor.name}</TableCell>
+                                    <TableCell>Online</TableCell>
+                                    <TableCell>{appointment.appointment_priority}</TableCell>
+                                    <TableCell>{appointment.alternative_address}</TableCell>
+                                    <TableCell>
+                                        <Select onValueChange={(value) => { onUpdateStatus(appointment.id, value) }}>
+                                            <SelectTrigger className={buttonVariants({
+                                                variant: 'outline',
+                                                size: 'sm',
+                                                className: 'bg-red-500 text-white'
+                                            })}>
+                                                <SelectValue placeholder={appointment.status} /> {isPending && <Loader className='animate-spin' />}
+                                            </SelectTrigger>
 
-                    {appointments.map((appointment, index) => {
-                        return <TableRow key={index}>
-                            <TableCell className="font-medium">{appointment.id}</TableCell>
-                            <TableCell >{appointment.patient.name}</TableCell>
-                            <TableCell>{appointment.appointment_date}</TableCell>
-                            <TableCell>{appointment.shift}</TableCell>
-                            <TableCell>{appointment.patient.phone}</TableCell>
-                            <TableCell>{appointment.patient.gender}</TableCell>
-                            <TableCell>{appointment.doctor.name}</TableCell>
-                            <TableCell>Online</TableCell>
-                            <TableCell>{appointment.appointment_priority}</TableCell>
-                            <TableCell>{appointment.alternative_address}</TableCell>
-                            <TableCell>
-                                <Select onValueChange={(value) => { onUpdateStatus(appointment.id, value) }}>
-                                    <SelectTrigger className={buttonVariants({
-                                        variant: 'outline',
-                                        size: 'sm',
-                                        className: 'bg-red-500 text-white'
-                                    })}>
-                                        <SelectValue placeholder={appointment.status} /> {isPending && <Loader className='animate-spin' />}
-                                    </SelectTrigger>
+                                            <SelectContent className='z-[200]'>
+                                                <SelectItem value="approved">Approved</SelectItem>
+                                                <SelectItem value="pending">Pending</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </TableCell>
+                                </TableRow>
+                            })}
 
-                                    <SelectContent className='z-[200]'>
-                                        <SelectItem value="approved">Approved</SelectItem>
-                                        <SelectItem value="pending">Pending</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </TableCell>
-                        </TableRow>
-                    })}
+                        </TableBody>
+                    </Table>
+                    {appointments.data.length < 1 && <p className='font-bold text-lg text-gray-800'>No data found</p>}
+                </div>
 
-                </TableBody>
-            </Table>
-            {appointments.length < 1 && <p className='font-bold text-lg text-gray-800'>No data found</p>}
+                {/* pagination */}
+                <section>
+                    <CustomPagination
+                        total_pages={appointments?.total_pages}
+                        currentPage={+page}
+                        previous={(p: number) => setPage(String(p))}
+                        goTo={(p: number) => setPage(String(p))}
+                        next={(p: number) => setPage(String(p))}
+                    />
+                </section>
+            </div>
         </section>
     )
 }

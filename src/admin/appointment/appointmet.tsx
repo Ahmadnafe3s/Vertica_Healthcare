@@ -7,7 +7,7 @@ import { Ban, FileText, ListMinus, Plus, Printer, Trash } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
-import { createAppointment, deleteAppointment, fetchAppointments, getAppointmentDetails, searchAppointment } from './appointmentAPIhandler'
+import { createAppointment, deleteAppointment, fetchAppointments, getAppointmentDetails } from './appointmentAPIhandler'
 import AppointmentDetailsModel from './appointmentDetailsModel'
 import AlertModel from '@/components/alertModel'
 import { currencySymbol } from '@/helpers/currencySymbol'
@@ -18,13 +18,15 @@ import { z } from 'zod'
 import CustomTooltip from '@/components/customTooltip'
 import { useDebouncedCallback } from 'use-debounce'
 import CustomPagination from '@/components/customPagination'
-import { useQueryState } from 'nuqs'
+import { useQueryState , parseAsInteger } from 'nuqs'
 
 
 const AdminAppointment = () => {
 
+    const itemID = useRef<string>()
+
     // params
-    const [page, setPage] = useQueryState('page', { defaultValue: "1" })
+    const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
     const [search, setSearch] = useQueryState('search')
 
     // Pending states
@@ -38,7 +40,6 @@ const AdminAppointment = () => {
         loader: false
     })
 
-    const itemID = useRef<string>()
 
     // API States
     const [Appointments, setAppointments] = useState<Appointment>({ data: [], total_pages: 0 })
@@ -46,13 +47,12 @@ const AdminAppointment = () => {
 
 
 
+    //fetching appointments list
     const getAppointments = async () => {
         try {
-            console.log(page);
-
             const data = await fetchAppointments({
-                page: +page,
-                limit: search ? 100 : 1,
+                page,
+                limit: search ? 100 : 10,
                 search: search!
             })
             setAppointments(data)
@@ -79,11 +79,10 @@ const AdminAppointment = () => {
     const onSearch = useDebouncedCallback(async (value: string) => {
         if (value) {
             setSearch(value)
-            setPage('1')
+            setPage(1)
             return null
         }
-        setSearch(null)
-        setPage("2")
+        setSearch(null) // if no value then null
     }, 400)
 
 
@@ -139,22 +138,13 @@ const AdminAppointment = () => {
                         </Button>
 
                         <Link to={'queue'} className={buttonVariants({
-                            variant: 'default',
-                            size: 'sm',
-                            className: 'flex gap-x-1'
+                            variant: 'default', size: 'sm', className: 'flex gap-x-1'
                         })}>
-                            <ListMinus />
-                            Queue
-                        </Link>
+                            <ListMinus /> Queue </Link>
 
                         <Link to={'cancelled'} className={buttonVariants({
-                            variant: 'destructive',
-                            size: 'sm',
-                            className: 'flex gap-x-1'
-                        })}>
-                            <Ban />
-                            Cancelled
-                        </Link>
+                            variant: 'destructive', size: 'sm', className: 'flex gap-x-1'
+                        })}><Ban /> Cancelled </Link>
 
                     </div>
                 </div>
@@ -175,7 +165,7 @@ const AdminAppointment = () => {
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-y-5 min-h-[70vh]">
+                <div className="flex flex-col gap-y-5 min-h-[75vh] mb-16">
                     <div className="flex-1">
                         <Table className="border rounded-lg my-10">
                             <TableHeader className='bg-slate-100'>
@@ -264,9 +254,9 @@ const AdminAppointment = () => {
                     <CustomPagination
                         total_pages={Appointments?.total_pages}
                         currentPage={+page}
-                        previous={(p) => setPage(String(p))}
-                        goTo={(p) => setPage(String(p))}
-                        next={(p) => setPage(String(p))}
+                        previous={(p) => setPage(p)}
+                        goTo={(p) => setPage(p)}
+                        next={(p) => setPage(p)}
                     />
                 </div>
 

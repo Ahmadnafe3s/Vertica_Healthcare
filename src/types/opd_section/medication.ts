@@ -1,4 +1,4 @@
-export interface opdMedications {
+export interface opdMedicationData {
     id: number,
     opdId: number,
     medicineId: number,
@@ -19,6 +19,10 @@ export interface opdMedications {
     }
 }
 
+export type opdMedications = {
+    data: opdMedicationData[],
+    total_pages: number
+}
 
 
 export interface medicationDetail {

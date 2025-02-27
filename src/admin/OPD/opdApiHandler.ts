@@ -10,16 +10,16 @@ import { opdMedications } from "@/types/opd_section/medication"
 import { opdDetails, OPDs } from "@/types/opd_section/opd"
 import { operationDetailsType, PaginatedOperations } from "@/types/opd_section/operationType"
 import { Payment } from "@/types/opd_section/payment"
-import { prescription, prescriptionDetail } from "@/types/opd_section/prescription"
+import { prescriptionDetail } from "@/types/opd_section/prescription"
 import { timeline } from "@/types/opd_section/timeline"
-import { Vitals_List } from "@/types/type"
+import { VitalType } from "@/types/opd_section/vitals"
 import axios from "axios"
 import { z } from "zod"
 
 
-export const getOPDList = async (): Promise<OPDs[]> => {
+export const getOPDs = async (params: { search?: string, page?: number, limit?: number }): Promise<OPDs> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd`)
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -32,17 +32,6 @@ export const getOPDlistBYpatient = async (patientId: number, date?: string) => {
     try {
         const params = { date }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd/patient/${patientId}`, { params })
-        return res.data
-    } catch (error: any) {
-        throw new Error(error.response?.data?.message)
-    }
-}
-
-
-export const searchOPDs = async (search: string) => {
-    try {
-        const params = { search }
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -75,10 +64,9 @@ export const createMedication = async (opdId: string, formData: z.infer<typeof m
 
 
 
-export const getMedications = async (opdId: string, date?: string): Promise<opdMedications[]> => {
+export const getMedications = async (params: { opdId: string, date?: string, page?: number, limit?: number }): Promise<opdMedications> => {
 
     try {
-        const params = { opdId, date }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/medication`, { params })
         return res.data
 
@@ -135,7 +123,7 @@ export const createVital = async (patientId: number, opdId: string, formData: z.
 
 
 
-export const getVitals = async (opdId: string): Promise<Vitals_List[]> => {
+export const getVitals = async (opdId: string): Promise<VitalType[]> => {
     try {
         const params = { opdId }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/vital`, { params })
@@ -158,7 +146,7 @@ export const deleteVitals = async (id: number) => {
 
 
 
-export const searchVital = async (opdId: string, date: string): Promise<Vitals_List[]> => {
+export const searchVital = async (opdId: string, date: string): Promise<VitalType[]> => {
     try {
         const params = { opdId, date }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/vital`, { params })
@@ -190,9 +178,8 @@ export const createOperation = async (patientId: number, opdId: string, formData
 
 
 
-export const getOperation_List = async (page: number, opdId: string, search?: string): Promise<PaginatedOperations> => {
+export const getOperations = async (params: { opdId: string, page: number, limit?: number, search?: string }): Promise<PaginatedOperations> => {
     try {
-        const params = { page, opdId }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/operation`, { params })
         return res.data
     } catch (error: any) {
@@ -346,28 +333,14 @@ export const getChargeDetails = async (id: number): Promise<ChargeDetailsType> =
 }
 
 
-export const getChargesList = async (opdId: string, page: number) => {
+export const getCharges = async (params: { opdId: string, page?: number, limit?: number, date?: string }) => {
     try {
-        const params = { opdId, page }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/charge`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
     }
 }
-
-
-export const searchCharges = async (opdId: string, date: string) => {
-    try {
-        const params = { opdId, date }
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/charge`, { params })
-        return res.data
-    } catch (error: any) {
-        throw new Error(error.response?.data?.message)
-    }
-}
-
-
 
 
 // API handlers for payment section
@@ -460,7 +433,7 @@ export const deletePrescription = async (id: number) => {
 }
 
 
-export const getPrescriptionDetails = async (id: number):Promise<prescriptionDetail> => {
+export const getPrescriptionDetails = async (id: number): Promise<prescriptionDetail> => {
     try {
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/prescription/${id}`)
         return res.data

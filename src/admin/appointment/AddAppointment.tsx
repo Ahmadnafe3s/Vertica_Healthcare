@@ -18,6 +18,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { currencySymbol } from '@/helpers/currencySymbol'
 import { PaymentOptions } from '@/helpers/formSelectOptions'
 import Dialog from '@/components/Dialog'
+import { useDebouncedCallback } from 'use-debounce'
 
 
 
@@ -39,14 +40,14 @@ function AddAppointment({ Submit, isPending, ...props }: AddAppointmentProps) {
     })
 
 
-    const onSearch = async (value: string) => {
+    const onSearch = useDebouncedCallback(async (value: string) => {
         try {
             const data = await fetchPatients(value)
             setPatients(data)
         } catch ({ message }: any) {
             toast.error(message)
         }
-    }
+    },400)
 
 
 

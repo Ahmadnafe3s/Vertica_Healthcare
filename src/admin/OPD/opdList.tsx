@@ -1,21 +1,23 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ClipboardPlus, FileText, Plus, Printer, ReceiptText, Syringe } from 'lucide-react'
+import { ClipboardPlus, FileText, Plus, Printer, ReceiptText, SearchX, Syringe } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { createPrescription, deletePrescription, getOPDList, getPrescriptionDetails, searchOPDs, updatePrescription } from './opdApiHandler'
+import { createPrescription, deletePrescription, getOPDs, getPrescriptionDetails, updatePrescription } from './opdApiHandler'
 import toast from 'react-hot-toast'
 import CreatePrescriptionFormModel from './prescription/createPrescriptionFormModel'
 import { OPDs } from '@/types/opd_section/opd'
 import { createPrescriptionFormSchema } from '@/formSchemas/createPrescriptionFormSchema'
-import { boolean, z } from 'zod'
+import { z } from 'zod'
 import CustomTooltip from '@/components/customTooltip'
 import LoaderModel from '@/components/loader'
 import PrescriptionDetailsModel from './prescription/prescriptionDetailsModel'
 import { prescriptionDetail } from '@/types/opd_section/prescription'
 import AlertModel from '@/components/alertModel'
 import { useDebouncedCallback } from 'use-debounce'
+import { parseAsInteger, useQueryState } from 'nuqs'
+import CustomPagination from '@/components/customPagination'
 
 
 
@@ -24,6 +26,10 @@ const OPDLIST = () => {
 
   const opdId = useRef<string>('')
 
+  // Query params
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
+  const [search, setSearch] = useQueryState('search')
+
   // loaders
   const [isLoading, setLoading] = useState<{ inline: boolean, model: boolean }>({
     inline: false,
@@ -31,7 +37,7 @@ const OPDLIST = () => {
   })
 
   // API states
-  const [OPD_list, setOPD_list] = useState<OPDs[]>([])
+  const [OPD_list, setOPD_list] = useState<OPDs>({ data: [], total_pages: 0 })
   const [prescDetails, setPrescDetails] = useState<prescriptionDetail>()
 
   // Model States
@@ -43,9 +49,9 @@ const OPDLIST = () => {
   })
 
 
-  const fetOPDlist = async () => {
+  const fetchOPDs = async () => {
     try {
-      const data = await getOPDList()
+      const data = await getOPDs({ search: search!, page, limit: search ? 100 : 10 })
       setOPD_list(data)
 
     } catch ({ message }: any) {
@@ -56,12 +62,12 @@ const OPDLIST = () => {
 
 
   const onSerach = useDebouncedCallback(async (search: string) => {
-    try {
-      const data = await searchOPDs(search)
-      setOPD_list(data)
-    } catch ({ message }: any) {
-      toast.error(message)
+    if (search) {
+      setPage(1)
+      setSearch(search)
+      return
     }
+    setSearch(null)
   }, 400)
 
 
@@ -79,7 +85,7 @@ const OPDLIST = () => {
         :
         (data = await createPrescription(opdId.current, formData))
       toast.success(data.message)
-      fetOPDlist()
+      fetchOPDs()
       setModel(prev => ({ ...prev, prescriptionForm: false }))
     } catch ({ message }: any) {
       toast.error(message)
@@ -113,7 +119,7 @@ const OPDLIST = () => {
       setLoading(prev => ({ ...prev, inline: true }))
       const data = await deletePrescription(prescDetails?.id!)
       toast.success(data.message)
-      fetOPDlist()
+      fetchOPDs()
     } catch ({ message }: any) {
       toast.error(message)
     } finally {
@@ -124,10 +130,9 @@ const OPDLIST = () => {
   }
 
 
-
   useEffect(() => {
-    fetOPDlist()
-  }, [])
+    fetchOPDs()
+  }, [page, search])
 
 
   return (
@@ -139,9 +144,9 @@ const OPDLIST = () => {
         <h1 className='font-semibold tracking-tight'>OPD - out patient list</h1>
         <div className='flex gap-x-2 overflow-x-auto'>
 
-          <Button size="sm"
+          {/* <Button size="sm"
             onClick={() => setModel(prev => ({ ...prev, appointmentForm: true }))}
-          ><Plus />Add Patient</Button>
+          ><Plus />Add Patient</Button> */}
 
         </div>
       </div>
@@ -163,76 +168,94 @@ const OPDLIST = () => {
         </div>
       </div>
 
+      {/* pagination */}
+      <section className="flex flex-col mb-16 gap-y-5 min-h-[70vh]">
+        <div className="flex-1 space-y-5">
+          <Table className="border rounded-lg my-10">
+            <TableHeader className='bg-gray-100 '>
+              <TableRow>
+                <TableHead>OPD No.</TableHead>
+                <TableHead>Patient Name</TableHead>
+                <TableHead>Appointment Date</TableHead>
+                <TableHead>Consultant</TableHead>
+                <TableHead>Reference</TableHead>
+                <TableHead>Symptom Type</TableHead>
+                <TableHead>Previous medical Issue</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
 
-      <Table className="border rounded-lg my-10">
-        <TableHeader className='bg-gray-100 '>
-          <TableRow>
-            <TableHead>OPD No.</TableHead>
-            <TableHead>Patient Name</TableHead>
-            <TableHead>Appointment Date</TableHead>
-            <TableHead>Consultant</TableHead>
-            <TableHead>Reference</TableHead>
-            <TableHead>Symptom Type</TableHead>
-            <TableHead>Previous medical Issue</TableHead>
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
+            <TableBody>
 
-        <TableBody>
+              {OPD_list.data.map((opd, i) => {
+                return <TableRow key={i}>
+                  <TableCell>
+                    <Link to={`../patient/${opd.patientId}/${opd.id}/visitdetails`}
+                      className="font-medium text-blue-500 hover:text-blue-400 cursor-pointer">
+                      {opd.id}
+                    </Link>
+                  </TableCell>
+                  <TableCell className='whitespace-nowrap'>{opd.appointment.patient.name}</TableCell>
+                  <TableCell>{opd.appointment.appointment_date}</TableCell>
+                  <TableCell>
+                    <Link className='text-blue-500 font-medium whitespace-nowrap' to={{ pathname: `/admin/profile/staff/${opd.appointment.doctor.id}` }}>
+                      {opd.appointment.doctor.name}
+                    </Link>
+                  </TableCell>
 
-          {OPD_list.map((opd, i) => {
-            return <TableRow key={i}>
-              <TableCell>
-                <Link to={`../patient/${opd.patientId}/${opd.id}/visitdetails`}
-                  className="font-medium text-blue-500 hover:text-blue-400 cursor-pointer">
-                  {opd.id}
-                </Link>
-              </TableCell>
-              <TableCell className='whitespace-nowrap'>{opd.appointment.patient.name}</TableCell>
-              <TableCell>{opd.appointment.appointment_date}</TableCell>
-              <TableCell>
-                <Link className='text-blue-500 font-medium whitespace-nowrap' to={{ pathname: `/admin/profile/staff/${opd.appointment.doctor.id}` }}>
-                  {opd.appointment.doctor.name}
-                </Link>
-              </TableCell>
+                  <TableCell>{opd.appointment.reference}</TableCell>
+                  <TableCell>{opd.appointment.symptom_type}</TableCell>
+                  <TableCell>{opd.appointment.previous_medical_issue}</TableCell>
 
-              <TableCell>{opd.appointment.reference}</TableCell>
-              <TableCell>{opd.appointment.symptom_type}</TableCell>
-              <TableCell>{opd.appointment.previous_medical_issue}</TableCell>
+                  <TableCell className='flex gap-x-2 items-center'>
+                    {opd.prescriptions?.id ?
+                      (
+                        <CustomTooltip message='prescription'>
+                          <Syringe className='cursor-pointer text-gray-600 w-5 h-5'
+                            onClick={async () => {
+                              await fetchPrescriptionDetails(opd.prescriptions.id)
+                              setModel(prev => ({ ...prev, prescriptionDetails: true }))
+                            }}
+                          />
+                        </CustomTooltip>
+                      )
+                      :
+                      (
+                        <CustomTooltip message='Add prescription'>
+                          <ClipboardPlus className='cursor-pointer text-gray-600 w-5 h-5'
+                            onClick={() => { opdId.current = opd.id; setModel(prev => ({ ...prev, prescriptionForm: true })) }}
+                          />
+                        </CustomTooltip>
+                      )
+                    }
+                    <FileText className='cursor-pointer text-gray-600 w-5 h-5' />
+                    <Printer className='cursor-pointer text-gray-600 w-5 h-5' />
+                    <ReceiptText className='cursor-pointer text-gray-600 w-5 h-5' />
+                  </TableCell>
 
-              <TableCell className='flex gap-x-2 items-center'>
-                {opd.prescriptions?.id ?
-                  (
-                    <CustomTooltip message='prescription'>
-                      <Syringe className='cursor-pointer text-gray-600 w-5 h-5'
-                        onClick={async () => {
-                          await fetchPrescriptionDetails(opd.prescriptions.id)
-                          setModel(prev => ({ ...prev, prescriptionDetails: true }))
-                        }}
-                      />
-                    </CustomTooltip>
-                  )
-                  :
-                  (
-                    <CustomTooltip message='Add prescription'>
-                      <ClipboardPlus className='cursor-pointer text-gray-600 w-5 h-5'
-                        onClick={() => { opdId.current = opd.id; setModel(prev => ({ ...prev, prescriptionForm: true })) }}
-                      />
-                    </CustomTooltip>
-                  )
-                }
-                <FileText className='cursor-pointer text-gray-600 w-5 h-5' />
-                <Printer className='cursor-pointer text-gray-600 w-5 h-5' />
-                <ReceiptText className='cursor-pointer text-gray-600 w-5 h-5' />
-              </TableCell>
+                </TableRow>
+              })}
+            </TableBody>
+          </Table>
+          {/* error on emply list */}
 
-            </TableRow>
-          })}
-        </TableBody>
-      </Table>
+          {OPD_list.data.length < 1 && <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
+        </div>
 
 
-      {/* {isAppointmentModel && <AddAppointment onClick={() => { setAppointmentModel(false); }} />} */}
+        {/* pagination buttons */}
+        <section>
+          <CustomPagination
+            total_pages={OPD_list?.total_pages!}
+            currentPage={page}
+            previous={(p) => setPage(p)}
+            goTo={(p) => setPage(p)}
+            next={(p) => setPage(p)}
+          />
+        </section>
+      </section>
+
+      {/* {model.appointmentForm && <AddAppointment  onClick={() => {  }} />} */}
 
       {/* Prescription Model */}
 

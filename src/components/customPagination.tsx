@@ -66,7 +66,7 @@ const CustomPagination = ({ currentPage, total_pages, next, goTo, previous }: Cu
                 {/* Next Button */}
                 <PaginationItem>
                     <Button size='sm'
-                        className={cn({ 'hidden': currentPage == total_pages })}
+                        className={cn({ 'hidden': currentPage === total_pages || total_pages === 0 })}
                         onClick={() => next(currentPage + 1)}>Next</Button>
                 </PaginationItem>
             </PaginationContent>

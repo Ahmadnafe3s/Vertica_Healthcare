@@ -14,10 +14,10 @@ import { chargeNameDetailsType, chargeNamesType } from "@/types/setupTypes/charg
 import { createChargeName, deleteChargeName, getChargeNameDetails, getChargeNames, updateChargeName } from "../chargesAPIhandlers"
 import { currencyFormat } from "@/lib/utils"
 import AlertModel from "@/components/alertModel"
-import { useLocation } from "react-router-dom"
 import CustomPagination from "@/components/customPagination"
 import LoaderModel from "@/components/loader"
 import CustomTooltip from "@/components/customTooltip"
+import { useQueryState, parseAsInteger } from "nuqs"
 
 
 
@@ -25,9 +25,9 @@ import CustomTooltip from "@/components/customTooltip"
 
 const ChargesList = () => {
 
-  const location = useLocation()
-  const queryParams = new URLSearchParams(location.search)
-  let page = parseInt(queryParams.get('page') || '1', 10);
+  // params
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
+  const [search, setSearch] = useQueryState('search')
 
   // credentials
   const itemID = useRef<number>(0)
@@ -43,7 +43,7 @@ const ChargesList = () => {
 
   // API States
   const [chargeNameDetails, setChargeNameDetails] = useState<chargeNameDetailsType | undefined>(undefined)
-  const [chargeNames, setchargeNames] = useState<chargeNamesType>()
+  const [chargeNames, setchargeNames] = useState<chargeNamesType>({ data: [], total_pages: 0 })
 
 
 
@@ -84,7 +84,7 @@ const ChargesList = () => {
 
   const fetChargeNames = async () => {
     try {
-      const data = await getChargeNames(page)
+      const data = await getChargeNames({ page, limit: search ? 100 : 10, search: search! })
       setchargeNames(data)
       console.log(data);
 
@@ -109,21 +109,19 @@ const ChargesList = () => {
   }
 
 
-  const onSearch = useDebouncedCallback(async (value) => {
-    try {
-      const data = await getChargeNames(page, value)
-      setchargeNames(data)
-    } catch ({ message }: any) {
-      toast.error(message)
+  const onSearch = useDebouncedCallback(async (value: string) => {
+    if (value) {
+      setPage(1)
+      setSearch(value)
+      return null
     }
+    setSearch(null) // if no value then null
   }, 400)
 
 
   useEffect(() => {
     fetChargeNames()
-    console.log("hjsjisd");
-
-  }, [page])
+  }, [page, search])
 
 
   return (
@@ -146,7 +144,7 @@ const ChargesList = () => {
 
       <Separator />
 
-      <div className="flex flex-col min-h-[70vh] gap-y-16">
+      <div className="flex flex-col min-h-[58vh] gap-y-16">
         {/* child 1 */}
         <div className="flex-1">
           <Table className="rounded-lg border">
@@ -203,10 +201,15 @@ const ChargesList = () => {
 
         </div>
 
-        {/* child 2 */}
-        <div>
-          <CustomPagination currentPage={page} total_pages={Number(chargeNames?.total_pages)} />
-        </div>
+        {/* Pagination */}
+
+        <CustomPagination
+          total_pages={chargeNames?.total_pages}
+          currentPage={+page}
+          previous={(p) => setPage(p)}
+          goTo={(p) => setPage(p)}
+          next={(p) => setPage(p)}
+        />
       </div>
 
 

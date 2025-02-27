@@ -1,11 +1,11 @@
 import { chargeListDataType } from "./charges"
-import { opdMedications } from "./medication"
+import { opdMedicationData } from "./medication"
 import { operation } from "./operationType"
 import { Payment } from "./payment"
 import { timeline } from "./timeline"
 import { VitalType } from "./vitals"
 
-export interface OPDs {  // it will be Array of objects
+interface opdData {  // it will be Array of objects
     id: string,
     patientId: number,
     appointmentId: string,
@@ -30,6 +30,12 @@ export interface OPDs {  // it will be Array of objects
     prescriptions: {
         id: number
     }
+}
+
+
+export interface OPDs {
+    data: opdData[],
+    total_pages: number
 }
 
 
@@ -58,7 +64,7 @@ export interface opdDetails {
             alergies: string
         }
     },
-    medications: opdMedications[],
+    medications: opdMedicationData[],
     Vitals: VitalType[],
     Operations: operation[],
     timelines: timeline[],

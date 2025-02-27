@@ -79,9 +79,10 @@ export const createPurchase = async (formData: z.infer<typeof PurchaseMedicineFo
 
 
 
-export const getPurchaseList = async (page: number, limit?: number, search?: string): Promise<medicinePurchases> => {
+export const getPurchaseList = async (params: { page: number, limit?: number, search?: string }): Promise<medicinePurchases> => {
     try {
-        const params = { page, limit, search }
+        console.log(params);
+        
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/purchaseMedicine`, { params })
         return res.data
     } catch (error: any) {

@@ -47,8 +47,6 @@ export const createAppointment = async (appointmentDetails: z.infer<typeof appoi
 
 export const fetchAppointments = async (params: { page?: number, limit?: number, status?: string, search?: string }): Promise<Appointment> => {
     try {
-        console.log(params);
-        
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/appointment`, { params })
         return res.data
     } catch (error: any) {
@@ -63,19 +61,6 @@ export const fetchAppointments = async (params: { page?: number, limit?: number,
 export const updateStatus = async (id: string, status: string) => {
     try {
         const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/appointment/status/${id}`, { status })
-        return res.data
-    } catch (error: any) {
-        throw new Error(error.response?.data?.message)
-    }
-}
-
-
-// search appointment
-
-export const searchAppointment = async (search: string) => {
-    try {
-        const params = { search }
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/appointment`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

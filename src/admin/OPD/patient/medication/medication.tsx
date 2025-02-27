@@ -14,10 +14,16 @@ import { medicationFormSchema } from "@/formSchemas/medicationFormSchema"
 import { z } from "zod"
 import LoaderModel from "@/components/loader"
 import CustomTooltip from "@/components/customTooltip"
+import { useQueryState, parseAsInteger } from "nuqs"
+import CustomPagination from "@/components/customPagination"
 
 
 
 const Medication = () => {
+
+  // Query params
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
+  const [search, setSearch] = useQueryState('search')
 
   //credentials
   const { opdId } = useParams()
@@ -34,7 +40,7 @@ const Medication = () => {
   })
 
   // api states
-  const [medications, setMedications] = useState<opdMedications[]>([])
+  const [medications, setMedications] = useState<opdMedications>({ data: [], total_pages: 1 })
   const [medicationDetails, setMedicationDetails] = useState<medicationDetail | undefined>(undefined)
 
 
@@ -54,7 +60,7 @@ const Medication = () => {
 
   const fetchMedications = async () => {
     try {
-      const data = await getMedications(opdId!)
+      const data = await getMedications({ opdId: opdId!, page, limit: search ? 100 : 1, date: search! })
       setMedications(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -83,14 +89,13 @@ const Medication = () => {
   }
 
 
-
-  const onSearch = async (date: string) => {
-    try {
-      const data = await getMedications(opdId!, date)
-      setMedications(data)
-    } catch ({ message }: any) {
-      toast.error(message)
+  const onSearch = (date: string) => {
+    if (date) {
+      setPage(1)
+      setSearch(date)
+      return
     }
+    setSearch(null)
   }
 
 
@@ -110,7 +115,9 @@ const Medication = () => {
 
   useEffect(() => {
     fetchMedications()
-  }, [])
+    console.log(medications);
+    
+  }, [page, search])
 
   return (
     <>
@@ -127,64 +134,81 @@ const Medication = () => {
 
         <div className="sm:w-48 space-y-1">
           <p className="text-sm text-gray-700">Search by date</p>
-          <Input type="date" onChange={(e) => { onSearch(e.target.value) }} />
+          <Input type="date" onChange={(e) => { onSearch(e.target.value) }} defaultValue={search!} />
         </div>
 
         <Separator />
 
-        <Table className="rounded-lg border">
-          <TableHeader className="bg-zinc-100">
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Medicine Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Unit</TableHead>
-              <TableHead>Time</TableHead>
-              <TableHead>Dose</TableHead>
-              <TableHead>Action</TableHead>
-            </TableRow>
-          </TableHeader>
+        {/* pagination */}
+        <section className="flex flex-col gap-y-5 min-h-[60vh]">
+          <div className="flex-1">
+            <Table className="rounded-lg border">
+              <TableHeader className="bg-zinc-100">
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Medicine Name</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Unit</TableHead>
+                  <TableHead>Time</TableHead>
+                  <TableHead>Dose</TableHead>
+                  <TableHead>Action</TableHead>
+                </TableRow>
+              </TableHeader>
 
-          <TableBody>
-            {medications.map((medication, i) => {
-              return <TableRow key={i}>
-                <TableCell >{medication.date}</TableCell>
-                <TableCell>{medication.medicine.name}</TableCell>
-                <TableCell>{medication.medicine.category.name}</TableCell>
-                <TableCell>{medication.medicine.unit.name}</TableCell>
-                <TableCell>{medication.time}</TableCell>
-                <TableCell>{medication.dose}</TableCell>
-                <TableCell className="flex space-x-2">
+              <TableBody>
+                {medications.data.map((medication, i) => {
+                  return <TableRow key={i}>
+                    <TableCell >{medication.date}</TableCell>
+                    <TableCell>{medication.medicine.name}</TableCell>
+                    <TableCell>{medication.medicine.category.name}</TableCell>
+                    <TableCell>{medication.medicine.unit.name}</TableCell>
+                    <TableCell>{medication.time}</TableCell>
+                    <TableCell>{medication.dose}</TableCell>
+                    <TableCell className="flex space-x-2">
 
-                  {/* Edit */}
-                  <CustomTooltip message="EDIT">
-                    <Pencil className="active:scale-95 w-4 text-gray-600 cursor-pointer"
-                      onClick={async () => {
-                        await fetchMedicationDetails(medication.id)
-                        setModel((rest) => ({ ...rest, medicationForm: true }))
-                      }}
-                    />
-                  </CustomTooltip>
+                      {/* Edit */}
+                      <CustomTooltip message="EDIT">
+                        <Pencil className="active:scale-95 w-4 text-gray-600 cursor-pointer"
+                          onClick={async () => {
+                            await fetchMedicationDetails(medication.id)
+                            setModel((rest) => ({ ...rest, medicationForm: true }))
+                          }}
+                        />
+                      </CustomTooltip>
 
-                  {/* Delete */}
-                  <CustomTooltip message="DELETE">
-                    <Trash className="active:scale-95 w-4 text-gray-600 cursor-pointer"
-                      onClick={() => {
-                        setModel((rest) => ({ ...rest, alert: true }))
-                        itemID.current = medication.id
-                      }}
-                    />
-                  </CustomTooltip>
-                </TableCell>
-              </TableRow>
-            })}
-          </TableBody>
-        </Table>
+                      {/* Delete */}
+                      <CustomTooltip message="DELETE">
+                        <Trash className="active:scale-95 w-4 text-gray-600 cursor-pointer"
+                          onClick={() => {
+                            setModel((rest) => ({ ...rest, alert: true }))
+                            itemID.current = medication.id
+                          }}
+                        />
+                      </CustomTooltip>
+                    </TableCell>
+                  </TableRow>
+                })}
+              </TableBody>
+            </Table>
+            {/* error on emply list */}
+
+            {medications.data.length < 1 && <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
+          </div>
+
+          {/* pagination buttons */}
+          <section>
+            <CustomPagination
+              total_pages={medications?.total_pages!}
+              currentPage={page}
+              previous={(p) => setPage(p)}
+              goTo={(p) => setPage(p)}
+              next={(p) => setPage(p)}
+            />
+          </section>
+        </section>
       </section>
 
-      {/* error on emply list */}
 
-      {medications.length < 1 && <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
 
 
       {/* models */}
