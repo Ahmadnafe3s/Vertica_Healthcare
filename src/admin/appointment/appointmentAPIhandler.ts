@@ -1,5 +1,5 @@
 import { appointmentFormSchema } from "@/formSchemas/AppointmentFormSchema"
-import { AppointmentDetails, Appointments } from "@/types/appointment/appointment"
+import { Appointment, AppointmentDetails } from "@/types/appointment/appointment"
 import { Patients } from "@/types/type"
 import axios from "axios"
 import { z } from "zod"
@@ -45,9 +45,10 @@ export const createAppointment = async (appointmentDetails: z.infer<typeof appoi
 
 // get appointment list
 
-export const fetchAppointments = async (status?: string): Promise<Appointments[]> => {
+export const fetchAppointments = async (params: { page?: number, limit?: number, status?: string, search?: string }): Promise<Appointment> => {
     try {
-        const params = status ? { status } : {}
+        console.log(params);
+        
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/appointment`, { params })
         return res.data
     } catch (error: any) {

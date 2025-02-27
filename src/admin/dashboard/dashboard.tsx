@@ -6,20 +6,12 @@ import { Ambulance, DollarSign, HeartPulse, Pill, Radiation, TestTubeDiagonal } 
 import toast from 'react-hot-toast'
 import { Area, AreaChart, CartesianGrid, Pie, PieChart, XAxis } from 'recharts'
 import { useEffect, useState } from 'react'
-import { AdminDash_MM_IncExp, AdminDashIncExp } from '@/types/dashboard/adminDashboard'
+import { AdminDash_MM_IncExp, AdminDashIncExp, AdminDashVisitors } from '@/types/dashboard/adminDashboard'
 import { getAdminDash_MM_IncExp, getAdminDashIncExp, getAdminDashVisitors } from './apiHandler'
 import { Input } from '@/components/ui/input'
 import { useDebouncedCallback } from 'use-debounce'
 
 
-// have to remove it 
-const chartData = [
-    { service: "OPD", visitors: 0, fill: "var(--color-chrome)" },
-    { service: "Pharmacy", visitors: 200, fill: "var(--color-safari)" },
-    { service: "Ambulace", visitors: 187, fill: "var(--color-firefox)" },
-    { service: "Pathylogy", visitors: 173, fill: "var(--color-edge)" },
-    { service: "Radiology", visitors: 90, fill: "var(--color-other)" },
-]
 
 
 const AdminDashboard = () => {
@@ -27,7 +19,7 @@ const AdminDashboard = () => {
     // Api states
     const [IncExp, setIncExp] = useState<AdminDashIncExp>()
     const [MonthlyIncExp, setMonthlyIncExp] = useState<AdminDash_MM_IncExp[]>([])
-
+    const [visitors, setVisitors] = useState<AdminDashVisitors[]>([])
 
     const fetchAdminDashStats = async () => {
         try {
@@ -39,7 +31,7 @@ const AdminDashboard = () => {
             // states
             setIncExp(inc_exp)
             setMonthlyIncExp(monthly_inc_exp)
-
+            setVisitors(visitors)
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -115,7 +107,7 @@ const AdminDashboard = () => {
                                 </div>
                                 <CardTitle>Monthly Income & Expense</CardTitle>
                                 <CardDescription>
-                                    Showing total Income & Expenses for the {MonthlyIncExp.length} months
+                                    Showing total Income & Expenses for the 12 months
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -179,7 +171,7 @@ const AdminDashboard = () => {
                         <Card className="flex flex-col">
                             <CardHeader className="items-center pb-0">
                                 <CardTitle>Pie Chart</CardTitle>
-                                <CardDescription>January - Dec 2024</CardDescription>
+                                <CardDescription>January - Dec {new Date().getFullYear()}</CardDescription>
                             </CardHeader>
                             <CardContent className="flex-1 pb-0">
                                 <ChartContainer
@@ -191,7 +183,7 @@ const AdminDashboard = () => {
                                             cursor={false}
                                             content={<ChartTooltipContent hideLabel />}
                                         />
-                                        <Pie data={chartData} dataKey="visitors" nameKey="service" />
+                                        <Pie data={visitors} dataKey="visitors" nameKey="service" />
                                     </PieChart>
                                 </ChartContainer>
                             </CardContent>

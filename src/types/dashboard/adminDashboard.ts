@@ -12,15 +12,8 @@ export type AdminDash_MM_IncExp = {
 }
 
 
-export type AdminDashVisitors = [
-    {
-        "service": string,
-        "visitors": number,
-        "fill": string,
-    },
-    {
-        "service": string,
-        "visitors": number,
-        "fill": string,
-    }
-]
+export type AdminDashVisitors = {
+    "service": string,
+    "visitors": number,
+    "fill": string,
+}

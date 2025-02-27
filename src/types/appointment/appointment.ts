@@ -1,4 +1,4 @@
-export interface Appointments {
+interface AppointmentData {
     id: string,
     doctorId: number,
     patientId: number,
@@ -25,6 +25,11 @@ export interface Appointments {
     }
 }
 
+
+export interface Appointment {
+    data: AppointmentData[],
+    total_pages: number
+}
 
 
 

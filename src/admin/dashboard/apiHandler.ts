@@ -24,7 +24,7 @@ export const getAdminDash_MM_IncExp = async (year?: string): Promise<AdminDash_M
 }
 
 
-export const getAdminDashVisitors = async ():Promise<AdminDashVisitors> => {
+export const getAdminDashVisitors = async ():Promise<AdminDashVisitors[]> => {
     try {
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/dashboard/admin/visitors`)
         return res.data

@@ -11,16 +11,21 @@ import { createAppointment, deleteAppointment, fetchAppointments, getAppointment
 import AppointmentDetailsModel from './appointmentDetailsModel'
 import AlertModel from '@/components/alertModel'
 import { currencySymbol } from '@/helpers/currencySymbol'
-import { AppointmentDetails, Appointments } from '@/types/appointment/appointment'
+import { Appointment, AppointmentDetails } from '@/types/appointment/appointment'
 import LoaderModel from '@/components/loader'
 import { appointmentFormSchema } from '@/formSchemas/AppointmentFormSchema'
 import { z } from 'zod'
 import CustomTooltip from '@/components/customTooltip'
 import { useDebouncedCallback } from 'use-debounce'
-
+import CustomPagination from '@/components/customPagination'
+import { useQueryState } from 'nuqs'
 
 
 const AdminAppointment = () => {
+
+    // params
+    const [page, setPage] = useQueryState('page', { defaultValue: "1" })
+    const [search, setSearch] = useQueryState('search')
 
     // Pending states
     const [isPending, setPending] = useState<boolean>(false)
@@ -36,14 +41,20 @@ const AdminAppointment = () => {
     const itemID = useRef<string>()
 
     // API States
-    const [Appointments, setAppointments] = useState<Appointments[]>([])
+    const [Appointments, setAppointments] = useState<Appointment>({ data: [], total_pages: 0 })
     const [AppointmentDetails, setAppointmentDetails] = useState<AppointmentDetails | undefined>(undefined)
 
 
 
     const getAppointments = async () => {
         try {
-            const data = await fetchAppointments()
+            console.log(page);
+
+            const data = await fetchAppointments({
+                page: +page,
+                limit: search ? 100 : 1,
+                search: search!
+            })
             setAppointments(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -66,12 +77,13 @@ const AdminAppointment = () => {
 
 
     const onSearch = useDebouncedCallback(async (value: string) => {
-        try {
-            const data = await searchAppointment(value)
-            setAppointments(data)
-        } catch ({ message }: any) {
-            toast.error(message)
+        if (value) {
+            setSearch(value)
+            setPage('1')
+            return null
         }
+        setSearch(null)
+        setPage("2")
     }, 400)
 
 
@@ -108,7 +120,7 @@ const AdminAppointment = () => {
 
     useEffect(() => {
         getAppointments();
-    }, [])
+    }, [page, search])
 
 
     return (
@@ -163,56 +175,58 @@ const AdminAppointment = () => {
                     </div>
                 </div>
 
-                <Table className="border rounded-lg my-10">
-                    <TableHeader className='bg-slate-100'>
-                        <TableRow>
-                            <TableHead>Appointment No</TableHead>
-                            <TableHead>Patient Name</TableHead>
-                            <TableHead>Appointment Date</TableHead>
-                            <TableHead>Shift</TableHead>
-                            <TableHead>Phone</TableHead>
-                            <TableHead>Gender</TableHead>
-                            <TableHead>Doctor</TableHead>
-                            <TableHead>Source</TableHead>
-                            <TableHead>Priority</TableHead>
-                            <TableHead>Alternative Address</TableHead>
-                            <TableHead>Discount%</TableHead>
-                            <TableHead>Fees {currencySymbol()}</TableHead>
-                            <TableHead>Action</TableHead>
-                            <TableHead>Status</TableHead>
-                        </TableRow>
-                    </TableHeader>
+                <div className="flex flex-col gap-y-5 min-h-[70vh]">
+                    <div className="flex-1">
+                        <Table className="border rounded-lg my-10">
+                            <TableHeader className='bg-slate-100'>
+                                <TableRow>
+                                    <TableHead>Appointment No</TableHead>
+                                    <TableHead>Patient Name</TableHead>
+                                    <TableHead>Appointment Date</TableHead>
+                                    <TableHead>Shift</TableHead>
+                                    <TableHead>Phone</TableHead>
+                                    <TableHead>Gender</TableHead>
+                                    <TableHead>Doctor</TableHead>
+                                    <TableHead>Source</TableHead>
+                                    <TableHead>Priority</TableHead>
+                                    <TableHead>Alternative Address</TableHead>
+                                    <TableHead>Discount%</TableHead>
+                                    <TableHead>Fees {currencySymbol()}</TableHead>
+                                    <TableHead>Action</TableHead>
+                                    <TableHead>Status</TableHead>
+                                </TableRow>
+                            </TableHeader>
 
 
-                    <TableBody>
-                        {Appointments.map((appointment) => {
-                            return <TableRow key={appointment.id}>
-                                <TableCell className="font-semibold cursor-pointer text-blue-500 hover:text-blue-400" onClick={async () => {
-                                    await fetchAppoinmentDetails(appointment.id)
-                                    setModel((reset) => {
-                                        return {
-                                            ...reset,
-                                            appointmentDetails: true
-                                        }
-                                    })
-                                }}>
-                                    {appointment.id}
-                                </TableCell>
-                                <TableCell className='whitespace-nowrap'>{appointment.patient.name}</TableCell>
-                                <TableCell>{appointment.appointment_date}</TableCell>
-                                <TableCell>{appointment.shift}</TableCell>
-                                <TableCell>{appointment.patient.phone}</TableCell>
-                                <TableCell>{appointment.patient.gender}</TableCell>
-                                <TableCell>{appointment.doctor.name}</TableCell>
-                                <TableCell>Online</TableCell>
-                                <TableCell>{appointment.appointment_priority}</TableCell>
-                                <TableCell>{appointment.alternative_address}</TableCell>
-                                <TableCell>{appointment.discount}</TableCell>
-                                <TableCell>{currencyFormat(+appointment.fees)}</TableCell>
-                                <TableCell className='space-x-2 px-2'>
+                            <TableBody>
+                                {Appointments.data.map((appointment) => {
+                                    return <TableRow key={appointment.id}>
+                                        <TableCell className="font-semibold cursor-pointer text-blue-500 hover:text-blue-400" onClick={async () => {
+                                            await fetchAppoinmentDetails(appointment.id)
+                                            setModel((reset) => {
+                                                return {
+                                                    ...reset,
+                                                    appointmentDetails: true
+                                                }
+                                            })
+                                        }}>
+                                            {appointment.id}
+                                        </TableCell>
+                                        <TableCell className='whitespace-nowrap'>{appointment.patient.name}</TableCell>
+                                        <TableCell>{appointment.appointment_date}</TableCell>
+                                        <TableCell>{appointment.shift}</TableCell>
+                                        <TableCell>{appointment.patient.phone}</TableCell>
+                                        <TableCell>{appointment.patient.gender}</TableCell>
+                                        <TableCell>{appointment.doctor.name}</TableCell>
+                                        <TableCell>Online</TableCell>
+                                        <TableCell>{appointment.appointment_priority}</TableCell>
+                                        <TableCell>{appointment.alternative_address}</TableCell>
+                                        <TableCell>{appointment.discount}</TableCell>
+                                        <TableCell>{currencyFormat(+appointment.fees)}</TableCell>
+                                        <TableCell className='space-x-2 px-2'>
 
-                                    {/* EDIT */}
-                                    {/* <TooltipProvider delayDuration={200}>
+                                            {/* EDIT */}
+                                            {/* <TooltipProvider delayDuration={200}>
                                         <Tooltip>
                                             <TooltipTrigger>
                                                 <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
@@ -224,26 +238,39 @@ const AdminAppointment = () => {
                                     </TooltipProvider> */}
 
 
-                                    {/* DELETE  */}
-                                    <CustomTooltip message='DELETE'>
-                                        <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
-                                            setModel((prev) => ({ ...prev, alert: true }))
-                                            itemID.current = appointment.id
-                                        }} />
-                                    </CustomTooltip>
+                                            {/* DELETE  */}
+                                            <CustomTooltip message='DELETE'>
+                                                <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                                                    setModel((prev) => ({ ...prev, alert: true }))
+                                                    itemID.current = appointment.id
+                                                }} />
+                                            </CustomTooltip>
 
-                                </TableCell>
-                                <TableCell>
-                                    <span className={cn('text-white py-1 px-3 block rounded-md group-hover:hidden', appointment.status === 'approved' ? 'bg-green-500' : appointment.status === 'pending' ? 'bg-yellow-500' : 'bg-red-500')}>{appointment.status}</span>
-                                </TableCell>
-                            </TableRow>
-                        })}
-                    </TableBody>
-                </Table>
+                                        </TableCell>
+                                        <TableCell>
+                                            <span className={cn('text-white py-1 px-3 block rounded-md group-hover:hidden', appointment.status === 'approved' ? 'bg-green-500' : appointment.status === 'pending' ? 'bg-yellow-500' : 'bg-red-500')}>{appointment.status}</span>
+                                        </TableCell>
+                                    </TableRow>
+                                })}
+                            </TableBody>
+                        </Table>
 
-                {/* if no data will be recive */}
+                        {/* if no data will be recive */}
+                        {Appointments.data.length < 1 && <p className='font-bold text-lg text-gray-800'>No data found</p>}
+                    </div>
 
-                {Appointments.length < 1 && <p className='font-bold text-lg text-gray-800'>No data found</p>}
+                    {/* Pagination */}
+
+                    <CustomPagination
+                        total_pages={Appointments?.total_pages}
+                        currentPage={+page}
+                        previous={(p) => setPage(String(p))}
+                        goTo={(p) => setPage(String(p))}
+                        next={(p) => setPage(String(p))}
+                    />
+                </div>
+
+
             </div>
 
 

@@ -1,40 +1,33 @@
 import { Pagination, PaginationContent, PaginationItem } from './ui/pagination'
-import { Link } from 'react-router-dom'
-import { buttonVariants } from './ui/button'
+import { Button } from './ui/button'
 import { cn } from '@/lib/utils'
 
+type CustomPaginationProps = {
+    currentPage: number,
+    total_pages: number,
+    next: (np: number) => void
+    goTo: (gtP: number) => void
+    previous: (pp: number) => void
+}
 
-
-const CustomPagination = ({ currentPage, total_pages }: { currentPage: number, total_pages: number }) => {
+const CustomPagination = ({ currentPage, total_pages, next, goTo, previous }: CustomPaginationProps) => {
 
     return (
         <Pagination>
             <PaginationContent>
                 {/* Previous Button */}
                 <PaginationItem>
-                    <Link
-                        to={`?page=${currentPage - 1}`}
-                        className={cn(buttonVariants({
-                            variant: 'outline',
-                            size : 'sm'
-                        }), { 'hidden': currentPage === 1 })}
-                    >
-                        Previous
-                    </Link>
+                    <Button size='sm'
+                        className={cn({ 'hidden': currentPage === 1 })}
+                        onClick={() => previous(currentPage - 1)}>Previous</Button>
                 </PaginationItem>
 
                 {/* Always show the first page */}
                 <PaginationItem>
-                    <Link
-                        className={buttonVariants({
-                            variant: currentPage === 1 ? 'outline' : 'ghost',
-                            size : 'sm'
-                        })}
-                        to="?page=1"
-                    >
-                        1
-                    </Link>
+                    <Button size='sm' variant={currentPage === 1 ? 'outline' : 'ghost'}
+                        onClick={() => goTo(1)}>1</Button>
                 </PaginationItem>
+
 
                 {/* Show an ellipsis if the current page is far from the start */}
                 {currentPage > 3 && (
@@ -43,22 +36,17 @@ const CustomPagination = ({ currentPage, total_pages }: { currentPage: number, t
                     </PaginationItem>
                 )}
 
-                {/* Show the previous page, current page, and next page */}
+
+                {/* if page is 2 total page is 4 then 2 , 3*/}
                 {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
                     .filter((pageNumber) => pageNumber > 1 && pageNumber < total_pages)
                     .map((pageNumber) => (
                         <PaginationItem key={pageNumber}>
-                            <Link
-                                className={buttonVariants({
-                                    variant: currentPage === pageNumber ? 'outline' : 'ghost',
-                                    size : 'sm'
-                                })}
-                                to={`?page=${pageNumber}`}
-                            >
-                                {pageNumber}
-                            </Link>
+                            <Button size='sm' variant={currentPage === pageNumber ? 'outline' : 'ghost'}
+                                onClick={() => goTo(pageNumber)}>{pageNumber}</Button>
                         </PaginationItem>
                     ))}
+
 
                 {/* Show an ellipsis if the current page is far from the end */}
                 {currentPage < total_pages - 2 && (
@@ -70,32 +58,19 @@ const CustomPagination = ({ currentPage, total_pages }: { currentPage: number, t
                 {/* Always show the last page */}
                 {total_pages > 1 && (
                     <PaginationItem>
-                        <Link
-                            className={buttonVariants({
-                                variant: currentPage === total_pages ? 'outline' : 'ghost',
-                                size : 'sm'
-                            })}
-                            to={`?page=${total_pages}`}
-                        >
-                            {total_pages}
-                        </Link>
+                        <Button size='sm' variant={currentPage === total_pages ? 'outline' : 'ghost'}
+                            onClick={() => goTo(total_pages)}>{total_pages}</Button>
                     </PaginationItem>
                 )}
 
                 {/* Next Button */}
                 <PaginationItem>
-                    <Link
-                        to={`?page=${currentPage + 1}`}
-                        className={cn(buttonVariants({
-                            variant: 'outline',
-                            size : 'sm'
-                        }), { 'hidden': currentPage === total_pages })}
-                    >
-                        Next
-                    </Link>
+                    <Button size='sm'
+                        className={cn({ 'hidden': currentPage == total_pages })}
+                        onClick={() => next(currentPage + 1)}>Next</Button>
                 </PaginationItem>
             </PaginationContent>
-        </Pagination>
+        </Pagination >
     )
 }
 
