@@ -9,7 +9,7 @@ import { ChargeDetailsType } from "@/types/opd_section/charges"
 import { opdMedications } from "@/types/opd_section/medication"
 import { opdDetails, OPDs } from "@/types/opd_section/opd"
 import { operationDetailsType, PaginatedOperations } from "@/types/opd_section/operationType"
-import { Payment } from "@/types/opd_section/payment"
+import { Payment, paymentData } from "@/types/opd_section/payment"
 import { prescriptionDetail } from "@/types/opd_section/prescription"
 import { timeline } from "@/types/opd_section/timeline"
 import { VitalType } from "@/types/opd_section/vitals"
@@ -45,6 +45,16 @@ export const getOPD_Details = async (opdId: string): Promise<opdDetails> => {
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd/${opdId}`)
         return res.data
 
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const getPrintBillDetails = async (opdId: string) => {
+    try {
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd/printbill/${opdId}`)
+        return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
     }
@@ -356,9 +366,8 @@ export const createPayment = async (opdId: string, formData: z.infer<typeof paym
 
 
 // if we provide search it only will search with respective OPD caseId
-export const getPaymentsList = async (opdId: string, search?: string): Promise<Payment[]> => {
+export const getPaymentsList = async (params: { opdId: string, search?: string, page?: number, limit?: number }): Promise<Payment> => {
     try {
-        const params = { opdId, search }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/payment`, { params })
         return res.data
     } catch (error: any) {
@@ -367,7 +376,7 @@ export const getPaymentsList = async (opdId: string, search?: string): Promise<P
 }
 
 
-export const getPaymentDetails = async (id: string): Promise<Payment> => {
+export const getPaymentDetails = async (id: string): Promise<paymentData> => {
     try {
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/payment/${id}`)
         return res.data

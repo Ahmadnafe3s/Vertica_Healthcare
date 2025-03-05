@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ClipboardPlus, FileText, Plus, Printer, ReceiptText, SearchX, Syringe } from 'lucide-react'
@@ -7,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { createPrescription, deletePrescription, getOPDs, getPrescriptionDetails, updatePrescription } from './opdApiHandler'
 import toast from 'react-hot-toast'
 import CreatePrescriptionFormModel from './prescription/createPrescriptionFormModel'
-import { OPDs } from '@/types/opd_section/opd'
+import { OPDs, } from '@/types/opd_section/opd'
 import { createPrescriptionFormSchema } from '@/formSchemas/createPrescriptionFormSchema'
 import { z } from 'zod'
 import CustomTooltip from '@/components/customTooltip'
@@ -18,13 +17,20 @@ import AlertModel from '@/components/alertModel'
 import { useDebouncedCallback } from 'use-debounce'
 import { parseAsInteger, useQueryState } from 'nuqs'
 import CustomPagination from '@/components/customPagination'
+import { useReactToPrint } from 'react-to-print'
+import OpdBillPDF from './pdf/bill'
+import OpdsPdf from './pdf/opds'
 
 
 
 
 const OPDLIST = () => {
 
+  //utilities
   const opdId = useRef<string>('')
+  const contentRef = useRef(null)
+  const reactToPrint = useReactToPrint({ contentRef, pageStyle: 'margin : 10px' })
+
 
   // Query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
@@ -40,18 +46,21 @@ const OPDLIST = () => {
   const [OPD_list, setOPD_list] = useState<OPDs>({ data: [], total_pages: 0 })
   const [prescDetails, setPrescDetails] = useState<prescriptionDetail>()
 
+
   // Model States
-  const [model, setModel] = useState<{ prescriptionForm: boolean, appointmentForm: boolean, prescriptionDetails: boolean, alert: boolean }>({
+  const [model, setModel] = useState<{ prescriptionForm: boolean, appointmentForm: boolean, prescriptionDetails: boolean, alert: boolean, print: boolean }>({
     prescriptionForm: false,
     appointmentForm: false,
     prescriptionDetails: false,
-    alert: false
+    alert: false,
+    print: false
   })
 
 
+  // fetching opd Details
   const fetchOPDs = async () => {
     try {
-      const data = await getOPDs({ search: search!, page, limit: search ? 100 : 10 })
+      const data = await getOPDs({ search: search!, page, limit: 10 })
       setOPD_list(data)
 
     } catch ({ message }: any) {
@@ -60,17 +69,11 @@ const OPDLIST = () => {
   }
 
 
-
-  const onSerach = useDebouncedCallback(async (search: string) => {
-    if (search) {
-      setPage(1)
-      setSearch(search)
-      return
-    }
-    setSearch(null)
+  // searching list
+  const onSerach = useDebouncedCallback(async (value: string) => {
+    value ? setSearch(value) : setSearch(null)
+    setPage(1)
   }, 400)
-
-
 
 
   // handling prescription
@@ -156,21 +159,20 @@ const OPDLIST = () => {
       <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between border-b border-gray-200'>
 
         <div className='flex gap-x-2'>
-          <Input type='text' height='10px' placeholder='opdId , patient , doctor' onChange={(e) => { onSerach(e.target.value) }} />
+          <Input type='text' height='10px' placeholder='opdId , patient , doctor' onChange={(e) => { onSerach(e.target.value) }} defaultValue={search!} />
           {/* use debounce to prevent api call */}
         </div>
 
         <div className='flex gap-x-2'>
-
-          <FileText className='cursor-pointer text-gray-600' />
-          <Printer className='cursor-pointer text-gray-600' />
-
+          {/* will print all list */}
+          <OpdsPdf opds={OPD_list['data']} />
         </div>
       </div>
 
+
       {/* pagination */}
-      <section className="flex flex-col mb-16 gap-y-5 min-h-[70vh]">
-        <div className="flex-1 space-y-5">
+      <section className="flex flex-col mb-16 gap-y-5 min-h-[75vh]">
+        <div className="flex-1 space-y-5" ref={contentRef}>
           <Table className="border rounded-lg my-10">
             <TableHeader className='bg-gray-100 '>
               <TableRow>
@@ -181,9 +183,10 @@ const OPDLIST = () => {
                 <TableHead>Reference</TableHead>
                 <TableHead>Symptom Type</TableHead>
                 <TableHead>Previous medical Issue</TableHead>
-                <TableHead>Action</TableHead>
+                <TableHead className='print:hidden'>Action</TableHead>
               </TableRow>
             </TableHeader>
+
 
             <TableBody>
 
@@ -207,7 +210,7 @@ const OPDLIST = () => {
                   <TableCell>{opd.appointment.symptom_type}</TableCell>
                   <TableCell>{opd.appointment.previous_medical_issue}</TableCell>
 
-                  <TableCell className='flex gap-x-2 items-center'>
+                  <TableCell className='flex gap-x-2 items-center print:hidden'>
                     {opd.prescriptions?.id ?
                       (
                         <CustomTooltip message='prescription'>
@@ -228,9 +231,7 @@ const OPDLIST = () => {
                         </CustomTooltip>
                       )
                     }
-                    <FileText className='cursor-pointer text-gray-600 w-5 h-5' />
-                    <Printer className='cursor-pointer text-gray-600 w-5 h-5' />
-                    <ReceiptText className='cursor-pointer text-gray-600 w-5 h-5' />
+                    <OpdBillPDF opdId={opd.id} onPending={(value) => setLoading({ ...isLoading, model: value })} />
                   </TableCell>
 
                 </TableRow>

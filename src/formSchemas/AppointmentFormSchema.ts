@@ -8,8 +8,9 @@ export const appointmentFormSchema = z.object({
     doctorId: z.number()
         .min(1, { message: 'Please select a doctor' }).default(0),
 
-    fees: z.string()
-        .min(1, { message: 'Please enter fees' }),
+    fees: z.number()
+        .min(1, { message: 'Fees cannot be 0' })
+        .default(0),
 
     shift: z.string()
         .min(1, { message: 'Please select shift' }).default(''),
@@ -39,8 +40,9 @@ export const appointmentFormSchema = z.object({
     status: z.string()
         .min(1, { message: 'Please select status' }).default(''),
 
-    discount: z.string()
-        .min(1, { message: 'Please enter discount %' }),
+    discount: z.number()
+        .optional()
+        .default(0),
 
     alternative_address: z.string().optional(),
 
@@ -49,5 +51,9 @@ export const appointmentFormSchema = z.object({
     previous_medical_issue: z.string().optional(),
 
     message: z.string().optional(),
+
+    net_amount: z.number()
+        .min(1, { message: 'Net amount cannot be 0' })
+        .default(0)
 
 })

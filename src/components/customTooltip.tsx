@@ -14,7 +14,7 @@ const CustomTooltip = ({ children, message, delay }: CustomTooltipProps) => {
                 <TooltipTrigger asChild>
                     {children}
                 </TooltipTrigger>
-                <TooltipContent className="z-[200]">
+                <TooltipContent className="z-[1000]">
                     {message}
                 </TooltipContent>
             </Tooltip>

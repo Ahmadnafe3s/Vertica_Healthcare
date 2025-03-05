@@ -19,6 +19,7 @@ import { currencySymbol } from '@/helpers/currencySymbol'
 import { PaymentOptions } from '@/helpers/formSelectOptions'
 import Dialog from '@/components/Dialog'
 import { useDebouncedCallback } from 'use-debounce'
+import { calculateAmount } from '@/helpers/calculateAmount'
 
 
 
@@ -44,12 +45,8 @@ function AddAppointment({ Submit, isPending, ...props }: AddAppointmentProps) {
         try {
             const data = await fetchPatients(value)
             setPatients(data)
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    },400)
-
-
+        } catch ({ message }: any) { toast.error(message) }
+    }, 400)
 
 
     const setValues = (doctorId: string) => {
@@ -58,6 +55,14 @@ function AddAppointment({ Submit, isPending, ...props }: AddAppointmentProps) {
         setValue('fees', data.staff.fees)
         setValue('shift', data.shift)
     }
+
+
+    // for calculating price
+    useEffect(() => {
+        const total = watch('fees')
+        const net_amount = calculateAmount(total, 0, watch('discount')).net_amount
+        setValue('net_amount', net_amount)
+    }, [watch('fees'), watch('discount')])
 
 
     useEffect(() => {
@@ -73,7 +78,7 @@ function AddAppointment({ Submit, isPending, ...props }: AddAppointmentProps) {
         } catch ({ message }: any) {
             toast.error(message)
         }
-    }, [watch('appointment_date'),])
+    }, [watch('appointment_date')])
 
 
 
@@ -156,7 +161,7 @@ function AddAppointment({ Submit, isPending, ...props }: AddAppointmentProps) {
 
                         <div className="w-full flex flex-col gap-y-2">
                             <Label>Doctor Fees {currencySymbol()}</Label>
-                            <Input type='number' {...register('fees')} />
+                            <Input type='number' {...register('fees', { valueAsNumber: true })} defaultValue={0} />
                             {errors.fees && <p className='text-sm text-red-500'>{errors.fees.message}</p>}
                         </div>
 
@@ -182,9 +187,9 @@ function AddAppointment({ Submit, isPending, ...props }: AddAppointmentProps) {
                                         </SelectTrigger>
 
                                         <SelectContent className='z-[200]'>
-                                            <SelectItem value="urgent">Urgent</SelectItem>
-                                            <SelectItem value="very urgent">Very Urgent</SelectItem>
-                                            <SelectItem value="low">Low</SelectItem>
+                                            <SelectItem value="Urgent">Urgent</SelectItem>
+                                            <SelectItem value="Very Urgent">Very Urgent</SelectItem>
+                                            <SelectItem value="Low">Low</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </>
@@ -243,9 +248,9 @@ function AddAppointment({ Submit, isPending, ...props }: AddAppointmentProps) {
                                         </SelectTrigger>
 
                                         <SelectContent className='z-[200]'>
-                                            <SelectItem value="approved">Approved</SelectItem>
-                                            <SelectItem value="pending">Pending</SelectItem>
-                                            <SelectItem value="cancelled">Cancel</SelectItem>
+                                            <SelectItem value="Approved">Approved</SelectItem>
+                                            <SelectItem value="Pending">Pending</SelectItem>
+                                            <SelectItem value="Cancelled">Cancel</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </>
@@ -253,29 +258,52 @@ function AddAppointment({ Submit, isPending, ...props }: AddAppointmentProps) {
                             {errors.status && <p className='text-sm text-red-500'>{errors.status.message}</p>}
                         </div >
 
+                        {/* Discount */}
+
                         <div className="w-full flex flex-col gap-y-2">
-                            <Label>Discount Percentage</Label>
-                            <Input type='number' {...register('discount')} />
+                            <Label>Discount %</Label>
+                            <Input type='number' {...register('discount', { valueAsNumber: true })} defaultValue={0} />
+                            {errors.discount && <p className='text-sm text-red-500'>{errors.discount.message}</p>}
                         </div>
+
+                        {/* Alternative Address */}
 
                         <div className="w-full flex flex-col gap-y-2">
                             <Label>Alternative Address</Label>
                             <Input type='text' {...register('alternative_address')} />
+                            {errors.alternative_address && <p className='text-sm text-red-500'>{errors.alternative_address.message}</p>}
                         </div>
+
+                        {/* Reference */}
 
                         <div className="w-full flex flex-col gap-y-2">
                             <Label>Reference</Label>
                             <Input type='text' {...register('reference')} />
+                            {errors.reference && <p className='text-sm text-red-500'>{errors.reference.message}</p>}
                         </div>
+
+                        {/* Previous issue */}
 
                         <div className="w-full flex flex-col gap-y-2">
                             <Label>Previous Issue</Label>
                             <Input type='text' {...register('previous_medical_issue')} />
+                            {errors.previous_medical_issue && <p className='text-sm text-red-500'>{errors.previous_medical_issue.message}</p>}
                         </div>
 
-                        <div className="w-full flex flex-col gap-y-2 sm:col-span-2">
+                        {/* message */}
+
+                        <div className="w-full flex flex-col gap-y-2">
                             <Label>Message</Label>
-                            <Textarea placeholder='write your messsage here' {...register('message')} />
+                            <Input type='text' placeholder='write your messsage here' {...register('message')} />
+                            {errors.message && <p className='text-sm text-red-500'>{errors.message.message}</p>}
+                        </div>
+
+                        {/* net amount */}
+
+                        <div className="w-full flex flex-col gap-y-2">
+                            <Label>Net Amount {currencySymbol()}</Label>
+                            <Input type='number' {...register('net_amount', { valueAsNumber: true })} defaultValue={0} disabled />
+                            {errors.net_amount && <p className='text-sm text-red-500'>{errors.net_amount.message}</p>}
                         </div>
 
                     </div>

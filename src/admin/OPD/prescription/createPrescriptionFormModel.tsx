@@ -1,4 +1,4 @@
-import { getMedicineList } from "@/admin/pharmacy/pharmacyApiHandler"
+import { getMedicineList, getMedicinesBYcategory } from "@/admin/pharmacy/pharmacyApiHandler"
 import { getFindingCategories, getFindingNameDetails, getFindingNames } from "@/admin/setup/findings/apiHandler"
 import { getDoseDurations, getDoseIntervals, getMedicineCategories } from "@/admin/setup/pharmacy/apiHandler"
 import Dialog from "@/components/Dialog"
@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { createPrescriptionFormSchema, valuesASdefault } from "@/formSchemas/createPrescriptionFormSchema"
 import { prescriptionDetail } from "@/types/opd_section/prescription"
-import { medicines } from "@/types/pharmacy/pharmacy"
+import { medicines, medicinesBYcategory } from "@/types/pharmacy/pharmacy"
 import { findingCategory, findingName } from "@/types/setupTypes/finding"
 import { doseDuration, doseInterval, medicineCategory } from "@/types/setupTypes/pharmacy"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -19,7 +19,7 @@ import { Loader, Plus, X } from "lucide-react"
 import { HTMLAttributes, useEffect, useState } from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
-import { string, z } from "zod"
+import { z } from "zod"
 
 
 interface PrescriptionFormModelProps extends HTMLAttributes<HTMLDivElement> {
@@ -36,7 +36,7 @@ const CreatePrescriptionFormModel = ({ prescDetails: details, isPending, Submit,
     const [findingCategories, setFindingCategories] = useState<findingCategory[]>([])
     const [findingNames, setFindingNames] = useState<{ [key: number]: findingName[] }>([])
     const [medicineCategories, setMedicineCategories] = useState<medicineCategory[]>([])
-    const [medicineNames, setMedicineNames] = useState<{ [key: number]: medicines[] }>([])
+    const [medicineNames, setMedicineNames] = useState<{ [key: number]: medicinesBYcategory[] }>([])
     const [medicineQuantity, setMedicineQuantity] = useState<{ [key: number]: number }>([])
     const [doseOption, setDoseOptions] = useState<{ doseIntervals: doseInterval[], doseDurations: doseDuration[] }>({
         doseDurations: [],
@@ -78,9 +78,9 @@ const CreatePrescriptionFormModel = ({ prescDetails: details, isPending, Submit,
     }
 
     // handling category change
-    const handleMedCategoryChange = async (categroyId: string, index: number,) => {
+    const handleMedCategoryChange = async (categroyId: number, index: number,) => {
         try {
-            const data = await getMedicineList(categroyId)
+            const data = await getMedicinesBYcategory(categroyId)
             setMedicineNames(rest => ({ ...rest, [index]: data }))
         } catch ({ message }: any) {
             toast.error(message)
@@ -162,7 +162,7 @@ const CreatePrescriptionFormModel = ({ prescDetails: details, isPending, Submit,
         // on edit mode rebinding data
         if (details) {
             details.prescMedicines.forEach((elem, i) => {
-                handleMedCategoryChange(String(elem.categoryId), i)
+                handleMedCategoryChange(elem.categoryId, i)
             })
             details.prescFindings.forEach((elem, i) => {
                 handleFindingCategoryChange(String(elem.findingCategoryId), i)
@@ -302,7 +302,7 @@ const CreatePrescriptionFormModel = ({ prescDetails: details, isPending, Submit,
                                     <Controller control={control} name={`medicine.${index}.categoryId`} render={({ field }) => {
                                         return <>
                                             <Label>Medicine Category</Label>
-                                            <Select value={field.value === 0 ? undefined : field.value.toString()} onValueChange={(value) => { handleMedCategoryChange(value, index); field.onChange(Number(value)) }}>
+                                            <Select value={field.value === 0 ? undefined : field.value.toString()} onValueChange={(value) => { handleMedCategoryChange(Number(value), index); field.onChange(Number(value)) }}>
                                                 <SelectTrigger >
                                                     <SelectValue placeholder="Select" />
                                                 </SelectTrigger>

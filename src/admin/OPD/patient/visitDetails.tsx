@@ -248,7 +248,7 @@ const VisitDetails = () => {
                             <TableRow key={i}>
                                 <TableCell className="text-gray-800 whitespace-nowrap">{medication.date}</TableCell>
                                 <TableCell>{medication?.medicine.name}</TableCell>
-                                <TableCell>{medication?.medicine.category.name}</TableCell>
+                                <TableCell>{medication?.category.name}</TableCell>
                                 <TableCell>{medication.dose}</TableCell>
                                 <TableCell>{medication.time}</TableCell>
                                 <TableCell className="text-gray-600">{medication.note}</TableCell>

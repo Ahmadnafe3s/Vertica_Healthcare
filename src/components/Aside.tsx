@@ -19,7 +19,7 @@ const Aside = () => {
 
     return (
         <>
-            <div className={cn('sticky w-0 sm:w-52 p-0 bg-white sm:p-2.5 transition-all border-r border-zinc-200 h-[calc(100vh-56px-35px)] top-14', { 'w-52 p-2.5': isSlideOpend })}>
+            <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all border-r border-zinc-200 h-[calc(100vh-56px-35px)] top-14', { 'w-52 p-2.5': isSlideOpend })}>
 
                 <ScrollArea className='h-full '>
 

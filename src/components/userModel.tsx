@@ -15,7 +15,7 @@ const UserModel = ({ onLogout, onProfile, ...props }: userModelProps) => {
 
     return (
         <>
-            <div {...props} className='fixed top-0 left-0 h-screen w-full transition-all z-[120]' style={{ background: '#0000009c' }}></div>
+            <div {...props} className='fixed top-0 left-0 h-screen w-full transition-all z-[120] bg-[#0000009c]'></div>
             <div className="bg-white w-[300px] p-2.5 z-[150] flex flex-col ring-1 shadow rounded-xl fixed top-16 right-2 sm:right-5 ring-gray-200">
                 <div className="flex items-center gap-x-3 my-2">
                     <img src="/user.png" alt="" className="w-12 border-2 border-gray-300 rounded-full" />

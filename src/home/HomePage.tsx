@@ -2,10 +2,7 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { buttonVariants } from '@/components/ui/button'
 import { Star } from 'lucide-react'
 import { Fade } from 'react-awesome-reveal'
-import gsap from 'gsap'
-import { useGSAP } from '@gsap/react'
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useRef } from 'react'
+
 
 const doctors = [
     { name: 'Dr. Isabella Grant, MD', speciality: 'Pediatric Cardiology', image: '/doctors/doctor-1.jpg' },
@@ -14,54 +11,15 @@ const doctors = [
     // you can add more
 ]
 
-gsap.registerPlugin(useGSAP)
-gsap.registerPlugin(ScrollTrigger)
 
 
 const HomePage = () => {
-
-    const container = useRef(null)
-
-    useGSAP(() => {
-
-        gsap.to('.hospital', {
-            // opacity: 0,
-            scale: 0.80,
-            y: -200,
-            duration: 2,
-            scrollTrigger: ({
-                trigger: '.hospital',
-                start: 'top 25%',
-                end: 'bottom 25%',
-                scrub: true
-            })
-        }),
-
-            gsap.to('#services', {
-                opacity: 0,
-                scale: 0.80,
-                duration: 2,
-                scrollTrigger: ({
-                    trigger: '.hospital',
-                    start: 'top -40%',
-                    end: 'bottom -40%%',
-                    scrub: true
-                })
-            })
-
-    }, { scope: container })
-
 
 
     return (
 
 
-
-        <div ref={container} style={{
-            backgroundImage: `radial-gradient(circle at 0.5px 0.5px, rgba(6, 182, 212, 0.2) 1px, transparent 0)`,
-            backgroundSize: '8px 8px',
-            backgroundRepeat: "repeat"
-        }}>
+        <div >
 
             <MaxWidthWrapper className="pt-14 md:pt-20 lg:pt-32 pb-20 lg:pb-32 grid lg:grid-cols-4">
 
@@ -100,7 +58,7 @@ const HomePage = () => {
 
 
             {/* Services Section */}
-            <section className=" bg-slate-50">
+            <section className=" bg-gradient-to-b from-white to-violet-100">
                 <MaxWidthWrapper className="pt-14 md:pt-20 lg:pt-32 pb-20 lg:pb-32">
                     <h2 id='services' className="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-gray-900 mb-16">Our Services</h2>
 
@@ -177,7 +135,7 @@ const HomePage = () => {
 
             {/* doctors */}
 
-            <section className='bg-slate-50'>
+            <section className='bg-gradient-to-r from-white to-violet-100'>
 
                 <MaxWidthWrapper className='pt-14 md:pt-20 lg:pt-32 pb-20 lg:pb-32'>
 
@@ -189,7 +147,7 @@ const HomePage = () => {
                         {/* iterating doctors array */}
 
                         {doctors.map((doctor, index) => {
-                            return <div key={index} className='flex flex-col shadow-lg w-72 mx-auto p-2 border-gray-200 border-dashed border-2 rounded-lg'>
+                            return <div key={index} className='flex flex-col shadow-lg w-72 mx-auto p-2 bg-white border-gray-200 border-dashed border-2 rounded-lg'>
                                 <div className='w-full h-48 '>
                                     <img src={doctor.image} className='object-cover rounded-lg select-none' alt="doctor image" />
                                 </div>
@@ -219,7 +177,9 @@ const HomePage = () => {
                     </Fade>
                 </MaxWidthWrapper>
             </div>
-        </div>
+
+
+        </div >
 
 
     )

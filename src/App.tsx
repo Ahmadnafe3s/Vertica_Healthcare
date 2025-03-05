@@ -13,7 +13,7 @@ import Bill from "./admin/pharmacy/pharmacyBill/pharmacyBills";
 import HumanResource from "./admin/humanresource/HRLayout";
 import Staff from "./admin/humanresource/staff";
 import CreateStaff from "./admin/humanresource/createStaff";
-import DutuRoster from "./admin/dutyRoster/dutyroster";
+import DutuRoster from "./admin/dutyRoster/dutyRosterLayout";
 import RosterReport from "./admin/dutyRoster/rosterReport";
 import { Toaster } from "react-hot-toast";
 import { useAppDispatch } from "./hooks";

@@ -3,6 +3,9 @@ import MaxWidthWrapper from "./MaxWidthWrapper"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { motion, AnimatePresence } from 'motion/react'
+import Backdrop from "./backdrop"
+
 
 interface DialogProps extends HTMLAttributes<HTMLDivElement> {
     pageTitle: string
@@ -14,39 +17,43 @@ interface DialogProps extends HTMLAttributes<HTMLDivElement> {
 
 const Dialog = ({ children, pageTitle, className, ...props }: DialogProps) => {
     return (
-        <>
-            <div {...props} className='fixed top-0 left-0 h-screen w-full transition-all z-[120]' style={{ background: '#0000009c' }}></div>
+        <AnimatePresence>
+            <Backdrop {...props}>
+                <motion.div className="flex-1"
+                    initial={{ scale: 0.50, y: 500 }}
+                    animate={{ scale: 1, y: 0 }}
 
-            <MaxWidthWrapper className='fixed h-auto top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-[200] '>
+                >
+                    {/* // prevents modal to click backdrop */}
+                    <MaxWidthWrapper className='h-auto' onClick={(e) => e.stopPropagation()} >
+                        <div className={cn('rounded-lg pb-2 bg-white', className)}>
 
-                <div className={cn('rounded-lg pb-2 bg-white', className)}>
+                            {/* hearder */}
 
-                    {/* hearder */}
+                            <div className='flex justify-between items-center p-3 border-b border-gray-200'>
 
-                    <div className='flex justify-between items-center p-3 border-b border-gray-200'>
+                                <h1 className=' text-sm sm:text-lg font-semibold text-gray-800 py-1 px-4 rounded-xl'>{pageTitle}</h1>
 
-                        <h1 className=' text-sm sm:text-lg font-semibold text-gray-800 py-1 px-4 rounded-xl'>{pageTitle}</h1>
-
-                        <div className='flex gap-x-4'>
-                            <div {...props}>
-                                <TooltipProvider delayDuration={200}>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <X className='cursor-pointer' />
-                                        </TooltipTrigger>
-                                        <TooltipContent className="z-[200]">Close popup</TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
+                                <div className='flex gap-x-4'>
+                                    <div {...props}>
+                                        <TooltipProvider delayDuration={200}>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <X className='cursor-pointer' />
+                                                </TooltipTrigger>
+                                                <TooltipContent className="z-[200]">Close popup</TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    </div>
+                                </div>
                             </div>
+                            {/* children of modal */}
+                            <div className="pt-3">{children}</div>
                         </div>
-
-                    </div>
-
-                    <div className="pt-3">{children}</div>
-
-                </div>
-            </MaxWidthWrapper>
-        </>
+                    </MaxWidthWrapper>
+                </motion.div>
+            </Backdrop>
+        </AnimatePresence>
     )
 }
 

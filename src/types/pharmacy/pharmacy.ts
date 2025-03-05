@@ -19,6 +19,12 @@ export interface medicines {
 
 
 
+export interface paginatedMedicines {
+    data: medicines[],
+    total_pages: number
+}
+
+
 export interface medicineDetails {
     id: number,
     name: string,
@@ -52,6 +58,12 @@ export interface medicineDetails {
 }
 
 
+export type medicinesBYcategory = {
+    id: number,
+    name: string,
+    quantity: number
+}
+
 
 export type medicineBatch = {
     "id": number,
@@ -76,7 +88,7 @@ export type medicineBatchDetails = {
 }
 
 
-export type pharmacyBills = {
+type pharmacyBillData = {
     "id": string,
     "opdId": string,
     "patientId": number,
@@ -88,6 +100,13 @@ export type pharmacyBills = {
         "name": string,
     }
 }
+
+
+export type pharmacyBills = {
+    data: pharmacyBillData[],
+    total_pages: number
+}
+
 
 type billItems = {
     quantity: number,

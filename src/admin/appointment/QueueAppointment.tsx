@@ -100,8 +100,8 @@ const QueueAppointment = () => {
                                             </SelectTrigger>
 
                                             <SelectContent className='z-[200]'>
-                                                <SelectItem value="approved">Approve</SelectItem>
-                                                <SelectItem value="cancelled">Cancel</SelectItem>
+                                                <SelectItem value="Approved">Approved</SelectItem>
+                                                <SelectItem value="Cancelled">Cancel</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </TableCell>

@@ -1,5 +1,6 @@
 export type AdminDashIncExp = {
     opdIncome: number,
+    appointmentIncome: number,
     pharmacyIncome: number,
     expenses: number
 }

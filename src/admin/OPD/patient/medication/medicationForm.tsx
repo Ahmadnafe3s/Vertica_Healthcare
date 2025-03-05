@@ -10,8 +10,8 @@ import { HTMLAttributes, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { medicines } from '@/types/pharmacy/pharmacy'
-import { getMedicineList } from '@/admin/pharmacy/pharmacyApiHandler'
+import { medicinesBYcategory } from '@/types/pharmacy/pharmacy'
+import { getMedicinesBYcategory } from '@/admin/pharmacy/pharmacyApiHandler'
 import { medicineCategory } from '@/types/setupTypes/pharmacy'
 import { getMedicineCategories } from '@/admin/setup/pharmacy/apiHandler'
 import Dialog from '@/components/Dialog'
@@ -31,22 +31,18 @@ const MedicationForm = ({ Submit, isPending, medicationDetails, ...props }: Medi
 
     // API states
     const [categories, setCategories] = useState<medicineCategory[]>([])
-    const [medicines, setMedicines] = useState<medicines[]>([])
+    const [medicines, setMedicines] = useState<medicinesBYcategory[]>([])
 
 
     const { control, register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof medicationFormSchema>>({
         resolver: zodResolver(medicationFormSchema),
-        defaultValues: {
-            ...medicationDetails,
-            medicineId: String(medicationDetails?.medicineId),
-            category: medicationDetails?.medicine.category.name
-        }
+        defaultValues: medicationDetails
     })
 
 
-    const handleCategoryChange = async (value: string) => {
+    const handleCategoryChange = async (categoryId: number) => {
         try {
-            const data = await getMedicineList(value)
+            const data = await getMedicinesBYcategory(categoryId)
             setMedicines(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -66,7 +62,7 @@ const MedicationForm = ({ Submit, isPending, medicationDetails, ...props }: Medi
 
     useEffect(() => {
         fetchMedicineCategories()
-        if (medicationDetails) handleCategoryChange(medicationDetails.medicine.category.name) // for edit mode
+        if (medicationDetails) handleCategoryChange(medicationDetails.categoryId) // for edit mode
     }, [])
 
 
@@ -102,23 +98,23 @@ const MedicationForm = ({ Submit, isPending, medicationDetails, ...props }: Medi
                         {/* Catgeory */}
 
                         <div className="w-full flex flex-col gap-y-2">
-                            <Controller control={control} name='category' render={({ field }) => {
+                            <Controller control={control} name='categoryId' render={({ field }) => {
                                 return <>
                                     <Label>Medicine Category</Label>
-                                    <Select value={field.value || ''} onValueChange={(value) => { handleCategoryChange(value); field.onChange(value) }}>
+                                    <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { handleCategoryChange(Number(value)); field.onChange(Number(value)) }}>
                                         <SelectTrigger >
                                             <SelectValue placeholder="Select" />
                                         </SelectTrigger>
 
                                         <SelectContent className='z-[200]'>
                                             {categories.map((category) => (
-                                                <SelectItem key={category.id} value={category.name}>{category.name}</SelectItem>
+                                                <SelectItem key={category.id} value={String(category.id)}>{category.name}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </>
                             }} />
-                            {errors.category && <p className='text-sm text-red-500'>{errors.category.message}</p>}
+                            {errors.categoryId && <p className='text-sm text-red-500'>{errors.categoryId.message}</p>}
 
                         </div>
 
@@ -130,7 +126,7 @@ const MedicationForm = ({ Submit, isPending, medicationDetails, ...props }: Medi
                             <Controller control={control} name='medicineId' render={({ field }) => {
                                 return <>
                                     <Label>Medicine Name</Label>
-                                    <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                                    <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(Number(value)) }}>
                                         <SelectTrigger >
                                             <SelectValue placeholder="Select" />
                                         </SelectTrigger>

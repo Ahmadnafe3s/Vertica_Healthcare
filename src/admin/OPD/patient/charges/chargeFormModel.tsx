@@ -1,4 +1,3 @@
-import MaxWidthWrapper from "@/components/MaxWidthWrapper"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -19,6 +18,7 @@ import { Charge_Type_Interface } from "@/admin/setup/hospital-charges/chargeType
 import { categoryType } from "@/admin/setup/hospital-charges/chargesCategory/categoryList"
 import { chargeNamesType } from "@/types/setupTypes/chargeName"
 import { ChargeDetailsType } from "@/types/opd_section/charges"
+import Dialog from "@/components/Dialog"
 
 
 interface ChargeFormModelProps extends HTMLAttributes<HTMLDivElement> {
@@ -111,7 +111,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
     // getting charge Names options based upon chargeCategory
     const handleCategoryChange = async (index: number, categoryId: string) => {
         try {
-            const data = await getChargeNames(1, categoryId)
+            const data = await getChargeNames({ page: 1, limit: 100, search: categoryId })
             setNames((rest) => {
                 return {
                     ...rest,
@@ -164,229 +164,201 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
 
     return (
-        <>
-            <div {...props} className='fixed top-0 left-0 h-screen w-full transition-all z-[120]' style={{ background: '#0000009c' }}></div>
+        <Dialog pageTitle="Charges" {...props}>
+            <form onSubmit={handleSubmit(Submit)}>
+                <ScrollArea className='h-[60vh] sm:h-[55vh]'>
 
-            <MaxWidthWrapper className='fixed h-auto top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-[200] '>
+                    <div className="grid lg:grid-cols-4 md:grid-cols-3 gap-5 px-2.5" onSubmit={handleSubmit(Submit)}>
 
-                <form className='p-3 bg-white rounded-md' onSubmit={handleSubmit(Submit)}>
+                        {fields.map((charge, index) => {
 
-                    <div>
-                        <div className='flex justify-between pt-2 pb-3 border-b border-gray-200 col-span-full'>
-                            <p className='font-semibold text-xl text-white bg-primary py-1 px-4 rounded-xl'>Add Charges</p>
-                            <div {...props}>
-                                <TooltipProvider delayDuration={200}>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <X className='cursor-pointer' />
-                                        </TooltipTrigger>
-                                        <TooltipContent className="z-[200]">Close popup</TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            </div>
-                        </div>
-                    </div>
+                            return <section key={charge.id} onClick={() => SET_INDEX(index)} className="sm:col-span-full mt-2 p-2 rounded-md grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2  items-center border-2 border-dashed border-gray-200">
+
+                                {/* Cahrge Type */}
+
+                                <div className="w-full flex flex-col gap-y-2">
+                                    <Controller control={control} name={`charge.${index}.chargeTypeId`} render={({ field }) => {
+                                        return <>
+                                            <Label>Charge Type</Label>
+                                            <Select value={field.value || ''} onValueChange={(value) => { handleTypeChange(index, Number(value)); field.onChange(value) }}>
+                                                <SelectTrigger >
+                                                    <SelectValue placeholder="Select" />
+                                                </SelectTrigger>
+
+                                                <SelectContent className='z-[200]'>
+                                                    {types.map((type, index) => {
+                                                        return <SelectItem key={index} value={String(type.id)}>{type.charge_type}</SelectItem>
+                                                    })}
+                                                </SelectContent>
+                                            </Select>
+                                        </>
+                                    }} />
+                                    {errors.charge?.[index]?.chargeTypeId && <p className='text-sm text-red-500'>{errors.charge?.[index].chargeTypeId?.message}</p>}
+                                </div>
 
 
-                    {/* grid for fields */}
+
+                                {/* Charge Category */}
+
+                                <div className="w-full flex flex-col gap-y-2">
+                                    <Controller control={control} name={`charge.${index}.categoryId`} render={({ field }) => {
+                                        const Categories = categories?.[index] || []; // Get categories specific to the current field index getting from the object key
+                                        return <>
+                                            <Label>Charge Category</Label>
+                                            <Select value={field.value || ''} onValueChange={(value) => { handleCategoryChange(index, value); field.onChange(value) }}>
+                                                <SelectTrigger >
+                                                    <SelectValue placeholder="Select" />
+                                                </SelectTrigger>
+
+                                                <SelectContent className='z-[200]'>
+                                                    {Categories.map((category, index) => {
+                                                        return <SelectItem key={index} value={String(category.id)}>{category.category}</SelectItem>
+                                                    })}
+                                                </SelectContent>
+                                            </Select>
+                                        </>
+                                    }} />
+                                    {errors.charge?.[index]?.categoryId && <p className='text-sm text-red-500'>{errors.charge?.[index].categoryId?.message}</p>}
+                                </div>
 
 
-                    <ScrollArea className='h-[60vh] sm:h-[55vh]'>
+                                {/* Charge Name */}
 
-                        <div className="grid lg:grid-cols-4 md:grid-cols-3 gap-5 p-1" onSubmit={handleSubmit(Submit)}>
+                                <div className="w-full flex flex-col gap-y-2">
+                                    <Controller control={control} name={`charge.${index}.chargeNameId`} render={({ field }) => {
+                                        const ChargeNames = names?.[index]?.data || []
+                                        return <>
+                                            <Label>Charge Name</Label>
+                                            <Select value={field.value || ''} onValueChange={(value) => { handleChargeNameChange(index, Number(value)); field.onChange(value) }}>
+                                                <SelectTrigger >
+                                                    <SelectValue placeholder="Select" />
+                                                </SelectTrigger>
+
+                                                <SelectContent className='z-[200]'>
+                                                    {ChargeNames.map((chargeName) => {
+                                                        return <SelectItem key={chargeName.id} value={String(chargeName.id)}>{chargeName.name}</SelectItem>
+                                                    })}
+                                                </SelectContent>
+                                            </Select>
+                                        </>
+                                    }} />
+                                    {errors.charge?.[index]?.chargeNameId && <p className='text-sm text-red-500'>{errors.charge?.[index]?.chargeNameId?.message}</p>}
+                                </div>
 
 
-                            {fields.map((charge, index) => {
+                                {/* Standard Charge */}
 
-                                return <section key={charge.id} onClick={() => SET_INDEX(index)} className="sm:col-span-full mt-2 p-2 rounded-md grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2  items-center border-2 border-dashed border-gray-200">
+                                <div className="w-full flex flex-col gap-y-2">
+                                    <Label>Standard Charge {currencySymbol()}</Label>
+                                    <Input type='number' {...register(`charge.${index}.standard_charge`, { valueAsNumber: true })} /> {/*assigning values automatically */}
+                                    {errors?.charge?.[index]?.standard_charge && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.standard_charge.message}</p>}
+                                </div>
 
-                                    {/* Cahrge Type */}
 
-                                    <div className="w-full flex flex-col gap-y-2">
-                                        <Controller control={control} name={`charge.${index}.chargeTypeId`} render={({ field }) => {
-                                            return <>
-                                                <Label>Charge Type</Label>
-                                                <Select value={field.value || ''} onValueChange={(value) => { handleTypeChange(index, Number(value)); field.onChange(value) }}>
-                                                    <SelectTrigger >
-                                                        <SelectValue placeholder="Select" />
-                                                    </SelectTrigger>
+                                {/* TPA */}
 
-                                                    <SelectContent className='z-[200]'>
-                                                        {types.map((type, index) => {
-                                                            return <SelectItem key={index} value={String(type.id)}>{type.charge_type}</SelectItem>
-                                                        })}
-                                                    </SelectContent>
-                                                </Select>
-                                            </>
-                                        }} />
-                                        {errors.charge?.[index]?.chargeTypeId && <p className='text-sm text-red-500'>{errors.charge?.[index].chargeTypeId?.message}</p>}
+                                <div className="w-full flex flex-col gap-y-2">
+                                    <Label>TPA Charge {currencySymbol()}</Label>
+                                    <Input type='number' {...register(`charge.${index}.tpa`, { valueAsNumber: true })} />
+                                    {errors?.charge?.[index]?.tpa && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.tpa.message}</p>}
+                                </div>
+
+
+                                {/* Date */}
+
+                                <div className="w-full flex flex-col gap-y-2">
+                                    <Label>Date</Label>
+                                    <Input type='date' {...register(`charge.${index}.date`)} />
+                                    {errors?.charge?.[index]?.date && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.date.message}</p>}
+                                </div>
+
+
+                                {/* toatl amount */}
+
+                                <div className="w-full flex flex-col gap-y-2">
+                                    <Label>Total Amount {currencySymbol()}</Label>
+                                    <Input type='number' {...register(`charge.${index}.total`, { valueAsNumber: true })} disabled />
+                                    {errors?.charge?.[index]?.total && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.total.message}</p>}
+                                </div>
+
+
+                                {/* Tax */}
+
+                                <div className="w-full flex flex-col gap-y-2">
+                                    <Label>Tax %</Label>
+                                    <Input type="number" {...register(`charge.${index}.tax`, { valueAsNumber: true })} disabled />
+                                    {errors?.charge?.[index]?.tax && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.tax.message}</p>}
+                                </div>
+
+
+
+                                {/* Discount % */}
+
+                                <div className="w-full flex flex-col gap-y-2">
+                                    <Label>Discount %</Label>
+                                    <Input type='number' {...register(`charge.${index}.discount`, { valueAsNumber: true })} />
+                                    {errors?.charge?.[index]?.discount && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.discount.message}</p>}
+                                </div>
+
+
+
+                                {/* Net AMount */}
+
+                                <div className="w-full flex flex-col gap-y-2">
+                                    <Label>Net Amount {currencySymbol()}</Label>
+                                    <Input type="number" {...register(`charge.${index}.net_amount`, { valueAsNumber: true })} />
+                                    {errors?.charge?.[index]?.net_amount && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.net_amount.message}</p>}
+                                </div>
+
+
+
+                                {/* Button to remove fields */}
+
+                                {fields.length !== 1 &&
+                                    <div className="h-full flex items-center gap-x-2 col-span-2 justify-end sm:justify-normal">
+                                        <TooltipProvider delayDuration={200}>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <div className="p-1 bg-red-500 rounded-full text-white mt-2 sm:mt-4">
+                                                        <X className="w-4 h-4 cursor-pointer" onClick={() => { RemoveChargeField(index) }} />
+                                                    </div>
+                                                </TooltipTrigger>
+                                                <TooltipContent className="z-[200]">Remove</TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
                                     </div>
+                                }
+
+                            </section>
+
+                        })}
 
 
+                        {/* Button for Addding fields */}
 
-                                    {/* Charge Category */}
-
-                                    <div className="w-full flex flex-col gap-y-2">
-                                        <Controller control={control} name={`charge.${index}.categoryId`} render={({ field }) => {
-                                            const Categories = categories?.[index] || []; // Get categories specific to the current field index getting from the object key
-                                            return <>
-                                                <Label>Charge Category</Label>
-                                                <Select value={field.value || ''} onValueChange={(value) => { handleCategoryChange(index, value); field.onChange(value) }}>
-                                                    <SelectTrigger >
-                                                        <SelectValue placeholder="Select" />
-                                                    </SelectTrigger>
-
-                                                    <SelectContent className='z-[200]'>
-                                                        {Categories.map((category, index) => {
-                                                            return <SelectItem key={index} value={String(category.id)}>{category.category}</SelectItem>
-                                                        })}
-                                                    </SelectContent>
-                                                </Select>
-                                            </>
-                                        }} />
-                                        {errors.charge?.[index]?.categoryId && <p className='text-sm text-red-500'>{errors.charge?.[index].categoryId?.message}</p>}
-                                    </div>
-
-
-                                    {/* Charge Name */}
-
-                                    <div className="w-full flex flex-col gap-y-2">
-                                        <Controller control={control} name={`charge.${index}.chargeNameId`} render={({ field }) => {
-                                            const ChargeNames = names?.[index]?.data || []
-                                            return <>
-                                                <Label>Charge Name</Label>
-                                                <Select value={field.value || ''} onValueChange={(value) => { handleChargeNameChange(index, Number(value)); field.onChange(value) }}>
-                                                    <SelectTrigger >
-                                                        <SelectValue placeholder="Select" />
-                                                    </SelectTrigger>
-
-                                                    <SelectContent className='z-[200]'>
-                                                        {ChargeNames.map((chargeName) => {
-                                                            return <SelectItem key={chargeName.id} value={String(chargeName.id)}>{chargeName.name}</SelectItem>
-                                                        })}
-                                                    </SelectContent>
-                                                </Select>
-                                            </>
-                                        }} />
-                                        {errors.charge?.[index]?.chargeNameId && <p className='text-sm text-red-500'>{errors.charge?.[index]?.chargeNameId?.message}</p>}
-                                    </div>
-
-
-                                    {/* Standard Charge */}
-
-                                    <div className="w-full flex flex-col gap-y-2">
-                                        <Label>Standard Charge {currencySymbol()}</Label>
-                                        <Input type='number' {...register(`charge.${index}.standard_charge`, { valueAsNumber: true })} /> {/*assigning values automatically */}
-                                        {errors?.charge?.[index]?.standard_charge && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.standard_charge.message}</p>}
-                                    </div>
-
-
-                                    {/* TPA */}
-
-                                    <div className="w-full flex flex-col gap-y-2">
-                                        <Label>TPA Charge {currencySymbol()}</Label>
-                                        <Input type='number' {...register(`charge.${index}.tpa`, { valueAsNumber: true })} />
-                                        {errors?.charge?.[index]?.tpa && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.tpa.message}</p>}
-                                    </div>
-
-
-                                    {/* Date */}
-
-                                    <div className="w-full flex flex-col gap-y-2">
-                                        <Label>Date</Label>
-                                        <Input type='date' {...register(`charge.${index}.date`)} />
-                                        {errors?.charge?.[index]?.date && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.date.message}</p>}
-                                    </div>
-
-
-                                    {/* toatl amount */}
-
-                                    <div className="w-full flex flex-col gap-y-2">
-                                        <Label>Total Amount {currencySymbol()}</Label>
-                                        <Input type='number' {...register(`charge.${index}.total`, { valueAsNumber: true })} disabled />
-                                        {errors?.charge?.[index]?.total && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.total.message}</p>}
-                                    </div>
-
-
-                                    {/* Tax */}
-
-                                    <div className="w-full flex flex-col gap-y-2">
-                                        <Label>Tax %</Label>
-                                        <Input type="number" {...register(`charge.${index}.tax`, { valueAsNumber: true })} disabled />
-                                        {errors?.charge?.[index]?.tax && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.tax.message}</p>}
-                                    </div>
-
-
-
-                                    {/* Discount % */}
-
-                                    <div className="w-full flex flex-col gap-y-2">
-                                        <Label>Discount %</Label>
-                                        <Input type='number' {...register(`charge.${index}.discount`, { valueAsNumber: true })} />
-                                        {errors?.charge?.[index]?.discount && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.discount.message}</p>}
-                                    </div>
-
-
-
-                                    {/* Net AMount */}
-
-                                    <div className="w-full flex flex-col gap-y-2">
-                                        <Label>Net Amount {currencySymbol()}</Label>
-                                        <Input type="number" {...register(`charge.${index}.net_amount`, { valueAsNumber: true })} />
-                                        {errors?.charge?.[index]?.net_amount && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.net_amount.message}</p>}
-                                    </div>
-
-
-
-                                    {/* Button to remove fields */}
-
-                                    {fields.length !== 1 &&
-                                        <div className="h-full flex items-center gap-x-2 col-span-2 justify-end sm:justify-normal">
-                                            <TooltipProvider delayDuration={200}>
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <div className="p-1 bg-red-500 rounded-full text-white mt-2 sm:mt-4">
-                                                            <X className="w-4 h-4 cursor-pointer" onClick={() => { RemoveChargeField(index) }} />
-                                                        </div>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent className="z-[200]">Remove</TooltipContent>
-                                                </Tooltip>
-                                            </TooltipProvider>
+                        {!chargeDetails && <div className="col-span-full flex justify-end mr-2">
+                            <TooltipProvider delayDuration={200}>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <div className="p-1 bg-slate-500 rounded-full text-white">
+                                            <Plus className="w-4 h-4 cursor-pointer" onClick={AppendFields} />
                                         </div>
-                                    }
-
-                                </section>
-
-                            })}
-
-
-                            {/* Button for Addding fields */}
-
-                            {!chargeDetails && <div className="col-span-full flex justify-end mr-2">
-                                <TooltipProvider delayDuration={200}>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <div className="p-1 bg-slate-500 rounded-full text-white">
-                                                <Plus className="w-4 h-4 cursor-pointer" onClick={AppendFields} />
-                                            </div>
-                                        </TooltipTrigger>
-                                        <TooltipContent className="z-[200]">Add More Fields</TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            </div>}
+                                    </TooltipTrigger>
+                                    <TooltipContent className="z-[200]">Add More Fields</TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </div>}
 
 
-                        </div>
-                    </ScrollArea>
-
-                    <div className="flex mt-5 mb-2 gap-x-2 sm:justify-end">
-                        <Button type='button' variant={'ghost'} onClick={() => reset()} >Reset</Button>
-                        <Button type='submit' className='flex-1 sm:flex-none' >{chargeDetails ? ('Update') : ('Save Charges')} {isPending && <Loader className='animate-spin' />}</Button>
                     </div>
+                </ScrollArea>
 
-                </form>
-            </MaxWidthWrapper>
-        </>
+                <div className="flex mt-5 mb-2 gap-x-2 sm:justify-end px-2.5">
+                    <Button type='button' variant={'ghost'} onClick={() => reset()} >Reset</Button>
+                    <Button type='submit' className='flex-1 sm:flex-none' >{chargeDetails ? ('Update') : ('Save Charges')} {isPending && <Loader className='animate-spin' />}</Button>
+                </div>
+            </form>
+        </Dialog>
     )
 }
 

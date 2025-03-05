@@ -18,6 +18,8 @@ import PurchaseMedicineDetailsModel from './purchaseMedicineDetailsModel'
 import PurchaseMedicineForm from './purchaseMedicine'
 import { useDebouncedCallback } from 'use-debounce'
 import { useQueryState, parseAsInteger } from 'nuqs'
+import PrintMedicinePurchase from './printPurchase/printPurchase'
+import PrintMedicinePurchases from './printPurchase/printPurchases'
 
 
 
@@ -40,7 +42,7 @@ const Purchase = () => {
 
 
   // API state
-  const [purcahseList, setPurchaseList] = useState<medicinePurchases>()
+  const [purcahseList, setPurchaseList] = useState<medicinePurchases>({ data: [], total_pages: 0 })
   const [purchaseDetails, setPurchaseDetails] = useState<medicinePurchaseDetails>()
 
 
@@ -68,12 +70,8 @@ const Purchase = () => {
   // just passing queries
 
   const onSearch = useDebouncedCallback(async (value: string) => {
-    if (value) {
-      setPage(1)
-      setSearch(value)
-      return null
-    }
-    setSearch(null)
+    value ? setSearch(value) : setSearch(null)
+    setPage(1)
   }, 400)
 
 
@@ -81,7 +79,7 @@ const Purchase = () => {
     try {
       const data = await getPurchaseList({
         page,
-        limit: search ? 100 : 10,
+        limit: 10,
         search: search! // dont have to use string object otherwise null will become string
       })
       setPurchaseList(data)
@@ -149,14 +147,13 @@ const Purchase = () => {
         <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between border-b border-gray-200'>
 
           <div className='flex gap-x-2'>
-            <Input type='text' height='10px' placeholder='search' onChange={(e) => onSearch(e.target.value)} />
+            <Input type='text' height='10px' placeholder='search' onChange={(e) => onSearch(e.target.value)} defaultValue={search!} />
           </div>
 
           <div className='flex gap-x-2'>
+            {/* Printing purcahse list */}
 
-            <FileText className='cursor-pointer text-gray-600' />
-            <Printer className='cursor-pointer text-gray-600' />
-
+            <PrintMedicinePurchases MedicinePurchases={purcahseList['data']} />
           </div>
         </div>
 
@@ -205,6 +202,7 @@ const Purchase = () => {
                     <TableCell>{purchase.discount}%</TableCell>
                     <TableCell className='text-gray-700 font-semibold'>{currencyFormat(purchase.total_amount)}</TableCell>
                     <TableCell className='flex gap-2'>
+                      {/* Delete */}
                       <CustomTooltip message='DELETE'>
                         <Trash className='cursor-pointer text-gray-500 w-4  active:scale-95'
                           onClick={() => {
@@ -213,6 +211,10 @@ const Purchase = () => {
                           }}
                         />
                       </CustomTooltip>
+
+                      {/* Print purchase Details */}
+                      <PrintMedicinePurchase Id={purchase.id} onPending={(v) => setLoading({ ...loading, model: v })} />
+
                     </TableCell>
                   </TableRow>
                 ))}

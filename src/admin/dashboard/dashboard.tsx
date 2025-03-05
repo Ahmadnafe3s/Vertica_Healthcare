@@ -2,7 +2,7 @@ import { chartConfig, incomeExpenseConfig } from '@/chartConfig/chartConfig'
 import RectCard from '@/components/rectCard'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
-import { Ambulance, DollarSign, HeartPulse, Pill, Radiation, TestTubeDiagonal } from 'lucide-react'
+import { Ambulance, CalendarClock, DollarSign, HeartPulse, Pill, Radiation, TestTubeDiagonal } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { Area, AreaChart, CartesianGrid, Pie, PieChart, XAxis } from 'recharts'
 import { useEffect, useState } from 'react'
@@ -63,6 +63,10 @@ const AdminDashboard = () => {
 
                 <RectCard name='OPD Income' path={''} amount={IncExp?.opdIncome!}>
                     <HeartPulse className='h-8 w-8 text-red-500' />
+                </RectCard>
+
+                <RectCard name='Appointment Income' path={''} amount={IncExp?.appointmentIncome!}>
+                    <CalendarClock className='h-8 w-8 text-slate-500' />
                 </RectCard>
 
                 <RectCard name='Pharmacy Income' path={''} amount={IncExp?.pharmacyIncome!}>

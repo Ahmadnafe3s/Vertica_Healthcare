@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { createPharmacyBillSchema, valuesASdefault } from "@/formSchemas/createPharmBillSchema"
 import { currencySymbol } from "@/helpers/currencySymbol"
-import { medicineBatch, medicines } from "@/types/pharmacy/pharmacy"
+import { medicineBatch, medicinesBYcategory } from "@/types/pharmacy/pharmacy"
 import { medicineCategory } from "@/types/setupTypes/pharmacy"
 import { Patients } from "@/types/type"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -20,11 +20,11 @@ import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import toast from "react-hot-toast"
 import { Link } from "react-router-dom"
 import { z } from "zod"
-import { getMedicineList, getMedicinesBatchDetails, getMedicinesBatches } from "../pharmacyApiHandler"
+import { getMedicinesBatchDetails, getMedicinesBatches, getMedicinesBYcategory } from "../pharmacyApiHandler"
 import { calculateAmount } from "@/helpers/calculateAmount"
 import { useDebouncedCallback } from "use-debounce"
 import { getStaffs } from "@/admin/humanresource/HRApiHandler"
-import { staffList } from "@/admin/humanresource/staff"
+import { staffs } from "@/types/staff/staff"
 
 
 
@@ -52,9 +52,9 @@ const CreatePharmacyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillP
 
   // API states
   const [patients, setPatients] = useState<Patients[]>([])
-  const [doctors, setDoctors] = useState<staffList[]>([])
+  const [doctors, setDoctors] = useState<staffs>({ data: [], total_pages: 0 })
   const [medCategories, setMedCategories] = useState<medicineCategory[]>([])
-  const [medNames, setMedNames] = useState<{ [key: number]: medicines[] }>([])
+  const [medNames, setMedNames] = useState<{ [key: number]: medicinesBYcategory[] }>([])
   const [batches, setBatches] = useState<{ [key: number]: medicineBatch[] }>([])
   const [medStocks, setMedStocks] = useState<{ [key: number]: number }>()
 
@@ -82,9 +82,9 @@ const CreatePharmacyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillP
 
 
   // fetching and binding medicines
-  const handleCategoryChange = async (i: number, value: string) => {
+  const handleCategoryChange = async (i: number, categoryId: number) => {
     try {
-      const data = await getMedicineList(value)
+      const data = await getMedicinesBYcategory(categoryId)
       setMedNames(prev => ({ ...prev, [i]: data }))
     } catch ({ message }: any) {
       toast.error(message)
@@ -133,7 +133,7 @@ const CreatePharmacyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillP
 
   const getDoctors = async () => {
     try {
-      const data = await getStaffs('doctor') // getting only doctors
+      const data = await getStaffs({ limit: 0, search: 'doctor' }) // getting only doctors
       setDoctors(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -215,7 +215,7 @@ const CreatePharmacyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillP
                   <Controller control={control} name={`items.${index}.categoryId`} render={({ field }) => {
                     return <>
                       <Label>Medicine Category</Label>
-                      <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { handleCategoryChange(index, value); field.onChange(Number(value)) }}>
+                      <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { handleCategoryChange(index, Number(value)); field.onChange(Number(value)) }}>
                         <SelectTrigger >
                           <SelectValue placeholder="Select" />
                         </SelectTrigger>
@@ -371,7 +371,7 @@ const CreatePharmacyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillP
                 </SelectTrigger>
 
                 <SelectContent className='z-[200]'>
-                  {doctors?.map((doctor) => {
+                  {doctors.data?.map((doctor) => {
                     return <SelectItem key={doctor.id} value={doctor.name}> {doctor.name} </SelectItem>
                   })}
                 </SelectContent>

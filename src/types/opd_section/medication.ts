@@ -6,12 +6,12 @@ export interface opdMedicationData {
     time: string,
     dose: string,
     note: string,
+    category: {
+        id: number,
+        name: string
+    },
     medicine: {
         name: string,
-        category: {
-            id: number,
-            name: string
-        },
         unit: {
             id: number,
             name: string
@@ -28,6 +28,7 @@ export type opdMedications = {
 export interface medicationDetail {
     id: number,
     opdId: string,
+    categoryId: number,
     medicineId: number,
     date: string,
     time: string,

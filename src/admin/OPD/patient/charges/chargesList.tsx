@@ -51,7 +51,7 @@ const CahrgesList = () => {
   const fetchCharges = async () => {
     try {
       //on search limit will be 100
-      const data = await getCharges({ opdId: opdId!, page, limit: search ? 100 : 10, date: search! }) // opdId is here string
+      const data = await getCharges({ opdId: opdId!, page, limit: 10, date: search! }) // opdId is here string
       SET_CHARGES(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -90,12 +90,8 @@ const CahrgesList = () => {
 
 
   const onSearch = async (date: string) => {
-    if (date) {
-      setPage(1)
-      setSearch(date)
-      return
-    }
-    setSearch(null)
+    date ? setSearch(date) : setSearch(null)
+    setPage(1)
   }
 
 
@@ -145,7 +141,7 @@ const CahrgesList = () => {
 
       <Separator />
 
-      <div className="flex flex-col min-h-[60vh] mb-20">
+      <div className="flex flex-col min-h-[58vh] mb-20">
         <div className="flex-1">
           <Table className="rounded-lg border">
             <TableHeader className="bg-zinc-100">

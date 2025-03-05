@@ -2,7 +2,7 @@ import { AddMedicinesFormSchema } from "@/formSchemas/addMedicinesFormSchema"
 import { createPharmacyBillSchema } from "@/formSchemas/createPharmBillSchema"
 import { PurchaseMedicineFormSchema } from "@/formSchemas/purchaseMedicineFormSchema"
 import { medicinePurchaseDetails, medicinePurchases } from "@/types/opd_section/purchaseMedicine"
-import { medicineBatchDetails, medicineDetails, medicines } from "@/types/pharmacy/pharmacy"
+import { medicineBatchDetails, medicineDetails, medicinesBYcategory, paginatedMedicines } from "@/types/pharmacy/pharmacy"
 import axios from "axios"
 import { z } from "zod"
 
@@ -19,10 +19,19 @@ export const createMedicine = async (formData: z.infer<typeof AddMedicinesFormSc
 
 
 
-export const getMedicineList = async (search?: string): Promise<medicines[]> => {
+export const getMedicineList = async (params: { search?: string, page?: number, limit?: number }): Promise<paginatedMedicines> => {
     try {
-        const params = { search }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy`, { params })
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const getMedicinesBYcategory = async (categoryId: number): Promise<medicinesBYcategory[]> => {
+    try {
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/names/${categoryId}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -82,7 +91,7 @@ export const createPurchase = async (formData: z.infer<typeof PurchaseMedicineFo
 export const getPurchaseList = async (params: { page: number, limit?: number, search?: string }): Promise<medicinePurchases> => {
     try {
         console.log(params);
-        
+
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/purchaseMedicine`, { params })
         return res.data
     } catch (error: any) {
@@ -150,9 +159,9 @@ export const createPharmacyBill = async (formData: z.infer<typeof createPharmacy
 }
 
 
-export const getPharmacyBills = async () => {
+export const getPharmacyBills = async (params: { search?: string, page?: number, limit?: number }) => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/bill/list`)
+        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/bill/list` , {params})
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

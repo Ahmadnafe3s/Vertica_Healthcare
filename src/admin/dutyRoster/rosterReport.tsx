@@ -1,18 +1,25 @@
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Pencil, Plus, SearchX, Trash } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import AssignRosterFormModel from './formModel/AssignRosterFormModel'
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { Shift } from '@/types/type'
 import calculateShiftDuration from '@/helpers/calculateHours'
 import AlertModel from '@/components/alertModel'
 import Radio from '@/components/radio'
-import { deleteRoster, fetchRosterlist, searchBYdate, searchBYid, searchBYPeriod } from './apihandlers'
+import { createRoster, deleteRoster, getRosterDetails, getRosters, updateRoster } from './apihandlers'
 import CustomTooltip from '@/components/customTooltip'
+import { AssignRosterSchema } from '@/formSchemas/assignRosterFormSchema'
+import { z } from 'zod'
+import { RosterDetails, Rosters } from '@/types/dutyRoster/DutyRoster'
+import { useQueryState, parseAsInteger } from 'nuqs'
+import CustomPagination from '@/components/customPagination'
+import { useDebouncedCallback } from 'use-debounce'
+import LoaderModel from '@/components/loader'
+
 
 
 
@@ -20,87 +27,115 @@ const RosterReport = () => {
 
     const id = useRef<number | null>(null)
 
+    // Query params
+    const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
+    const [credential, setCredential] = useQueryState('credential')
+    const [date, setDate] = useQueryState('date')
+    const [period, setPeriod] = useState<{ startDate: string, endDate: string }>({ startDate: '', endDate: '' })
+
+
+    // laoding States
+    const [loading, setLoading] = useState<{ inlineLoader: boolean, modelLoader: boolean }>({ inlineLoader: false, modelLoader: false })
+
+    // model states
     const [model, setModel] = useState<{ rosterFormModel: boolean, AlertModel: boolean }>({
         rosterFormModel: false,
         AlertModel: false
     })
 
-    const period = useRef<{ startDate: string, endDate: string }>({ startDate: '', endDate: '' })
-
     const [searchBy, setSearchBy] = useState<'date' | 'period' | 'credentials'>('credentials')
 
-    const [rosterList, setRosterList] = useState<Shift[]>([])
+    // API states
+    const [rosterList, setRosterList] = useState<Rosters>({ data: [], total_pages: 0 })
+    const [rosterDetails, setRosterDetails] = useState<RosterDetails | undefined>(undefined)
 
     const router = useNavigate()
 
 
-    const fetchList = async () => {
+    // Performing both upsert
+    const handleSubmit = async (formData: z.infer<typeof AssignRosterSchema>) => {
         try {
-            const data = await fetchRosterlist()
+            let data;
+            setLoading({ ...loading, inlineLoader: true })
+            rosterDetails ? (
+                data = await updateRoster(formData, rosterDetails.id),
+                setRosterDetails(undefined)
+            ) :
+                (data = await createRoster(formData))
+            toast.success(data.message)
+            fetchRosters()
+            setModel({ ...model, rosterFormModel: false })
+        } catch ({ message }: any) {
+            toast.error(message)
+        } finally { setLoading({ ...loading, inlineLoader: false }) }
+    }
+
+
+    // Getting rosters list
+    const fetchRosters = async () => {
+        try {
+            const data = await getRosters({
+                page,
+                limit: 10,
+                credentials: credential!,
+                date: date!,
+                period
+            })
             setRosterList(data)
         } catch ({ message }: any) {
             toast.error(message)
         }
+    }
+
+
+    const fetchRosterDetails = async (id: number) => {
+        try {
+            setLoading({ ...loading, modelLoader: true })
+            const data = await getRosterDetails(id)
+            setRosterDetails(data)
+        } catch ({ message }: any) {
+            toast.error(message)
+        } finally { setLoading({ ...loading, modelLoader: false }) }
     }
 
 
     // search functionality
 
-    const onSearch = async (value: string) => {
+    const onSearch = useDebouncedCallback(async (search: { credential?: string, startDate?: string, endDate?: string, date?: string }) => {
         try {
-            let data: Shift[] = []
+            search.credential ? (setCredential(search.credential)) : (setCredential(null));
+            search.date ? (setDate(search.date)) : (setDate(null));
+            search.startDate && setPeriod({ ...period, startDate: search.startDate })
+            search.endDate && setPeriod({ ...period, endDate: search.endDate });
+            (!search.startDate && !search.endDate) && setPeriod({ startDate: '', endDate: '' }) // after clearing any field this will reset (coz we are passing only one field from input which means second one will be alwasys false)
 
-            if (searchBy === 'credentials') {
-                data = await searchBYid(value)
-            }
-
-            if (searchBy === 'date') {
-                data = await searchBYdate(value)
-            }
-
-            if (searchBy === 'period') {
-                data = await searchBYPeriod(period.current.startDate, period.current.endDate)
-            }
-
-            setRosterList(data)
+            setPage(1) // always
         } catch ({ message }: any) {
             toast.error(message)
         }
-    }
+    }, 400)
 
 
     // for deleting rosters
 
     const onDelete = async () => {
         try {
-
+            setLoading({ ...loading, inlineLoader: true })
             const data = await deleteRoster(id.current)
             toast.success(data.message)
-            fetchList()
-
+            fetchRosters()
         } catch ({ message }: any) {
-
             toast.error(message)
-
         } finally {
-
-            setModel((rest) => {
-                return {
-                    ...rest,
-                    AlertModel: false
-                }
-            });
-            id.current = null
+            setLoading({ ...loading, inlineLoader: false })
+            setModel({ ...model, AlertModel: false })
         }
     }
 
 
-
     useEffect(() => {
-        fetchList()
-    }, [])
-
-
+        fetchRosters()
+    }, [page, period, date, credential])
 
 
     return (
@@ -126,21 +161,19 @@ const RosterReport = () => {
                 <Label>Search by keyword</Label>
 
                 <div className='flex items-center gap-2 w-72 sm:w-96'>
-                    {searchBy === 'date' && <Input type='date' onChange={(e) => { onSearch(e.target.value) }} />}
+                    {searchBy === 'date' && <Input type='date' onChange={(e) => { onSearch({ date: e.target.value }) }} defaultValue={date!} />}
                     {searchBy === 'period' &&
-                        <div className='flex flex-col flex-1 space-y-2 sm:space-y-0  sm:space-x-2 sm:flex-row'>
+                        <form className='flex flex-row space-x-2'>
                             <Input type='date' onChange={(e) => {
-                                period.current.startDate = e.target.value
-                                onSearch('')
+                                onSearch({ startDate: e.target.value })
                             }} />
 
                             <Input type='date' onChange={(e) => {
-                                period.current.endDate = e.target.value;
-                                onSearch('')
+                                onSearch({ endDate: e.target.value })
                             }} />
-                        </div>
+                        </form>
                     }
-                    {searchBy === 'credentials' && <Input type='text' placeholder='staff id , name' onChange={(e) => { onSearch(e.target.value) }} />}
+                    {searchBy === 'credentials' && <Input type='text' placeholder='staff id , name' onChange={(e) => onSearch({ credential: e.target.value })} defaultValue={credential!} />}
                 </div>
 
 
@@ -164,92 +197,102 @@ const RosterReport = () => {
 
             </div>
 
-            {/* Table */}
+            {/* paginated Table */}
 
+            <div className="flex flex-col pb-16 gap-y-10 min-h-[70vh]">
+                <div className="flex-1">
+                    <Table className="rounded-lg border my-10">
+                        <TableHeader className='bg-zinc-100'>
+                            <TableRow>
+                                <TableHead>Staff ID</TableHead>
+                                <TableHead>Staff</TableHead>
+                                <TableHead>Start Date</TableHead>
+                                <TableHead>End Date</TableHead>
+                                <TableHead>Shift Start Time</TableHead>
+                                <TableHead>Shift End Time</TableHead>
+                                <TableHead>Shift Hour</TableHead>
+                                <TableHead>Shift</TableHead>
+                                <TableHead>Department</TableHead>
+                                <TableHead>Note</TableHead>
+                                <TableHead>Action</TableHead>
+                            </TableRow>
+                        </TableHeader>
 
-            <Table className="rounded-lg border my-10">
-                <TableHeader className='bg-zinc-100'>
-                    <TableRow>
-                        <TableHead>Staff ID</TableHead>
-                        <TableHead>Staff</TableHead>
-                        <TableHead>Start Date</TableHead>
-                        <TableHead>End Date</TableHead>
-                        <TableHead>Shift Start Time</TableHead>
-                        <TableHead>Shift End Time</TableHead>
-                        <TableHead>Shift Hour</TableHead>
-                        <TableHead>Shift</TableHead>
-                        <TableHead>Department</TableHead>
-                        <TableHead>Note</TableHead>
-                        <TableHead>Action</TableHead>
-                    </TableRow>
-                </TableHeader>
+                        <TableBody>
 
-                <TableBody>
+                            {rosterList?.data.map((roster, i) => {
+                                return <TableRow key={i}>
+                                    <TableCell
+                                        className='font-semibold text-blue-600 cursor-pointer hover:text-blue-500'
+                                        onClick={() => router(`/admin/profile/staff/${roster.staffId}`)}>
+                                        {roster.staffId}
+                                    </TableCell>
+                                    <TableCell className="font-medium cursor-pointer">{roster.staff.name}</TableCell>
+                                    <TableCell>{roster.shiftStartDate}</TableCell>
+                                    <TableCell>{roster.shiftEndDate}</TableCell>
+                                    <TableCell>{roster.shiftStartTime}</TableCell>
+                                    <TableCell>{roster.shiftEndTime}</TableCell>
+                                    <TableCell>{calculateShiftDuration(roster.shiftStartTime, roster.shiftEndTime)}</TableCell>
+                                    <TableCell>{roster.shift}</TableCell>
+                                    <TableCell>{roster.staff.department}</TableCell>
+                                    <TableCell>{roster.note}</TableCell>
+                                    <TableCell className='flex gap-x-2'>
 
-                    {rosterList?.map((roster, i) => {
-                        return <TableRow key={i}>
-                            <TableCell
-                                className='font-semibold text-blue-600 cursor-pointer hover:text-blue-500'
-                                onClick={() => router(`/admin/profile/staff/${roster.staffId}`)}>
-                                {roster.staffId}
-                            </TableCell>
-                            <TableCell className="font-medium cursor-pointer">{roster.staff.name}</TableCell>
-                            <TableCell>{roster.shiftStartDate}</TableCell>
-                            <TableCell>{roster.shiftEndDate}</TableCell>
-                            <TableCell>{roster.shiftStartTime}</TableCell>
-                            <TableCell>{roster.shiftEndTime}</TableCell>
-                            <TableCell>{calculateShiftDuration(roster.shiftStartTime, roster.shiftEndTime)}</TableCell>
-                            <TableCell>{roster.shift}</TableCell>
-                            <TableCell>{roster.staff.department}</TableCell>
-                            <TableCell>{roster.note}</TableCell>
-                            <TableCell className='flex gap-x-2'>
+                                        {/* Edit button */}
+                                        <CustomTooltip message='EDIT'>
+                                            <Pencil className='text-gray-600 w-4 h-4 cursor-pointer active:scale-95'
+                                                onClick={async () => {
+                                                    await fetchRosterDetails(roster.id)
+                                                    setModel((prev) => ({ ...prev, rosterFormModel: true }));
+                                                }}
+                                            />
+                                        </CustomTooltip>
 
-                                {/* Edit button */}
-                                <CustomTooltip message='EDIT'>
-                                    <Pencil className='text-gray-600 w-4 h-4 cursor-pointer active:scale-95'
-                                        onClick={() => {
-                                            setModel((prev) => ({ ...prev, rosterFormModel: true }));
-                                            id.current = roster.id
-                                        }}
-                                    />
-                                </CustomTooltip>
+                                        {/* Delete */}
 
-                                {/* Delete */}
+                                        <CustomTooltip message='DELETE'>
+                                            <Trash className='text-gray-600 w-4 h-4 cursor-pointer active:scale-95'
+                                                onClick={() => {
+                                                    setModel((prev) => ({ ...prev, AlertModel: true }));
+                                                    id.current = roster.id
+                                                }}
+                                            />
+                                        </CustomTooltip>
 
-                                <CustomTooltip message='DELETE'>
-                                    <Trash className='text-gray-600 w-4 h-4 cursor-pointer active:scale-95'
-                                        onClick={() => {
-                                            setModel((prev) => ({ ...prev, AlertModel: true }));
-                                            id.current = roster.id
-                                        }}
-                                    />
-                                </CustomTooltip>
+                                    </TableCell>
+                                </TableRow>
+                            })}
+                        </TableBody>
+                    </Table>
 
-                            </TableCell>
-                        </TableRow>
-                    })}
+                    {/* error on emply list */}
+                    {rosterList.data.length < 1 && <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>Not found <SearchX className='h-5 w-5' /></h1>}
+                </div>
 
-                </TableBody>
-            </Table>
+                {/* pagination */}
+                <section>
+                    <CustomPagination
+                        total_pages={rosterList?.total_pages}
+                        currentPage={+page}
+                        previous={(p) => setPage(p)}
+                        goTo={(p) => setPage(p)}
+                        next={(p) => setPage(p)}
+                    />
+                </section>
+            </div>
 
-            {/* error on emply list */}
-
-            {rosterList.length < 1 && <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>Not found <SearchX className='h-5 w-5' /></h1>}
 
 
             {/* roster form model */}
 
             {
-                model.rosterFormModel && <AssignRosterFormModel ID={id.current}
+                model.rosterFormModel && <AssignRosterFormModel
+                    Submit={handleSubmit}
+                    rosterDetails={rosterDetails!}
+                    isPending={loading.inlineLoader}
                     onClick={() => {
-                        setModel((rest) => {
-                            return {
-                                ...rest,
-                                rosterFormModel: false
-                            }
-                        });
-                        fetchList()
-                        id.current = null
+                        setModel({ ...model, rosterFormModel: false })
+                        setRosterDetails(undefined)
                     }}
                 />
             }
@@ -259,19 +302,13 @@ const RosterReport = () => {
 
             {
                 model.AlertModel && <AlertModel
-                    cancel={() => {
-                        setModel((rest) => {
-                            return {
-                                ...rest,
-                                AlertModel: false
-                            }
-                        });
-                        id.current = null
-                    }}
-
+                    cancel={() => { setModel({ ...model, AlertModel: false }) }}
                     continue={onDelete}
+                    isPending={loading.inlineLoader}
                 />
             }
+
+            {loading.modelLoader && <LoaderModel />}
 
         </div >
     )

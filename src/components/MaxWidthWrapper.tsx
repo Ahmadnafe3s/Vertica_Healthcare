@@ -1,14 +1,14 @@
-import React from "react"
+import React, { HTMLAttributes } from "react"
 import { cn } from "../lib/utils"
 
-interface MaxWidthWrapperProps {
+interface MaxWidthWrapperProps extends HTMLAttributes<HTMLDivElement> {
     className?: string,
     children: React.ReactNode
 }
 
-const MaxWidthWrapper = ({ className, children }: MaxWidthWrapperProps) => {
+const MaxWidthWrapper = ({ className, children, ...props }: MaxWidthWrapperProps) => {
 
-    return <div className={cn('px-2.5 lg:px-20 mx-auto max-w-screen-xl h-full w-full', className)}>
+    return <div {...props} className={cn('px-2.5 lg:px-20 mx-auto max-w-screen-xl h-full w-full', className)}>
         {children}
     </div>
 

@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const AssignRosterSchema = z.object({
         
-    staffId: z.string()
-        .min(1, { message: 'Staff is required' }).default(''),
+    staffId: z.number()
+        .min(1, { message: 'Staff is required' }).default(0),
 
     shiftStartTime: z.string()
         .min(1, { message: 'Shift start time is required' }),

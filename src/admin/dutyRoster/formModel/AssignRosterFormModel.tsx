@@ -1,105 +1,73 @@
-import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AssignRosterSchema } from '@/formSchemas/assignRosterFormSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader, X } from 'lucide-react'
+import { Loader } from 'lucide-react'
 import { HTMLAttributes, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { createRoster, fetchRosterDetails, fetchStaffs, updateRoster } from '../apihandlers'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import Dialog from '@/components/Dialog'
+import { staffs } from '@/types/staff/staff'
+import { getStaffs } from '@/admin/humanresource/HRApiHandler'
+import { useQueryState } from 'nuqs'
+import { useDebouncedCallback } from 'use-debounce'
+import { RosterDetails } from '@/types/dutyRoster/DutyRoster'
 
 
 
 interface AssignRosterFormModelProps extends HTMLAttributes<HTMLDivElement> {
-  ID: number | null
+  Submit: (formData: any) => void
+  rosterDetails: RosterDetails
+  isPending: boolean
 }
 
 
-interface staffs {
-  id: string,
-  name: string,
-  role: string
-}
+
+const AssignRosterFormModel = ({ Submit, rosterDetails, isPending, ...props }: AssignRosterFormModelProps) => {
+
+  // Query params
+  const [search, setSearch] = useQueryState('search')
+
+  // API state
+  const [staffs, setStaff] = useState<staffs>({ data: [], total_pages: 0 })
 
 
-const AssignRosterFormModel = ({ ID, ...props }: AssignRosterFormModelProps) => {
-
-  const [staffs, setStaff] = useState<staffs[]>([])
-  const [isPending, setPending] = useState<boolean>(false)
-
-  const { handleSubmit, setValue, control, register, formState: { errors }, reset } = useForm<z.infer<typeof AssignRosterSchema>>(
-    {
-      resolver: zodResolver(AssignRosterSchema)
-    }
-  )
+  const { handleSubmit, control, register, formState: { errors }, reset } = useForm<z.infer<typeof AssignRosterSchema>>({
+    resolver: zodResolver(AssignRosterSchema),
+    defaultValues: rosterDetails
+  })
 
 
-  // performing both works (create update)
 
-  const onSubmit = async (formData: z.infer<typeof AssignRosterSchema>) => {
+  // fetching staffs list
+  const fetchStaffs = async () => {
     try {
-      setPending(true)
-      let message = ''
-
-      if (!!ID) {  //id editmode then upadte
-        message = await updateRoster(formData, ID)
-      } else {
-        message = await createRoster(formData)
-      }
-
-      toast.success(message)
-
+      const data = await getStaffs({ limit: search ? 10 : 5, search: search! })
+      setStaff(data)
     } catch ({ message }: any) {
       toast.error(message)
     }
-    finally {
-      setPending(false)
-    }
-
   }
 
 
+  const onSearch = useDebouncedCallback(async (value: string) => {
+    value ? (setSearch(value)) : setSearch(null)
+  }, 500)
+
+
   useEffect(() => {
-
-    (async function () {
-
-      try {
-
-        const data = await fetchStaffs()   // it is required to keep at top
-        setStaff(data)
-
-        // if edit mode then set form values
-        if (!!ID) {
-          const data = await fetchRosterDetails(ID)
-          setValue('staffId', data.staffId.toString()) // this will select associated staff with roster
-          setValue('shiftStartTime', data.shiftStartTime)
-          setValue('shiftEndTime', data.shiftEndTime)
-          setValue('shiftStartDate', data.shiftStartDate)
-          setValue('shiftEndDate', data.shiftEndDate)
-          setValue('shift', data.shift)
-          setValue('note', data.note)
-        }
-
-      } catch ({ message }: any) {
-        toast.error(message)
-      }
-
-    })() //IIEF
-
-  }, [])
-
+    fetchStaffs()
+  }, [search])
 
 
 
   return (
     <Dialog pageTitle='Assign Roster' className='sm:w-[550px] mx-auto' {...props}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(Submit)}>
         <ScrollArea className='h-[60vh] sm:h-[55vh]'>
           <div className="grid sm:grid-cols-2 gap-5 pb-5 px-2.5">
 
@@ -109,14 +77,15 @@ const AssignRosterFormModel = ({ ID, ...props }: AssignRosterFormModelProps) => 
               <Controller control={control} name='staffId' render={({ field }) => {
                 return <>
                   <Label>Staff</Label>
-                  <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                  <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(Number(value)) }}>
                     <SelectTrigger >
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
 
                     <SelectContent className='z-[200]'>
-                      {staffs?.map((staff, index) => {
-                        return <SelectItem key={index} value={staff.id.toString()}>{`${staff.name} (${staff.role})`}</SelectItem>
+                      <Input placeholder='Search Staff' className='h-8' onChange={(e) => onSearch(e.target.value)} defaultValue={search!} />
+                      {staffs?.data.map((staff) => {
+                        return <SelectItem key={staff.id} value={staff.id.toString()}>{`${staff.name} (${staff.role})`}</SelectItem>
                       })}
                     </SelectContent>
                   </Select>
@@ -171,9 +140,9 @@ const AssignRosterFormModel = ({ ID, ...props }: AssignRosterFormModelProps) => 
                     </SelectTrigger>
 
                     <SelectContent className='z-[200]'>
-                      <SelectItem value='morning'>Morning</SelectItem>
-                      <SelectItem value='evening'>Evening</SelectItem>
-                      <SelectItem value='night'>Night</SelectItem>
+                      <SelectItem value='Morning'>Morning</SelectItem>
+                      <SelectItem value='Evening'>Evening</SelectItem>
+                      <SelectItem value='Night'>Night</SelectItem>
                     </SelectContent>
                   </Select>
                 </>
@@ -193,8 +162,8 @@ const AssignRosterFormModel = ({ ID, ...props }: AssignRosterFormModelProps) => 
         </ScrollArea>
 
         <div className="flex mt-5 mb-2 gap-x-2 px-2.5">
-          <Button type='submit' variant='outline' onClick={() => { reset(); ID = null }}>Reset</Button>
-          <Button type='submit' className='flex-1'>{ID ? 'Update Roster' : 'Save Roster'} {isPending && <Loader className='h-4 w-4 animate-spin' />}</Button>
+          <Button type='submit' variant='outline' onClick={() => reset()}>Reset</Button>
+          <Button type='submit' className='flex-1'>{rosterDetails ? 'Update Roster' : 'Save Roster'} {isPending && <Loader className='h-4 w-4 animate-spin' />}</Button>
         </div>
       </form>
     </Dialog>

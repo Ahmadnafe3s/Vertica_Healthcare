@@ -2,7 +2,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { currencyFormat } from '@/lib/utils'
-import { FileText, ListMinus, Pencil, Plus, Printer, ReceiptIndianRupee, Trash } from 'lucide-react'
+import { FileText, ListMinus, Plus, Printer, Trash } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import CreatePharmacyBill from './createPharmacyBill'
 import toast from 'react-hot-toast'
@@ -15,10 +15,20 @@ import CustomTooltip from '@/components/customTooltip'
 import PharmacyBillDetailsModal from './pharmacyBillDetailsModal'
 import LoaderModel from '@/components/loader'
 import AlertModel from '@/components/alertModel'
+import { useQueryState, parseAsInteger } from 'nuqs'
+import CustomPagination from '@/components/customPagination'
+import { useDebouncedCallback } from 'use-debounce'
+import PrintPharmacyBill from './printBill/printPharmacyBill'
+import PrintPharmacyBills from './printBill/printPharmacyBills'
 
 
 
 const Bill = () => {
+
+    // query params
+    const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
+    const [search, setSearch] = useQueryState('search')
+
 
     // credential
     const itemID = useRef('')
@@ -37,19 +47,29 @@ const Bill = () => {
     })
 
     // API states
-    const [pharmBills, setPharmBills] = useState<pharmacyBills[]>([])
+    const [pharmBills, setPharmBills] = useState<pharmacyBills>({ data: [], total_pages: 0 })
     const [pharmBillDetails, setPharmBillDetails] = useState<pharmacyBillDetail>()
+
+
 
 
     // list of bills
     const fetchParmacyBills = async () => {
         try {
-            const data = await getPharmacyBills()
+            // adjust limit accordingly
+            const data = await getPharmacyBills({ page, limit: 10, search: search! }) // here search only will have value when we will search anything
             setPharmBills(data)
         } catch ({ message }: any) {
             toast.error(message)
         }
     }
+
+
+
+    const onSearch = useDebouncedCallback((value: string) => {
+        value ? (setSearch(value)) : setSearch(null)
+        setPage(1)
+    }, 400)
 
 
     // bill deatils
@@ -100,7 +120,7 @@ const Bill = () => {
 
     useEffect(() => {
         fetchParmacyBills()
-    }, [])
+    }, [page, search])
 
 
     return (
@@ -134,66 +154,82 @@ const Bill = () => {
                 <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between border-b border-gray-200'>
 
                     <div className='flex gap-x-2'>
-                        <Input type='text' height='10px' placeholder='search' />
+                        <Input type='text' height='10px' placeholder='Bill No. , Date , Patient' onChange={(e) => { onSearch(e.target.value) }} defaultValue={search!} />
                     </div>
 
                     <div className='flex gap-x-2'>
-
-                        <FileText className='cursor-pointer text-gray-600' />
-                        <Printer className='cursor-pointer text-gray-600' />
-
+                        <PrintPharmacyBills PharmacyBills={pharmBills['data']} />
                     </div>
                 </div>
 
+                <div className="flex flex-col pb-16 gap-y-10 min-h-[80vh]">
+                    <div className="flex-1 space-y-3">
+                        <Table className='border rounded-lg my-10'>
+                            <TableHeader className='bg-slate-100'>
+                                <TableRow>
+                                    <TableHead>Bill No.</TableHead>
+                                    <TableHead>Invoice Date</TableHead>
+                                    <TableHead>OPD ID</TableHead>
+                                    <TableHead>Patient Name</TableHead>
+                                    <TableHead>Doctor Name</TableHead>
+                                    <TableHead>Discount%</TableHead>
+                                    <TableHead>Total</TableHead>
+                                    <TableHead>Action</TableHead>
+                                </TableRow>
+                            </TableHeader>
 
-                <Table className='border rounded-lg my-10'>
-                    <TableHeader className='bg-slate-100'>
-                        <TableRow>
-                            <TableHead>Bill No.</TableHead>
-                            <TableHead>Invoice Date</TableHead>
-                            <TableHead>OPD ID</TableHead>
-                            <TableHead>Patient Name</TableHead>
-                            <TableHead>Doctor Name</TableHead>
-                            <TableHead>Discount%</TableHead>
-                            <TableHead>Total</TableHead>
-                            <TableHead>Action</TableHead>
-                        </TableRow>
-                    </TableHeader>
+                            <TableBody>
+                                {pharmBills.data.map((bill) => (
+                                    <TableRow key={bill.id}>
+                                        <TableCell
+                                            className='text-blue-500 hover:text-blue-400 cursor-pointer font-medium'
+                                            onClick={async () => {
+                                                await fetchPharmacyBillDetails(bill.id)
+                                                setModel(prev => ({ ...prev, billDetails: true }))
+                                            }}
+                                        >{bill.id}
+                                        </TableCell>
+                                        <TableCell>{bill.date}</TableCell>
+                                        <TableCell>{bill.opdId}</TableCell>
+                                        <TableCell>{bill.patient.name}</TableCell>
+                                        <TableCell>{bill.doctor}</TableCell>
+                                        <TableCell>{bill.discount} %</TableCell>
+                                        <TableCell>{currencyFormat(bill.net_amount)}</TableCell>
+                                        <TableCell className='flex space-x-2'>
+                                            {/* DELETE  */}
+                                            <CustomTooltip message='DELETE'>
+                                                <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                                                    itemID.current = bill.id
+                                                    setModel(prev => ({ ...prev, alert: true }))
+                                                }} />
+                                            </CustomTooltip>
 
-                    <TableBody>
-                        {pharmBills.map((bill) => (
-                            <TableRow key={bill.id}>
-                                <TableCell
-                                    className='text-blue-500 hover:text-blue-400 cursor-pointer font-medium'
-                                    onClick={async () => {
-                                        await fetchPharmacyBillDetails(bill.id)
-                                        setModel(prev => ({ ...prev, billDetails: true }))
-                                    }}
-                                >{bill.id}
-                                </TableCell>
-                                <TableCell>{bill.date}</TableCell>
-                                <TableCell>{bill.opdId}</TableCell>
-                                <TableCell>{bill.patient.name}</TableCell>
-                                <TableCell>{bill.doctor}</TableCell>
-                                <TableCell>{bill.discount} %</TableCell>
-                                <TableCell>{currencyFormat(bill.net_amount)}</TableCell>
-                                <TableCell className=''>
-                                    {/* DELETE  */}
-                                    <CustomTooltip message='DELETE'>
-                                        <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
-                                            itemID.current = bill.id
-                                            setModel(prev => ({ ...prev, alert: true }))
-                                        }} />
-                                    </CustomTooltip>
+                                            {/* Print Bill */}
 
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                                            <PrintPharmacyBill Id={bill.id} onPending={(v) => setLoading({ ...isLodaing, model: v })} />
+
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        {pharmBills.data.length < 1 && <p className='font-medium text-lg text-gray-600'>No data found</p>}
+                    </div>
+
+                    {/* pagination buttons */}
+
+                    <section>
+                        <CustomPagination
+                            total_pages={pharmBills?.total_pages!}
+                            currentPage={page}
+                            next={(p) => setPage(p)}
+                            goTo={(p) => setPage(p)}
+                            previous={(p) => setPage(p)}
+                        />
+                    </section>
+                </div>
             </div >
 
-            {pharmBills.length < 1 && <p className='font-medium text-lg text-gray-600'>No data found</p>}
 
             {/* Models */}
 

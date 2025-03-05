@@ -1,7 +1,7 @@
 import { chargeListDataType } from "./charges"
 import { opdMedicationData } from "./medication"
 import { operation } from "./operationType"
-import { Payment } from "./payment"
+import { paymentData } from "./payment"
 import { timeline } from "./timeline"
 import { VitalType } from "./vitals"
 
@@ -69,5 +69,42 @@ export interface opdDetails {
     Operations: operation[],
     timelines: timeline[],
     charges: chargeListDataType[],
-    Payments: Payment[]
+    Payments: paymentData[]
+}
+
+
+
+export interface PrintBillDetails {
+    id: string,
+    patientId: number,
+    appointmentId: string,
+    appointment: {
+        appointment_date: string,
+        appointment_priority: string,
+        shift: string,
+        patient: {
+            name: string,
+            age: string,
+            blood_group: string,
+        },
+        doctor: {
+            name: string,
+            department: string,
+            specialist: string,
+        }
+    },
+    charges: {
+        chargeCategory: {
+            category: string
+        },
+        chargeNames: {
+            name: string,
+        },
+        total: number,
+        discount: number,
+        tax: number,
+        tpa: number,
+        standard_charge: number,
+        net_amount: number,
+    }[]
 }

@@ -2,13 +2,13 @@ import { z } from "zod";
 
 export const medicationFormSchema = z.object({
 
-    category: z.string()
+    categoryId: z.number()
         .min(1, { message: "Category is required" })
-        .default(''),
+        .default(0),
 
-    medicineId: z.string()
+    medicineId: z.number()
         .min(1, { message: "Medicine name is required" })
-        .default(''),
+        .default(0),
 
     date: z.string()
         .min(1, { message: "Date is required" }),

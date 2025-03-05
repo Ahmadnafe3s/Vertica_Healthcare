@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Textarea } from "@/components/ui/textarea";
 import { timeline } from "@/types/opd_section/timeline";
+import Dialog from "@/components/Dialog";
 
 
 interface TimelineFormModelProps extends HTMLAttributes<HTMLDivElement> {
@@ -29,68 +30,47 @@ const TimelineFormModel = ({ Submit, timelineDetails, isPending, ...props }: Tim
 
 
     return (
-        <>
-            <div {...props} className='fixed top-0 left-0 h-screen w-full transition-all z-[120]' style={{ background: '#0000009c' }}></div>
+        <Dialog pageTitle="Timeline" className="sm:w-[400px] mx-auto" {...props}>
+            <form onSubmit={handleSubmit(Submit)}>
+                <ScrollArea className='h-[50vh]'>
+                    <div className="grid gap-5 mt-5 px-3 pb-5">
 
-            <MaxWidthWrapper className='fixed h-auto  top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-[200] '>
+                        {/* Title */}
 
-                <form className=' bg-white rounded-md sm:w-[400px] mx-auto' onSubmit={handleSubmit(Submit)}>
-
-                    {/* Header */}
-
-                    <div className='flex justify-between p-3 col-span-full border-b border-gray-200'>
-                        <p className='font-semibold text-sm sm:text-lg text-white bg-primary py-1 px-4 rounded-xl'>Timeline</p>
-                        <div {...props}>
-                            <X className='cursor-pointer' />
-                        </div>
-                    </div>
-
-
-                    {/* mainGrid */}
-
-                    <ScrollArea className='h-[50vh]'>
-
-                        <div className="grid gap-5 mt-5 px-3 pb-5">
-
-
-                            {/* Title */}
-
-                            <div className="w-full flex flex-col gap-y-2 ">
-                                <Label>Title</Label>
-                                <Input type='text' {...register('title')} />
-                                {errors.title && <p className='text-sm text-red-500'>{errors.title.message}</p>}
-                            </div>
-
-
-                            {/* Date */}
-
-                            <div className="w-full flex flex-col gap-y-2 ">
-                                <Label>Date</Label>
-                                <Input type='datetime-local' {...register('date')} />
-                                {errors.date && <p className='text-sm text-red-500'>{errors.date.message}</p>}
-                            </div>
-
-
-                            {/* Description */}
-
-                            <div className="w-full flex flex-col gap-y-2 ">
-                                <Label>Description</Label>
-                                <Textarea  {...register('description')} />
-                                {errors.description && <p className='text-sm text-red-500'>{errors.description.message}</p>}
-                            </div>
-
+                        <div className="w-full flex flex-col gap-y-2 ">
+                            <Label>Title</Label>
+                            <Input type='text' {...register('title')} />
+                            {errors.title && <p className='text-sm text-red-500'>{errors.title.message}</p>}
                         </div>
 
-                    </ScrollArea>
 
-                    <div className="flex mt-5 mb-2 p-3 gap-x-2 sm:justify-end">
-                        <Button variant='outline' onClick={() => reset()}>Reset</Button>
-                        <Button type='submit' className='flex-1'>{timelineDetails ? 'Update' : 'Save'} {isPending && <Loader className='animate-spin' />}</Button>
+                        {/* Date */}
+
+                        <div className="w-full flex flex-col gap-y-2 ">
+                            <Label>Date</Label>
+                            <Input type='datetime-local' {...register('date')} />
+                            {errors.date && <p className='text-sm text-red-500'>{errors.date.message}</p>}
+                        </div>
+
+
+                        {/* Description */}
+
+                        <div className="w-full flex flex-col gap-y-2 px-3">
+                            <Label>Description</Label>
+                            <Textarea  {...register('description')} />
+                            {errors.description && <p className='text-sm text-red-500'>{errors.description.message}</p>}
+                        </div>
+
                     </div>
 
-                </form>
-            </MaxWidthWrapper>
-        </>
+                </ScrollArea>
+
+                <div className="flex mt-5 mb-2 p-3 gap-x-2 sm:justify-end">
+                    <Button variant='outline' onClick={() => reset()}>Reset</Button>
+                    <Button type='submit' className='flex-1'>{timelineDetails ? 'Update' : 'Save'} {isPending && <Loader className='animate-spin' />}</Button>
+                </div>
+            </form>
+        </Dialog>
     )
 }
 

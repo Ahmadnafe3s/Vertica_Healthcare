@@ -97,8 +97,8 @@ const CancelledAppointments = () => {
                                             </SelectTrigger>
 
                                             <SelectContent className='z-[200]'>
-                                                <SelectItem value="approved">Approved</SelectItem>
-                                                <SelectItem value="pending">Pending</SelectItem>
+                                                <SelectItem value="Approved">Approved</SelectItem>
+                                                <SelectItem value="Pending">Pending</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </TableCell>

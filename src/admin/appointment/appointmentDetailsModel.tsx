@@ -4,6 +4,7 @@ import { CalendarDays, Cross, PersonStanding } from 'lucide-react'
 import { cn, currencyFormat } from '@/lib/utils'
 import { AppointmentDetails } from '@/types/appointment/appointment'
 import Dialog from '@/components/Dialog'
+import { currencySymbol } from '@/helpers/currencySymbol'
 
 
 interface AppointmentDetailsModelProps extends HTMLAttributes<HTMLDivElement> {
@@ -47,7 +48,7 @@ const AppointmentDetailsModel = ({ appointmentDetails, ...props }: AppointmentDe
                             <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
                                 <p className='text-gray-700 '>Status</p>
                                 <p className={cn('text-white rounded-md bg-green-600 w-fit px-2 font-semibold',
-                                    { 'bg-red-500': appointmentDetails?.status === 'cancelled', 'bg-yellow-500': appointmentDetails?.status === 'pending' })}>
+                                    { 'bg-red-500': appointmentDetails?.status === 'Cancelled', 'bg-yellow-500': appointmentDetails?.status === 'Pending' })}>
                                     {appointmentDetails?.status}
                                 </p>
                             </div>
@@ -64,12 +65,7 @@ const AppointmentDetailsModel = ({ appointmentDetails, ...props }: AppointmentDe
                             <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                 <p className='text-gray-700'>Priority</p>
                                 <p className='text-sm'>{appointmentDetails?.appointment_priority}</p>
-                            </div>
-
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Fees</p>
-                                <p className='text-sm'>{currencyFormat(Number(appointmentDetails?.fees))}</p>
-                            </div>
+                            </div>                          
 
                             <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                 <p className='text-gray-700'>Symptom Type</p>
@@ -94,12 +90,7 @@ const AppointmentDetailsModel = ({ appointmentDetails, ...props }: AppointmentDe
                             <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                 <p className='text-gray-700'>Payment Mode</p>
                                 <p className='text-sm'>{appointmentDetails?.payment_mode}</p>
-                            </div>
-
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Discount</p>
-                                <p className='text-sm'>{appointmentDetails?.discount}%</p>
-                            </div>
+                            </div>                          
 
                             <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
                                 <p className='text-gray-700'>Alternative Address</p>
@@ -110,6 +101,22 @@ const AppointmentDetailsModel = ({ appointmentDetails, ...props }: AppointmentDe
                                 <p className='text-gray-700'>Message</p>
                                 <p className='text-sm'>{appointmentDetails?.message}</p>
                             </div>
+
+                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                <p className='text-gray-700'>Fees</p>
+                                <p className='text-sm'>{currencyFormat(Number(appointmentDetails?.fees))}</p>
+                            </div>
+
+                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                <p className='text-gray-700'>Discount</p>
+                                <p className='text-sm'>{appointmentDetails?.discount}%</p>
+                            </div>
+
+                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
+                                <p className='text-gray-700'>Net Amount {currencySymbol()}</p>
+                                <p className='text-sm'>{currencyFormat(appointmentDetails?.net_amount)}</p>
+                            </div>
+
                         </div>
 
                     </div>

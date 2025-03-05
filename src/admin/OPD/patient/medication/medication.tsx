@@ -60,7 +60,7 @@ const Medication = () => {
 
   const fetchMedications = async () => {
     try {
-      const data = await getMedications({ opdId: opdId!, page, limit: search ? 100 : 1, date: search! })
+      const data = await getMedications({ opdId: opdId!, page, limit: 10, date: search! })
       setMedications(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -90,12 +90,8 @@ const Medication = () => {
 
 
   const onSearch = (date: string) => {
-    if (date) {
-      setPage(1)
-      setSearch(date)
-      return
-    }
-    setSearch(null)
+    date ? setSearch(date) : setSearch(null)
+    setPage(1)
   }
 
 
@@ -116,7 +112,7 @@ const Medication = () => {
   useEffect(() => {
     fetchMedications()
     console.log(medications);
-    
+
   }, [page, search])
 
   return (
@@ -160,7 +156,7 @@ const Medication = () => {
                   return <TableRow key={i}>
                     <TableCell >{medication.date}</TableCell>
                     <TableCell>{medication.medicine.name}</TableCell>
-                    <TableCell>{medication.medicine.category.name}</TableCell>
+                    <TableCell>{medication.category.name}</TableCell>
                     <TableCell>{medication.medicine.unit.name}</TableCell>
                     <TableCell>{medication.time}</TableCell>
                     <TableCell>{medication.dose}</TableCell>

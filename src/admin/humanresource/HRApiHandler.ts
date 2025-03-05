@@ -2,7 +2,7 @@ import { createStaffFormSchema } from "@/formSchemas/createStaffFormSchema"
 import { StaffProfile } from "@/types/type"
 import axios from "axios"
 import { z } from "zod"
-import { staffList } from "./staff"
+import { staffs } from "@/types/staff/staff"
 
 
 export const fetchStaffProfile = async (id: number): Promise<StaffProfile> => {
@@ -27,15 +27,16 @@ export const createStaff = async (formData: z.infer<typeof createStaffFormSchema
 
 }
 
-export const getStaffs = async (search?: string): Promise<staffList[]> => {
+
+export const getStaffs = async (params: { search?: string, page?: number, limit?: number }): Promise<staffs> => {
     try {
-        const params = { search }
         const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/staff`, { params })
         return response.data
     } catch (error: any) {
         throw new Error(error.response.data.message)
     }
 }
+
 
 // staff id is coming from profile page passed here by createStaff component
 

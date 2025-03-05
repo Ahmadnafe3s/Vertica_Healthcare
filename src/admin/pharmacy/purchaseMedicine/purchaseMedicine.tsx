@@ -9,10 +9,10 @@ import { HTMLAttributes, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { getMedicineList } from '../pharmacyApiHandler'
+import { getMedicinesBYcategory } from '../pharmacyApiHandler'
 import { Textarea } from '@/components/ui/textarea'
 import { currencySymbol } from '@/helpers/currencySymbol'
-import { medicines } from '@/types/pharmacy/pharmacy'
+import {  medicinesBYcategory } from '@/types/pharmacy/pharmacy'
 import { medicineCategory } from '@/types/setupTypes/pharmacy'
 import { getMedicineCategories } from '@/admin/setup/pharmacy/apiHandler'
 import Dialog from '@/components/Dialog'
@@ -29,7 +29,7 @@ interface PurchaseMedicineFormProps extends HTMLAttributes<HTMLDivElement> {
 const PurchaseMedicineForm = ({ Submit, isPending, purchaseDetails, ...props }: PurchaseMedicineFormProps) => {
 
     // API States
-    const [medicines, setMedicines] = useState<medicines[]>([])
+    const [medicines, setMedicines] = useState<medicinesBYcategory[]>([])
     const [medicineCategories, setMedicineCategories] = useState<medicineCategory[]>([])
 
 
@@ -37,15 +37,6 @@ const PurchaseMedicineForm = ({ Submit, isPending, purchaseDetails, ...props }: 
         resolver: zodResolver(PurchaseMedicineFormSchema)
     })
 
-
-    const fetchMedicinesList = async (value: string) => {
-        try {
-            const data = await getMedicineList(value)
-            setMedicines(data)
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }
 
 
     const fetchMedicineCategories = async () => {
@@ -58,9 +49,9 @@ const PurchaseMedicineForm = ({ Submit, isPending, purchaseDetails, ...props }: 
     }
 
 
-    const handleCategoryChange = async (id: string) => {
+    const handleCategoryChange = async (categoryId: number) => {
         try {
-            const data = await getMedicineList(id)
+            const data = await getMedicinesBYcategory(categoryId)
             setMedicines(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -109,7 +100,7 @@ const PurchaseMedicineForm = ({ Submit, isPending, purchaseDetails, ...props }: 
                             <Controller control={control} name='categoryId' render={({ field }) => {
                                 return <>
                                     <Label>Category</Label>
-                                    <Select value={field.value || ''} onValueChange={(value) => { handleCategoryChange(value); fetchMedicinesList(value); field.onChange(value) }}>
+                                    <Select value={field.value || ''} onValueChange={(value) => { handleCategoryChange(Number(value));  field.onChange(value) }}>
                                         <SelectTrigger >
                                             <SelectValue placeholder="Select" />
                                         </SelectTrigger>

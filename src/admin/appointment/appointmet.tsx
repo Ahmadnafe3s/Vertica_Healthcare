@@ -18,7 +18,10 @@ import { z } from 'zod'
 import CustomTooltip from '@/components/customTooltip'
 import { useDebouncedCallback } from 'use-debounce'
 import CustomPagination from '@/components/customPagination'
-import { useQueryState , parseAsInteger } from 'nuqs'
+import { useQueryState, parseAsInteger } from 'nuqs'
+import AppointmentPDF from './generatePDF/AppointmnetPDF'
+import AppointmentListPDF from './generatePDF/AppointmnetListPDF'
+
 
 
 const AdminAppointment = () => {
@@ -52,8 +55,8 @@ const AdminAppointment = () => {
         try {
             const data = await fetchAppointments({
                 page,
-                limit: search ? 100 : 10,
-                search: search!
+                limit: 10,
+                search: search! // if search will have value then data will get accordingly
             })
             setAppointments(data)
         } catch ({ message }: any) {
@@ -77,12 +80,8 @@ const AdminAppointment = () => {
 
 
     const onSearch = useDebouncedCallback(async (value: string) => {
-        if (value) {
-            setSearch(value)
-            setPage(1)
-            return null
-        }
-        setSearch(null) // if no value then null
+        value ? (setSearch(value)) : (setSearch(null))
+        setPage(1) // always should execute
     }, 400)
 
 
@@ -154,14 +153,12 @@ const AdminAppointment = () => {
                 <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between border-b border-gray-200'>
 
                     <div className='flex gap-x-2'>
-                        <Input type='text' height='10px' placeholder='search' onChange={(e) => { onSearch(e.target.value) }} />
+                        <Input type='text' height='10px' placeholder='search' defaultValue={search!} onChange={(e) => { onSearch(e.target.value) }} />
                     </div>
 
                     <div className='flex gap-x-2'>
-
-                        <FileText className='cursor-pointer text-gray-600' />
-                        <Printer className='cursor-pointer text-gray-600' />
-
+                        {/* printing appointments list */}
+                        <AppointmentListPDF appointments={Appointments['data']} />
                     </div>
                 </div>
 
@@ -177,11 +174,11 @@ const AdminAppointment = () => {
                                     <TableHead>Phone</TableHead>
                                     <TableHead>Gender</TableHead>
                                     <TableHead>Doctor</TableHead>
-                                    <TableHead>Source</TableHead>
                                     <TableHead>Priority</TableHead>
                                     <TableHead>Alternative Address</TableHead>
-                                    <TableHead>Discount%</TableHead>
                                     <TableHead>Fees {currencySymbol()}</TableHead>
+                                    <TableHead>Discount%</TableHead>
+                                    <TableHead>Net Amount {currencySymbol()}</TableHead>
                                     <TableHead>Action</TableHead>
                                     <TableHead>Status</TableHead>
                                 </TableRow>
@@ -208,12 +205,12 @@ const AdminAppointment = () => {
                                         <TableCell>{appointment.patient.phone}</TableCell>
                                         <TableCell>{appointment.patient.gender}</TableCell>
                                         <TableCell>{appointment.doctor.name}</TableCell>
-                                        <TableCell>Online</TableCell>
                                         <TableCell>{appointment.appointment_priority}</TableCell>
                                         <TableCell>{appointment.alternative_address}</TableCell>
-                                        <TableCell>{appointment.discount}</TableCell>
                                         <TableCell>{currencyFormat(+appointment.fees)}</TableCell>
-                                        <TableCell className='space-x-2 px-2'>
+                                        <TableCell>{appointment.discount}%</TableCell>
+                                        <TableCell>{currencyFormat(appointment.net_amount)}</TableCell>
+                                        <TableCell className='flex items-end space-x-2 px-2'>
 
                                             {/* EDIT */}
                                             {/* <TooltipProvider delayDuration={200}>
@@ -236,9 +233,12 @@ const AdminAppointment = () => {
                                                 }} />
                                             </CustomTooltip>
 
+                                            {/* Print Appointment */}
+                                            <AppointmentPDF appointmentId={appointment.id} onPending={(v) => setModel({ ...model, loader: v })} />
+
                                         </TableCell>
                                         <TableCell>
-                                            <span className={cn('text-white py-1 px-3 block rounded-md group-hover:hidden', appointment.status === 'approved' ? 'bg-green-500' : appointment.status === 'pending' ? 'bg-yellow-500' : 'bg-red-500')}>{appointment.status}</span>
+                                            <span className={cn('text-white py-1 px-3 block rounded-md group-hover:hidden', appointment.status === 'Approved' ? 'bg-green-500' : appointment.status === 'Pending' ? 'bg-yellow-500' : 'bg-red-500')}>{appointment.status}</span>
                                         </TableCell>
                                     </TableRow>
                                 })}

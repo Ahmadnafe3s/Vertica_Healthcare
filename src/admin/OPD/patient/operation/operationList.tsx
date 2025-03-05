@@ -133,7 +133,7 @@ const OperationList = () => {
 
         {/* with pagination */}
 
-        <div className="flex flex-col min-h-[75vh] mb-20">
+        <div className="flex flex-col min-h-[70vh] mb-20">
           <div className='flex-1'>
             <Table className="rounded-lg border">
               <TableHeader className='bg-zinc-100'>
@@ -210,7 +210,6 @@ const OperationList = () => {
           Submit={handleSubmit}
           isPending={isPending}
           operationDetails={OPERATION_DETAILS}
-          onSubmitCapture={() => alert('hello')}
           onClick={() => {
             setModel({ ...model, operationForm: false });
             SET_OPERATION_DETAILS(undefined);

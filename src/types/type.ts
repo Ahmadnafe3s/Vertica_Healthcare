@@ -1,20 +1,7 @@
 
 
 
-export interface Shift {
-    id: number;
-    staffId: number;
-    shiftStartTime: string;
-    shiftEndTime: string;
-    shiftStartDate: string;
-    shiftEndDate: string;
-    shift: string;
-    note: string;
-    staff: {
-        name: string,
-        department: string
-    }
-}
+
 
 
 // for profile
@@ -60,7 +47,7 @@ export interface Doctors {
     staff: {
         id: number,
         name: string,
-        fees: string,
+        fees: number,
         specialist: string
     }
 }
