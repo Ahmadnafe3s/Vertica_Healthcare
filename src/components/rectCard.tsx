@@ -6,11 +6,12 @@ import { Link } from 'react-router-dom'
 interface rectCardProps {
     path: string,
     name: string,
-    amount: number,
+    amount?: number,
+    visits?: number,
     children: React.ReactNode
 }
 
-const RectCard = ({ path, name, amount, children }: rectCardProps) => {
+const RectCard = ({ path, name, amount, visits, children }: rectCardProps) => {
     return (
         <div className="mx-auto w-full ">
             <Link to={{
@@ -19,7 +20,8 @@ const RectCard = ({ path, name, amount, children }: rectCardProps) => {
                 {children}
                 <span className='mr-5 inline-block text-nowrap'>
                     <p>{name}</p>
-                    <p className='font-bold'>{currencyFormat(amount)}</p>
+                    {amount && <p className='font-bold'>{currencyFormat(amount)}</p>}
+                    {visits && <p className='font-bold'>{visits}</p>}
                 </span>
             </Link>
         </div>

@@ -20,6 +20,9 @@ import { PaymentOptions } from '@/helpers/formSelectOptions'
 import Dialog from '@/components/Dialog'
 import { useDebouncedCallback } from 'use-debounce'
 import { calculateAmount } from '@/helpers/calculateAmount'
+import { useAppSelector } from '@/hooks'
+import { authSelector } from '@/features/auth/authSlice'
+import { cn } from '@/lib/utils'
 
 
 
@@ -32,7 +35,7 @@ interface AddAppointmentProps extends HTMLAttributes<HTMLDivElement> {
 
 function AddAppointment({ Submit, isPending, ...props }: AddAppointmentProps) {
 
-
+    const session = useAppSelector(authSelector)
     const [patients, setPatients] = useState<Patients[]>([])
     const [doctors, setDoctors] = useState<Doctors[]>([])
 
@@ -89,7 +92,7 @@ function AddAppointment({ Submit, isPending, ...props }: AddAppointmentProps) {
                     {/* Patient Section */}
                     <div>
                         <Controller name='patientId' control={control} render={({ field }) => {
-                            return <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(Number(value)) }}>
+                            return <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(Number(value)) }} defaultValue={'1'}>
                                 <SelectTrigger className='sm:w-[300px] w-40'>
                                     <SelectValue placeholder="Search" />
                                 </SelectTrigger>
@@ -238,11 +241,11 @@ function AddAppointment({ Submit, isPending, ...props }: AddAppointmentProps) {
 
                         {/* Status */}
 
-                        <div className="w-full flex flex-col gap-y-2">
+                        <div className={cn('w-full flex flex-col gap-y-2')}>
                             <Controller control={control} name='status' render={({ field }) => {
                                 return <>
                                     <Label>Status</Label>
-                                    <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                                    <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }} >
                                         <SelectTrigger >
                                             <SelectValue placeholder="Select" />
                                         </SelectTrigger>

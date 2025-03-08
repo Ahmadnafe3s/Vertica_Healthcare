@@ -2,14 +2,16 @@ import { authSelector } from '@/features/auth/authSlice'
 import { useAppSelector } from '@/hooks'
 import { HTMLAttributes } from 'react'
 import { Button } from './ui/button'
-import { CircleUser } from 'lucide-react';
+import { Airplay, Settings } from 'lucide-react';
 
 interface userModelProps extends HTMLAttributes<HTMLDivElement> {
     onLogout: () => void;
     onProfile: () => void;
+    onDashboard: () => void;
 }
 
-const UserModel = ({ onLogout, onProfile, ...props }: userModelProps) => {
+
+const UserModel = ({ onLogout, onProfile, onDashboard, ...props }: userModelProps) => {
 
     const session = useAppSelector(authSelector)
 
@@ -25,8 +27,18 @@ const UserModel = ({ onLogout, onProfile, ...props }: userModelProps) => {
                     </div>
                 </div>
                 <div className="h-px bg-gray-200"></div>
-                <div className="my-2 text-sm text-gray-800 cursor-pointer flex flex-col gap-y-4">
-                    <p className="flex items-center" onClick={onProfile}><CircleUser className='h-4 w-4 mr-1'/>Account</p>
+                <div className="my-2 text-sm text-gray-800 cursor-pointer flex flex-col gap-y-2">
+                    {/* Account Button */}
+                    <div className="hover:bg-slate-100 p-2 rounded-lg" onClick={onProfile}>
+                        <p className='text-sm text-slate-800 flex items-center'><Settings className='w-5 mr-1' /> Account</p>
+                    </div>
+                    {/* Separator */}
+                    <div className='h-px bg-gray-200 w-full' />
+                    <div className="hover:bg-slate-100 p-2 rounded-lg" onClick={onDashboard}>
+                        <p className='text-sm text-slate-800 flex items-center'><Airplay className='w-5 mr-1' /> Dashboard</p>
+                    </div>
+                    {/* Separator */}
+                    <div className='h-px bg-gray-200 w-full' />
                     <Button size={'sm'} variant={'destructive'} onClick={onLogout}>logout</Button>
                 </div>
             </div>

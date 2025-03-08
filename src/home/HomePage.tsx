@@ -2,6 +2,10 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { buttonVariants } from '@/components/ui/button'
 import { Star } from 'lucide-react'
 import { Fade } from 'react-awesome-reveal'
+import Lottie from 'lottie-react'
+import animationData from '../../public/hospital.json'
+import { useInView } from 'motion/react'
+import { useRef } from 'react'
 
 
 const doctors = [
@@ -13,7 +17,13 @@ const doctors = [
 
 
 
+
 const HomePage = () => {
+
+    const animationRef = useRef(null)
+    const view = useInView(animationRef)
+
+    console.log(view);
 
 
     return (
@@ -21,9 +31,9 @@ const HomePage = () => {
 
         <div >
 
-            <MaxWidthWrapper className="pt-14 md:pt-20 lg:pt-32 pb-20 lg:pb-32 grid lg:grid-cols-4">
+            <MaxWidthWrapper className="pt-14 md:pt-20 lg:pt-32 pb-20 lg:pb-32 grid lg:grid-cols-4 gap-y-5">
 
-                <div className="lg:col-span-2 flex flex-col justify-center gap-y-5" >
+                <div className="lg:col-span-2 flex flex-col justify-center space-y-5" >
 
                     <div className='space-y-5'>
                         <p className="font-bold text-4xl md:text-5xl lg:text-6xl text-gray-900 tracking-tight ">
@@ -48,8 +58,8 @@ const HomePage = () => {
                 </div>
 
                 <div className="lg:col-span-2 mx-auto flex flex-col justify-center" >
-                    <div id='hospital' className='w-72 lg:w-[500px] hospital '>
-                        <img src="/hospital-2.png" className="object-cover" />
+                    <div id='hospital' className='w-72 lg:w-[500px] hospital'>
+                        <Lottie animationData={animationData} />
                     </div>
                 </div>
 

@@ -33,7 +33,7 @@ const SignIn = () => {
 
       setPending(true)
 
-      const response = await (await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/signin`, formData))
+      const response = (await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/signin`, formData))
 
       const user = response.data.user
 

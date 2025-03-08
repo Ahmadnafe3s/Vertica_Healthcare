@@ -108,3 +108,36 @@ export interface PrintBillDetails {
         net_amount: number,
     }[]
 }
+
+
+
+
+
+// for patient section
+
+export type PatientOpdData = {
+    id: string,
+    patientId: number,
+    appointmentId: string,
+    createdAt: string,
+    updatedAt: string,
+    appointment: {
+        appointment_date: string,
+        symptom_type: string,
+        previous_medical_issue: string,
+        reference: string,
+        doctor: {
+            id: 4,
+            name: string,
+             specialist: string
+        }
+    }
+}
+
+
+//paginated list
+export type PatientOPDs = {
+    data: PatientOpdData[],
+    total_pages: number
+}
+

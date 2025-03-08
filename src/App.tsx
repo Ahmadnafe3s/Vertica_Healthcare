@@ -58,6 +58,22 @@ import CancelledAppointments from "./admin/appointment/cancelledAppointments";
 import AppointmentLayout from "./admin/appointment/appointmentLayout";
 import Medicines from "./admin/pharmacy/medicines/medicines";
 import Purchase from "./admin/pharmacy/purchaseMedicine/purchase";
+import PatientLayout from "./patient/patientLayout";
+import PatientDashboard from "./patient/dashboard/patientDashboard";
+import PatientAppointments from "./patient/appointment/patientAppointments";
+import PatientProfile from "./patient/profile/patientProfile";
+import PatientResetPassword from "./patient/profile/patientResetPassword";
+import PatientsOpdLayout from "./patient/opd/patientOpdLayout";
+import PatientOpds from "./patient/opd/opds/opds";
+import PatinetOpdDetailsLayout from "./patient/opd/details/opdDetailsLayout";
+import PatinetOpdVisitDetails from "./patient/opd/details/visitdetails/visitdetails";
+import PatientOpdMedication from "./patient/opd/details/medication/medication";
+import PatientOpdVitals from "./patient/opd/details/vitals/vitals";
+import PatientOpdTimeline from "./patient/opd/details/timeline/timeline";
+import PatientOpdOperation from "./patient/opd/details/operation/operation";
+import PatientOpdCharges from "./patient/opd/details/charges/charges";
+import PatientOpdPayments from "./patient/opd/details/payments/payments";
+import PatientPharmacyBills from "./patient/pharmacy/pharmacy";
 
 
 
@@ -82,7 +98,7 @@ function App() {
 
         <Route path="/" element={<HomePage />} />
         <Route path="signin" element={<SignIn />} />
-        <Route path="registerPatient" element={<RegisterPatient />} />
+        <Route path="registerPatient" element={<ProtectRoutes protectElement={<RegisterPatient />} />} />
 
 
         {/* routes with aside */}
@@ -144,8 +160,8 @@ function App() {
 
 
 
-          <Route path="admin/OPD" element={<OPD />}>
-            <Route path="list" element={<OPDLIST />} />
+          <Route path="admin/opd" element={<OPD />}>
+            <Route path="" element={<OPDLIST />} />
             <Route path="patient/:patientId/:opdId" element={<Patient />}>
               <Route path="visitdetails" element={<VisitDetails />} />
               <Route path="medication" element={<Medication />} />
@@ -159,7 +175,7 @@ function App() {
           </Route>
 
           <Route path="admin/pharmacy" element={<Pharmacy />} >
-            <Route path="bill" element={<Bill />} />
+            <Route path="" element={<Bill />} />
             <Route path="medicines" element={<Medicines />} />
             <Route path="purchase" element={<Purchase />} />
           </Route>
@@ -178,7 +194,38 @@ function App() {
           <Route path="admin/dutyroster" element={<DutuRoster />}>
             <Route path="rosterreport" element={<RosterReport />} />
           </Route>
+
+
+          {/* Patient Routes */}
+          <Route path="patient" element={<PatientLayout />}>
+            <Route path="dashboard" element={<PatientDashboard />} />
+            <Route path="appointment" element={<PatientAppointments />} />
+            <Route path="profile/:id" element={<PatientProfile />} />
+            <Route path="edit/:id" element={<RegisterPatient />} />
+            <Route path="resetpassword" element={<PatientResetPassword />} />
+            <Route path="pharmacy" element={<PatientPharmacyBills />} />
+            {/* opd layout */}
+            <Route path="opd" element={<PatientsOpdLayout />} >
+              <Route path="" element={<PatientOpds />} />
+              {/* details layout */}
+              <Route path="details/:opdId" element={<PatinetOpdDetailsLayout />}>
+                <Route path="" element={<PatinetOpdVisitDetails />} />
+                <Route path="medication" element={<PatientOpdMedication />} />
+                <Route path="vital" element={<PatientOpdVitals />} />
+                <Route path="timeline" element={<PatientOpdTimeline />} />
+                <Route path="operation" element={<PatientOpdOperation />} />
+                <Route path="charges" element={<PatientOpdCharges />} />
+                <Route path="payment" element={<PatientOpdPayments />} />
+                {/* <Route path="findings" element={<PatientOpdFindings />} /> */}
+              </Route>
+            </Route>
+          </Route>
+
+
+
         </Route>
+
+
 
 
         {/* error handlers */}

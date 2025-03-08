@@ -8,41 +8,77 @@ import { useForm } from 'react-hook-form'
 import { patientRegistrationSchema, DefaultValues } from '@/formSchemas/patientRegisterFormSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import { createPatient, getPatientDetails, updatePatient } from '@/patient/profile/ApiHandlers'
+import { useNavigate, useParams } from 'react-router-dom'
+import { PatientDetails } from '@/types/patient/patient'
+import { authSelector } from '@/features/auth/authSlice'
+import { useAppSelector } from '@/hooks'
 
 
 
 const RegisterPatient = () => {
 
+    // params
+    const { id } = useParams()
+    // session
+    const session = useAppSelector(authSelector)
+    // router
+    const router = useNavigate()
+
+    // loading state
     const [isPending, setPending] = useState<boolean>(false)
 
-    const patientRegistrationform = useForm<z.infer<typeof patientRegistrationSchema>>(
-        {
-            resolver: zodResolver(patientRegistrationSchema),
-            defaultValues: DefaultValues
+    const patientRegistrationform = useForm<z.infer<typeof patientRegistrationSchema>>({
+        resolver: zodResolver(patientRegistrationSchema),
+        defaultValues: DefaultValues
+    })
+
+
+    const fetchPatientDetails = async () => {
+        try {
+            if ((session?.user?.id !== +id!)) return toast.error('Unauthorized User ID')
+            const data = await getPatientDetails(+id!)
+            patientRegistrationform.reset({
+                ...data,
+                image: undefined, // Exclude or handle image properly if needed
+            });
+
+        } catch ({ message }: any) {
+            toast.error(message)
         }
-    )
+    }
 
     const onSubmit = async (formData: z.infer<typeof patientRegistrationSchema>) => {
 
         try {
-
             setPending(true)
+            let data
+            id ? (
+                data = await updatePatient(+id, formData),
+                router(`../profile/${id}`)
+            ) : (
+                data = await createPatient(formData),
+                router(`/login`)
+            )
 
-            const response = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/patient`, formData)
-
-            toast.success(response.data.message)
+            toast.success(data.message)
 
         } catch (error: any) {
             toast.error(error.response.data.message)
         }
-        finally{
+        finally {
             setPending(false)
         }
 
     }
+
+
+    useEffect(() => {
+        if (id) fetchPatientDetails()
+    }, [])
 
 
     return (

@@ -29,7 +29,7 @@ const Navbar = () => {
         setUserModel(false)
     }
 
-    
+
 
     return (
         <>
@@ -38,7 +38,7 @@ const Navbar = () => {
                     <header className="h-full flex justify-between items-center">
 
                         <Link to={{ pathname: '/' }} className="tracking-tight cursor-pointer z-[100] select-none">
-                            <span className="text-primary font-semibold">V</span>ertica 
+                            <span className="text-primary font-semibold">V</span>ertica
                             {' '}
                             <span className="text-primary font-semibold">H</span>ealtcare
                         </Link>
@@ -75,13 +75,18 @@ const Navbar = () => {
 
             </section >
 
+
+            {/* user model */}
+
             {isUserModel && <UserModel onClick={() => setUserModel(false)} onLogout={onLogout}
                 onProfile={() => {
-                    session.user?.role === 'admin' ? router(`/admin/profile/staff/${session.user.id}`)
+                    (session.user?.role === 'admin' || session.user?.role === 'doctor') ? router(`/admin/profile/staff/${session.user.id}`)
                         :
-                        alert('user not created yet')
+                        session.user?.role === "patient" ? router(`/patient/profile/${session.user.id}`) : alert('Invalid user')
                     setUserModel(false)
                 }}
+
+                onDashboard={() => { router(`${session.user?.role}/dashboard`), setUserModel(false) }}
             />}
 
         </>

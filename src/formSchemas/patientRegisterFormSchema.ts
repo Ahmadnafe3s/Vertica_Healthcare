@@ -13,10 +13,9 @@ export const patientRegistrationSchema = z.object({
         .max(25, { message: 'Guardian name must be less than 25 characters' }),
 
 
-    gender: z.enum(['male', 'female', 'other', ""], {
-        errorMap: () => ({ message: "Please select valid gender" })
-    }),
-
+    gender: z.string()
+        .min(1, { message: "Please select valid gender" })
+        .default(''),
 
     dob: z.string()
         .min(1, { message: 'Date of birth is required' })
@@ -28,16 +27,14 @@ export const patientRegistrationSchema = z.object({
     ,
 
 
-    blood_group: z.enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-", ""],
-        { errorMap: () => ({ message: 'Please select your blood group' }) }
-    ),
+    blood_group: z.string()
+        .min(1, { message: 'Please select your blood group' })
+        .default(''),
 
 
-    marital_status: z.enum(["married", "single", "widowed", "separated", "not specified", ""],
-        {
-            errorMap: () => ({ message: 'Please select marital status' })
-        }
-    ),
+    marital_status: z.string()
+        .min(1, { message: 'Please select marital status' })
+        .default(''),
 
 
     image: z.instanceof(File)
@@ -81,7 +78,7 @@ export const patientRegistrationSchema = z.object({
 
 
 export const DefaultValues = {
-    patient_name: '',
+    name: '',
     guardian_name: '',
     dob: '',
     age: '',

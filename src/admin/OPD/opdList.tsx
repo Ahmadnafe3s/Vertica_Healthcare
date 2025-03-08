@@ -1,6 +1,6 @@
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ClipboardPlus, FileText, Plus, Printer, ReceiptText, SearchX, Syringe } from 'lucide-react'
+import { ClipboardPlus, SearchX, Syringe } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { createPrescription, deletePrescription, getOPDs, getPrescriptionDetails, updatePrescription } from './opdApiHandler'
@@ -17,7 +17,6 @@ import AlertModel from '@/components/alertModel'
 import { useDebouncedCallback } from 'use-debounce'
 import { parseAsInteger, useQueryState } from 'nuqs'
 import CustomPagination from '@/components/customPagination'
-import { useReactToPrint } from 'react-to-print'
 import OpdBillPDF from './pdf/bill'
 import OpdsPdf from './pdf/opds'
 
@@ -28,8 +27,8 @@ const OPDLIST = () => {
 
   //utilities
   const opdId = useRef<string>('')
+  const patientId = useRef<number>()
   const contentRef = useRef(null)
-  const reactToPrint = useReactToPrint({ contentRef, pageStyle: 'margin : 10px' })
 
 
   // Query params
@@ -86,7 +85,7 @@ const OPDLIST = () => {
         setPrescDetails(undefined)
       )
         :
-        (data = await createPrescription(opdId.current, formData))
+        (data = await createPrescription(opdId.current, 2, formData))
       toast.success(data.message)
       fetchOPDs()
       setModel(prev => ({ ...prev, prescriptionForm: false }))
@@ -193,7 +192,7 @@ const OPDLIST = () => {
               {OPD_list.data.map((opd, i) => {
                 return <TableRow key={i}>
                   <TableCell>
-                    <Link to={`../patient/${opd.patientId}/${opd.id}/visitdetails`}
+                    <Link to={`./patient/${opd.patientId}/${opd.id}/visitdetails`}
                       className="font-medium text-blue-500 hover:text-blue-400 cursor-pointer">
                       {opd.id}
                     </Link>
@@ -226,7 +225,7 @@ const OPDLIST = () => {
                       (
                         <CustomTooltip message='Add prescription'>
                           <ClipboardPlus className='cursor-pointer text-gray-600 w-5 h-5'
-                            onClick={() => { opdId.current = opd.id; setModel(prev => ({ ...prev, prescriptionForm: true })) }}
+                            onClick={() => { opdId.current = opd.id; patientId.current = opd.patientId; setModel(prev => ({ ...prev, prescriptionForm: true })) }}
                           />
                         </CustomTooltip>
                       )

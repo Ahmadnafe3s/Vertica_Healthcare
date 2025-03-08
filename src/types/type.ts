@@ -1,9 +1,5 @@
 
 
-
-
-
-
 // for profile
 
 export interface StaffProfile {

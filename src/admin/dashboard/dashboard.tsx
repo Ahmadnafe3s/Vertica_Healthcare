@@ -8,8 +8,8 @@ import { Area, AreaChart, CartesianGrid, Pie, PieChart, XAxis } from 'recharts'
 import { useEffect, useState } from 'react'
 import { AdminDash_MM_IncExp, AdminDashIncExp, AdminDashVisitors } from '@/types/dashboard/adminDashboard'
 import { getAdminDash_MM_IncExp, getAdminDashIncExp, getAdminDashVisitors } from './apiHandler'
-import { Input } from '@/components/ui/input'
-import { useDebouncedCallback } from 'use-debounce'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Default_MM_Inc_Exp_Data } from './defaultChartdata'
 
 
 
@@ -39,14 +39,14 @@ const AdminDashboard = () => {
 
 
 
-    const onSearch = useDebouncedCallback(async (year: string) => {
+    const onYearChnage = async (value: number) => {
         try {
-            const data = await getAdminDash_MM_IncExp(year)
+            const data = await getAdminDash_MM_IncExp(value)
             setMonthlyIncExp(data)
         } catch ({ message }: any) {
             toast.error(message)
         }
-    }, 600)
+    }
 
 
 
@@ -103,12 +103,24 @@ const AdminDashboard = () => {
                     <div className="lg:col-span-2 w-full">
                         <Card  >
                             <CardHeader>
+
                                 <div className="flex justify-between items-center mb-2">
                                     <p className='text-gray-500'>Search</p>
-                                    <Input type="number" className='w-40' placeholder='Enter year'
-                                        defaultValue={new Date().getFullYear()}
-                                        onChange={(e) => { onSearch(e.target.value) }} />
+                                    <div className="w-40">
+                                        <Select onValueChange={(v) => onYearChnage(Number(v))}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value={String(new Date().getFullYear())}>{new Date().getFullYear()}</SelectItem>
+                                                <SelectItem value={String(new Date().getFullYear() - 1)}>{new Date().getFullYear() - 1}</SelectItem>
+                                                <SelectItem value={String(new Date().getFullYear() - 2)}>{new Date().getFullYear() - 2}</SelectItem>
+                                                <SelectItem value={String(new Date().getFullYear() - 3)}>{new Date().getFullYear() - 3}</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
                                 </div>
+
                                 <CardTitle>Monthly Income & Expense</CardTitle>
                                 <CardDescription>
                                     Showing total Income & Expenses for the 12 months
@@ -118,7 +130,7 @@ const AdminDashboard = () => {
                                 <ChartContainer config={incomeExpenseConfig}>
                                     <AreaChart
                                         accessibilityLayer
-                                        data={MonthlyIncExp}
+                                        data={MonthlyIncExp.length > 1 ? MonthlyIncExp : Default_MM_Inc_Exp_Data}
                                         margin={{
                                             left: 12,
                                             right: 12,

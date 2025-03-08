@@ -12,7 +12,7 @@ export const getAdminDashIncExp = async (): Promise<AdminDashIncExp> => {
     }
 }
 
-export const getAdminDash_MM_IncExp = async (year?: string): Promise<AdminDash_MM_IncExp[]> => {
+export const getAdminDash_MM_IncExp = async (year?: number): Promise<AdminDash_MM_IncExp[]> => {
     try {
         const params = { year }
         const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/dashboard/admin/monthly`, { params })

@@ -412,9 +412,9 @@ export const deletePayment = async (id: string) => {
 // API handlers for prescription section
 
 
-export const createPrescription = async (opdId: string, formData: z.infer<typeof createPrescriptionFormSchema>) => {
+export const createPrescription = async (opdId: string, patientId: number, formData: z.infer<typeof createPrescriptionFormSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/prescription/${opdId}`, formData)
+        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/prescription/${opdId}/${patientId}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
