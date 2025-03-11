@@ -43,7 +43,7 @@ const Staffprofile = () => {
             }
         })() // IIFE
 
-    }, [])
+    }, [id])
 
 
 
@@ -58,11 +58,20 @@ const Staffprofile = () => {
                     </div>
                     <div className='space-y-2'>
                         <h1 className='text-gray-900 text-2xl font-bold'>{profile?.name}</h1>
-                        {session.user?.role === 'admin' && <div className='flex gap-x-2'>
-                            <Key className='text-green-600 w-4 h-4 cursor-pointer active:scale-95' onClick={() => { router(`/admin/profile/resetpassword/${profile?.id}`) }} />
-                            <Pencil className='text-yellow-600 w-4 h-4 cursor-pointer active:scale-95' onClick={() => { router(`/admin/profile/edit/${profile?.id}`) }} />
-                            <Trash className='text-red-600 w-4 h-4 cursor-pointer active:scale-95' onClick={() => setAlert(true)} />
-                        </div>}
+                        
+                        {/* Profile Actions */}
+                        <div className='flex gap-x-2'>
+                            {(session.user?.role === 'admin' || session.user?.id === profile?.id) &&
+                                <Key className='text-green-600 w-4 h-4 cursor-pointer active:scale-95' onClick={() => { router(`/admin/profile/resetpassword/${profile?.id}`) }} />
+                            }
+                            {session.user?.role === 'admin' &&
+                                <>
+                                    <Pencil className='text-yellow-600 w-4 h-4 cursor-pointer active:scale-95' onClick={() => { router(`/admin/profile/edit/${profile?.id}`) }} />
+                                    <Trash className='text-red-600 w-4 h-4 cursor-pointer active:scale-95' onClick={() => setAlert(true)} />
+                                </>
+                            }
+                        </div>
+
                     </div>
                 </div>
 

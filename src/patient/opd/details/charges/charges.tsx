@@ -12,8 +12,8 @@ import LoaderModel from "@/components/loader"
 import { ChargeDetailsType, ChargeListType } from "@/types/opd_section/charges"
 import CustomPagination from "@/components/customPagination"
 import { parseAsInteger, useQueryState } from "nuqs"
-import ChargeDetailsModel from "@/admin/OPD/patient/charges/chargeDetailsModel"
 import { getChargeDetails, getCharges } from "@/admin/OPD/opdApiHandler"
+import ChargeDetailsModel from "@/admin/OPD/details/charges/chargeDetailsModel"
 
 
 

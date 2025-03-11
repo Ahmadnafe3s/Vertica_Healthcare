@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom"
 
 
-const OPD = () => {
+const AdminOPDlayout = () => {
 
   return (
     <Outlet></Outlet>
@@ -9,4 +9,4 @@ const OPD = () => {
   
 }
 
-export default OPD
+export default AdminOPDlayout

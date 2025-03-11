@@ -3,7 +3,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { Star } from 'lucide-react'
 import { Fade } from 'react-awesome-reveal'
 import Lottie from 'lottie-react'
-import animationData from '../../public/hospital.json'
+import animationData from '../assets/animation/hospital.json'
 import { useInView } from 'motion/react'
 import { useRef } from 'react'
 

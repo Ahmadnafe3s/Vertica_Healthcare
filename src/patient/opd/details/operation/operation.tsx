@@ -8,8 +8,8 @@ import { operationDetailsType, PaginatedOperations } from '@/types/opd_section/o
 import CustomPagination from '@/components/customPagination';
 import { Separator } from '@/components/ui/separator';
 import { useQueryState, parseAsInteger } from 'nuqs';
-import OperationDetailsModel from '@/admin/OPD/patient/operation/operationDetails';
 import { getOperation_Details, getOperations } from '@/admin/OPD/opdApiHandler';
+import OperationDetailsModel from '@/admin/OPD/details/operation/operationDetails';
 
 
 

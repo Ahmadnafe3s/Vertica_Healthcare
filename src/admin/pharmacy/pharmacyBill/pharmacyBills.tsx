@@ -2,7 +2,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { currencyFormat } from '@/lib/utils'
-import { FileText, ListMinus, Plus, Printer, Trash } from 'lucide-react'
+import { ListMinus, Plus, Trash } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import CreatePharmacyBill from './createPharmacyBill'
 import toast from 'react-hot-toast'
@@ -137,7 +137,7 @@ const Bill = () => {
                             onClick={() => setModel(prev => ({ ...prev, createPharmacyBill: true }))}
                         > <Plus /> Generate Bill</Button>
 
-                        <Link to={'../medicines'} className={buttonVariants({
+                        <Link to={'medicines'} className={buttonVariants({
                             variant: 'default',
                             size: 'sm',
                             className: 'flex gap-x-1'

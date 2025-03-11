@@ -5,6 +5,8 @@ import { paymentData } from "./payment"
 import { timeline } from "./timeline"
 import { VitalType } from "./vitals"
 
+
+
 interface opdData {  // it will be Array of objects
     id: string,
     patientId: number,
@@ -115,7 +117,7 @@ export interface PrintBillDetails {
 
 // for patient section
 
-export type PatientOpdData = {
+type PatientOpdData = {
     id: string,
     patientId: number,
     appointmentId: string,
@@ -129,7 +131,7 @@ export type PatientOpdData = {
         doctor: {
             id: 4,
             name: string,
-             specialist: string
+            specialist: string
         }
     }
 }
@@ -141,3 +143,34 @@ export type PatientOPDs = {
     total_pages: number
 }
 
+
+
+type DoctorOpdData = {
+    id: string,
+    patientId: number,
+    appointmentId: string,
+    createdAt: string,
+    updatedAt: string,
+    appointment: {
+        appointment_date: string,
+        symptom_type: string,
+        previous_medical_issue: string,
+        reference: string,
+        patient: {
+            id: number,
+            name: string,
+            gender: string,
+        }
+    },
+    prescriptions: {
+        id: number
+    }
+}
+
+
+
+//paginated list
+export type DoctorOPDs = {
+    data: DoctorOpdData[],
+    total_pages: number
+}

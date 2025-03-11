@@ -10,10 +10,14 @@ import { useDebouncedCallback } from 'use-debounce'
 import { useQueryState, parseAsInteger } from 'nuqs'
 import { staffs } from '@/types/staff/staff'
 import CustomPagination from '@/components/customPagination'
+import { useAppSelector } from '@/hooks'
+import { authSelector } from '@/features/auth/authSlice'
 
 
 
 const Staff = () => {
+
+  const { user } = useAppSelector(authSelector)
 
   // query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
@@ -34,7 +38,7 @@ const Staff = () => {
   // fetching staffs list
   const fetchStaffs = async () => {
     try {
-      const data = await getStaffs({ page, limit: 1, search: search! })
+      const data = await getStaffs({ page, limit: 10, search: search! })
       setStaffs(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -56,14 +60,19 @@ const Staff = () => {
           <h1 className='font-semibold tracking-tight'>Staff List</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
-            <Link to={'../create'} className={buttonVariants({   // on step back
-              variant: 'default',
-              size: 'sm',
-              className: 'flex gap-x-1'
-            })}>
-              <Plus />
-              Add Staff
-            </Link>
+            {/* visible for only admin */}
+
+            {user?.role === 'admin' && (
+              <Link to={'../create'} className={buttonVariants({   // on step back
+                variant: 'default',
+                size: 'sm',
+                className: 'flex gap-x-1'
+              })}>
+                <Plus />
+                Add Staff
+              </Link>
+            )}
+
           </div>
         </div>
 

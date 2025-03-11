@@ -3,7 +3,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Banknote, BriefcaseMedical, Clock, HeartPulse, Menu, PocketKnife, ReceiptText, SquareStack } from 'lucide-react'
 import { Link, Outlet } from 'react-router-dom'
 
-const Patient = () => {
+const OpdDetailsLayout = () => {
 
 
     return (
@@ -15,7 +15,7 @@ const Patient = () => {
 
                         {/* we provide relative path like this */}
 
-                        <Link to={`visitdetails`} className={buttonVariants({
+                        <Link to={``} className={buttonVariants({
                             variant: 'outline'
                         })}>
                             <Menu /> Overview
@@ -75,6 +75,6 @@ const Patient = () => {
     )
 }
 
-export default Patient
+export default OpdDetailsLayout
 
 // NOTE : IT IS PARENT COMPONENT FOR ALL COMPONENTS INSIDE THIS DIRECTORY

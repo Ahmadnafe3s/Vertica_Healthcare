@@ -15,17 +15,16 @@ import CustomPagination from '@/components/customPagination'
 import { useQueryState, parseAsInteger } from 'nuqs'
 import { createAppointment, getAppointmentDetails } from '@/admin/appointment/appointmentAPIhandler'
 import AppointmentDetailsModel from '@/admin/appointment/appointmentDetailsModel'
-import { getPatientAppointments } from './ApiHandlers'
 import { useAppSelector } from '@/hooks'
 import { authSelector } from '@/features/auth/authSlice'
 import AppointmentPDF from '@/admin/appointment/generatePDF/AppointmnetPDF'
-import CreatePatientAppointment from './createPatientAppointment'
 import AppointmentListPDF from '@/admin/appointment/generatePDF/AppointmnetListPDF'
+import { getDoctorAppointments } from './APIhandler'
 
 
 
 
-const PatientAppointments = () => {
+const DoctorAppointments = () => {
 
     // const itemID = useRef<string>()
 
@@ -57,7 +56,7 @@ const PatientAppointments = () => {
     //fetching appointments list
     const getAppointments = async () => {
         try {
-            const data = await getPatientAppointments({
+            const data = await getDoctorAppointments({
                 page,
                 limit: 10,
                 search: search!, // if search will have value then data will get accordingly
@@ -134,12 +133,12 @@ const PatientAppointments = () => {
                 <div className='flex flex-row gap-y-2 py-3 justify-between border-b border-gray-200'>
                     <h1 className='font-semibold tracking-tight'>Appointments</h1>
 
-                    <div>
+                    {/* <div>
                         <Button type='button' size={'sm'}
                             onClick={() => { setModel((prev) => ({ ...prev, addAppointmentForm: true })) }} >
                             <Plus /> Appointment
                         </Button>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* search bar */}
@@ -163,8 +162,9 @@ const PatientAppointments = () => {
                                 <TableRow>
                                     <TableHead>Appointment No</TableHead>
                                     <TableHead>Appointment Date</TableHead>
+                                    <TableHead>Pateint</TableHead>
+                                    <TableHead>Gender</TableHead>
                                     <TableHead>Shift</TableHead>
-                                    <TableHead>Doctor</TableHead>
                                     <TableHead>Priority</TableHead>
                                     <TableHead>Alternative Address</TableHead>
                                     <TableHead>Fees {currencySymbol()}</TableHead>
@@ -191,8 +191,9 @@ const PatientAppointments = () => {
                                             {appointment.id}
                                         </TableCell>
                                         <TableCell>{appointment.appointment_date}</TableCell>
+                                        <TableCell>{appointment.patient.name}</TableCell>
+                                        <TableCell>{appointment.patient.gender}</TableCell>
                                         <TableCell>{appointment.shift}</TableCell>
-                                        <TableCell>{appointment.doctor.name}</TableCell>
                                         <TableCell>{appointment.appointment_priority}</TableCell>
                                         <TableCell>{appointment.alternative_address}</TableCell>
                                         <TableCell>{currencyFormat(+appointment.fees)}</TableCell>
@@ -254,7 +255,7 @@ const PatientAppointments = () => {
 
             {/* appointment form model */}
 
-            {
+            {/* {
                 model.addAppointmentForm && <CreatePatientAppointment
                     Submit={handleSubmit}
                     isPending={isPending}
@@ -262,7 +263,7 @@ const PatientAppointments = () => {
                         setModel({ ...model, addAppointmentForm: false })
                     }}
                 />
-            }
+            } */}
 
 
 
@@ -295,4 +296,6 @@ const PatientAppointments = () => {
     )
 }
 
-export default PatientAppointments
+
+
+export default DoctorAppointments

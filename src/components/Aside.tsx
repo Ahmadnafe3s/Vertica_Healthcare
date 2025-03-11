@@ -46,89 +46,104 @@ const Aside = () => {
                             })
                         }><HeartPulse className='h-4 w-4' /> OPD - Out Patient</Link></li>
 
-                        <li><Link to={{ pathname: `/${session.user?.role}/pharmacy` }} className={
-                            buttonVariants({
-                                variant: 'ghost',
-                                className: 'flex text-sm items-center'
-                            })
-                        }><BriefcaseMedical className='h-4 w-4' />Pharmacy</Link></li>
+
+                        {/* admin and patient roles */}
+                        
+                        {['admin', 'patient'].includes(session.user?.role!) &&
+
+                            <li><Link to={{ pathname: `/${session.user?.role}/pharmacy` }} className={
+                                buttonVariants({
+                                    variant: 'ghost',
+                                    className: 'flex text-sm items-center'
+                                })
+                            }><BriefcaseMedical className='h-4 w-4' />Pharmacy</Link></li>
+                        }
 
 
                         {/* only these role can see this */}
 
                         {['admin', 'doctor'].includes(session.user?.role!) &&
-                            <>
-                                <li><Link to={{ pathname: '/admin/humanresource/staff' }} className={
-                                    buttonVariants({
-                                        variant: 'ghost',
-                                        className: 'flex text-sm items-center'
-                                    })
-                                }><Network className='h-4 w-4' />Human Resource</Link></li>
+                            <li><Link to={{ pathname: '/admin/humanresource/staff' }} className={
+                                buttonVariants({
+                                    variant: 'ghost',
+                                    className: 'flex text-sm items-center'
+                                })
+                            }><Network className='h-4 w-4' />Human Resource</Link></li>
+                        }
 
+
+
+
+                        {/* Tree View Links setup links */}
+
+                        {session.user?.role === 'admin' &&
+                            <>
                                 <li><Link to={{ pathname: '/admin/dutyroster/rosterreport' }} className={
                                     buttonVariants({
                                         variant: 'ghost',
                                         className: 'flex text-sm items-center'
                                     })
                                 }><Watch className='h-4 w-4' />Duty Roster</Link></li>
+
+                                <li>
+                                    <Accordion type="single" collapsible >
+                                        <AccordionItem value="item-1" className='border-none'>
+
+                                            <AccordionTrigger className={buttonVariants({
+                                                variant: 'ghost',
+                                                className: 'justify-between items-center'
+                                            })}>
+                                                <div className='flex gap-2'><Settings className='h-4 w-4' />  Setup</div>
+                                            </AccordionTrigger>
+
+                                            {/* Links */}
+
+                                            <AccordionContent className='py-1'>
+                                                <div className="pl-5">
+                                                    <Link to={{ pathname: '/admin/setup/charges' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                        <ChevronRight className='h-4 w-4' />Hospital Charges</Link>
+                                                </div>
+                                            </AccordionContent>
+
+                                            <AccordionContent className='py-1'>
+                                                <div className="pl-5">
+                                                    <Link to={{ pathname: '/admin/setup/operation' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                        <ChevronRight className='h-4 w-4' />Operation</Link>
+                                                </div>
+                                            </AccordionContent>
+
+                                            <AccordionContent className='py-1'>
+                                                <div className="pl-5">
+                                                    <Link to={{ pathname: '/admin/setup/finding' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                        <ChevronRight className='h-4 w-4' />Findings</Link>
+                                                </div>
+                                            </AccordionContent>
+
+                                            <AccordionContent className='py-1'>
+                                                <div className="pl-5">
+                                                    <Link to={{ pathname: '/admin/setup/pharmacy' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                        <ChevronRight className='h-4 w-4' />Pharmacy</Link>
+                                                </div>
+                                            </AccordionContent>
+
+                                            <AccordionContent className='py-1'>
+                                                <div className="pl-5">
+                                                    <Link to={{ pathname: '/admin/setup/vital' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                        <ChevronRight className='h-4 w-4' />Vital</Link>
+                                                </div>
+                                            </AccordionContent>
+
+                                            <AccordionContent className='py-1'>
+                                                <div className="pl-5">
+                                                    <Link to={{ pathname: '/admin/setup/event' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                        <ChevronRight className='h-4 w-4' />Calendar</Link>
+                                                </div>
+                                            </AccordionContent>
+
+                                        </AccordionItem>
+                                    </Accordion>
+                                </li>
                             </>
-                        }
-
-
-                        {/* Tree View Links setup links */}
-
-                        {session.user?.role === 'admin' &&
-                            <li>
-                                <Accordion type="single" collapsible >
-                                    <AccordionItem value="item-1" className='border-none'>
-
-                                        <AccordionTrigger className={buttonVariants({
-                                            variant: 'ghost',
-                                            className: 'justify-between items-center'
-                                        })}>
-                                            <div className='flex gap-2'><Settings className='h-4 w-4' />  Setup</div>
-                                        </AccordionTrigger>
-
-                                        {/* Links */}
-
-                                        <AccordionContent className='py-1'>
-                                            <div className="pl-5">
-                                                <Link to={{ pathname: '/admin/setup/charges' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                    <ChevronRight className='h-4 w-4' />Hospital Charges</Link>
-                                            </div>
-                                        </AccordionContent>
-
-                                        <AccordionContent className='py-1'>
-                                            <div className="pl-5">
-                                                <Link to={{ pathname: '/admin/setup/operation' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                    <ChevronRight className='h-4 w-4' />Operation</Link>
-                                            </div>
-                                        </AccordionContent>
-
-                                        <AccordionContent className='py-1'>
-                                            <div className="pl-5">
-                                                <Link to={{ pathname: '/admin/setup/finding' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                    <ChevronRight className='h-4 w-4' />Findings</Link>
-                                            </div>
-                                        </AccordionContent>
-
-                                        <AccordionContent className='py-1'>
-                                            <div className="pl-5">
-                                                <Link to={{ pathname: '/admin/setup/pharmacy' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                    <ChevronRight className='h-4 w-4' />Pharmacy</Link>
-                                            </div>
-                                        </AccordionContent>
-
-                                        <AccordionContent className='py-1'>
-                                            <div className="pl-5">
-                                                <Link to={{ pathname: '/admin/setup/vital' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                    <ChevronRight className='h-4 w-4' />Vital</Link>
-                                            </div>
-                                        </AccordionContent>
-
-                                    </AccordionItem>
-                                </Accordion>
-                            </li>
                         }
 
                     </ul>

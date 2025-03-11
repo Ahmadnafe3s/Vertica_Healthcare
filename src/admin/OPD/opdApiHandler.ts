@@ -27,18 +27,6 @@ export const getOPDs = async (params: { search?: string, page?: number, limit?: 
 }
 
 
-// can filter list by date
-export const getOPDlistBYpatient = async (patientId: number, date?: string) => {
-    try {
-        const params = { date }
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd/patient/${patientId}`, { params })
-        return res.data
-    } catch (error: any) {
-        throw new Error(error.response?.data?.message)
-    }
-}
-
-
 export const getOPD_Details = async (opdId: string): Promise<opdDetails> => {
 
     try {
