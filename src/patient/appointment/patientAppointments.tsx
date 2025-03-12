@@ -13,9 +13,8 @@ import { z } from 'zod'
 import { useDebouncedCallback } from 'use-debounce'
 import CustomPagination from '@/components/customPagination'
 import { useQueryState, parseAsInteger } from 'nuqs'
-import { createAppointment, getAppointmentDetails } from '@/admin/appointment/appointmentAPIhandler'
+import { createAppointment, fetchAppointments, getAppointmentDetails } from '@/admin/appointment/appointmentAPIhandler'
 import AppointmentDetailsModel from '@/admin/appointment/appointmentDetailsModel'
-import { getPatientAppointments } from './ApiHandlers'
 import { useAppSelector } from '@/hooks'
 import { authSelector } from '@/features/auth/authSlice'
 import AppointmentPDF from '@/admin/appointment/generatePDF/AppointmnetPDF'
@@ -26,8 +25,6 @@ import AppointmentListPDF from '@/admin/appointment/generatePDF/AppointmnetListP
 
 
 const PatientAppointments = () => {
-
-    // const itemID = useRef<string>()
 
     // user session
     const session = useAppSelector(authSelector)
@@ -53,15 +50,14 @@ const PatientAppointments = () => {
     const [AppointmentDetails, setAppointmentDetails] = useState<AppointmentDetails | undefined>(undefined)
 
 
-
     //fetching appointments list
     const getAppointments = async () => {
         try {
-            const data = await getPatientAppointments({
+            const data = await fetchAppointments({
                 page,
                 limit: 10,
                 search: search!, // if search will have value then data will get accordingly
-            }, Number(session.user?.id))
+            })
             setAppointments(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -87,21 +83,6 @@ const PatientAppointments = () => {
         value ? (setSearch(value)) : (setSearch(null))
         setPage(1) // always should execute
     }, 400)
-
-
-    // const onDelete = async () => {
-    //     try {
-    //         setPending(true)
-    //         const data = await deleteAppointment(itemID.current!)
-    //         toast.success(data.message)
-    //         getAppointments()
-    //     } catch ({ message }: any) {
-    //         toast.error(message)
-    //     } finally {
-    //         setPending(false)
-    //         setModel((rest) => ({ ...rest, alert: false }))
-    //     }
-    // }
 
 
     // performing only insert

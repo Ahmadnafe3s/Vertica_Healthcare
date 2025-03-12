@@ -1,18 +1,15 @@
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ScrollText, SearchX } from 'lucide-react'
+import { SearchX } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { useDebouncedCallback } from 'use-debounce'
 import { parseAsInteger, useQueryState } from 'nuqs'
 import CustomPagination from '@/components/customPagination'
-import { PatientOPDs } from '@/types/opd_section/opd'
-import { getPatientOpds } from '../ApiHandlers'
-import { useAppSelector } from '@/hooks'
-import { authSelector } from '@/features/auth/authSlice'
-import { Button } from '@/components/ui/button'
+import { OPDs } from '@/types/opd_section/opd'
 import PrintPatientOpds from './print/print'
+import { getOPDs } from '@/admin/OPD/opdApiHandler'
 
 
 
@@ -20,22 +17,19 @@ import PrintPatientOpds from './print/print'
 
 const PatientOpds = () => {
 
-  // session
-  const session = useAppSelector(authSelector)
-
   // Query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [search, setSearch] = useQueryState('search')
 
 
   // API states
-  const [opds, setOpds] = useState<PatientOPDs>({ data: [], total_pages: 0 })
+  const [opds, setOpds] = useState<OPDs>({ data: [], total_pages: 0 })
 
 
   // fetching opd Details
   const fetchOPDs = async () => {
     try {
-      const data = await getPatientOpds({ page, limit: 1, search: search! }, Number(session.user?.id))
+      const data = await getOPDs({ page, limit: 10, search: search! })
       setOpds(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -113,8 +107,8 @@ const PatientOpds = () => {
                     </Link>
                   </TableCell>
                   <TableCell>{opd.appointment.appointment_date}</TableCell>
-                  <TableCell>{opd.appointment.doctor.name}</TableCell>
-                  <TableCell>{opd.appointment.doctor.specialist}</TableCell>
+                  <TableCell>{opd.doctor.name}</TableCell>
+                  <TableCell>{opd.doctor.specialist}</TableCell>
                   <TableCell>{opd.appointment.reference}</TableCell>
                   <TableCell>{opd.appointment.symptom_type}</TableCell>
                   <TableCell>{opd.appointment.previous_medical_issue}</TableCell>

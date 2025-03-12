@@ -40,11 +40,11 @@ const AdminRoutes = () => {
             {/* Dashboard */}
             <Route
                 path="dashboard"
-                element={<ProtectRoutes requiredRole="admin" protectElement={<AdminDashboard />} />}
+                element={<ProtectRoutes requiredRole={["admin"]} protectElement={<AdminDashboard />} />}
             />
 
             {/* Appoinment routes */}
-            <Route path="appointment" element={<AppointmentLayout />}>
+            <Route path="appointment" element={<ProtectRoutes requiredRole={["admin"]} protectElement={<AppointmentLayout />} />}>
                 <Route path="" element={<AdminAppointment />} />
                 <Route path="queue" element={<QueueAppointment />} />
                 <Route path="cancelled" element={<CancelledAppointments />} />
@@ -52,8 +52,8 @@ const AdminRoutes = () => {
 
             {/* OPD Routes */}
             <Route path="opd" element={<AdminOPDlayout />}>
-                <Route path="" element={<OPDLIST />} />
-                <Route path="patient/:patientId/:opdId" element={<OpdDetailsLayout />}>
+                <Route path="" element={<ProtectRoutes requiredRole={["admin"]} protectElement={<OPDLIST />} />} />
+                <Route path="patient/:patientId/:opdId" element={<ProtectRoutes requiredRole={["admin", "doctor"]} protectElement={<OpdDetailsLayout />} />}>
                     <Route path="" element={<VisitDetails />} />
                     <Route path="medication" element={<Medication />} />
                     <Route path="vital" element={<Vital />} />
@@ -66,7 +66,7 @@ const AdminRoutes = () => {
             </Route>
 
             {/* Pharmacy Routes */}
-            <Route path="pharmacy" element={<Pharmacy />} >
+            <Route path="pharmacy" element={<ProtectRoutes requiredRole={["admin", "pharmacist"]} protectElement={<Pharmacy />} />} >
                 <Route path="" element={<Bill />} />
                 <Route path="medicines" element={<Medicines />} />
                 <Route path="purchase" element={<Purchase />} />
@@ -74,19 +74,19 @@ const AdminRoutes = () => {
 
             {/* HR Routes */}
             <Route path="humanresource" element={<HumanResource />} >
-                <Route path="staff" element={<Staff />} />
-                <Route path="create" element={<CreateStaff />} />
+                <Route path="staff" element={<ProtectRoutes requiredRole={["admin", "doctor", "pharmacist"]} protectElement={<Staff />} />} />
+                <Route path="create" element={<ProtectRoutes requiredRole={["admin"]} protectElement={<CreateStaff />} />} />
             </Route>
 
             {/* Profile Routes */}
-            <Route path="profile" element={<HumanResource />} >
+            <Route path="profile" element={<ProtectRoutes requiredRole={["admin", "doctor", "pharmacist"]} protectElement={<HumanResource />} />} >
                 <Route path="staff/:id" element={<Staffprofile />} />
-                <Route path="edit/:id" element={<CreateStaff />} />
+                <Route path="edit/:id" element={<ProtectRoutes requiredRole={["admin"]} protectElement={<CreateStaff />} />} />
                 <Route path="resetpassword/:id" element={<ResetPassword />} />
             </Route>
 
             {/* Duty Roster Routes */}
-            <Route path="dutyroster" element={<DutuRoster />}>
+            <Route path="dutyroster" element={<ProtectRoutes requiredRole={["admin"]} protectElement={<DutuRoster />} />}>
                 <Route path="rosterreport" element={<RosterReport />} />
             </Route>
 

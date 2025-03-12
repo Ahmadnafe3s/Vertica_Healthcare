@@ -4,7 +4,7 @@ import { Route } from 'react-router-dom'
 
 const SetupVitalRoutes = () => {
     return (
-        <Route path="admin/setup/vital" element={<ProtectRoutes requiredRole="admin" protectElement={<SetupVitals />} />} />
+        <Route path="admin/setup/vital" element={<ProtectRoutes requiredRole={['admin']} protectElement={<SetupVitals />} />} />
     )
 }
 

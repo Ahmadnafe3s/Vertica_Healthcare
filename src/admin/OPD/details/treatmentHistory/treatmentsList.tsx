@@ -4,10 +4,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Link, useParams } from "react-router-dom"
-import { OPDs, PatientOPDs } from "@/types/opd_section/opd"
-import { getPatientOpds } from "@/patient/opd/ApiHandlers"
+import { OPDs } from "@/types/opd_section/opd"
 import { useQueryState, parseAsInteger } from "nuqs"
 import CustomPagination from "@/components/customPagination"
+import { getOPDs, getTreatmentHistory } from "../../opdApiHandler"
 
 
 const TreatmentsList = () => {
@@ -19,7 +19,7 @@ const TreatmentsList = () => {
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [search, setSearch] = useQueryState('search')
 
-  const [OPD_LIST, SET_OPD_LIST] = useState<PatientOPDs>({ data: [], total_pages: 0 })
+  const [OPD_LIST, SET_OPD_LIST] = useState<OPDs>({ data: [], total_pages: 0 })
 
 
   async function onSearch(date: string) {
@@ -29,7 +29,7 @@ const TreatmentsList = () => {
 
   const fetchOPDs = async () => {
     try {
-      const data = await getPatientOpds({ page, limit: 10, search: search! }, Number(patientId))
+      const data = await getTreatmentHistory({ page, limit: 10, date: search! }, +patientId!)
       SET_OPD_LIST(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -72,7 +72,7 @@ const TreatmentsList = () => {
               {OPD_LIST?.data.map((opd, i) => {
                 return <TableRow key={i}>
                   <TableCell>
-                    <Link className="text-blue-500 hover:text-blue-400 font-semibold" to={{ pathname: `/admin/OPD/patient/${opd.patientId}/${opd.id}/visitdetails` }}>{opd.id}</Link>
+                    <Link className="text-blue-500 hover:text-blue-400 font-semibold" to={{ pathname: `/admin/OPD/patient/${opd.patientId}/${opd.id}` }}>{opd.id}</Link>
                   </TableCell>
                   <TableCell>{opd.appointment.appointment_date}</TableCell>
                   <TableCell>{opd.appointment.doctor.name}</TableCell>

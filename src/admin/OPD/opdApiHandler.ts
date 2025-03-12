@@ -1,3 +1,4 @@
+import AxiosClient from "@/api/apiClient"
 import { operationFormSchema } from "@/formSchemas/addOperationFormSchema"
 import { chargeFormSchema } from "@/formSchemas/chargeFormSchema"
 import { createPrescriptionFormSchema } from "@/formSchemas/createPrescriptionFormSchema"
@@ -17,9 +18,9 @@ import axios from "axios"
 import { z } from "zod"
 
 
-export const getOPDs = async (params: { search?: string, page?: number, limit?: number }): Promise<OPDs> => {
+export const getOPDs = async (params: { search?: string, page?: number, limit?: number, patientId?: number }): Promise<OPDs> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd`, { params })
+        const res = await AxiosClient.get(`/api/opd`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -30,9 +31,8 @@ export const getOPDs = async (params: { search?: string, page?: number, limit?: 
 export const getOPD_Details = async (opdId: string): Promise<opdDetails> => {
 
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd/${opdId}`)
+        const res = await AxiosClient.get(`/api/opd/${opdId}`)
         return res.data
-
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
     }
@@ -41,7 +41,17 @@ export const getOPD_Details = async (opdId: string): Promise<opdDetails> => {
 
 export const getPrintBillDetails = async (opdId: string) => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/opd/printbill/${opdId}`)
+        const res = await AxiosClient.get(`/api/opd/printbill/${opdId}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+export const getTreatmentHistory = async (params: { page?: number, limit?: number, date?: string }, patientId: number): Promise<OPDs> => {
+    try {
+        const res = await AxiosClient.get(`/api/opd/history/${patientId}`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -53,7 +63,7 @@ export const getPrintBillDetails = async (opdId: string) => {
 
 export const createMedication = async (opdId: string, formData: z.infer<typeof medicationFormSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/medication/${opdId}`, formData)
+        const res = await AxiosClient.post(`/api/medication/${opdId}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -65,7 +75,7 @@ export const createMedication = async (opdId: string, formData: z.infer<typeof m
 export const getMedications = async (params: { opdId: string, date?: string, page?: number, limit?: number }): Promise<opdMedications> => {
 
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/medication`, { params })
+        const res = await AxiosClient.get(`${import.meta.env.VITE_APP_API_URL}/api/medication`, { params })
         return res.data
 
     } catch (error: any) {
@@ -77,7 +87,7 @@ export const getMedications = async (params: { opdId: string, date?: string, pag
 
 export const deleteMedication = async (id: number) => {
     try {
-        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/medication/${id}`)
+        const res = await AxiosClient.delete(`/api/medication/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -87,7 +97,7 @@ export const deleteMedication = async (id: number) => {
 
 export const getMedicationDetails = async (id: number) => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/medication/${id}`)
+        const res = await AxiosClient.get(`/api/medication/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -97,7 +107,7 @@ export const getMedicationDetails = async (id: number) => {
 
 export const updateMedication = async (id: number, formData: z.infer<typeof medicationFormSchema>) => {
     try {
-        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/medication/${id}`, formData)
+        const res = await AxiosClient.put(`/api/medication/${id}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

@@ -18,3 +18,14 @@ export type AdminDashVisitors = {
     "visitors": number,
     "fill": string,
 }
+
+
+export type AdminDashAppmtReport = {
+    totalAppmts: number,
+    status: {
+        status: string,
+        count: number,
+        fill: string,
+    }[]
+
+}

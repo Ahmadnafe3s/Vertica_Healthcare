@@ -1,25 +1,20 @@
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { cn, currencyFormat } from '@/lib/utils'
-import { Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { currencySymbol } from '@/helpers/currencySymbol'
 import { Appointment, AppointmentDetails } from '@/types/appointment/appointment'
 import LoaderModel from '@/components/loader'
-import { appointmentFormSchema } from '@/formSchemas/AppointmentFormSchema'
-import { z } from 'zod'
 import { useDebouncedCallback } from 'use-debounce'
 import CustomPagination from '@/components/customPagination'
 import { useQueryState, parseAsInteger } from 'nuqs'
-import { createAppointment, getAppointmentDetails } from '@/admin/appointment/appointmentAPIhandler'
+import { fetchAppointments, getAppointmentDetails } from '@/admin/appointment/appointmentAPIhandler'
 import AppointmentDetailsModel from '@/admin/appointment/appointmentDetailsModel'
 import { useAppSelector } from '@/hooks'
 import { authSelector } from '@/features/auth/authSlice'
 import AppointmentPDF from '@/admin/appointment/generatePDF/AppointmnetPDF'
 import AppointmentListPDF from '@/admin/appointment/generatePDF/AppointmnetListPDF'
-import { getDoctorAppointments } from './APIhandler'
 
 
 
@@ -36,7 +31,7 @@ const DoctorAppointments = () => {
     const [search, setSearch] = useQueryState('search')
 
     // Pending states
-    const [isPending, setPending] = useState<boolean>(false)
+    // const [isPending, setPending] = useState<boolean>(false)
 
     // Model States
     const [model, setModel] = useState<{ appointmentDetails: boolean, addAppointmentForm: boolean, alert: boolean, loader: boolean }>({
@@ -56,11 +51,11 @@ const DoctorAppointments = () => {
     //fetching appointments list
     const getAppointments = async () => {
         try {
-            const data = await getDoctorAppointments({
+            const data = await fetchAppointments({
                 page,
                 limit: 10,
                 search: search!, // if search will have value then data will get accordingly
-            }, Number(session.user?.id))
+            })
             setAppointments(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -104,19 +99,19 @@ const DoctorAppointments = () => {
 
 
     // performing only insert
-    const handleSubmit = async (formData: z.infer<typeof appointmentFormSchema>) => {
-        try {
-            setPending(true)
-            const data = await createAppointment({ ...formData, patientId: session.user?.id! })
-            toast.success(data.message)
-            getAppointments()
-            setModel((rest) => ({ ...rest, addAppointmentForm: false }))
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally {
-            setPending(false)
-        }
-    }
+    // const handleSubmit = async (formData: z.infer<typeof appointmentFormSchema>) => {
+    //     try {
+    //         setPending(true)
+    //         const data = await createAppointment({ ...formData, patientId: session.user?.id! })
+    //         toast.success(data.message)
+    //         getAppointments()
+    //         setModel((rest) => ({ ...rest, addAppointmentForm: false }))
+    //     } catch ({ message }: any) {
+    //         toast.error(message)
+    //     } finally {
+    //         setPending(false)
+    //     }
+    // }
 
 
     useEffect(() => {

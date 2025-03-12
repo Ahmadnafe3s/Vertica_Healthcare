@@ -3,14 +3,14 @@ import { Table, TD, TH, TR } from "@/components/pdfTable"
 import { authSelector } from "@/features/auth/authSlice"
 import { useAppSelector } from "@/hooks"
 import styles from "@/pdfStyleSheet/style"
-import { PatientOPDs } from "@/types/opd_section/opd"
+import { OPDs } from "@/types/opd_section/opd"
 import { Page, Document, View, pdf, Text } from "@react-pdf/renderer"
 import { Printer } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 
 interface PatientOpdDocumentProps {
-    opds: PatientOPDs['data'],
+    opds: OPDs['data'],
     user: { name: string, id: number }
 }
 
@@ -40,8 +40,8 @@ const Documents = ({ opds, user }: PatientOpdDocumentProps) => {
                             <TR key={opd.id}>
                                 <TD>{opd.id}</TD>
                                 <TD>{opd.appointment.appointment_date}</TD>
-                                <TD>{opd.appointment.doctor.name}</TD>
-                                <TD>{opd.appointment.doctor.specialist}</TD>
+                                <TD>{opd.doctor.name}</TD>
+                                <TD>{opd.doctor.specialist}</TD>
                                 <TD>{opd.appointment.symptom_type}</TD>
                                 <TD last>{opd.appointment.previous_medical_issue}</TD>
                             </TR>
@@ -56,7 +56,7 @@ const Documents = ({ opds, user }: PatientOpdDocumentProps) => {
 
 
 
-const PrintPatientOpds = ({ opds }: { opds: PatientOPDs['data'] }) => {
+const PrintPatientOpds = ({ opds }: { opds: OPDs['data'] }) => {
 
     const [client, setClient] = useState(false);
     const { user } = useAppSelector(authSelector)

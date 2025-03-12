@@ -4,11 +4,11 @@ import React from 'react'
 import { Navigate } from 'react-router-dom'
 
 interface ProtectRoutesProps {
-    requiredRole?: string,
+    requiredRole?: string[],
     protectElement: React.ReactNode
 }
 
-const ProtectRoutes = ({ requiredRole, protectElement }: ProtectRoutesProps) => {
+const ProtectRoutes = ({ requiredRole = [], protectElement }: ProtectRoutesProps) => {
 
     const session = useAppSelector(authSelector)
 
@@ -20,7 +20,7 @@ const ProtectRoutes = ({ requiredRole, protectElement }: ProtectRoutesProps) => 
         return <Navigate to="/signin" />
     }
 
-    if (requiredRole && session.user.role !== requiredRole) { // if role exists the check (means if we passed)
+    if ((requiredRole.length > 0) && !requiredRole.includes(session.user?.role)) { // if role exists the check (means if we passed)
         return <Navigate to="/unauthorized" />
     }
 

@@ -12,7 +12,7 @@ import { Route } from 'react-router-dom'
 
 const SetupPharmacyRoutes = () => {
     return (
-        <Route path="admin/setup/pharmacy" element={<ProtectRoutes requiredRole="admin" protectElement={<PharmacyLayout />} />}>
+        <Route path="admin/setup/pharmacy" element={<ProtectRoutes requiredRole={['admin']} protectElement={<PharmacyLayout />} />}>
             <Route path="" element={<MedicineCategories />} />
             <Route path="group" element={<MedicineGroups />} />
             <Route path="company" element={<MedicineCompany />} />

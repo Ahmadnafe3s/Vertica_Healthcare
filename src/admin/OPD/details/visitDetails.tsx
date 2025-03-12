@@ -15,15 +15,19 @@ const VisitDetails = () => {
     const { opdId } = useParams()
     const [OPD_DETAILS, set_OPD_DETAILS] = useState<opdDetails>()
 
-    useEffect(() => {
+
+    const fetchOpdDetails = async () => {
         try {
-            (async function fetchData() {
-                const data = await getOPD_Details(opdId!)
-                set_OPD_DETAILS(data)
-            })() // IIFE
+            const data = await getOPD_Details(opdId!)
+            set_OPD_DETAILS(data)
         } catch ({ message }: any) {
             toast.error(message)
         }
+    }
+
+    
+    useEffect(() => {
+        fetchOpdDetails()
     }, [])
 
 

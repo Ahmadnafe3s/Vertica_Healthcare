@@ -7,10 +7,6 @@ import toast from 'react-hot-toast'
 import { useDebouncedCallback } from 'use-debounce'
 import { parseAsInteger, useQueryState } from 'nuqs'
 import CustomPagination from '@/components/customPagination'
-import { DoctorOPDs } from '@/types/opd_section/opd'
-import { useAppSelector } from '@/hooks'
-import { authSelector } from '@/features/auth/authSlice'
-import { getDoctorOpds } from './ApiHandler'
 import PrintDoctorOpds from './print/print'
 import OpdBillPDF from '@/admin/OPD/pdf/bill'
 import LoaderModel from '@/components/loader'
@@ -19,9 +15,10 @@ import CreatePrescriptionFormModel from '@/admin/OPD/prescription/createPrescrip
 import { createPrescriptionFormSchema } from '@/formSchemas/createPrescriptionFormSchema'
 import { z } from 'zod'
 import { prescriptionDetail } from '@/types/opd_section/prescription'
-import { createPrescription, deletePrescription, getPrescriptionDetails, updatePrescription } from '@/admin/OPD/opdApiHandler'
+import { createPrescription, deletePrescription, getOPDs, getPrescriptionDetails, updatePrescription } from '@/admin/OPD/opdApiHandler'
 import PrescriptionDetailsModel from '@/admin/OPD/prescription/prescriptionDetailsModel'
 import AlertModel from '@/components/alertModel'
+import { OPDs } from '@/types/opd_section/opd'
 
 
 
@@ -32,9 +29,6 @@ const DoctorOpds = () => {
   //credentials
   const opdId = useRef<string>('')
   const patientId = useRef<number>()
-
-  // session
-  const session = useAppSelector(authSelector)
 
   // Query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
@@ -58,14 +52,14 @@ const DoctorOpds = () => {
 
 
   // API states
-  const [opds, setOpds] = useState<DoctorOPDs>({ data: [], total_pages: 0 })
+  const [opds, setOpds] = useState<OPDs>({ data: [], total_pages: 0 })
   const [prescDetails, setPrescDetails] = useState<prescriptionDetail>()
 
 
   // fetching opd Details
   const fetchOPDs = async () => {
     try {
-      const data = await getDoctorOpds({ page, limit: 10, search: search! }, Number(session.user?.id))
+      const data = await getOPDs({ page, limit: 10, search: search! })
       setOpds(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -194,14 +188,14 @@ const DoctorOpds = () => {
               {opds.data.map((opd, i) => {
                 return <TableRow key={i}>
                   <TableCell>
-                    <Link to={`/admin/opd/patient/${opd.patientId}/${opd.id}/visitdetails`}
+                    <Link to={`/admin/opd/patient/${opd.patientId}/${opd.id}`}
                       className="font-medium text-blue-500 hover:text-blue-400 cursor-pointer">
                       {opd.id}
                     </Link>
                   </TableCell>
                   <TableCell>{opd.appointment.appointment_date}</TableCell>
-                  <TableCell>{opd.appointment.patient.name}</TableCell>
-                  <TableCell>{opd.appointment.patient.gender}</TableCell>
+                  <TableCell>{opd.patient.name}</TableCell>
+                  <TableCell>{opd.patient.gender}</TableCell>
                   <TableCell>{opd.appointment.reference}</TableCell>
                   <TableCell>{opd.appointment.symptom_type}</TableCell>
                   <TableCell>{opd.appointment.previous_medical_issue}</TableCell>

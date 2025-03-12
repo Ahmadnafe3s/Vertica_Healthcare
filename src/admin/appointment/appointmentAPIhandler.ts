@@ -1,7 +1,7 @@
+import AxiosClient from "@/api/apiClient"
 import { appointmentFormSchema } from "@/formSchemas/AppointmentFormSchema"
 import { Appointment, AppointmentDetails } from "@/types/appointment/appointment"
 import { Patients } from "@/types/type"
-import axios from "axios"
 import { z } from "zod"
 
 
@@ -9,7 +9,7 @@ import { z } from "zod"
 
 export const fetchPatients = async (value: string): Promise<Patients[]> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/patient?search=${value}`)
+        const res = await AxiosClient.get(`/api/patient?search=${value}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -23,7 +23,7 @@ export const fetchPatients = async (value: string): Promise<Patients[]> => {
 export const fetchDoctors = async (appointmentDate?: string) => {
     try {
         const params = { appointmentDate }
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/staff/doctor/list`, { params })
+        const res = await AxiosClient.get(`/api/staff/doctor/list`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -35,7 +35,7 @@ export const fetchDoctors = async (appointmentDate?: string) => {
 
 export const createAppointment = async (appointmentDetails: z.infer<typeof appointmentFormSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/appointment`, appointmentDetails)
+        const res = await AxiosClient.post(`/api/appointment`, appointmentDetails)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -47,7 +47,7 @@ export const createAppointment = async (appointmentDetails: z.infer<typeof appoi
 
 export const fetchAppointments = async (params: { page?: number, limit?: number, status?: string, search?: string }): Promise<Appointment> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/appointment`, { params })
+        const res = await AxiosClient.get(`/api/appointment`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -60,7 +60,7 @@ export const fetchAppointments = async (params: { page?: number, limit?: number,
 
 export const updateStatus = async (id: string, status: string) => {
     try {
-        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/appointment/status/${id}`, { status })
+        const res = await AxiosClient.put(`/api/appointment/status/${id}`, { status })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -72,7 +72,7 @@ export const updateStatus = async (id: string, status: string) => {
 
 export const getAppointmentDetails = async (id: string): Promise<AppointmentDetails> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/appointment/${id}`)
+        const res = await AxiosClient.get(`/api/appointment/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -84,7 +84,7 @@ export const getAppointmentDetails = async (id: string): Promise<AppointmentDeta
 
 export const deleteAppointment = async (id: string) => {
     try {
-        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/appointment/${id}`)
+        const res = await AxiosClient.delete(`/api/appointment/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

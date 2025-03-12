@@ -6,7 +6,7 @@ import { Route } from 'react-router-dom'
 
 const SetupFindingRoutes = () => {
     return (
-        <Route path="admin/setup/finding" element={<ProtectRoutes requiredRole="admin" protectElement={<FindingsLayout />} />}>
+        <Route path="admin/setup/finding" element={<ProtectRoutes requiredRole={['admin']} protectElement={<FindingsLayout />} />}>
             <Route path="" element={<FindingNames />} />
             <Route path="category" element={<FindindngCategories />} />
         </Route>

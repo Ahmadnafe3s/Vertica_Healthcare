@@ -5,7 +5,7 @@ import { Route } from 'react-router-dom'
 
 const SetupEventRoutes = () => {
   return (
-    <Route path="admin/setup/event" element={<ProtectRoutes requiredRole="admin" protectElement={<EventCalendar />} />} />
+    <Route path="admin/setup/event" element={<ProtectRoutes requiredRole={['admin']} protectElement={<EventCalendar />} />} />
   )
 }
 

@@ -1,5 +1,5 @@
+import AxiosClient from "@/api/apiClient"
 import { Events } from "@/types/setupTypes/events"
-import axios from "axios"
 
 // Props
 
@@ -7,7 +7,7 @@ type createEventProps = { title: string, start: Date | undefined, end: Date | un
 
 export const createEvents = async ({ title, start, end, allDay }: createEventProps) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/setupEvent`, { title, start, end, allDay })
+        const res = await AxiosClient.post(`/api/setupEvent`, { title, start, end, allDay })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -18,7 +18,7 @@ export const createEvents = async ({ title, start, end, allDay }: createEventPro
 
 export const getEvents = async (): Promise<Events> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/setupEvent`)
+        const res = await AxiosClient.get(`/api/setupEvent`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -29,7 +29,7 @@ export const getEvents = async (): Promise<Events> => {
 
 export const deleteEvent = async (id: number) => {
     try {
-        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/setupEvent/${id}`)
+        const res = await AxiosClient.delete(`/api/setupEvent/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

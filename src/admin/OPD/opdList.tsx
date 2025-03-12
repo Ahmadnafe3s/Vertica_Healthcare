@@ -197,11 +197,11 @@ const OPDLIST = () => {
                       {opd.id}
                     </Link>
                   </TableCell>
-                  <TableCell className='whitespace-nowrap'>{opd.appointment.patient.name}</TableCell>
+                  <TableCell className='whitespace-nowrap'>{opd.patient.name}</TableCell>
                   <TableCell>{opd.appointment.appointment_date}</TableCell>
                   <TableCell>
-                    <Link className='text-blue-500 font-medium whitespace-nowrap' to={{ pathname: `/admin/profile/staff/${opd.appointment.doctor.id}` }}>
-                      {opd.appointment.doctor.name}
+                    <Link className='text-blue-500 font-medium whitespace-nowrap' to={{ pathname: `/admin/profile/staff/${opd.doctorId}` }}>
+                      {opd.doctor.name}
                     </Link>
                   </TableCell>
 
@@ -267,7 +267,7 @@ const OPDLIST = () => {
             onClick={() => { setModel(prev => ({ ...prev, prescriptionForm: false })); setPrescDetails(undefined) }}
           />
         )
-      } 
+      }
 
       {/* Loader Model */}
 

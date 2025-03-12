@@ -10,24 +10,22 @@ import { VitalType } from "./vitals"
 interface opdData {  // it will be Array of objects
     id: string,
     patientId: number,
+    doctorId: number,
     appointmentId: string,
 
     appointment: {
-
         appointment_date: string,
         symptom_type: string,
         previous_medical_issue: string,
         reference: string,
-
-        patient: {
-            id: number,
-            name: string
-        },
-
-        doctor: {
-            id: number,
-            name: string
-        }
+    },
+    patient: {
+        name: string,
+        gender: string
+    },
+    doctor: {
+        name: string
+        specialist: string
     },
     prescriptions: {
         id: number
@@ -111,66 +109,3 @@ export interface PrintBillDetails {
     }[]
 }
 
-
-
-
-
-// for patient section
-
-type PatientOpdData = {
-    id: string,
-    patientId: number,
-    appointmentId: string,
-    createdAt: string,
-    updatedAt: string,
-    appointment: {
-        appointment_date: string,
-        symptom_type: string,
-        previous_medical_issue: string,
-        reference: string,
-        doctor: {
-            id: 4,
-            name: string,
-            specialist: string
-        }
-    }
-}
-
-
-//paginated list
-export type PatientOPDs = {
-    data: PatientOpdData[],
-    total_pages: number
-}
-
-
-
-type DoctorOpdData = {
-    id: string,
-    patientId: number,
-    appointmentId: string,
-    createdAt: string,
-    updatedAt: string,
-    appointment: {
-        appointment_date: string,
-        symptom_type: string,
-        previous_medical_issue: string,
-        reference: string,
-        patient: {
-            id: number,
-            name: string,
-            gender: string,
-        }
-    },
-    prescriptions: {
-        id: number
-    }
-}
-
-
-
-//paginated list
-export type DoctorOPDs = {
-    data: DoctorOpdData[],
-    total_pages: number
-}
