@@ -7,13 +7,17 @@ import { fetchAppointments, updateStatus } from './appointmentAPIhandler'
 import { Loader } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Appointment } from '@/types/appointment/appointment'
-import { useQueryState } from 'nuqs'
+import { useQueryState, parseAsInteger } from 'nuqs'
 import CustomPagination from '@/components/customPagination'
+import { Input } from '@/components/ui/input'
+import { useDebouncedCallback } from 'use-debounce'
+import { Separator } from '@/components/ui/separator'
 
 const QueueAppointment = () => {
 
     // query params 
-    const [page, setPage] = useQueryState('page', { defaultValue: "1" })
+    const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
+    const [search, setSearch] = useQueryState('search')
 
     // api states
     const [appointments, setAppointments] = useState<Appointment>({ data: [], total_pages: 1 })
@@ -38,24 +42,37 @@ const QueueAppointment = () => {
     }
 
 
+    const onSearch = useDebouncedCallback(async (value: string) => {
+        value ? (setSearch(value)) : (setSearch(null))
+        setPage(1) // always should execute
+    }, 400)
+
+
     useEffect(() => {
         try {
             (async function () {
-                const data = await fetchAppointments({ page: +page, limit: 10, status: 'pending' })
+                const data = await fetchAppointments({ page, limit: 10, status: 'pending', search: search! })
                 setAppointments(data)
             })() //IIFE
 
         } catch ({ message }: any) {
             toast.error(message)
         }
-    }, [])
+    }, [page, search])
 
     return (
         <section className='bg-slate-50'>
 
-            <div className='flex flex-col border-b border-gray-200 py-3'>
+            <div className='flex flex-col py-3 gap-y-3'>
                 <h1 className='text-xl text-gray-900 font-semibold'>Queue Appointments</h1>
+                <Separator />
+                <div className='flex gap-x-2 w-[180px]'>
+                    <Input type='text' height='10px' placeholder='search' defaultValue={search!} onChange={(e) => { onSearch(e.target.value) }} />
+                </div>
             </div>
+
+            <Separator />
+
             <div className="flex flex-col mb-16 min-h-[75vh]">
                 <div className="flex-1">
                     <Table className='rounded-lg border my-10'>
@@ -117,9 +134,9 @@ const QueueAppointment = () => {
                     <CustomPagination
                         total_pages={appointments?.total_pages}
                         currentPage={+page}
-                        previous={(p: number) => setPage(String(p))}
-                        goTo={(p: number) => setPage(String(p))}
-                        next={(p: number) => setPage(String(p))}
+                        previous={(p) => setPage(p)}
+                        goTo={(p) => setPage(p)}
+                        next={(p) => setPage(p)}
                     />
                 </section>
             </div>

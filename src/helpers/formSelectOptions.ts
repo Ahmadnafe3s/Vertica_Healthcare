@@ -2,6 +2,8 @@
 export const roles = [
   { label: 'Admin', value: 'admin' },
   { label: 'Doctor', value: 'doctor' },
+  { label: 'Pharmacist', value: 'pharmacist' },
+  { label: 'Receptionist', value: 'receptionist' },
 ]
 
 export const degisnations = [
@@ -14,6 +16,9 @@ export const departments = [
   { label: 'OT', value: 'OT' },
   { label: 'Doctor Department', value: 'doctor department' },
   { label: 'OPD Department', value: 'OPD department' },
+  { label: 'Pharmacy', value: 'pharmacy' },
+  { label: 'Finance', value: 'finance' },
+  { label: 'Reception', value: 'reception' },
 ]
 
 

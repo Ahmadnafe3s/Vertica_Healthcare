@@ -16,19 +16,19 @@ import PatientLayout from '@/patient/patientLayout'
 import PatientPharmacyBills from '@/patient/pharmacy/pharmacy'
 import PatientProfile from '@/patient/profile/patientProfile'
 import PatientResetPassword from '@/patient/profile/patientResetPassword'
-import {  Route } from 'react-router-dom'
+import { Route } from 'react-router-dom'
 
 
 const PatientRoutes = () => {
 
 
     return (
-        <Route path="patient" element={<ProtectRoutes requiredRole={["patient"]} protectElement={<PatientLayout />} />}>
+        <Route path="patient" element={<ProtectRoutes requiredRole={["admin", "patient"]} protectElement={<PatientLayout />} />}>
             <Route path="dashboard" element={<PatientDashboard />} />
             <Route path="appointment" element={<PatientAppointments />} />
             <Route path="profile/:id" element={<PatientProfile />} />
             <Route path="edit/:id" element={<RegisterPatient />} />
-            <Route path="resetpassword" element={<PatientResetPassword />} />
+            <Route path="resetpassword/:id" element={<PatientResetPassword />} />
             <Route path="pharmacy" element={<PatientPharmacyBills />} />
             {/* opd layout */}
             <Route path="opd" element={<PatientsOpdLayout />} >

@@ -15,6 +15,9 @@ import { operationDetailsType, PaginatedOperations } from '@/types/opd_section/o
 import CustomPagination from '@/components/customPagination';
 import { Separator } from '@/components/ui/separator';
 import { useQueryState, parseAsInteger } from 'nuqs';
+import { useAppSelector } from '@/hooks';
+import { authSelector } from '@/features/auth/authSlice';
+import { cn } from '@/lib/utils';
 
 
 
@@ -29,6 +32,8 @@ const OperationList = () => {
 
   const id = useRef<string | null>(null)
 
+  // session
+  const { user } = useAppSelector(authSelector)
 
   // spinner state
   const [isPending, setPending] = useState<boolean>(false)
@@ -119,10 +124,9 @@ const OperationList = () => {
   return (
     <>
       <section className="flex flex-col gap-y-5">
-
         <div className="flex justify-between">
           <h1 className="text-lg text-gray-800 font-semibold">Operations</h1>
-          <Button size='sm' onClick={() => {
+          <Button size='sm' className={cn({ 'hidden': user?.role === 'receptionist' })} onClick={() => {
             setModel({ ...model, operationForm: true })
           }}>
             <Plus /> Add Operation
@@ -143,7 +147,7 @@ const OperationList = () => {
                   <TableHead>Operation Name</TableHead>
                   <TableHead>Operation Category</TableHead>
                   <TableHead>OT Technician</TableHead>
-                  <TableHead>Action</TableHead>
+                  <TableHead className={cn({ 'hidden': user?.role === 'receptionist' })}>Action</TableHead>
                 </TableRow>
               </TableHeader>
 
@@ -162,7 +166,7 @@ const OperationList = () => {
                     <TableCell>{opertion.operationName.name}</TableCell>
                     <TableCell>{opertion.operationCategory.name}</TableCell>
                     <TableCell>{opertion.ot_technician}</TableCell>
-                    <TableCell className='flex space-x-2'>
+                    <TableCell className={cn("flex space-x-2", { 'hidden': user?.role === 'receptionist' })}>
 
                       <Pencil className='w-4 text-gray-600 active:scale-95 cursor-pointer'
                         onClick={async () => {

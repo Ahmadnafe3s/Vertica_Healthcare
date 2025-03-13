@@ -19,6 +19,8 @@ import { parseAsInteger, useQueryState } from 'nuqs'
 import CustomPagination from '@/components/customPagination'
 import OpdBillPDF from './pdf/bill'
 import OpdsPdf from './pdf/opds'
+import { useAppSelector } from '@/hooks'
+import { authSelector } from '@/features/auth/authSlice'
 
 
 
@@ -30,6 +32,7 @@ const OPDLIST = () => {
   const patientId = useRef<number>()
   const contentRef = useRef(null)
 
+  const { user } = useAppSelector(authSelector)
 
   // Query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
@@ -192,16 +195,16 @@ const OPDLIST = () => {
               {OPD_list?.data.map((opd, i) => {
                 return <TableRow key={i}>
                   <TableCell>
-                    <Link to={`./patient/${opd.patientId}/${opd.id}`}
+                    <Link to={`./patient/${opd?.patientId}/${opd?.id}`}
                       className="font-medium text-blue-500 hover:text-blue-400 cursor-pointer">
-                      {opd.id}
+                      {opd?.id}
                     </Link>
                   </TableCell>
-                  <TableCell className='whitespace-nowrap'>{opd.patient.name}</TableCell>
+                  <TableCell className='whitespace-nowrap'>{opd.patient?.name}</TableCell>
                   <TableCell>{opd.appointment.appointment_date}</TableCell>
                   <TableCell>
-                    <Link className='text-blue-500 font-medium whitespace-nowrap' to={{ pathname: `/admin/profile/staff/${opd.doctorId}` }}>
-                      {opd.doctor.name}
+                    <Link className='text-blue-500 font-medium whitespace-nowrap' to={{ pathname: `/admin/profile/staff/${opd?.doctorId}` }}>
+                      {opd.doctor?.name}
                     </Link>
                   </TableCell>
 
@@ -222,13 +225,15 @@ const OPDLIST = () => {
                         </CustomTooltip>
                       )
                       :
-                      (
-                        <CustomTooltip message='Add prescription'>
-                          <ClipboardPlus className='cursor-pointer text-gray-600 w-5 h-5'
-                            onClick={() => { opdId.current = opd.id; patientId.current = opd.patientId; setModel(prev => ({ ...prev, prescriptionForm: true })) }}
-                          />
-                        </CustomTooltip>
-                      )
+                      <>
+                        {user?.role !== 'receptionist' && (
+                          <CustomTooltip message='Add prescription'>
+                            <ClipboardPlus className='cursor-pointer text-gray-600 w-5 h-5'
+                              onClick={() => { opdId.current = opd.id; patientId.current = opd.patientId; setModel(prev => ({ ...prev, prescriptionForm: true })) }}
+                            />
+                          </CustomTooltip>
+                        )}
+                      </>
                     }
                     {/* prints bill */}
                     <OpdBillPDF opdId={opd.id} onPending={(value) => setLoading({ ...isLoading, model: value })} />

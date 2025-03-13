@@ -1,3 +1,4 @@
+import AxiosClient from "@/api/apiClient"
 import { AddMedicinesFormSchema } from "@/formSchemas/addMedicinesFormSchema"
 import { createPharmacyBillSchema } from "@/formSchemas/createPharmBillSchema"
 import { PurchaseMedicineFormSchema } from "@/formSchemas/purchaseMedicineFormSchema"
@@ -10,7 +11,7 @@ import { z } from "zod"
 
 export const createMedicine = async (formData: z.infer<typeof AddMedicinesFormSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy`, formData)
+        const res = await AxiosClient.post(`/api/pharmacy`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -21,7 +22,7 @@ export const createMedicine = async (formData: z.infer<typeof AddMedicinesFormSc
 
 export const getMedicineList = async (params: { search?: string, page?: number, limit?: number }): Promise<paginatedMedicines> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy`, { params })
+        const res = await AxiosClient.get(`/api/pharmacy`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -31,7 +32,7 @@ export const getMedicineList = async (params: { search?: string, page?: number, 
 
 export const getMedicinesBYcategory = async (categoryId: number): Promise<medicinesBYcategory[]> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/names/${categoryId}`)
+        const res = await AxiosClient.get(`/api/pharmacy/names/${categoryId}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -42,7 +43,7 @@ export const getMedicinesBYcategory = async (categoryId: number): Promise<medici
 
 export const deleteMedicine = async (id: number) => {
     try {
-        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/${id}`)
+        const res = await AxiosClient.delete(`/api/pharmacy/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -53,7 +54,7 @@ export const deleteMedicine = async (id: number) => {
 
 export const getMedicinedetails = async (id: number): Promise<medicineDetails> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/${id}`)
+        const res = await AxiosClient.get(`/api/pharmacy/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -64,7 +65,7 @@ export const getMedicinedetails = async (id: number): Promise<medicineDetails> =
 
 export const updateMedicine = async (id: number, formData: z.infer<typeof AddMedicinesFormSchema>): Promise<medicineDetails> => {
     try {
-        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/${id}`, formData)
+        const res = await AxiosClient.put(`/api/pharmacy/${id}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -79,7 +80,7 @@ export const updateMedicine = async (id: number, formData: z.infer<typeof AddMed
 
 export const createPurchase = async (formData: z.infer<typeof PurchaseMedicineFormSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/purchaseMedicine`, formData)
+        const res = await AxiosClient.post(`/api/purchaseMedicine`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -92,7 +93,7 @@ export const getPurchaseList = async (params: { page: number, limit?: number, se
     try {
         console.log(params);
 
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/purchaseMedicine`, { params })
+        const res = await AxiosClient.get(`/api/purchaseMedicine`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -103,7 +104,7 @@ export const getPurchaseList = async (params: { page: number, limit?: number, se
 
 export const getPurchaseDetails = async (id: string): Promise<medicinePurchaseDetails> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/purchaseMedicine/${id}`)
+        const res = await AxiosClient.get(`/api/purchaseMedicine/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -113,7 +114,7 @@ export const getPurchaseDetails = async (id: string): Promise<medicinePurchaseDe
 
 export const deletePurchaseMedicine = async (id: string) => {
     try {
-        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/purchaseMedicine/${id}`)
+        const res = await AxiosClient.delete(`/api/purchaseMedicine/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -126,7 +127,7 @@ export const deletePurchaseMedicine = async (id: string) => {
 
 export const getMedicinesBatches = async (medicineId: number) => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/batch/${medicineId}`)
+        const res = await AxiosClient.get(`/api/pharmacy/batch/${medicineId}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -137,7 +138,7 @@ export const getMedicinesBatches = async (medicineId: number) => {
 
 export const getMedicinesBatchDetails = async (batchId: number): Promise<medicineBatchDetails> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/batch/details/${batchId}`)
+        const res = await AxiosClient.get(`/api/pharmacy/batch/details/${batchId}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -151,7 +152,7 @@ export const getMedicinesBatchDetails = async (batchId: number): Promise<medicin
 
 export const createPharmacyBill = async (formData: z.infer<typeof createPharmacyBillSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/bill`, formData)
+        const res = await AxiosClient.post(`/api/pharmacy/bill`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -161,7 +162,7 @@ export const createPharmacyBill = async (formData: z.infer<typeof createPharmacy
 
 export const getPharmacyBills = async (params: { search?: string, page?: number, limit?: number }) => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/bill/list` , {params})
+        const res = await AxiosClient.get(`/api/pharmacy/bill/list` , {params})
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -171,7 +172,7 @@ export const getPharmacyBills = async (params: { search?: string, page?: number,
 
 export const getPharmacyBillDetails = async (id: string) => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/bill/details/${id}`)
+        const res = await AxiosClient.get(`/api/pharmacy/bill/details/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -181,7 +182,7 @@ export const getPharmacyBillDetails = async (id: string) => {
 
 export const deletePharmacyBill = async (id: string) => {
     try {
-        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/pharmacy/bill/${id}`)
+        const res = await AxiosClient.delete(`/api/pharmacy/bill/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

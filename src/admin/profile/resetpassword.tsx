@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { resetPassword } from './apiHandlers'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { Loader } from 'lucide-react'
 import { useState } from 'react'
@@ -17,6 +17,7 @@ const ResetPassword = () => {
 
     const { id } = useParams()
     const [isPending, setPending] = useState<boolean>(false)
+    const router = useNavigate()
 
     const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof ResetPasswordForm>>({
         resolver: zodResolver(ResetPasswordForm)
@@ -29,6 +30,7 @@ const ResetPassword = () => {
             const { password } = formData
             const data = await resetPassword(Number(id), password)
             toast.success(data.message)
+            router(`../staff/${id}`)
         } catch ({ message }: any) {
             toast.error(message)
         } finally {

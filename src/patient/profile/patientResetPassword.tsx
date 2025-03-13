@@ -8,15 +8,16 @@ import { z } from 'zod'
 import toast from 'react-hot-toast'
 import { Loader } from 'lucide-react'
 import { useState } from 'react'
-import { useAppSelector } from '@/hooks'
-import { authSelector } from '@/features/auth/authSlice'
 import { resetPatientPassword } from './ApiHandlers'
+import { useNavigate, useParams } from 'react-router-dom'
 
 
 
 const PatientResetPassword = () => {
 
-    const session = useAppSelector(authSelector)
+    const { id } = useParams()
+    const router = useNavigate()
+
     const [isPending, setPending] = useState<boolean>(false)
 
     const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof ResetPasswordForm>>({
@@ -28,8 +29,9 @@ const PatientResetPassword = () => {
         try {
             setPending(true)
             const { password } = formData
-            const data = await resetPatientPassword(password, session.user?.id!)
+            const data = await resetPatientPassword(password, +id!)
             toast.success(data.message)
+            router(`../profile/${id}`)
         } catch ({ message }: any) {
             toast.error(message)
         } finally {

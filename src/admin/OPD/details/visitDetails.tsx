@@ -8,6 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { currencySymbol } from "@/helpers/currencySymbol";
 import { currencyFormat } from "@/lib/utils";
 import { opdDetails } from "@/types/opd_section/opd";
+import { useAppSelector } from "@/hooks";
+import { authSelector } from "@/features/auth/authSlice";
 
 
 const VisitDetails = () => {
@@ -15,6 +17,7 @@ const VisitDetails = () => {
     const { opdId } = useParams()
     const [OPD_DETAILS, set_OPD_DETAILS] = useState<opdDetails>()
 
+    const { user } = useAppSelector(authSelector)
 
     const fetchOpdDetails = async () => {
         try {
@@ -25,7 +28,7 @@ const VisitDetails = () => {
         }
     }
 
-    
+
     useEffect(() => {
         fetchOpdDetails()
     }, [])

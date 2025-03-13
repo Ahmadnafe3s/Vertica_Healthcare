@@ -9,7 +9,7 @@ import { Loader } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod'
 import { createStaff, fetchStaffProfile, updateStaff } from './HRApiHandler'
 import { currencySymbol } from '@/helpers/currencySymbol'
@@ -17,80 +17,51 @@ import { currencySymbol } from '@/helpers/currencySymbol'
 const CreateStaff = () => {
 
   const { id } = useParams()
+  const router = useNavigate()
 
   const [isPending, setPending] = useState<boolean>(false)
   const [editMode, setEditmode] = useState<string | undefined>(id)
 
-  const { handleSubmit, reset, register, setValue, control, formState: { errors } } = useForm<z.infer<typeof createStaffFormSchema>>({
+  const { handleSubmit, reset, register, control, formState: { errors } } = useForm<z.infer<typeof createStaffFormSchema>>({
     resolver: zodResolver(createStaffFormSchema)
   })
 
 
   async function onSubmit(formData: z.infer<typeof createStaffFormSchema>) {
     try {
-
+      let data;
       setPending(true)
 
-      let data;
+      id ?
+        (data = await updateStaff(Number(id), formData))
+        :
+        (data = await createStaff(formData))
 
-      if (editMode) {
-        data = await updateStaff(Number(id), formData)
-      } else {
-        data = await createStaff(formData)
-      }
       toast.success(data.message)
-
+      router(`/admin/humanresource/staff`)
     } catch ({ message }: any) {
       toast.error(message)
     }
 
-    finally {
-      setPending(false)
+    finally { setPending(false) }
+  }
+
+
+  const fetchProfileDetails = async () => {
+    try {
+      const data = await fetchStaffProfile(Number(id))
+      reset({
+        ...data,
+        image: undefined
+      })
+    } catch ({ message }: any) {
+      toast.error(message)
     }
   }
 
 
-
   useEffect(() => {
-
-    try {
-
-      console.log(editMode);
-
-      (async function fetchData() {
-        if (editMode) {
-          const data = await fetchStaffProfile(Number(id))
-          setValue('name', data.name)
-          setValue('role', data.role)
-          setValue('designation', data.designation)
-          setValue('department', data.department)
-          setValue('fees', data.fees)
-          setValue('father_name', data.father_name)
-          setValue('mother_name', data.mother_name)
-          setValue('gender', data.gender)
-          setValue('marital_status', data.marital_status)
-          setValue('blood_group', data.blood_group)
-          setValue('dob', data.dob)
-          setValue('date_of_joining', data.date_of_joining)
-          setValue('phone', data.phone)
-          setValue('emergency_contact', data.emergency_contact)
-          setValue('email', data.email)
-          setValue('current_address', data.current_address)
-          setValue('permanent_address', data.permanent_address)
-          setValue('qualification', data.qualification)
-          setValue('specialist', data.specialist)
-          setValue('work_experience', data.work_experience)
-          setValue('note', data.note)
-          setValue('PAN', data.PAN)
-          setValue('national_identification_number', data.national_identification_number)
-          setValue('local_identification_number', data.local_identification_number)
-        }
-      })()
-
-    } catch ({ message }: any) {
-      toast.error(message)
-    }
-
+    if (id) fetchProfileDetails()
   }, [])
 
 

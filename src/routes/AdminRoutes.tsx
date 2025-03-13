@@ -44,7 +44,7 @@ const AdminRoutes = () => {
             />
 
             {/* Appoinment routes */}
-            <Route path="appointment" element={<ProtectRoutes requiredRole={["admin"]} protectElement={<AppointmentLayout />} />}>
+            <Route path="appointment" element={<ProtectRoutes requiredRole={["admin", "receptionist"]} protectElement={<AppointmentLayout />} />}>
                 <Route path="" element={<AdminAppointment />} />
                 <Route path="queue" element={<QueueAppointment />} />
                 <Route path="cancelled" element={<CancelledAppointments />} />
@@ -52,8 +52,8 @@ const AdminRoutes = () => {
 
             {/* OPD Routes */}
             <Route path="opd" element={<AdminOPDlayout />}>
-                <Route path="" element={<ProtectRoutes requiredRole={["admin"]} protectElement={<OPDLIST />} />} />
-                <Route path="patient/:patientId/:opdId" element={<ProtectRoutes requiredRole={["admin", "doctor"]} protectElement={<OpdDetailsLayout />} />}>
+                <Route path="" element={<ProtectRoutes requiredRole={["admin", "receptionist"]} protectElement={<OPDLIST />} />} />
+                <Route path="patient/:patientId/:opdId" element={<ProtectRoutes requiredRole={["admin", "doctor" , "receptionist"]} protectElement={<OpdDetailsLayout />} />}>
                     <Route path="" element={<VisitDetails />} />
                     <Route path="medication" element={<Medication />} />
                     <Route path="vital" element={<Vital />} />
@@ -74,12 +74,12 @@ const AdminRoutes = () => {
 
             {/* HR Routes */}
             <Route path="humanresource" element={<HumanResource />} >
-                <Route path="staff" element={<ProtectRoutes requiredRole={["admin", "doctor", "pharmacist"]} protectElement={<Staff />} />} />
+                <Route path="staff" element={<ProtectRoutes requiredRole={["admin", "doctor", "pharmacist", "receptionist"]} protectElement={<Staff />} />} />
                 <Route path="create" element={<ProtectRoutes requiredRole={["admin"]} protectElement={<CreateStaff />} />} />
             </Route>
 
             {/* Profile Routes */}
-            <Route path="profile" element={<ProtectRoutes requiredRole={["admin", "doctor", "pharmacist"]} protectElement={<HumanResource />} />} >
+            <Route path="profile" element={<ProtectRoutes requiredRole={["admin", "doctor", "pharmacist", "receptionist"]} protectElement={<HumanResource />} />} >
                 <Route path="staff/:id" element={<Staffprofile />} />
                 <Route path="edit/:id" element={<ProtectRoutes requiredRole={["admin"]} protectElement={<CreateStaff />} />} />
                 <Route path="resetpassword/:id" element={<ResetPassword />} />

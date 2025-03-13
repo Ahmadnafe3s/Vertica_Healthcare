@@ -1,6 +1,6 @@
+import AxiosClient from "@/api/apiClient"
 import { AssignRosterSchema } from "@/formSchemas/assignRosterFormSchema"
 import { RosterDetails, Rosters } from "@/types/dutyRoster/DutyRoster"
-import axios from "axios"
 import { z } from "zod"
 
 
@@ -8,7 +8,7 @@ import { z } from "zod"
 // create roster
 export const createRoster = async (formData: z.infer<typeof AssignRosterSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/roster`, formData)
+        const res = await AxiosClient.post(`/api/roster`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -19,7 +19,7 @@ export const createRoster = async (formData: z.infer<typeof AssignRosterSchema>)
 // update roster
 export const updateRoster = async (formData: z.infer<typeof AssignRosterSchema>, ID: number) => {
     try {
-        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/roster/${ID}`, formData)
+        const res = await AxiosClient.put(`/api/roster/${ID}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -30,7 +30,7 @@ export const updateRoster = async (formData: z.infer<typeof AssignRosterSchema>,
 // for edit mode (retriving data)
 export const getRosterDetails = async (ID: number): Promise<RosterDetails> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/roster/${ID}`)
+        const res = await AxiosClient.get(`/api/roster/${ID}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -50,7 +50,7 @@ export const getRosterDetails = async (ID: number): Promise<RosterDetails> => {
 
 export const getRosters = async (params: { page?: number, limit?: number, credentials?: string, date?: string, period?: { startDate: string, endDate: string } }): Promise<Rosters> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/roster`, { params })
+        const res = await AxiosClient.get(`/api/roster`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -62,7 +62,7 @@ export const getRosters = async (params: { page?: number, limit?: number, creden
 
 export const deleteRoster = async (id: number | null) => {
     try {
-        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/roster/${id}`)
+        const res = await AxiosClient.delete(`/api/roster/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

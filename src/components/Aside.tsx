@@ -18,6 +18,10 @@ const Aside = () => {
     const dispatch = useAppDispatch()
     const session = useAppSelector(authSelector)
 
+    // making few routes static
+    const Routes = ['admin', 'pharmacist', 'receptionist'].includes(session.user?.role!) ? 'admin' : session.user?.role
+
+
     return (
         <>
             <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all border-r border-zinc-200 h-[calc(100vh-56px-35px)] top-14', { 'w-52 p-2.5': isSlideOpend })}>
@@ -32,26 +36,32 @@ const Aside = () => {
                             })
                         }><Airplay className='h-4 w-4' /> Dashboard</Link></li>
 
-                        <li><Link to={{ pathname: `/${session.user?.role}/appointment` }} className={
-                            buttonVariants({
-                                variant: 'ghost',
-                                className: 'flex text-sm items-center'
-                            })
-                        }><CalendarClock className='h-4 w-4' /> Appointment</Link></li>
 
-                        <li><Link to={{ pathname: `/${session.user?.role}/opd` }} className={
-                            buttonVariants({
-                                variant: 'ghost',
-                                className: 'flex text-sm items-center'
-                            })
-                        }><HeartPulse className='h-4 w-4' /> OPD - Out Patient</Link></li>
+                        {session.user?.role !== 'pharmacist' &&
+                            <>
+                                <li><Link to={{ pathname: `/${Routes}/appointment` }} className={
+                                    buttonVariants({
+                                        variant: 'ghost',
+                                        className: 'flex text-sm items-center'
+                                    })
+                                }><CalendarClock className='h-4 w-4' /> Appointment</Link></li>
+
+                                <li><Link to={{ pathname: `/${Routes}/opd` }} className={
+                                    buttonVariants({
+                                        variant: 'ghost',
+                                        className: 'flex text-sm items-center'
+                                    })
+                                }><HeartPulse className='h-4 w-4' /> OPD - Out Patient</Link></li>
+
+                            </>
+                        }
 
 
                         {/* admin and patient roles */}
-                        
-                        {['admin', 'patient'].includes(session.user?.role!) &&
 
-                            <li><Link to={{ pathname: `/${session.user?.role}/pharmacy` }} className={
+                        {['admin', 'patient', 'pharmacist'].includes(session.user?.role!) &&
+
+                            <li><Link to={{ pathname: `/${Routes}/pharmacy` }} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
@@ -62,7 +72,7 @@ const Aside = () => {
 
                         {/* only these role can see this */}
 
-                        {['admin', 'doctor'].includes(session.user?.role!) &&
+                        {['admin', 'doctor', 'pharmacist', 'receptionist'].includes(session.user?.role!) &&
                             <li><Link to={{ pathname: '/admin/humanresource/staff' }} className={
                                 buttonVariants({
                                     variant: 'ghost',

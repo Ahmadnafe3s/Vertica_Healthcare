@@ -20,6 +20,8 @@ import SetupPharmacyRoutes from "./routes/AdminSetup/PharmacyRoutes";
 import SetupVitalRoutes from "./routes/AdminSetup/vitalRoutes";
 import SetupEventRoutes from "./routes/AdminSetup/EventRoutes";
 import AdminRoutes from "./routes/AdminRoutes";
+import PharmacistRoutes from "./routes/pharmacist";
+import ReceptionistRoutes from "./routes/Receptionist";
 
 
 
@@ -56,6 +58,9 @@ function App() {
 
           {DoctorRoutes()}
 
+          {PharmacistRoutes()}
+
+          {ReceptionistRoutes()}
 
 
           {/* Setup routes for charges*/}

@@ -30,7 +30,6 @@ const Navbar = () => {
     }
 
 
-
     return (
         <>
             <section className="h-14 bg-gradient-to-r from-purple-50 to-violet-100 shadow w-full z-[100] sticky inset-x-0 top-0">
@@ -80,7 +79,8 @@ const Navbar = () => {
 
             {isUserModel && <UserModel onClick={() => setUserModel(false)} onLogout={onLogout}
                 onProfile={() => {
-                    (session.user?.role === 'admin' || session.user?.role === 'doctor') ? router(`/admin/profile/staff/${session.user.id}`)
+
+                    ['admin', 'doctor', 'pharmacist', 'receptionist'].includes(session.user?.role!) ? router(`/admin/profile/staff/${session.user?.id}`)
                         :
                         session.user?.role === "patient" ? router(`/patient/profile/${session.user.id}`) : alert('Invalid user')
                     setUserModel(false)

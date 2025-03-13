@@ -1,10 +1,13 @@
 import { buttonVariants } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { authSelector } from '@/features/auth/authSlice'
+import { useAppSelector } from '@/hooks'
 import { Banknote, BriefcaseMedical, Clock, HeartPulse, Menu, PocketKnife, ReceiptText, SquareStack } from 'lucide-react'
 import { Link, Outlet } from 'react-router-dom'
 
 const OpdDetailsLayout = () => {
 
+    const { user } = useAppSelector(authSelector)
 
     return (
         <div className='space-y-4 pt-4 pb-10'>
@@ -32,37 +35,46 @@ const OpdDetailsLayout = () => {
                         })}>
                             <PocketKnife /> Operation
                         </Link>
+                        
 
-                        <Link to={`vital`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <HeartPulse /> Vital
-                        </Link>
+                        {user?.role !== 'receptionist' &&
+                            <>
+                                <Link to={`vital`} className={buttonVariants({
+                                    variant: 'outline'
+                                })}>
+                                    <HeartPulse /> Vital
+                                </Link>
 
-                        <Link to={`timeline`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <Clock /> Timeline
-                        </Link>
+                                <Link to={`timeline`} className={buttonVariants({
+                                    variant: 'outline'
+                                })}>
+                                    <Clock /> Timeline
+                                </Link>
 
-                        <Link to={`charges`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <ReceiptText /> Charges
-                        </Link>
+                                <Link to={`treatmenthistory`} className={buttonVariants({
+                                    variant: 'outline'
+                                })}>
+                                    <SquareStack /> Treatment History
+                                </Link>
+                            </>
+                        }
 
-                        <Link to={`treatmenthistory`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                             <SquareStack /> Treatment History
-                        </Link>
 
-                        <Link to={`payment`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <Banknote /> Payment
-                        </Link>
+                        {user?.role !== 'doctor' &&
+                            <>
+                                <Link to={`charges`} className={buttonVariants({
+                                    variant: 'outline'
+                                })}>
+                                    <ReceiptText /> Charges
+                                </Link>
 
+                                <Link to={`payment`} className={buttonVariants({
+                                    variant: 'outline'
+                                })}>
+                                    <Banknote /> Payment
+                                </Link>
+                            </>
+                        }
 
                     </div>
 

@@ -12,8 +12,8 @@ export const createStaffFormSchema = z.object({
         .default(''),
 
     department: z.string()
-        .default('')
-        .optional(),
+        .min(1, { message: "Department is required" })
+        .default(''),
 
     specialist: z.string()
         .optional(),

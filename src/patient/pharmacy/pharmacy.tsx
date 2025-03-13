@@ -9,11 +9,8 @@ import { useQueryState, parseAsInteger } from 'nuqs'
 import CustomPagination from '@/components/customPagination'
 import { useDebouncedCallback } from 'use-debounce'
 import PharmacyBillDetailsModal from '@/admin/pharmacy/pharmacyBill/pharmacyBillDetailsModal'
-import { getPharmacyBillDetails } from '@/admin/pharmacy/pharmacyApiHandler'
+import { getPharmacyBillDetails, getPharmacyBills } from '@/admin/pharmacy/pharmacyApiHandler'
 import PrintPharmacyBills from '@/admin/pharmacy/pharmacyBill/printBill/printPharmacyBills'
-import { getPatientPharmacyBills } from './ApiHandler'
-import { useAppSelector } from '@/hooks'
-import { authSelector } from '@/features/auth/authSlice'
 import PrintPharmacyBill from '@/admin/pharmacy/pharmacyBill/printBill/printPharmacyBill'
 
 
@@ -24,9 +21,6 @@ const PatientPharmacyBills = () => {
     // query params
     const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
     const [search, setSearch] = useQueryState('search')
-
-    // session
-    const { user } = useAppSelector(authSelector)
 
     //model states
     const [billDetailsModal, setBillDetailsModal] = useState<boolean>(false)
@@ -46,7 +40,7 @@ const PatientPharmacyBills = () => {
     const fetchParmacyBills = async () => {
         try {
             // adjust limit accordingly
-            const data = await getPatientPharmacyBills({ page, limit: 10, search: search! }, Number(user?.id)) // here search only will have value when we will search anything
+            const data = await getPharmacyBills({ page, limit: 10, search: search! }) // here search only will have value when we will search anything
             setPharmBills(data)
         } catch ({ message }: any) {
             toast.error(message)

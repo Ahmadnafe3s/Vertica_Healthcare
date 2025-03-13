@@ -16,6 +16,9 @@ import LoaderModel from "@/components/loader"
 import CustomTooltip from "@/components/customTooltip"
 import { useQueryState, parseAsInteger } from "nuqs"
 import CustomPagination from "@/components/customPagination"
+import { useAppSelector } from "@/hooks"
+import { authSelector } from "@/features/auth/authSlice"
+import { cn } from "@/lib/utils"
 
 
 
@@ -29,6 +32,9 @@ const Medication = () => {
   const { opdId } = useParams()
   const itemID = useRef<number>(0)
 
+  // session
+
+  const { user } = useAppSelector(authSelector)
 
   // laoding states
   const [loading, setLoading] = useState<{ inline: boolean, model: boolean }>({ inline: false, model: false })
@@ -121,7 +127,7 @@ const Medication = () => {
 
         <div className="flex justify-between">
           <h1 className="text-lg text-gray-800 font-semibold">Medication</h1>
-          <Button size='sm' onClick={() => setModel(rest => ({ ...rest, medicationForm: true }))}>
+          <Button size='sm' className={cn({ 'hidden': user?.role === 'receptionist' })} onClick={() => setModel(rest => ({ ...rest, medicationForm: true }))}>
             <Plus /> Add Medication
           </Button>
         </div>
@@ -147,7 +153,7 @@ const Medication = () => {
                   <TableHead>Unit</TableHead>
                   <TableHead>Time</TableHead>
                   <TableHead>Dose</TableHead>
-                  <TableHead>Action</TableHead>
+                  <TableHead className={cn({ 'hidden': user?.role === 'receptionist' })}>Action</TableHead>
                 </TableRow>
               </TableHeader>
 
@@ -160,7 +166,7 @@ const Medication = () => {
                     <TableCell>{medication.medicine.unit.name}</TableCell>
                     <TableCell>{medication.time}</TableCell>
                     <TableCell>{medication.dose}</TableCell>
-                    <TableCell className="flex space-x-2">
+                    <TableCell className={cn("flex space-x-2", { 'hidden': user?.role === 'receptionist' })}>
 
                       {/* Edit */}
                       <CustomTooltip message="EDIT">
