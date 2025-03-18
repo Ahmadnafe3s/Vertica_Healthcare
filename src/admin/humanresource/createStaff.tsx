@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createStaffFormSchema } from '@/formSchemas/createStaffFormSchema'
-import { bloodGroups, departments, maritalStatus, roles } from '@/helpers/formSelectOptions'
+import { bloodGroups, degisnations, departments, maritalStatus, roles } from '@/helpers/formSelectOptions'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -13,6 +13,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod'
 import { createStaff, fetchStaffProfile, updateStaff } from './HRApiHandler'
 import { currencySymbol } from '@/helpers/currencySymbol'
+import { ROLE } from '../setup/Authorization/role/role'
+import { getRoles } from '../setup/Authorization/APIHandler'
 
 const CreateStaff = () => {
 
@@ -21,6 +23,9 @@ const CreateStaff = () => {
 
   const [isPending, setPending] = useState<boolean>(false)
   const [editMode, setEditmode] = useState<string | undefined>(id)
+
+  // api state
+  const [roles, setRole] = useState<ROLE[]>([])
 
   const { handleSubmit, reset, register, control, formState: { errors } } = useForm<z.infer<typeof createStaffFormSchema>>({
     resolver: zodResolver(createStaffFormSchema)
@@ -49,11 +54,21 @@ const CreateStaff = () => {
 
   const fetchProfileDetails = async () => {
     try {
-      const data = await fetchStaffProfile(Number(id))
-      reset({
-        ...data,
-        image: undefined
-      })
+      // const data = await fetchStaffProfile(Number(id))
+      // reset({
+      //   ...data,
+      //   image: undefined
+      // })
+    } catch ({ message }: any) {
+      toast.error(message)
+    }
+  }
+
+
+  const fetchRoles = async () => {
+    try {
+      const data = await getRoles()
+      setRole(data)
     } catch ({ message }: any) {
       toast.error(message)
     }
@@ -62,6 +77,7 @@ const CreateStaff = () => {
 
   useEffect(() => {
     if (id) fetchProfileDetails()
+    fetchRoles()
   }, [])
 
 
@@ -93,14 +109,14 @@ const CreateStaff = () => {
           <Controller control={control} name='role' render={({ field }) => {
             return <>
               <Label>Role</Label>
-              <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+              <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(Number(value)) }}>
                 <SelectTrigger >
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
 
                 <SelectContent className='z-[200]'>
                   {roles?.map((role, index) => {
-                    return <SelectItem key={index} value={role.value}>{role.label}</SelectItem>
+                    return <SelectItem key={index} value={String(role.id)}>{role.name}</SelectItem>
                   })}
                 </SelectContent>
               </Select>
@@ -122,7 +138,7 @@ const CreateStaff = () => {
                 </SelectTrigger>
 
                 <SelectContent className='z-[200]'>
-                  {roles?.map((role, index) => {
+                  {degisnations?.map((role, index) => {
                     return <SelectItem key={index} value={role.value}>{role.label}</SelectItem>
                   })}
                 </SelectContent>

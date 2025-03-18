@@ -62,7 +62,7 @@ const PatientProfile = () => {
                     </div>
                     <div className='space-y-2'>
                         <h1 className='text-gray-900 text-2xl font-bold'>{profile?.name}</h1>
-                        {(['admin', 'patient'].includes(session.user?.role!) && (session.user?.id === +id!)) && <div className='flex gap-x-2'>
+                        {(['admin'].includes(session.user?.role!) || (session.user?.id === +id!)) && <div className='flex gap-x-2'>
                             {/* reset */}
                             <CustomTooltip message='Reset Password'>
                                 <Key className='text-green-600 w-4 h-4 cursor-pointer active:scale-95' onClick={() => { router(`../resetpassword/${id}`) }} />

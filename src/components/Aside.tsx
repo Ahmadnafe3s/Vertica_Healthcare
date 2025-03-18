@@ -5,11 +5,15 @@ import { Button, buttonVariants } from './ui/button'
 import { cn } from '@/lib/utils'
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import AlertModel from './alertModel'
 import { authSelector, logout } from '@/features/auth/authSlice'
+import usePermission from '@/authz'
 
 const Aside = () => {
+
+    // custom
+    const { loadPermission, hasPermission } = usePermission()
 
     // model
     const [isAlert, setAlert] = useState<boolean>(false)
@@ -18,8 +22,16 @@ const Aside = () => {
     const dispatch = useAppDispatch()
     const session = useAppSelector(authSelector)
 
+
     // making few routes static
     const Routes = ['admin', 'pharmacist', 'receptionist'].includes(session.user?.role!) ? 'admin' : session.user?.role
+
+
+    useEffect(() => {
+        (async () => {
+            await loadPermission()
+        })()
+    }, [])
 
 
     return (
@@ -29,6 +41,7 @@ const Aside = () => {
                 <ScrollArea className='h-full '>
 
                     <ul className='flex flex-col gap-y-2'>
+
                         <li><Link to={{ pathname: `/${session.user?.role}/dashboard` }} className={
                             buttonVariants({
                                 variant: 'ghost',
@@ -37,29 +50,24 @@ const Aside = () => {
                         }><Airplay className='h-4 w-4' /> Dashboard</Link></li>
 
 
-                        {session.user?.role !== 'pharmacist' &&
-                            <>
-                                <li><Link to={{ pathname: `/${Routes}/appointment` }} className={
-                                    buttonVariants({
-                                        variant: 'ghost',
-                                        className: 'flex text-sm items-center'
-                                    })
-                                }><CalendarClock className='h-4 w-4' /> Appointment</Link></li>
+                        {hasPermission('view', 'appointment') &&
+                            <li><Link to={{ pathname: `/${Routes}/appointment` }} className={
+                                buttonVariants({
+                                    variant: 'ghost',
+                                    className: 'flex text-sm items-center'
+                                })
+                            }><CalendarClock className='h-4 w-4' /> Appointment</Link></li>}
 
-                                <li><Link to={{ pathname: `/${Routes}/opd` }} className={
-                                    buttonVariants({
-                                        variant: 'ghost',
-                                        className: 'flex text-sm items-center'
-                                    })
-                                }><HeartPulse className='h-4 w-4' /> OPD - Out Patient</Link></li>
 
-                            </>
+                        {hasPermission('view', 'opd') && <li><Link to={{ pathname: `/${Routes}/opd` }} className={
+                            buttonVariants({
+                                variant: 'ghost',
+                                className: 'flex text-sm items-center'
+                            })
+                        }><HeartPulse className='h-4 w-4' /> OPD - Out Patient</Link></li>
                         }
 
-
-                        {/* admin and patient roles */}
-
-                        {['admin', 'patient', 'pharmacist'].includes(session.user?.role!) &&
+                        {hasPermission('view', 'pharmacy') &&
 
                             <li><Link to={{ pathname: `/${Routes}/pharmacy` }} className={
                                 buttonVariants({
@@ -72,7 +80,7 @@ const Aside = () => {
 
                         {/* only these role can see this */}
 
-                        {['admin', 'doctor', 'pharmacist', 'receptionist'].includes(session.user?.role!) &&
+                        {hasPermission('view', 'human_resource') &&
                             <li><Link to={{ pathname: '/admin/humanresource/staff' }} className={
                                 buttonVariants({
                                     variant: 'ghost',
@@ -83,10 +91,9 @@ const Aside = () => {
 
 
 
-
                         {/* Tree View Links setup links */}
 
-                        {session.user?.role === 'admin' &&
+                        {hasPermission('view', 'setup') &&
                             <>
                                 <li><Link to={{ pathname: '/admin/dutyroster/rosterreport' }} className={
                                     buttonVariants({
@@ -147,6 +154,20 @@ const Aside = () => {
                                                 <div className="pl-5">
                                                     <Link to={{ pathname: '/admin/setup/event' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
                                                         <ChevronRight className='h-4 w-4' />Calendar</Link>
+                                                </div>
+                                            </AccordionContent>
+
+                                            <AccordionContent className='py-1'>
+                                                <div className="pl-5">
+                                                    <Link to={{ pathname: '/admin/setup/patient' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                        <ChevronRight className='h-4 w-4' />Patients</Link>
+                                                </div>
+                                            </AccordionContent>
+
+                                            <AccordionContent className='py-1'>
+                                                <div className="pl-5">
+                                                    <Link to={{ pathname: '/admin/setup/authorization' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                        <ChevronRight className='h-4 w-4' />Authorization</Link>
                                                 </div>
                                             </AccordionContent>
 

@@ -3,9 +3,9 @@ import { z } from "zod";
 
 export const createStaffFormSchema = z.object({
 
-    role: z.string()
+    role: z.number()
         .min(1, { message: "Role is required" })
-        .default(''),
+        .default(0),
 
     designation: z.string()
         .min(1, { message: "Designation is required" })

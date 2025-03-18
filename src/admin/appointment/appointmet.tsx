@@ -21,12 +21,14 @@ import CustomPagination from '@/components/customPagination'
 import { useQueryState, parseAsInteger } from 'nuqs'
 import AppointmentPDF from './generatePDF/AppointmnetPDF'
 import AppointmentListPDF from './generatePDF/AppointmnetListPDF'
+import usePermission from '@/authz'
 
 
 
 const AdminAppointment = () => {
 
     const itemID = useRef<string>()
+    const { loadPermission, hasPermission } = usePermission()
 
     // params
     const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
@@ -118,6 +120,7 @@ const AdminAppointment = () => {
 
     useEffect(() => {
         getAppointments();
+        loadPermission()
     }, [page, search])
 
 
@@ -131,10 +134,12 @@ const AdminAppointment = () => {
                     <h1 className='font-semibold tracking-tight'>Appointments</h1>
                     <div className='flex gap-x-2 overflow-x-auto'>
 
-                        <Button type='button' size={'sm'}
-                            onClick={() => { setModel((prev) => ({ ...prev, addAppointmentForm: true })) }} >
-                            <Plus /> Appointment
-                        </Button>
+                        {hasPermission('create', 'appointment') && (
+                            <Button type='button' size={'sm'}
+                                onClick={() => { setModel((prev) => ({ ...prev, addAppointmentForm: true })) }} >
+                                <Plus /> Appointment
+                            </Button>
+                        )}
 
                         <Link to={'queue'} className={buttonVariants({
                             variant: 'default', size: 'sm', className: 'flex gap-x-1'

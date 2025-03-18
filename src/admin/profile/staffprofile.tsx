@@ -85,7 +85,7 @@ const Staffprofile = () => {
                     </div>
                     <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
                         <p className='text-gray-700'>Role</p>
-                        <p className='font-semibold'>{profile?.role}</p>
+                        <p className='font-semibold'>{profile?.role?.name}</p>
                     </div>
                     <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
                         <p className='text-gray-700'>Designation</p>

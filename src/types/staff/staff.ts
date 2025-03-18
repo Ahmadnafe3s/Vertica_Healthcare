@@ -1,6 +1,6 @@
 
 export interface staffsData {
-    name: string, id: number, role: string, phone: string, image: string, gender: string
+    name: string, id: number, role: { id: number, name: string }, phone: string, image: string, gender: string
 }
 
 

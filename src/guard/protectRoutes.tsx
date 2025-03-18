@@ -1,3 +1,4 @@
+import usePermission from '@/authz'
 import { authSelector } from '@/features/auth/authSlice'
 import { useAppSelector } from '@/hooks'
 import React from 'react'
@@ -11,10 +12,6 @@ interface ProtectRoutesProps {
 const ProtectRoutes = ({ requiredRole = [], protectElement }: ProtectRoutesProps) => {
 
     const session = useAppSelector(authSelector)
-
-    // if (session.user && session.user.role !== requiredRole) {
-    //     return <div>You are already logged in as a patient. Stay on this page or log out.</div>;
-    // }   // i was trying to prevent users to visit register page
 
     if (!session.user) {
         return <Navigate to="/signin" />

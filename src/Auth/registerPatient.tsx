@@ -9,13 +9,9 @@ import { patientRegistrationSchema, DefaultValues } from '@/formSchemas/patientR
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import toast from 'react-hot-toast'
 import { createPatient, getPatientDetails, updatePatient } from '@/patient/profile/ApiHandlers'
 import { useNavigate, useParams } from 'react-router-dom'
-import { PatientDetails } from '@/types/patient/patient'
-import { authSelector } from '@/features/auth/authSlice'
-import { useAppSelector } from '@/hooks'
 
 
 
@@ -23,8 +19,7 @@ const RegisterPatient = () => {
 
     // params
     const { id } = useParams()
-    // session
-    const session = useAppSelector(authSelector)
+
     // router
     const router = useNavigate()
 
@@ -39,7 +34,6 @@ const RegisterPatient = () => {
 
     const fetchPatientDetails = async () => {
         try {
-            if ((session?.user?.id !== +id!)) return toast.error('Unauthorized User ID')
             const data = await getPatientDetails(+id!)
             patientRegistrationform.reset({
                 ...data,
@@ -54,6 +48,7 @@ const RegisterPatient = () => {
     const onSubmit = async (formData: z.infer<typeof patientRegistrationSchema>) => {
 
         try {
+        
             setPending(true)
             let data
             id ? (
@@ -61,7 +56,7 @@ const RegisterPatient = () => {
                 router(`../profile/${id}`)
             ) : (
                 data = await createPatient(formData),
-                router(`/login`)
+                router(`/signin`)
             )
 
             toast.success(data.message)

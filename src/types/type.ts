@@ -5,7 +5,7 @@
 export interface StaffProfile {
     id: number;
     name: string;
-    role: string;
+    role: { name: string };
     designation: string;
     department: string;
     specialist: string;

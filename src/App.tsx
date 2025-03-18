@@ -5,9 +5,9 @@ import AsideLayout from "./Layouts/AsideLayout";
 import HomePage from "./home/HomePage";
 import RegisterPatient from "./Auth/registerPatient";
 import { Toaster } from "react-hot-toast";
-import { useAppDispatch } from "./hooks";
+import { useAppDispatch, useAppSelector } from "./hooks";
 import { useEffect } from "react";
-import { checkSession } from "./features/auth/authSlice";
+import { authSelector, checkSession } from "./features/auth/authSlice";
 import ProtectRoutes from "./guard/protectRoutes";
 import Not_found from "./error/not_found";
 import Unauthorized from "./error/unauthorized";
@@ -22,13 +22,14 @@ import SetupEventRoutes from "./routes/AdminSetup/EventRoutes";
 import AdminRoutes from "./routes/AdminRoutes";
 import PharmacistRoutes from "./routes/pharmacist";
 import ReceptionistRoutes from "./routes/Receptionist";
-
-
+import SetupPatientRoutes from "./routes/AdminSetup/patientRoutes";
+import SetupAuthzRoutes from "./routes/AdminSetup/authzRoutes";
 
 
 function App() {
 
   const dispatch = useAppDispatch()
+  
 
   useEffect(() => {
     dispatch(checkSession())
@@ -44,7 +45,7 @@ function App() {
 
         <Route path="/" element={<HomePage />} />
         <Route path="signin" element={<SignIn />} />
-        <Route path="registerPatient" element={<ProtectRoutes protectElement={<RegisterPatient />} />} />
+        <Route path="registerPatient" element={<RegisterPatient />} />
 
 
         {/* routes with aside */}
@@ -80,6 +81,12 @@ function App() {
 
           {/* setup route for Event */}
           {SetupEventRoutes()}
+
+          {/* setup route for Patinets */}
+          {SetupPatientRoutes()}
+
+          {/* setup route for Patinets */}
+          {SetupAuthzRoutes()}
 
         </Route>
 

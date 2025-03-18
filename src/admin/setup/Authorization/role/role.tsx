@@ -1,0 +1,175 @@
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Pencil, Plus, Trash } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { z } from 'zod'
+import toast from 'react-hot-toast'
+import AlertModel from '@/components/alertModel'
+import CustomTooltip from '@/components/customTooltip'
+import CreateRole, { roleFormSchema } from './createRole'
+import { createRole, deleteRole, getRoleDetails, getRoles, updateRole } from '../APIHandler'
+import { useConfirmation } from '@/hooks/useConfirmation'
+
+
+export interface ROLE {
+    "id": number,
+    "name": string
+}
+
+
+const Role = () => {
+
+    // Loaders
+    const [isPending, setPending] = useState<boolean>(false)
+
+    // custom hook
+
+    const { confirm, confirmationProps } = useConfirmation()
+
+    // model states
+    const [isRoleForm, setRoleForm] = useState<boolean>(false)
+
+    // api state
+    const [roles, setRoles] = useState<ROLE[]>([])
+    const [roleDts, setRoleDts] = useState<ROLE>()
+
+
+    // performing upsert 
+    const handleSubmit = async (formData: z.infer<typeof roleFormSchema>) => {
+        try {
+            let data;
+            setPending(true)
+            roleDts ? (
+                data = await updateRole(formData, roleDts.id),
+                setRoleDts(undefined)
+            ) :
+                (data = await createRole(formData))
+            toast.success(data.message)
+            setRoleForm(false)
+            fetchRoles()
+        } catch ({ message }: any) {
+            toast.error(message)
+        } finally {
+            setPending(false)
+        }
+    }
+
+
+    // fetching list
+    const fetchRoles = async () => {
+        try {
+            const data = await getRoles()
+            setRoles(data)
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+
+    // fetching details for update mode
+
+    const fetchRoleDetails = async (id: number) => {
+        try {
+            const data = await getRoleDetails(id)
+            setRoleDts(data)
+            setRoleForm(true)
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+
+
+    //   deleting details
+    const onDelete = async (id: number) => {
+        try {
+            const isConfirm = await confirm()
+            if (!isConfirm) return null
+            const data = await deleteRole(id)
+            toast.success(data.message)
+            fetchRoles()
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+
+
+    useEffect(() => {
+        fetchRoles()
+    }, [])
+
+
+    return (
+        <section className="flex flex-col pb-16 gap-y-5 pt-5">
+
+            <div className="flex justify-between">
+                <h1 className="text-lg text-gray-800 font-semibold">Roles</h1>
+                <Button size='sm' onClick={() => { setRoleForm(true) }}>
+                    <Plus /> Add Role
+                </Button>
+            </div>
+
+            <Separator />
+
+            <Table className="rounded-lg border">
+                <TableHeader className='bg-zinc-100'>
+                    <TableRow>
+                        <TableHead >ID</TableHead>
+                        <TableHead className=''>Role</TableHead>
+                        <TableHead >Action</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {roles.map((role) => {
+                        return <TableRow key={role.id}>
+                            <TableCell>{role.id}</TableCell>
+                            <TableCell>{role.name}</TableCell>
+                            <TableCell className='flex space-x-2'>
+                                {/* EDIT  */}
+                                <CustomTooltip message='EDIT'>
+                                    <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                                        fetchRoleDetails(role.id)
+                                    }} />
+                                </CustomTooltip>
+
+                                {/* DELETE  */}
+                                <CustomTooltip message='DELETE'>
+                                    <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                                        onDelete(role.id)
+                                    }} />
+                                </CustomTooltip>
+                            </TableCell>
+                        </TableRow>
+                    })}
+                </TableBody>
+            </Table>
+
+            {/* Models */}
+
+            {/* form model */}
+            {isRoleForm && (
+                <CreateRole isPending={isPending} Submit={handleSubmit}
+                    defaultVals={roleDts!}
+                    onClick={() => { setRoleForm(false); setRoleDts(undefined) }}
+                />
+            )}
+
+
+            {/* Alert model */}
+            {confirmationProps.isOpen && <AlertModel
+                cancel={() => { confirmationProps.onCancel() }}
+                continue={() => confirmationProps.onConfirm()}
+            />}
+
+
+
+        </section>
+    )
+}
+
+
+
+
+export default Role

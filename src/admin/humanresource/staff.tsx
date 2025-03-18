@@ -94,8 +94,8 @@ const Staff = () => {
             {/* grid for staffs */}
             <div className='grid xl:grid-cols-4 gap-4 lg:grid-cols-3 sm:grid-cols-2 py-5'>
               {/* staff card */}
-              {staffList?.data.map((staff, i) => {
-                return <div className="mx-auto w-full h-28" key={i}>
+              {staffList?.data.map((staff, i) => (
+                <div className="mx-auto w-full h-28" key={i}>
                   <Link to={{
                     pathname: `/admin/profile/staff/${staff.id}`
                   }} className='flex items-center gap-x-3 p-2.5 active:scale-95 rounded-lg ring-1 transition-all ring-gray-200 hover:shadow-lg'>
@@ -108,12 +108,12 @@ const Staff = () => {
                       <p className='font-semibold'>{staff.name}</p>
                       <p className='text-sm'>{staff.id}</p>
                       <p className='text-sm'>{staff.phone}</p>
-                      <p className='bg-gray-200 w-fit rounded-sm px-1 text-sm'>{staff.role}</p>
+                      <p className='bg-gray-200 w-fit rounded-sm px-1 text-sm'>{staff.role.name}</p>
                     </span>
 
                   </Link>
                 </div>
-              })}
+              ))}
             </div>
             {staffList?.data.length! < 1 && <h1 className='text-gray-900 font-semibold text-lg flex items-center gap-1'>Not found <SearchX className='h-5 w-5' /></h1>}
           </div>

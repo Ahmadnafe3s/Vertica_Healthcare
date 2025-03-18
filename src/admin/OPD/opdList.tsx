@@ -25,6 +25,7 @@ import { authSelector } from '@/features/auth/authSlice'
 
 
 
+
 const OPDLIST = () => {
 
   //utilities
@@ -64,11 +65,11 @@ const OPDLIST = () => {
     try {
       const data = await getOPDs({ search: search!, page, limit: 10 })
       setOPD_list(data)
-
     } catch ({ message }: any) {
       toast.error(message)
     }
   }
+
 
 
   // searching list
@@ -76,6 +77,7 @@ const OPDLIST = () => {
     value ? setSearch(value) : setSearch(null)
     setPage(1)
   }, 400)
+
 
 
   // handling prescription
