@@ -20,8 +20,6 @@ import { PaymentOptions } from '@/helpers/formSelectOptions'
 import Dialog from '@/components/Dialog'
 import { useDebouncedCallback } from 'use-debounce'
 import { calculateAmount } from '@/helpers/calculateAmount'
-import { useAppSelector } from '@/hooks'
-import { authSelector } from '@/features/auth/authSlice'
 import { cn } from '@/lib/utils'
 
 
@@ -32,10 +30,8 @@ interface AddAppointmentProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 
-
 function AddAppointment({ Submit, isPending, ...props }: AddAppointmentProps) {
 
-    const session = useAppSelector(authSelector)
     const [patients, setPatients] = useState<Patients[]>([])
     const [doctors, setDoctors] = useState<Doctors[]>([])
 
@@ -92,7 +88,8 @@ function AddAppointment({ Submit, isPending, ...props }: AddAppointmentProps) {
                     {/* Patient Section */}
                     <div>
                         <Controller name='patientId' control={control} render={({ field }) => {
-                            return <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(Number(value)) }} defaultValue={'1'}>
+                            return <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(Number(value)); console.log(value);
+                             }}>
                                 <SelectTrigger className='sm:w-[300px] w-40'>
                                     <SelectValue placeholder="Search" />
                                 </SelectTrigger>

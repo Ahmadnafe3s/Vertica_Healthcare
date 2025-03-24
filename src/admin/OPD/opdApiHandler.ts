@@ -320,7 +320,7 @@ export const updateCharge = async (id: string | number, formData: z.infer<typeof
 
 
 
-export const deleteCharge = async (id: string | number) => {
+export const deleteCharge = async (id: number) => {
     try {
         const res = await AxiosClient.delete(`/api/charge/${id}`)
         return res.data

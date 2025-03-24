@@ -43,7 +43,7 @@ const SignIn = () => {
 
       localStorage.setItem('token', JSON.stringify(response.data.token))
 
-      router(`/${user.role}/dashboard`)
+      router(`/admin/dashboard`)
 
     } catch (error: any) {
       toast.error(error.response.data.message)

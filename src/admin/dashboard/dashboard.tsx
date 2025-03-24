@@ -2,23 +2,26 @@ import { chartConfig, incomeExpenseConfig } from '@/chartConfig/chartConfig'
 import RectCard from '@/components/rectCard'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
-import { CalendarClock, DollarSign, HeartPulse, Pill } from 'lucide-react'
+import { Activity, CalendarClock, DollarSign, HandCoins, HeartPulse, Package, Pill, ReceiptText, ShoppingCart } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { Area, AreaChart, CartesianGrid, Label, Pie, PieChart, XAxis } from 'recharts'
 import { useEffect, useState } from 'react'
-import { AdminDash_MM_IncExp, AdminDashAppmtReport, AdminDashIncExp, AdminDashVisitors } from '@/types/dashboard/adminDashboard'
+import { AdminDash_MM_IncExp, AdminDashAppmtReport, AdminDashTotalCount, AdminDashVisitors } from '@/types/dashboard/adminDashboard'
 import { getAdminDash_MM_IncExp, getAdminDashAppointmentReport, getAdminDashIncExp, getAdminDashVisitors } from './apiHandler'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Default_MM_Inc_Exp_Data } from './defaultChartdata'
 import StaffCalendar from '@/components/staffCalendar'
+import usePermission from '@/authz'
 
 
 
 
 const AdminDashboard = () => {
 
+    const { loadPermission, hasPermission } = usePermission()
+
     // Api states
-    const [IncExp, setIncExp] = useState<AdminDashIncExp>()
+    const [total, setTotalCount] = useState<AdminDashTotalCount>()
     const [MonthlyIncExp, setMonthlyIncExp] = useState<AdminDash_MM_IncExp[]>([])
     const [visitors, setVisitors] = useState<AdminDashVisitors[]>([])
     const [appmtReport, setAppmtReport] = useState<AdminDashAppmtReport>()
@@ -26,14 +29,14 @@ const AdminDashboard = () => {
 
     const fetchAdminDashStats = async () => {
         try {
-            const [inc_exp, monthly_inc_exp, visitors, appmtReport] = await Promise.all([
+            const [total, monthly_inc_exp, visitors, appmtReport] = await Promise.all([
                 getAdminDashIncExp(),
                 getAdminDash_MM_IncExp(),
                 getAdminDashVisitors(), // start woking from here
                 getAdminDashAppointmentReport()
             ])
             // states
-            setIncExp(inc_exp)
+            setTotalCount(total)
             setMonthlyIncExp(monthly_inc_exp)
             setVisitors(visitors)
             setAppmtReport(appmtReport)
@@ -58,6 +61,7 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         fetchAdminDashStats()
+        loadPermission()
     }, [])
 
     return (
@@ -67,36 +71,60 @@ const AdminDashboard = () => {
             {/* total income section */}
             <div className='grid lg:grid-cols-4 sm:grid-cols-2 gap-4'>
 
-                <RectCard name='OPD Income' path={'../opd'} amount={IncExp?.opdIncome ?? 0}>
-                    <HeartPulse className='h-8 w-8 text-red-500' />
-                </RectCard>
+                {hasPermission('opd_income', 'dashboard') && (
+                    <RectCard name='OPD Income' path={'../opd'} amount={total?.opdIncome ?? 0}>
+                        <HeartPulse className='h-8 w-8 text-red-500' />
+                    </RectCard>
+                )}
 
-                <RectCard name='Appointment Income' path={'../appointment'} amount={IncExp?.appointmentIncome ?? 0}>
-                    <CalendarClock className='h-8 w-8 text-slate-500' />
-                </RectCard>
+                {hasPermission('opds', 'dashboard') && (
+                    <RectCard name='Total OPDs' path={'../opd'} visits={total?.opds ?? 0}>
+                        <Activity className='h-8 w-8 text-amber-500' />
+                    </RectCard>
+                )}
 
-                <RectCard name='Pharmacy Income' path={'../pharmacy'} amount={IncExp?.pharmacyIncome ?? 0}>
-                    <Pill className='h-8 w-8 text-green-500' />
-                </RectCard>
+                {hasPermission('appmnt_income', 'dashboard') && (
+                    <RectCard name='Appointment Income' path={'../appointment'} amount={total?.appointmentIncome ?? 0}>
+                        <CalendarClock className='h-8 w-8 text-slate-500' />
+                    </RectCard>
+                )}
 
-                {/* <RectCard name='Pathylogy Income' path={''} amount={45600}>
-                    <TestTubeDiagonal className='h-8 w-8 text-blue-500' />
-                </RectCard> */}
+                {hasPermission('pharmacy_income', 'dashboard') && (
+                    <RectCard name='Pharmacy Income' path={'../pharmacy'} amount={total?.pharmacyIncome ?? 0}>
+                        <Pill className='h-8 w-8 text-green-500' />
+                    </RectCard>
+                )}
 
-                {/* <RectCard name='Radiology Income' path={''} amount={780}>
-                    <Radiation className='h-8 w-8 text-yellow-500' />
-                </RectCard> */}
+                {hasPermission('pharmacy_bill', 'dashboard') && (
+                    <RectCard name='Pharmacy Bills' path={''} visits={total?.pharmacyBills ?? 0}>
+                        <ReceiptText className='h-8 w-8 text-blue-500' />
+                    </RectCard>
+                )}
 
-                {/* <RectCard name='Ambulance Income' path={''} amount={6900}>
-                    <Ambulance className='h-8 w-8 text-violet-500' />
-                </RectCard> */}
+                {hasPermission('medicines', 'dashboard') && (
+                    <RectCard name='Total Medicines' path={'/admin/pharmacy/medicines'} visits={total?.medicines ?? 0}>
+                        <Package className='h-8 w-8 text-teal-500' />
+                    </RectCard>
+                )}
 
-                <RectCard name='Expenses' path={''} amount={IncExp?.expenses!}>
-                    <DollarSign className='h-8 w-8 text-pink-500 ' />
-                </RectCard>
+                {hasPermission('pharmacy_expenses', 'dashboard') && (
+                    <RectCard name='Pharmacy Expenses' path={''} amount={total?.pharmacyExpenses ?? 0}>
+                        <HandCoins className='h-8 w-8 text-yellow-500' />
+                    </RectCard>
+                )}
 
+                {hasPermission('medicine_purchases', 'dashboard') && (
+                    <RectCard name='Medicine Purchases' path={''} visits={total?.purchases ?? 0}>
+                        <ShoppingCart className='h-8 w-8 text-violet-500' />
+                    </RectCard>
+                )}
+
+                {hasPermission('expenses', 'dashboard') && (
+                    <RectCard name='Expenses' path={''} amount={total?.expenses! ?? 0}>
+                        <DollarSign className='h-8 w-8 text-pink-500 ' />
+                    </RectCard>
+                )}
             </div>
-
 
 
 
@@ -106,183 +134,193 @@ const AdminDashboard = () => {
 
                 <div className="grid lg:grid-cols-3 gap-3 items-center">
                     {/* Montly Income & expenses Chart */}
-                    <div className="w-full">
-                        <Card  >
-                            <CardHeader>
+                    {hasPermission('income_expenses', 'dashboard') && (
+                        <div className="w-full">
+                            <Card  >
+                                <CardHeader>
 
-                                <div className="flex justify-between items-center mb-2">
-                                    <p className='text-gray-500'>Search</p>
-                                    <div className="w-40">
-                                        <Select onValueChange={(v) => onYearChnage(Number(v))}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value={String(new Date().getFullYear())}>{new Date().getFullYear()}</SelectItem>
-                                                <SelectItem value={String(new Date().getFullYear() - 1)}>{new Date().getFullYear() - 1}</SelectItem>
-                                                <SelectItem value={String(new Date().getFullYear() - 2)}>{new Date().getFullYear() - 2}</SelectItem>
-                                                <SelectItem value={String(new Date().getFullYear() - 3)}>{new Date().getFullYear() - 3}</SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <p className='text-gray-500'>Search</p>
+                                        <div className="w-40">
+                                            <Select onValueChange={(v) => onYearChnage(Number(v))}>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value={String(new Date().getFullYear())}>{new Date().getFullYear()}</SelectItem>
+                                                    <SelectItem value={String(new Date().getFullYear() - 1)}>{new Date().getFullYear() - 1}</SelectItem>
+                                                    <SelectItem value={String(new Date().getFullYear() - 2)}>{new Date().getFullYear() - 2}</SelectItem>
+                                                    <SelectItem value={String(new Date().getFullYear() - 3)}>{new Date().getFullYear() - 3}</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <CardTitle>Monthly Income & Expense</CardTitle>
-                                <CardDescription>
-                                    Showing total Income & Expenses for the 12 months
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <ChartContainer config={incomeExpenseConfig}>
-                                    <AreaChart
-                                        accessibilityLayer
-                                        data={MonthlyIncExp.length > 1 ? MonthlyIncExp : Default_MM_Inc_Exp_Data}
-                                        margin={{
-                                            left: 12,
-                                            right: 12,
-                                        }}
-                                    >
-                                        <CartesianGrid
-                                            vertical
-                                            stroke="#e0e0e0" // Change color of grid lines
-                                            strokeDasharray="5 5" // Optional: Customize dash pattern
+                                    <CardTitle>Monthly Income & Expense</CardTitle>
+                                    <CardDescription>
+                                        Showing total Income & Expenses for the 12 months
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <ChartContainer config={incomeExpenseConfig}>
+                                        <AreaChart
+                                            accessibilityLayer
+                                            data={MonthlyIncExp.length > 1 ? MonthlyIncExp : Default_MM_Inc_Exp_Data}
+                                            margin={{
+                                                left: 12,
+                                                right: 12,
+                                            }}
+                                        >
+                                            <CartesianGrid
+                                                vertical
+                                                stroke="#e0e0e0" // Change color of grid lines
+                                                strokeDasharray="5 5" // Optional: Customize dash pattern
 
-                                        />
-                                        <XAxis
-                                            dataKey="month"
-                                            tickLine={false}
-                                            axisLine={false}
-                                            tickMargin={8}
-                                            tickFormatter={(value: string) => value.slice(0, 3)}
-                                        />
-                                        <ChartTooltip
-                                            cursor={false}
-                                            content={<ChartTooltipContent indicator="dot" />}
-                                        />
-                                        <Area
-                                            dataKey="Expenses"
-                                            type="natural"
-                                            fill="var(--color-mobile)"
-                                            fillOpacity={0.4}
-                                            stroke="var(--color-mobile)"
-                                            stackId="a"
-                                        />
-                                        <Area
-                                            dataKey="Income"
-                                            type="natural"
-                                            fill="var(--color-desktop)"
-                                            fillOpacity={0.4}
-                                            stroke="var(--color-desktop)"
-                                            stackId="a"
-                                        />
-                                    </AreaChart>
-                                </ChartContainer>
-                                {MonthlyIncExp.length < 1 && <p className='text-red-600 italic'>No data found</p>}
-                            </CardContent>
-                            <CardFooter className='space-x-2'>
-                                <p className='text-sm text-gray-500'>Income & Expenses From</p>
-                                <p className='text-sm font-semibold text-gray-500'>January - Dec</p>
-                            </CardFooter>
-                        </Card>
-                    </div>
+                                            />
+                                            <XAxis
+                                                dataKey="month"
+                                                tickLine={false}
+                                                axisLine={false}
+                                                tickMargin={8}
+                                                tickFormatter={(value: string) => value.slice(0, 3)}
+                                            />
+                                            <ChartTooltip
+                                                cursor={false}
+                                                content={<ChartTooltipContent indicator="dot" />}
+                                            />
+                                            <Area
+                                                dataKey="Expenses"
+                                                type="natural"
+                                                fill="var(--color-mobile)"
+                                                fillOpacity={0.4}
+                                                stroke="var(--color-mobile)"
+                                                stackId="a"
+                                            />
+                                            <Area
+                                                dataKey="Income"
+                                                type="natural"
+                                                fill="var(--color-desktop)"
+                                                fillOpacity={0.4}
+                                                stroke="var(--color-desktop)"
+                                                stackId="a"
+                                            />
+                                        </AreaChart>
+                                    </ChartContainer>
+                                    {MonthlyIncExp.length < 1 && <p className='text-red-600 italic'>No data found</p>}
+                                </CardContent>
+                                <CardFooter className='space-x-2'>
+                                    <p className='text-sm text-gray-500'>Income & Expenses From</p>
+                                    <p className='text-sm font-semibold text-gray-500'>January - Dec</p>
+                                </CardFooter>
+                            </Card>
+                        </div>
+                    )}
+
+
 
                     {/* pie chart 1 */}
 
-                    <div >
-                        <Card className="flex flex-col mx-auto">
-                            <CardHeader className="items-center pb-0">
-                                <CardTitle>Appointments - Status</CardTitle>
-                                <CardDescription>January - Dec {new Date().getFullYear()}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex-1 pb-0">
-                                <ChartContainer
-                                    config={chartConfig}
-                                    className="mx-auto aspect-square max-h-[250px]"
-                                >
-                                    <PieChart>
-                                        <ChartTooltip
-                                            cursor={false}
-                                            content={<ChartTooltipContent hideLabel />}
-                                        />
-                                        <Pie
-                                            data={appmtReport?.status}
-                                            dataKey="count"
-                                            nameKey="status"
-                                            innerRadius={60}
-                                            strokeWidth={5}
-                                        >
-                                            <Label
-                                                content={({ viewBox }) => {
-                                                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                                                        return (
-                                                            <text
-                                                                x={viewBox.cx}
-                                                                y={viewBox.cy}
-                                                                textAnchor="middle"
-                                                                dominantBaseline="middle"
-                                                            >
-                                                                <tspan
+                    {hasPermission('appointments', 'dashboard') && (
+                        <div >
+                            <Card className="flex flex-col mx-auto">
+                                <CardHeader className="items-center pb-0">
+                                    <CardTitle>Appointments - Status</CardTitle>
+                                    <CardDescription>January - Dec {new Date().getFullYear()}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="flex-1 pb-0">
+                                    <ChartContainer
+                                        config={chartConfig}
+                                        className="mx-auto aspect-square max-h-[250px]"
+                                    >
+                                        <PieChart>
+                                            <ChartTooltip
+                                                cursor={false}
+                                                content={<ChartTooltipContent hideLabel />}
+                                            />
+                                            <Pie
+                                                data={appmtReport?.status}
+                                                dataKey="count"
+                                                nameKey="status"
+                                                innerRadius={60}
+                                                strokeWidth={5}
+                                            >
+                                                <Label
+                                                    content={({ viewBox }) => {
+                                                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                                                            return (
+                                                                <text
                                                                     x={viewBox.cx}
                                                                     y={viewBox.cy}
-                                                                    className="fill-foreground text-3xl font-bold"
+                                                                    textAnchor="middle"
+                                                                    dominantBaseline="middle"
                                                                 >
-                                                                    {appmtReport?.totalAppmts?.toLocaleString()}
-                                                                </tspan>
-                                                                <tspan
-                                                                    x={viewBox.cx}
-                                                                    y={(viewBox.cy || 0) + 24}
-                                                                    className="fill-muted-foreground"
-                                                                >
-                                                                    Appointments
-                                                                </tspan>
-                                                            </text>
-                                                        )
-                                                    }
-                                                }}
-                                            />
-                                        </Pie>
-                                    </PieChart>
-                                </ChartContainer>
-                            </CardContent>
-                            <CardFooter className="flex-col gap-2 text-sm">
-                                <div className="leading-none text-muted-foreground">
-                                    Showing Appointment Report for 12 months
-                                </div>
-                            </CardFooter>
-                        </Card>
-                    </div>
+                                                                    <tspan
+                                                                        x={viewBox.cx}
+                                                                        y={viewBox.cy}
+                                                                        className="fill-foreground text-3xl font-bold"
+                                                                    >
+                                                                        {appmtReport?.totalAppmts?.toLocaleString()}
+                                                                    </tspan>
+                                                                    <tspan
+                                                                        x={viewBox.cx}
+                                                                        y={(viewBox.cy || 0) + 24}
+                                                                        className="fill-muted-foreground"
+                                                                    >
+                                                                        Appointments
+                                                                    </tspan>
+                                                                </text>
+                                                            )
+                                                        }
+                                                    }}
+                                                />
+                                            </Pie>
+                                        </PieChart>
+                                    </ChartContainer>
+                                </CardContent>
+                                <CardFooter className="flex-col gap-2 text-sm">
+                                    <div className="leading-none text-muted-foreground">
+                                        Showing Appointment Report for 12 months
+                                    </div>
+                                </CardFooter>
+                            </Card>
+                        </div>
+                    )}
+
+
 
                     {/* numbers of services */}
 
-                    <div className="lg:col-span-1">
+                    {hasPermission('visitors', 'dashboard') && (
+                        <div className="lg:col-span-1">
 
-                        <Card className="flex flex-col mx-auto">
-                            <CardHeader className="items-center pb-0">
-                                <CardTitle>Visitors Chart</CardTitle>
-                                <CardDescription>January - Dec {new Date().getFullYear()}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex-1 pb-0">
-                                <ChartContainer
-                                    config={chartConfig}
-                                    className="mx-auto aspect-square max-h-[250px]"
-                                >
-                                    <PieChart>
-                                        <ChartTooltip
-                                            cursor={false}
-                                            content={<ChartTooltipContent hideLabel />}
-                                        />
-                                        <Pie data={visitors} dataKey="visitors" nameKey="service" />
-                                    </PieChart>
-                                </ChartContainer>
-                            </CardContent>
-                            <CardFooter className="flex-col gap-2 text-sm">
-                                <div className="leading-none text-muted-foreground">
-                                    Showing Total Visitors for 12 months
-                                </div>
-                            </CardFooter>
-                        </Card>
+                            <Card className="flex flex-col mx-auto">
+                                <CardHeader className="items-center pb-0">
+                                    <CardTitle>Visitors Chart</CardTitle>
+                                    <CardDescription>January - Dec {new Date().getFullYear()}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="flex-1 pb-0">
+                                    <ChartContainer
+                                        config={chartConfig}
+                                        className="mx-auto aspect-square max-h-[250px]"
+                                    >
+                                        <PieChart>
+                                            <ChartTooltip
+                                                cursor={false}
+                                                content={<ChartTooltipContent hideLabel />}
+                                            />
+                                            <Pie data={visitors} dataKey="visitors" nameKey="service" />
+                                        </PieChart>
+                                    </ChartContainer>
+                                </CardContent>
+                                <CardFooter className="flex-col gap-2 text-sm">
+                                    <div className="leading-none text-muted-foreground">
+                                        Showing Total Visitors for 12 months
+                                    </div>
+                                </CardFooter>
+                            </Card>
 
-                    </div>
+                        </div>
+                    )}
 
                 </div>
             </div>

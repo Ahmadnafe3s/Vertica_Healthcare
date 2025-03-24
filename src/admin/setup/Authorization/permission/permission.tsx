@@ -12,10 +12,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const Permission = () => {
 
     // have to create dynamically
-    const module = ['appointment', 'opd', 'pharmacy', 'medicine', 'purchase_medicine', 'prescription', 'medication', 'operation', 'charges', 'payments', 'vitals', 'timeline', 'human_resource', 'duty_roster', 'setup']
+    const module = ['appointment', 'queue', 'cancelled', 'opd', 'pharmacy_bill', 'medicines', 'purchase_medicine', 'prescription', 'medication', 'operation', 'charges', 'payments', 'vitals', 'timeline', 'human_resource', 'duty_roster', 'setup']
+
+
+    const dashboardPermissions = ['opd_income', 'opds', 'appointments', 'appmnt_income', 'pharmacy_income', 'pharmacy_bill' , 'medicines', 'income_expenses' , 'medicine_purchases', 'pharmacy_expenses', 'expenses', 'visitors',]
+
 
     const [permissions, setPermissions] = useState(new Map())
-
 
     const [roles, setRoles] = useState<ROLE[]>([])
     const roleId = useRef<number>()
@@ -123,19 +126,36 @@ const Permission = () => {
             </Table>
 
 
+            {/* dashboard permissions */}
 
-            {/* Models */}
+            <div className="mt-10">
 
+                <h1 className="text-gray-800 font-medium mb-4">Dashboard Permission</h1>
 
-
-            {/* Alert */}
-            {/* {isAlert && (
-                <AlertModel
-                    isPending={isPending}
-                    cancel={() => { setAlert(false) }}
-                    continue={onDelete}
-                />
-            )} */}
+                <Table className="rounded-lg border">
+                    <TableHeader className='bg-zinc-100'>
+                        <TableRow>
+                            <TableHead >Module</TableHead>
+                            {dashboardPermissions.map((action, i) => (
+                                <TableHead key={i}>{action}</TableHead>
+                            ))}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell>Dashboard</TableCell>
+                            {dashboardPermissions.map((action) => {
+                                const perm = `${action}:dashboard`;
+                                const permID = permissions.get(perm)
+                                return <TableCell key={action}>
+                                    {/* checking if any role has permission the checked */}
+                                    <Checkbox checked={permissions.has(perm)} onCheckedChange={(value) => { handleCheckBox(Boolean(value), perm, permID?.id) }} />
+                                </TableCell>
+                            })}
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </div>
 
         </section>
     )

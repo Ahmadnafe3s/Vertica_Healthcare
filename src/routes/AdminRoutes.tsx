@@ -40,11 +40,11 @@ const AdminRoutes = () => {
             {/* Dashboard */}
             <Route
                 path="dashboard"
-                element={<ProtectRoutes requiredRole={["admin"]} protectElement={<AdminDashboard />} />}
+                element={<ProtectRoutes protectElement={<AdminDashboard />} />}
             />
 
             {/* Appoinment routes */}
-            <Route path="appointment" element={<ProtectRoutes requiredRole={["admin", "receptionist"]} protectElement={<AppointmentLayout />} />}>
+            <Route path="appointment" element={<ProtectRoutes requiredRole={["admin", "receptionist", "doctor"]} protectElement={<AppointmentLayout />} />}>
                 <Route path="" element={<AdminAppointment />} />
                 <Route path="queue" element={<QueueAppointment />} />
                 <Route path="cancelled" element={<CancelledAppointments />} />
@@ -52,8 +52,8 @@ const AdminRoutes = () => {
 
             {/* OPD Routes */}
             <Route path="opd" element={<AdminOPDlayout />}>
-                <Route path="" element={<ProtectRoutes requiredRole={["admin", "receptionist"]} protectElement={<OPDLIST />} />} />
-                <Route path="patient/:patientId/:opdId" element={<ProtectRoutes requiredRole={["admin", "doctor" , "receptionist"]} protectElement={<OpdDetailsLayout />} />}>
+                <Route path="" element={<ProtectRoutes requiredRole={["admin", "doctor", "receptionist"]} protectElement={<OPDLIST />} />} />
+                <Route path="patient/:patientId/:opdId" element={<OpdDetailsLayout />}>
                     <Route path="" element={<VisitDetails />} />
                     <Route path="medication" element={<Medication />} />
                     <Route path="vital" element={<Vital />} />
@@ -86,7 +86,7 @@ const AdminRoutes = () => {
             </Route>
 
             {/* Duty Roster Routes */}
-            <Route path="dutyroster" element={<ProtectRoutes requiredRole={["admin"]} protectElement={<DutuRoster />} />}>
+            <Route path="dutyroster" element={<ProtectRoutes protectElement={<DutuRoster />} />}>
                 <Route path="rosterreport" element={<RosterReport />} />
             </Route>
 

@@ -21,6 +21,7 @@ import OpdBillPDF from './pdf/bill'
 import OpdsPdf from './pdf/opds'
 import { useAppSelector } from '@/hooks'
 import { authSelector } from '@/features/auth/authSlice'
+import usePermission from '@/authz'
 
 
 
@@ -31,9 +32,12 @@ const OPDLIST = () => {
   //utilities
   const opdId = useRef<string>('')
   const patientId = useRef<number>()
-  const contentRef = useRef(null)
 
   const { user } = useAppSelector(authSelector)
+
+  // my custom hook
+
+  const { loadPermission, hasPermission } = usePermission()
 
   // Query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
@@ -139,6 +143,7 @@ const OPDLIST = () => {
 
   useEffect(() => {
     fetchOPDs()
+    loadPermission()
   }, [page, search])
 
 
@@ -176,7 +181,7 @@ const OPDLIST = () => {
 
       {/* pagination */}
       <section className="flex flex-col mb-16 gap-y-5 min-h-[75vh]">
-        <div className="flex-1 space-y-5" ref={contentRef}>
+        <div className="flex-1 space-y-5">
           <Table className="border rounded-lg my-10">
             <TableHeader className='bg-gray-100 '>
               <TableRow>
@@ -216,19 +221,21 @@ const OPDLIST = () => {
 
                   <TableCell className='flex gap-x-2 items-center print:hidden'>
                     {opd.prescriptions?.id ?
-                      (
-                        <CustomTooltip message='prescription'>
-                          <Syringe className='cursor-pointer text-gray-600 w-5 h-5'
-                            onClick={async () => {
-                              await fetchPrescriptionDetails(opd.prescriptions.id)
-                              setModel(prev => ({ ...prev, prescriptionDetails: true }))
-                            }}
-                          />
-                        </CustomTooltip>
-                      )
+                      <>
+                        {hasPermission('view', 'prescription') && (
+                          <CustomTooltip message='prescription'>
+                            <Syringe className='cursor-pointer text-gray-600 w-5 h-5'
+                              onClick={async () => {
+                                await fetchPrescriptionDetails(opd.prescriptions.id)
+                                setModel(prev => ({ ...prev, prescriptionDetails: true }))
+                              }}
+                            />
+                          </CustomTooltip>
+                        )}
+                      </>
                       :
                       <>
-                        {user?.role !== 'receptionist' && (
+                        {hasPermission('create', 'prescription') && (
                           <CustomTooltip message='Add prescription'>
                             <ClipboardPlus className='cursor-pointer text-gray-600 w-5 h-5'
                               onClick={() => { opdId.current = opd.id; patientId.current = opd.patientId; setModel(prev => ({ ...prev, prescriptionForm: true })) }}

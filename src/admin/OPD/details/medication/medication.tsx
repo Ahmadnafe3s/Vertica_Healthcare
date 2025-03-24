@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Pencil, Plus, SearchX, Trash } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import MedicationForm from "./medicationForm"
 import toast from "react-hot-toast"
 import { createMedication, deleteMedication, getMedicationDetails, getMedications, updateMedication } from "../../opdApiHandler"
@@ -16,9 +16,8 @@ import LoaderModel from "@/components/loader"
 import CustomTooltip from "@/components/customTooltip"
 import { useQueryState, parseAsInteger } from "nuqs"
 import CustomPagination from "@/components/customPagination"
-import { useAppSelector } from "@/hooks"
-import { authSelector } from "@/features/auth/authSlice"
-import { cn } from "@/lib/utils"
+import usePermission from "@/authz"
+import { useConfirmation } from "@/hooks/useConfirmation"
 
 
 
@@ -30,20 +29,17 @@ const Medication = () => {
 
   //credentials
   const { opdId } = useParams()
-  const itemID = useRef<number>(0)
 
-  // session
 
-  const { user } = useAppSelector(authSelector)
+  // custom hook
+  const { hasPermission, loadPermission } = usePermission()
+  const { confirm, confirmationProps } = useConfirmation()
 
   // laoding states
   const [loading, setLoading] = useState<{ inline: boolean, model: boolean }>({ inline: false, model: false })
 
   // models
-  const [model, setModel] = useState<{ medicationForm: boolean, alert: boolean }>({
-    medicationForm: false,
-    alert: false
-  })
+  const [medicationForm, setMedicationForm] = useState(false)
 
   // api states
   const [medications, setMedications] = useState<opdMedications>({ data: [], total_pages: 1 })
@@ -51,15 +47,15 @@ const Medication = () => {
 
 
 
-  const onDelete = async () => {
+  const onDelete = async (id: number) => {
     try {
-      const data = await deleteMedication(itemID.current)
+      const isConfirm = await confirm()
+      if (!isConfirm) return null
+      const data = await deleteMedication(id)
       toast.success(data.message)
       fetchMedications()
     } catch ({ message }: any) {
       toast.error(message)
-    } finally {
-      setModel((rest) => ({ ...rest, alert: false }))
     }
   }
 
@@ -85,7 +81,7 @@ const Medication = () => {
         (data = await createMedication(opdId!, formData))
 
       toast.success(data.message)
-      setModel(rest => ({ ...rest, medicationForm: false }))
+      setMedicationForm(false)
       fetchMedications()
     } catch ({ message }: any) {
       toast.error(message)
@@ -117,8 +113,7 @@ const Medication = () => {
 
   useEffect(() => {
     fetchMedications()
-    console.log(medications);
-
+    loadPermission()
   }, [page, search])
 
   return (
@@ -127,9 +122,11 @@ const Medication = () => {
 
         <div className="flex justify-between">
           <h1 className="text-lg text-gray-800 font-semibold">Medication</h1>
-          <Button size='sm' className={cn({ 'hidden': user?.role === 'receptionist' })} onClick={() => setModel(rest => ({ ...rest, medicationForm: true }))}>
-            <Plus /> Add Medication
-          </Button>
+          {hasPermission('create', 'medication') && (
+            <Button size='sm' onClick={() => setMedicationForm(true)}>
+              <Plus /> Add Medication
+            </Button>
+          )}
         </div>
 
         <Separator />
@@ -153,7 +150,7 @@ const Medication = () => {
                   <TableHead>Unit</TableHead>
                   <TableHead>Time</TableHead>
                   <TableHead>Dose</TableHead>
-                  <TableHead className={cn({ 'hidden': user?.role === 'receptionist' })}>Action</TableHead>
+                  <TableHead>Action</TableHead>
                 </TableRow>
               </TableHeader>
 
@@ -166,27 +163,28 @@ const Medication = () => {
                     <TableCell>{medication.medicine.unit.name}</TableCell>
                     <TableCell>{medication.time}</TableCell>
                     <TableCell>{medication.dose}</TableCell>
-                    <TableCell className={cn("flex space-x-2", { 'hidden': user?.role === 'receptionist' })}>
-
+                    <TableCell className="flex gap-2">
                       {/* Edit */}
-                      <CustomTooltip message="EDIT">
-                        <Pencil className="active:scale-95 w-4 text-gray-600 cursor-pointer"
-                          onClick={async () => {
-                            await fetchMedicationDetails(medication.id)
-                            setModel((rest) => ({ ...rest, medicationForm: true }))
-                          }}
-                        />
-                      </CustomTooltip>
+                      {hasPermission('update', 'medication') && (
+                        <CustomTooltip message="EDIT">
+                          <Pencil className="active:scale-95 w-4 text-gray-600 cursor-pointer"
+                            onClick={async () => {
+                              await fetchMedicationDetails(medication.id)
+                              setMedicationForm(true)
+                            }}
+                          />
+                        </CustomTooltip>
+                      )}
 
                       {/* Delete */}
-                      <CustomTooltip message="DELETE">
-                        <Trash className="active:scale-95 w-4 text-gray-600 cursor-pointer"
-                          onClick={() => {
-                            setModel((rest) => ({ ...rest, alert: true }))
-                            itemID.current = medication.id
-                          }}
-                        />
-                      </CustomTooltip>
+                      {hasPermission('delete', 'medication') && (
+                        <CustomTooltip message="DELETE">
+                          <Trash className="active:scale-95 w-4 text-gray-600 cursor-pointer"
+                            onClick={() => onDelete(medication.id)}
+                          />
+                        </CustomTooltip>
+                      )}
+
                     </TableCell>
                   </TableRow>
                 })}
@@ -212,17 +210,15 @@ const Medication = () => {
 
 
 
-
       {/* models */}
 
       {
-        model.medicationForm && <MedicationForm
+        medicationForm && <MedicationForm
           medicationDetails={medicationDetails!}
           Submit={handleSubmit}
           isPending={loading.inline}
-
           onClick={() => {
-            setModel(rest => ({ ...rest, medicationForm: false }));
+            setMedicationForm(false);
             setMedicationDetails(undefined)
           }}
         />
@@ -232,10 +228,9 @@ const Medication = () => {
       {/* Alert Model */}
 
       {
-        model.alert && <AlertModel
-          cancel={() => { setModel((rest) => ({ ...rest, alert: false })) }}
-          isPending={loading.model}
-          continue={onDelete}
+        confirmationProps.isOpen && <AlertModel
+          cancel={() => { confirmationProps.onCancel() }}
+          continue={() => { confirmationProps.onConfirm() }}
         />
       }
 

@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Pencil, Plus, SearchX, Trash } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import AssignRosterFormModel from './formModel/AssignRosterFormModel'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import calculateShiftDuration from '@/helpers/calculateHours'
 import AlertModel from '@/components/alertModel'
@@ -19,29 +19,32 @@ import { useQueryState, parseAsInteger } from 'nuqs'
 import CustomPagination from '@/components/customPagination'
 import { useDebouncedCallback } from 'use-debounce'
 import LoaderModel from '@/components/loader'
+import usePermission from '@/authz'
+import { useConfirmation } from '@/hooks/useConfirmation'
 
 
 
 
 const RosterReport = () => {
 
-    const id = useRef<number | null>(null)
+    // custom hooks
+    const { loadPermission, hasPermission } = usePermission()
+    const { confirm, confirmationProps } = useConfirmation()
+
 
     // Query params
     const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
     const [credential, setCredential] = useQueryState('credential')
     const [date, setDate] = useQueryState('date')
-    const [period, setPeriod] = useState<{ startDate: string, endDate: string }>({ startDate: '', endDate: '' })
+    const [period, setPeriod] = useState({ startDate: '', endDate: '' })
 
 
     // laoding States
     const [loading, setLoading] = useState<{ inlineLoader: boolean, modelLoader: boolean }>({ inlineLoader: false, modelLoader: false })
 
     // model states
-    const [model, setModel] = useState<{ rosterFormModel: boolean, AlertModel: boolean }>({
-        rosterFormModel: false,
-        AlertModel: false
-    })
+    const [rosterFormModel, setRosterFormModel] = useState(false)
+
 
     const [searchBy, setSearchBy] = useState<'date' | 'period' | 'credentials'>('credentials')
 
@@ -64,7 +67,7 @@ const RosterReport = () => {
                 (data = await createRoster(formData))
             toast.success(data.message)
             fetchRosters()
-            setModel({ ...model, rosterFormModel: false })
+            setRosterFormModel(false)
         } catch ({ message }: any) {
             toast.error(message)
         } finally { setLoading({ ...loading, inlineLoader: false }) }
@@ -118,19 +121,22 @@ const RosterReport = () => {
 
     // for deleting rosters
 
-    const onDelete = async () => {
+    const onDelete = async (id: number) => {
         try {
-            setLoading({ ...loading, inlineLoader: true })
-            const data = await deleteRoster(id.current)
+            const isConfirm = await confirm()
+            if (!isConfirm) return null
+            const data = await deleteRoster(id)
             toast.success(data.message)
             fetchRosters()
         } catch ({ message }: any) {
             toast.error(message)
-        } finally {
-            setLoading({ ...loading, inlineLoader: false })
-            setModel({ ...model, AlertModel: false })
         }
     }
+
+
+    useEffect(() => {
+        loadPermission()
+    }, [])
 
 
     useEffect(() => {
@@ -146,9 +152,11 @@ const RosterReport = () => {
                 <h1 className='font-semibold tracking-tight'>Duty Roster</h1>
 
                 <div className='flex gap-x-2 overflow-x-auto'>
-                    <Button size='sm' onClick={() => setModel((prev) => ({ ...prev, rosterFormModel: true }))}>
-                        <Plus /> Add Roster
-                    </Button>
+                    {hasPermission('create', 'duty_roster') && (
+                        <Button size='sm' onClick={() => setRosterFormModel(true)}>
+                            <Plus /> Add Roster
+                        </Button>
+                    )}
                 </div>
 
             </div>
@@ -214,7 +222,9 @@ const RosterReport = () => {
                                 <TableHead>Shift</TableHead>
                                 <TableHead>Department</TableHead>
                                 <TableHead>Note</TableHead>
-                                <TableHead>Action</TableHead>
+                                {(hasPermission('update', 'duty_roster') || hasPermission('delete', 'duty_roster')) && (
+                                    <TableHead>Action</TableHead>
+                                )}
                             </TableRow>
                         </TableHeader>
 
@@ -237,28 +247,26 @@ const RosterReport = () => {
                                     <TableCell>{roster.staff.department}</TableCell>
                                     <TableCell>{roster.note}</TableCell>
                                     <TableCell className='flex gap-x-2'>
-
                                         {/* Edit button */}
-                                        <CustomTooltip message='EDIT'>
-                                            <Pencil className='text-gray-600 w-4 h-4 cursor-pointer active:scale-95'
-                                                onClick={async () => {
-                                                    await fetchRosterDetails(roster.id)
-                                                    setModel((prev) => ({ ...prev, rosterFormModel: true }));
-                                                }}
-                                            />
-                                        </CustomTooltip>
+                                        {hasPermission('update', 'duty_roster') && (
+                                            <CustomTooltip message='EDIT'>
+                                                <Pencil className='text-gray-600 w-4 h-4 cursor-pointer active:scale-95'
+                                                    onClick={async () => {
+                                                        await fetchRosterDetails(roster.id)
+                                                        setRosterFormModel(true)
+                                                    }}
+                                                />
+                                            </CustomTooltip>
+                                        )}
+
 
                                         {/* Delete */}
-
-                                        <CustomTooltip message='DELETE'>
-                                            <Trash className='text-gray-600 w-4 h-4 cursor-pointer active:scale-95'
-                                                onClick={() => {
-                                                    setModel((prev) => ({ ...prev, AlertModel: true }));
-                                                    id.current = roster.id
-                                                }}
-                                            />
-                                        </CustomTooltip>
-
+                                        {hasPermission('delete', 'duty_roster') && (
+                                            <CustomTooltip message='DELETE'>
+                                                <Trash className='text-gray-600 w-4 h-4 cursor-pointer active:scale-95'
+                                                    onClick={() => onDelete(roster.id)}
+                                                />
+                                            </CustomTooltip>)}
                                     </TableCell>
                                 </TableRow>
                             })}
@@ -286,12 +294,12 @@ const RosterReport = () => {
             {/* roster form model */}
 
             {
-                model.rosterFormModel && <AssignRosterFormModel
+                rosterFormModel && <AssignRosterFormModel
                     Submit={handleSubmit}
                     rosterDetails={rosterDetails!}
                     isPending={loading.inlineLoader}
                     onClick={() => {
-                        setModel({ ...model, rosterFormModel: false })
+                        setRosterFormModel(false)
                         setRosterDetails(undefined)
                     }}
                 />
@@ -301,10 +309,9 @@ const RosterReport = () => {
             {/* alert model */}
 
             {
-                model.AlertModel && <AlertModel
-                    cancel={() => { setModel({ ...model, AlertModel: false }) }}
-                    continue={onDelete}
-                    isPending={loading.inlineLoader}
+                confirmationProps.isOpen && <AlertModel
+                    cancel={() => confirmationProps.onCancel()}
+                    continue={() => confirmationProps.onConfirm()}
                 />
             }
 

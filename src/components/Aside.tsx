@@ -23,9 +23,8 @@ const Aside = () => {
     const session = useAppSelector(authSelector)
 
 
-    // making few routes static
-    const Routes = ['admin', 'pharmacist', 'receptionist'].includes(session.user?.role!) ? 'admin' : session.user?.role
-
+    // making routes static
+    const Routes = (session.user?.role === 'patient') ? session.user?.role : 'admin'
 
     useEffect(() => {
         (async () => {
@@ -42,7 +41,7 @@ const Aside = () => {
 
                     <ul className='flex flex-col gap-y-2'>
 
-                        <li><Link to={{ pathname: `/${session.user?.role}/dashboard` }} className={
+                        <li><Link to={{ pathname: `/${Routes}/dashboard` }} className={
                             buttonVariants({
                                 variant: 'ghost',
                                 className: 'flex text-sm items-center'
@@ -67,7 +66,7 @@ const Aside = () => {
                         }><HeartPulse className='h-4 w-4' /> OPD - Out Patient</Link></li>
                         }
 
-                        {hasPermission('view', 'pharmacy') &&
+                        {hasPermission('view', 'pharmacy_bill') &&
 
                             <li><Link to={{ pathname: `/${Routes}/pharmacy` }} className={
                                 buttonVariants({
@@ -90,17 +89,20 @@ const Aside = () => {
                         }
 
 
+                        {hasPermission('view', 'duty_roster') && (
+                            <li><Link to={{ pathname: '/admin/dutyroster/rosterreport' }} className={
+                                buttonVariants({
+                                    variant: 'ghost',
+                                    className: 'flex text-sm items-center'
+                                })
+                            }><Watch className='h-4 w-4' />Duty Roster</Link></li>
+                        )}
+
 
                         {/* Tree View Links setup links */}
 
                         {hasPermission('view', 'setup') &&
                             <>
-                                <li><Link to={{ pathname: '/admin/dutyroster/rosterreport' }} className={
-                                    buttonVariants({
-                                        variant: 'ghost',
-                                        className: 'flex text-sm items-center'
-                                    })
-                                }><Watch className='h-4 w-4' />Duty Roster</Link></li>
 
                                 <li>
                                     <Accordion type="single" collapsible >

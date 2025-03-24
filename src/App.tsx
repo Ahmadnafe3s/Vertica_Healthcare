@@ -5,14 +5,12 @@ import AsideLayout from "./Layouts/AsideLayout";
 import HomePage from "./home/HomePage";
 import RegisterPatient from "./Auth/registerPatient";
 import { Toaster } from "react-hot-toast";
-import { useAppDispatch, useAppSelector } from "./hooks";
+import { useAppDispatch } from "./hooks";
 import { useEffect } from "react";
-import { authSelector, checkSession } from "./features/auth/authSlice";
-import ProtectRoutes from "./guard/protectRoutes";
+import { checkSession } from "./features/auth/authSlice";
 import Not_found from "./error/not_found";
 import Unauthorized from "./error/unauthorized";
 import PatientRoutes from "./routes/PatientRoutes";
-import DoctorRoutes from "./routes/DoctorRoutes";
 import HospitalChargesRoutes from "./routes/AdminSetup/HospitalChargesRoutes";
 import SetupOperationRoutes from "./routes/AdminSetup/OperationRoutes";
 import SetupFindingRoutes from "./routes/AdminSetup/FindingRoutes";
@@ -20,16 +18,15 @@ import SetupPharmacyRoutes from "./routes/AdminSetup/PharmacyRoutes";
 import SetupVitalRoutes from "./routes/AdminSetup/vitalRoutes";
 import SetupEventRoutes from "./routes/AdminSetup/EventRoutes";
 import AdminRoutes from "./routes/AdminRoutes";
-import PharmacistRoutes from "./routes/pharmacist";
-import ReceptionistRoutes from "./routes/Receptionist";
 import SetupPatientRoutes from "./routes/AdminSetup/patientRoutes";
 import SetupAuthzRoutes from "./routes/AdminSetup/authzRoutes";
+
 
 
 function App() {
 
   const dispatch = useAppDispatch()
-  
+
 
   useEffect(() => {
     dispatch(checkSession())
@@ -56,13 +53,7 @@ function App() {
           {AdminRoutes()}
 
           {PatientRoutes()}
-
-          {DoctorRoutes()}
-
-          {PharmacistRoutes()}
-
-          {ReceptionistRoutes()}
-
+          
 
           {/* Setup routes for charges*/}
           {HospitalChargesRoutes()}

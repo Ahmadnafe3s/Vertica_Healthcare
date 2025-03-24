@@ -20,11 +20,17 @@ import { useDebouncedCallback } from 'use-debounce'
 import { useQueryState, parseAsInteger } from 'nuqs'
 import PrintMedicinePurchase from './printPurchase/printPurchase'
 import PrintMedicinePurchases from './printPurchase/printPurchases'
+import usePermission from '@/authz'
+import { useConfirmation } from '@/hooks/useConfirmation'
 
 
 
 
 const Purchase = () => {
+
+  // custom hooks
+  const { loadPermission, hasPermission } = usePermission()
+  const { confirm, confirmationProps } = useConfirmation()
 
   // query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
@@ -35,10 +41,7 @@ const Purchase = () => {
   const itemID = useRef('')
 
   // loading state
-  const [loading, setLoading] = useState<{ inline: boolean, model: boolean }>({
-    inline: false,
-    model: false
-  })
+  const [loading, setLoading] = useState({ inline: false, model: false })
 
 
   // API state
@@ -47,11 +50,7 @@ const Purchase = () => {
 
 
   // Model State
-  const [model, setModel] = useState<{ purchaseDetails: boolean, createPurchaseForm: boolean, alert: boolean }>({
-    purchaseDetails: false,
-    createPurchaseForm: false,
-    alert: false
-  })
+  const [model, setModel] = useState({ purchaseDetails: false, createPurchaseForm: false })
 
 
   // performing only insert
@@ -90,17 +89,15 @@ const Purchase = () => {
 
 
   //deleting
-  const onDelete = async () => {
+  const onDelete = async (id: string) => {
     try {
-      setLoading(rest => ({ ...rest, inline: true }))
-      const data = await deletePurchaseMedicine(itemID.current)
+      const isConfirm = await confirm()
+      if (!isConfirm) return null
+      const data = await deletePurchaseMedicine(id)
       toast.success(data.message)
       fetchPurchases()
     } catch ({ message }: any) {
       toast.error(message)
-    } finally {
-      setModel(rest => ({ ...rest, alert: false }))
-      setLoading(rest => ({ ...rest, inline: false }))
     }
   }
 
@@ -120,6 +117,7 @@ const Purchase = () => {
 
   useEffect(() => {
     fetchPurchases()
+    loadPermission()
   }, [page, search])
 
 
@@ -133,11 +131,13 @@ const Purchase = () => {
           <h1 className='font-semibold tracking-tight'>Medicine Purchases</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
-            <Button className='flex gap-x-1' size={'sm'}
-              onClick={() => setModel(rest => ({ ...rest, createPurchaseForm: true }))}>
-              <Plus />
-              Add Purchase
-            </Button>
+            {hasPermission('create', 'purchase_medicine') && (
+              <Button className='flex gap-x-1' size={'sm'}
+                onClick={() => setModel(rest => ({ ...rest, createPurchaseForm: true }))}>
+                <Plus />
+                Add Purchase
+              </Button>
+            )}
 
           </div>
         </div>
@@ -152,7 +152,6 @@ const Purchase = () => {
 
           <div className='flex gap-x-2'>
             {/* Printing purcahse list */}
-
             <PrintMedicinePurchases MedicinePurchases={purcahseList['data']} />
           </div>
         </div>
@@ -202,15 +201,15 @@ const Purchase = () => {
                     <TableCell>{purchase.discount}%</TableCell>
                     <TableCell className='text-gray-700 font-semibold'>{currencyFormat(purchase.total_amount)}</TableCell>
                     <TableCell className='flex gap-2'>
+
                       {/* Delete */}
-                      <CustomTooltip message='DELETE'>
-                        <Trash className='cursor-pointer text-gray-500 w-4  active:scale-95'
-                          onClick={() => {
-                            itemID.current = purchase.id;
-                            setModel((rest) => ({ ...rest, alert: true }))
-                          }}
-                        />
-                      </CustomTooltip>
+                      {hasPermission('delete', 'purchase_medicine') && (
+                        <CustomTooltip message='DELETE'>
+                          <Trash className='cursor-pointer text-gray-500 w-4  active:scale-95'
+                            onClick={() => onDelete(purchase.id)}
+                          />
+                        </CustomTooltip>
+                      )}
 
                       {/* Print purchase Details */}
                       <PrintMedicinePurchase Id={purchase.id} onPending={(v) => setLoading({ ...loading, model: v })} />
@@ -252,11 +251,10 @@ const Purchase = () => {
         )}
 
 
-        {model.alert && (
+        {confirmationProps.isOpen && (
           <AlertModel
-            continue={onDelete}
-            cancel={() => setModel(rest => ({ ...rest, alert: false }))}
-            isPending={loading.inline}
+            continue={() => confirmationProps.onConfirm()}
+            cancel={() => confirmationProps.onCancel()}
           />
         )}
 

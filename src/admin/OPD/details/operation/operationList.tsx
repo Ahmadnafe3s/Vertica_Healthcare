@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Pencil, Plus, SearchX, Trash } from 'lucide-react';
 import OperationForm from './operationForm';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { createOperation, deleteOperation, getOperation_Details, getOperations, updateOperation } from '../../opdApiHandler';
@@ -18,6 +18,9 @@ import { useQueryState, parseAsInteger } from 'nuqs';
 import { useAppSelector } from '@/hooks';
 import { authSelector } from '@/features/auth/authSlice';
 import { cn } from '@/lib/utils';
+import usePermission from '@/authz';
+import { useConfirmation } from '@/hooks/useConfirmation';
+import CustomTooltip from '@/components/customTooltip';
 
 
 
@@ -29,8 +32,10 @@ const OperationList = () => {
   // search params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
 
+  // custom hook
+  const { hasPermission, loadPermission } = usePermission()
+  const { confirm, confirmationProps } = useConfirmation()
 
-  const id = useRef<string | null>(null)
 
   // session
   const { user } = useAppSelector(authSelector)
@@ -45,12 +50,7 @@ const OperationList = () => {
 
 
   // model state
-  const [model, setModel] = useState<{ operationForm: boolean, alert: boolean, operationDetails: boolean, loader: boolean }>({
-    operationForm: false,
-    alert: false,
-    operationDetails: false,
-    loader: false
-  })
+  const [model, setModel] = useState({ operationForm: false, operationDetails: false, loader: false })
 
 
   // performing upsert
@@ -100,24 +100,22 @@ const OperationList = () => {
   }
 
 
-
-
-  const onDelete = async () => {
+  const onDelete = async (id: string) => {
     try {
-      const data = await deleteOperation(String(id.current))
+      const isConfirm = await confirm()
+      if (!isConfirm) return null
+      const data = await deleteOperation(id)
       toast.success(data.message)
       fetchOperations()
     } catch ({ message }: any) {
       toast.error(message)
-    } finally {
-      setModel({ ...model, alert: false });
-      id.current = null
     }
   }
 
 
   useEffect(() => {
     fetchOperations()
+    loadPermission()
   }, [page])
 
 
@@ -126,11 +124,13 @@ const OperationList = () => {
       <section className="flex flex-col gap-y-5">
         <div className="flex justify-between">
           <h1 className="text-lg text-gray-800 font-semibold">Operations</h1>
-          <Button size='sm' className={cn({ 'hidden': user?.role === 'receptionist' })} onClick={() => {
-            setModel({ ...model, operationForm: true })
-          }}>
-            <Plus /> Add Operation
-          </Button>
+          {hasPermission('create', 'operation') && (
+            <Button size='sm' className={cn({ 'hidden': user?.role === 'receptionist' })} onClick={() => {
+              setModel({ ...model, operationForm: true })
+            }}>
+              <Plus /> Add Operation
+            </Button>
+          )}
         </div>
 
         <Separator />
@@ -147,7 +147,9 @@ const OperationList = () => {
                   <TableHead>Operation Name</TableHead>
                   <TableHead>Operation Category</TableHead>
                   <TableHead>OT Technician</TableHead>
-                  <TableHead className={cn({ 'hidden': user?.role === 'receptionist' })}>Action</TableHead>
+                  {(hasPermission('update', 'operation') || hasPermission('delete', 'operation')) && (
+                    <TableHead>Action</TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
 
@@ -166,21 +168,28 @@ const OperationList = () => {
                     <TableCell>{opertion.operationName.name}</TableCell>
                     <TableCell>{opertion.operationCategory.name}</TableCell>
                     <TableCell>{opertion.ot_technician}</TableCell>
-                    <TableCell className={cn("flex space-x-2", { 'hidden': user?.role === 'receptionist' })}>
+                    <TableCell className={cn("flex space-x-2")}>
 
-                      <Pencil className='w-4 text-gray-600 active:scale-95 cursor-pointer'
-                        onClick={async () => {
-                          await fetchOperationDetails(opertion.id)
-                          setModel({ ...model, operationForm: true });
-                        }}
-                      />
+                      {/* EDIT */}
+                      {hasPermission('update', 'operation') && (
+                        <CustomTooltip message='EDIT'>
+                          <Pencil className='w-4 text-gray-600 active:scale-95 cursor-pointer'
+                            onClick={async () => {
+                              await fetchOperationDetails(opertion.id)
+                              setModel({ ...model, operationForm: true });
+                            }}
+                          />
+                        </CustomTooltip>
+                      )}
 
-                      <Trash className='w-4 text-gray-600 active:scale-95 cursor-pointer'
-                        onClick={() => {
-                          setModel({ ...model, alert: true });
-                          id.current = opertion.id
-                        }}
-                      />
+                      {/* DELETE */}
+                      {hasPermission('delete', 'operation') && (
+                        <CustomTooltip message='DELETE'>
+                          <Trash className='w-4 text-gray-600 active:scale-95 cursor-pointer'
+                            onClick={() => { onDelete(opertion.id) }} />
+                        </CustomTooltip>
+                      )}
+
                     </TableCell>
                   </TableRow>
                 })}
@@ -225,12 +234,9 @@ const OperationList = () => {
       {/* Alert Model */}
 
       {
-        model.alert && <AlertModel
-          cancel={() => {
-            setModel({ ...model, alert: false })
-            id.current = null
-          }}
-          continue={onDelete}
+        confirmationProps.isOpen && <AlertModel
+          cancel={() => confirmationProps.onCancel()}
+          continue={() => confirmationProps.onConfirm()}
         />
       }
 

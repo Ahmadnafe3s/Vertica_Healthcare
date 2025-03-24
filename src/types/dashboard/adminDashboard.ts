@@ -1,8 +1,13 @@
-export type AdminDashIncExp = {
+export type AdminDashTotalCount = {
     opdIncome: number,
     appointmentIncome: number,
     pharmacyIncome: number,
-    expenses: number
+    expenses: number,
+    opds: number,
+    pharmacyBills: number,
+    purchases: number,
+    pharmacyExpenses: number,
+    medicines: number
 }
 
 

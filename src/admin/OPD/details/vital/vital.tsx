@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, SearchX, Trash } from "lucide-react";
 import VitalFormModel from "./vitalFormModel";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { createVital, deleteVitals, getVitals, searchVital } from "../../opdApiHandler";
@@ -16,10 +16,15 @@ import CustomTooltip from "@/components/customTooltip";
 import { SetupVital } from "@/types/setupTypes/vital";
 import { getSetupVitals } from "@/admin/setup/vitals/apiHandler";
 import { VitalType } from "@/types/opd_section/vitals";
+import usePermission from "@/authz";
+import { useConfirmation } from "@/hooks/useConfirmation";
 
 
 const Vital = () => {
-    const id = useRef<number | null>(null)
+
+    // custom hook
+    const { hasPermission, loadPermission } = usePermission()
+    const { confirm, confirmationProps } = useConfirmation()
 
     const { patientId, opdId } = useParams()
 
@@ -31,11 +36,7 @@ const Vital = () => {
 
 
     // models State
-    const [model, setModel] = useState<{ vitalForm: boolean, alert: boolean }>({
-        vitalForm: false,
-        alert: false
-    })
-
+    const [vitalForm, setVitalForm] = useState(false)
 
 
     // creating vital
@@ -44,10 +45,7 @@ const Vital = () => {
             setPending(true)
             const data = await createVital(Number(patientId), opdId!, formData)
             toast.success(data.message)
-            setModel({
-                ...model,
-                vitalForm: false
-            })
+            setVitalForm(false)
             fetchVitalsList()
         } catch ({ message }: any) {
             toast.error(message)
@@ -76,19 +74,15 @@ const Vital = () => {
     }
 
 
-    const onDelete = async () => {
+    const onDelete = async (id: number) => {
         try {
-            const data = await deleteVitals(Number(id.current))
+            const isConfirm = await confirm()
+            if (!isConfirm) return null
+            const data = await deleteVitals(id)
             toast.success(data.message)
+            fetchVitalsList()
         } catch ({ message }: any) {
             toast.error(message)
-        } finally {
-            setModel({
-                ...model,
-                alert: false
-            });
-            id.current = null;
-            fetchVitalsList()
         }
     }
 
@@ -108,6 +102,7 @@ const Vital = () => {
     useEffect(() => {
         fetchVitalsList()
         fetchSetupVitals()
+        loadPermission()
     }, [])
 
 
@@ -116,16 +111,12 @@ const Vital = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg text-gray-800 font-semibold">Vitals</h1>
-                <Button size='sm' onClick={() => {
-                    setModel({
-                        ...model,
-                        vitalForm: true
-                    })
-                }}>
-                    <Plus /> Add Vital
-                </Button>
+                {hasPermission('create', 'vitals') && (
+                    <Button size='sm' onClick={() => { setVitalForm(true) }}>
+                        <Plus /> Add Vital
+                    </Button>
+                )}
             </div>
-
 
             <Separator />
 
@@ -166,14 +157,13 @@ const Vital = () => {
                                             {detail ? (
                                                 <div className="flex space-x-1 group">
                                                     <span>{detail.vital.name} {detail.value}</span>
-                                                    <CustomTooltip message="DELETE">
-                                                        <Trash className="w-3 text-gray-700 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                                                            onClick={() => {
-                                                                setModel({ ...model, alert: true });
-                                                                id.current = detail.id
-                                                            }}
-                                                        />
-                                                    </CustomTooltip>
+                                                    {hasPermission('delete', 'vitals') && (
+                                                        <CustomTooltip message="DELETE">
+                                                            <Trash className="w-3 text-gray-700 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                                                                onClick={() => onDelete(detail.id)}
+                                                            />
+                                                        </CustomTooltip>
+                                                    )}
                                                 </div>
                                             )
                                                 : ""} {/* Render the value or an empty string if missing */}
@@ -193,30 +183,19 @@ const Vital = () => {
 
             {/* model */}
 
-            {model.vitalForm && <VitalFormModel
+            {vitalForm && <VitalFormModel
                 vitalOptions={setupVitals}
                 Submit={handleSubmit}
                 isPending={isPending}
-                onClick={() => {
-                    setModel({
-                        ...model,
-                        vitalForm: false
-                    });
-                }}
+                onClick={() => setVitalForm(false)}
             />}
 
 
             {/* Alert model */}
 
-            {model.alert && <AlertModel
-                cancel={() => {
-                    setModel((rest) => ({
-                        ...rest,
-                        alert: false
-                    }));
-                    id.current = null
-                }}
-                continue={onDelete}
+            {confirmationProps.isOpen && <AlertModel
+                cancel={() => confirmationProps.onCancel()}
+                continue={() => confirmationProps.onConfirm()}
             />}
 
         </section>

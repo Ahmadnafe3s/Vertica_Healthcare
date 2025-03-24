@@ -10,14 +10,14 @@ import { useDebouncedCallback } from 'use-debounce'
 import { useQueryState, parseAsInteger } from 'nuqs'
 import { staffs } from '@/types/staff/staff'
 import CustomPagination from '@/components/customPagination'
-import { useAppSelector } from '@/hooks'
-import { authSelector } from '@/features/auth/authSlice'
+import usePermission from '@/authz'
 
 
 
 const Staff = () => {
 
-  const { user } = useAppSelector(authSelector)
+  // custom hooks
+  const { loadPermission, hasPermission } = usePermission()
 
   // query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
@@ -48,6 +48,7 @@ const Staff = () => {
 
   useEffect(() => {
     fetchStaffs()
+    loadPermission()
   }, [page, search])
 
 
@@ -62,14 +63,10 @@ const Staff = () => {
 
             {/* visible for only admin */}
 
-            {user?.role === 'admin' && (
-              <Link to={'../create'} className={buttonVariants({   // on step back
-                variant: 'default',
-                size: 'sm',
-                className: 'flex gap-x-1'
-              })}>
-                <Plus />
-                Add Staff
+            {hasPermission('create', 'human_resource') && (
+              <Link to={'../create'}
+                className={buttonVariants({ variant: 'default', size: 'sm', className: 'flex gap-x-1' })}>
+                <Plus />Add Staff
               </Link>
             )}
 

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Calendar, Clock, Pencil, Plus, SearchX, Trash2 } from "lucide-react"
 import TimelineFormModel from "./timelineFormModel"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import AlertModel from "@/components/alertModel"
 import toast from "react-hot-toast"
 import { createTimeline, deleteTimeline, getTimelineDetails, getTimelines, updateTimeine } from "../../opdApiHandler"
@@ -11,10 +11,15 @@ import { timelineFormSchema } from "@/formSchemas/timelineFormSchema"
 import { z } from "zod"
 import { timeline } from "@/types/opd_section/timeline"
 import LoaderModel from "@/components/loader"
+import usePermission from "@/authz"
+import { useConfirmation } from "@/hooks/useConfirmation"
+import CustomTooltip from "@/components/customTooltip"
 
 const Timeline = () => {
 
-    const id = useRef<null | number>(null)
+    // custom hook
+    const { hasPermission, loadPermission } = usePermission()
+    const { confirm, confirmationProps } = useConfirmation()
 
     const { patientId, opdId } = useParams()
 
@@ -28,11 +33,7 @@ const Timeline = () => {
 
 
     // model state
-    const [model, setModel] = useState<{ timelineForm: boolean, alert: boolean, loaderModel: boolean }>({
-        timelineForm: false,
-        alert: false,
-        loaderModel: false,
-    })
+    const [model, setModel] = useState({ timelineForm: false, loaderModel: false })
 
 
     const handleSubmit = async (formData: z.infer<typeof timelineFormSchema>) => {
@@ -83,24 +84,22 @@ const Timeline = () => {
     }
 
 
-    const onDelete = async () => {
+    const onDelete = async (id: number) => {
         try {
-            const data = await deleteTimeline(Number(id.current))  // timeline id
+            const isConfirm = await confirm()
+            if (!isConfirm) return null
+            const data = await deleteTimeline(id)  // timeline id
             toast.success(data.message)
             fetchTimelines()
         } catch ({ message }: any) {
             toast.error(message)
-        } finally {
-            setModel({
-                ...model,
-                alert: false
-            })
         }
     }
 
 
     useEffect(() => {
         fetchTimelines()
+        loadPermission()
     }, [])
 
 
@@ -109,14 +108,13 @@ const Timeline = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg text-gray-800 font-semibold">Timeline</h1>
-                <Button size='sm' onClick={() => {
-                    setModel({
-                        ...model,
-                        timelineForm: true
-                    })
-                }}>
-                    <Plus /> Add Timeline
-                </Button>
+                {hasPermission('create', 'timeline') && (
+                    <Button size='sm' onClick={() => {
+                        setModel({ ...model, timelineForm: true })
+                    }}>
+                        <Plus /> Add Timeline
+                    </Button>
+                )}
             </div>
 
             <Separator />
@@ -145,25 +143,26 @@ const Timeline = () => {
                                     <p className="text-lg font-semibold text-gray-800">{timeline.title}</p>
                                     <div className="flex gap-x-2">
 
-                                        <Pencil className="w-4 h-4 text-gray-500 transition-all active:scale-90 opacity-0 group-hover:opacity-100 "
-                                            onClick={async () => {
-                                                await fetchTimelineDetails(timeline.id)
-                                                setModel({
-                                                    ...model,
-                                                    timelineForm: true
-                                                })
-                                            }}
-                                        />
+                                        {/* EDIT */}
+                                        {hasPermission('update', 'timeline') && (
+                                            <CustomTooltip message="EDIT">
+                                                <Pencil className="w-4 h-4 text-gray-500 transition-all active:scale-90 opacity-0 group-hover:opacity-100 "
+                                                    onClick={async () => {
+                                                        await fetchTimelineDetails(timeline.id)
+                                                        setModel({ ...model, timelineForm: true })
+                                                    }}
+                                                />
+                                            </CustomTooltip>
+                                        )}
 
-                                        <Trash2 className="w-4 h-4 text-gray-500 transition-all active:scale-90 opacity-0 group-hover:opacity-100 "
-                                            onClick={() => {
-                                                setModel({
-                                                    ...model,
-                                                    alert: true
-                                                })
-                                                id.current = timeline.id
-                                            }}
-                                        />
+                                        {/* DELETE */}
+                                        {hasPermission('delete', 'timeline') && (
+                                            <CustomTooltip message="DELETE">
+                                                <Trash2 className="w-4 h-4 text-gray-500 transition-all active:scale-90 opacity-0 group-hover:opacity-100 "
+                                                    onClick={() => onDelete(timeline.id)}
+                                                />
+                                            </CustomTooltip>
+                                        )}
 
                                     </div>
                                 </div>
@@ -214,19 +213,13 @@ const Timeline = () => {
 
             {/* Alert Model */}
 
-            {model.alert && <AlertModel
-                cancel={() => {
-                    setModel({
-                        ...model,
-                        alert: false
-                    })
-                }}
-                continue={onDelete}
+            {confirmationProps.isOpen && <AlertModel
+                cancel={() => confirmationProps.onCancel()}
+                continue={() => confirmationProps.onConfirm()}
             />}
 
 
             {/* Loader Model */}
-
             {model.loaderModel && (<LoaderModel />)}
 
         </section>

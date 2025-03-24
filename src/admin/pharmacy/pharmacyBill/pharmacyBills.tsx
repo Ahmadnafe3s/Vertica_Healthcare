@@ -9,7 +9,7 @@ import toast from 'react-hot-toast'
 import { createPharmacyBill, deletePharmacyBill, getPharmacyBillDetails, getPharmacyBills } from '../pharmacyApiHandler'
 import { createPharmacyBillSchema } from '@/formSchemas/createPharmBillSchema'
 import { z } from 'zod'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { pharmacyBillDetail, pharmacyBills } from '@/types/pharmacy/pharmacy'
 import CustomTooltip from '@/components/customTooltip'
 import PharmacyBillDetailsModal from './pharmacyBillDetailsModal'
@@ -20,25 +20,23 @@ import CustomPagination from '@/components/customPagination'
 import { useDebouncedCallback } from 'use-debounce'
 import PrintPharmacyBill from './printBill/printPharmacyBill'
 import PrintPharmacyBills from './printBill/printPharmacyBills'
+import usePermission from '@/authz'
+import { useConfirmation } from '@/hooks/useConfirmation'
 
 
 
 const Bill = () => {
 
+    // custom hooks
+    const { loadPermission, hasPermission } = usePermission()
+    const { confirm, confirmationProps } = useConfirmation()
+
     // query params
     const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
     const [search, setSearch] = useQueryState('search')
 
-
-    // credential
-    const itemID = useRef('')
-
     //model states
-    const [model, setModel] = useState<{ createPharmacyBill: boolean, alert: boolean, billDetails: boolean }>({
-        createPharmacyBill: false,
-        alert: false,
-        billDetails: false
-    })
+    const [model, setModel] = useState({ createPharmacyBill: false, billDetails: false })
 
     // loading states
     const [isLodaing, setLoading] = useState<{ inline: boolean, model: boolean }>({
@@ -49,7 +47,6 @@ const Bill = () => {
     // API states
     const [pharmBills, setPharmBills] = useState<pharmacyBills>({ data: [], total_pages: 0 })
     const [pharmBillDetails, setPharmBillDetails] = useState<pharmacyBillDetail>()
-
 
 
 
@@ -103,23 +100,22 @@ const Bill = () => {
 
 
     // deleting a particular bill
-    const onDelete = async () => {
+    const onDelete = async (id: string) => {
         try {
-            setLoading(pre => ({ ...pre, inline: false }))
-            const data = await deletePharmacyBill(itemID.current)
+            const isConfirm = await confirm()
+            if (!isConfirm) return null
+            const data = await deletePharmacyBill(id)
             toast.success(data.message)
             fetchParmacyBills()
         } catch ({ message }: any) {
             toast.error(message)
-        } finally {
-            setLoading(pre => ({ ...pre, inline: false }))
-            setModel(prev => ({ ...prev, alert: false }))
         }
     }
 
 
     useEffect(() => {
         fetchParmacyBills()
+        loadPermission()
     }, [page, search])
 
 
@@ -132,19 +128,23 @@ const Bill = () => {
                     <h1 className='font-semibold tracking-tight'>Pharmacy Bill</h1>
                     <div className='flex gap-x-2 overflow-x-auto'>
 
-                        <Button
-                            size={'sm'}
-                            onClick={() => setModel(prev => ({ ...prev, createPharmacyBill: true }))}
-                        > <Plus /> Generate Bill</Button>
+                        {hasPermission('create', 'pharmacy_bill') && (
+                            <Button
+                                size={'sm'}
+                                onClick={() => setModel(prev => ({ ...prev, createPharmacyBill: true }))}
+                            > <Plus /> Generate Bill</Button>
+                        )}
 
-                        <Link to={'medicines'} className={buttonVariants({
-                            variant: 'default',
-                            size: 'sm',
-                            className: 'flex gap-x-1'
-                        })}>
-                            <ListMinus />
-                            Medicines
-                        </Link>
+                        {hasPermission('view', 'medicines') && (
+                            < Link to={'medicines'} className={buttonVariants({
+                                variant: 'default',
+                                size: 'sm',
+                                className: 'flex gap-x-1'
+                            })}>
+                                <ListMinus />
+                                Medicines
+                            </Link>
+                        )}
 
                     </div>
                 </div>
@@ -197,15 +197,13 @@ const Bill = () => {
                                         <TableCell>{currencyFormat(bill.net_amount)}</TableCell>
                                         <TableCell className='flex space-x-2'>
                                             {/* DELETE  */}
-                                            <CustomTooltip message='DELETE'>
-                                                <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
-                                                    itemID.current = bill.id
-                                                    setModel(prev => ({ ...prev, alert: true }))
-                                                }} />
-                                            </CustomTooltip>
+                                            {hasPermission('delete', 'pharmacy_bill') && (
+                                                <CustomTooltip message='DELETE'>
+                                                    <Trash className="w-4 cursor-pointer  text-gray-600" onClick={() => onDelete(bill.id)} />
+                                                </CustomTooltip>
+                                            )}
 
                                             {/* Print Bill */}
-
                                             <PrintPharmacyBill Id={bill.id} onPending={(v) => setLoading({ ...isLodaing, model: v })} />
 
                                         </TableCell>
@@ -233,32 +231,37 @@ const Bill = () => {
 
             {/* Models */}
 
-            {model.createPharmacyBill && (
-                < CreatePharmacyBill
-                    Submit={handleSubmit}
-                    isPending={isLodaing.inline}
-                    onClick={() => { setModel(prev => ({ ...prev, createPharmacyBill: false })) }}
-                />
-            )}
+            {
+                model.createPharmacyBill && (
+                    < CreatePharmacyBill
+                        Submit={handleSubmit}
+                        isPending={isLodaing.inline}
+                        onClick={() => { setModel(prev => ({ ...prev, createPharmacyBill: false })) }}
+                    />
+                )
+            }
 
-            {model.billDetails && (
-                <PharmacyBillDetailsModal
-                    details={pharmBillDetails!}
-                    onClick={() => {
-                        setModel(prev => ({ ...prev, billDetails: false }))
-                    }}
-                />
-            )}
+            {
+                model.billDetails && (
+                    <PharmacyBillDetailsModal
+                        details={pharmBillDetails!}
+                        onClick={() => {
+                            setModel(prev => ({ ...prev, billDetails: false }))
+                        }}
+                    />
+                )
+            }
 
             {isLodaing.model && <LoaderModel />}
 
-            {model.alert && (
-                <AlertModel
-                    continue={onDelete}
-                    cancel={() => setModel(prev => ({ ...prev, alert: false }))}
-                    isPending={isLodaing.inline}
-                />
-            )}
+            {
+                confirmationProps.isOpen && (
+                    <AlertModel
+                        continue={() => confirmationProps.onConfirm()}
+                        cancel={() => confirmationProps.onCancel()}
+                    />
+                )
+            }
         </>
 
     )

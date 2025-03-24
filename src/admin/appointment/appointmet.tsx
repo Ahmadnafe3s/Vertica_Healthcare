@@ -22,13 +22,15 @@ import { useQueryState, parseAsInteger } from 'nuqs'
 import AppointmentPDF from './generatePDF/AppointmnetPDF'
 import AppointmentListPDF from './generatePDF/AppointmnetListPDF'
 import usePermission from '@/authz'
+import { useConfirmation } from '@/hooks/useConfirmation'
 
 
 
 const AdminAppointment = () => {
 
-    const itemID = useRef<string>()
+    // custom hooks
     const { loadPermission, hasPermission } = usePermission()
+    const { confirm, confirmationProps } = useConfirmation()
 
     // params
     const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
@@ -38,18 +40,11 @@ const AdminAppointment = () => {
     const [isPending, setPending] = useState<boolean>(false)
 
     // Model States
-    const [model, setModel] = useState<{ appointmentDetails: boolean, addAppointmentForm: boolean, alert: boolean, loader: boolean }>({
-        appointmentDetails: false,
-        addAppointmentForm: false,
-        alert: false,
-        loader: false
-    })
-
+    const [model, setModel] = useState({ appointmentDetails: false, addAppointmentForm: false, loader: false })
 
     // API States
     const [Appointments, setAppointments] = useState<Appointment>({ data: [], total_pages: 0 })
     const [AppointmentDetails, setAppointmentDetails] = useState<AppointmentDetails | undefined>(undefined)
-
 
 
     //fetching appointments list
@@ -87,17 +82,15 @@ const AdminAppointment = () => {
     }, 400)
 
 
-    const onDelete = async () => {
+    const onDelete = async (id: string) => {
         try {
-            setPending(true)
-            const data = await deleteAppointment(itemID.current!)
+            const isConfirm = await confirm()
+            if (!isConfirm) return null
+            const data = await deleteAppointment(id)
             toast.success(data.message)
             getAppointments()
         } catch ({ message }: any) {
             toast.error(message)
-        } finally {
-            setPending(false)
-            setModel((rest) => ({ ...rest, alert: false }))
         }
     }
 
@@ -141,17 +134,22 @@ const AdminAppointment = () => {
                             </Button>
                         )}
 
-                        <Link to={'queue'} className={buttonVariants({
-                            variant: 'default', size: 'sm', className: 'flex gap-x-1'
-                        })}>
-                            <ListMinus /> Queue </Link>
+                        {hasPermission('view', 'queue') && (
+                            <Link to={'queue'} className={buttonVariants({
+                                variant: 'default', size: 'sm', className: 'flex gap-x-1'
+                            })}>
+                                <ListMinus /> Queue </Link>
+                        )}
 
-                        <Link to={'cancelled'} className={buttonVariants({
-                            variant: 'destructive', size: 'sm', className: 'flex gap-x-1'
-                        })}><Ban /> Cancelled </Link>
+                        {hasPermission('view', 'cancelled') && (
+                            <Link to={'cancelled'} className={buttonVariants({
+                                variant: 'destructive', size: 'sm', className: 'flex gap-x-1'
+                            })}><Ban /> Cancelled </Link>
+                        )}
 
                     </div>
                 </div>
+
 
                 {/* search bar */}
 
@@ -195,12 +193,7 @@ const AdminAppointment = () => {
                                     return <TableRow key={appointment.id}>
                                         <TableCell className="font-semibold cursor-pointer text-blue-500 hover:text-blue-400" onClick={async () => {
                                             await fetchAppoinmentDetails(appointment.id)
-                                            setModel((reset) => {
-                                                return {
-                                                    ...reset,
-                                                    appointmentDetails: true
-                                                }
-                                            })
+                                            setModel({ ...model, appointmentDetails: true })
                                         }}>
                                             {appointment.id}
                                         </TableCell>
@@ -215,32 +208,18 @@ const AdminAppointment = () => {
                                         <TableCell>{currencyFormat(+appointment.fees)}</TableCell>
                                         <TableCell>{appointment.discount}%</TableCell>
                                         <TableCell>{currencyFormat(appointment.net_amount)}</TableCell>
-                                        <TableCell className='flex items-end space-x-2 px-2'>
+                                        <TableCell >
+                                            <div className='flex items-center space-x-2'>
+                                                {/* DELETE  */}
+                                                {hasPermission('delete', 'appointment') && (
+                                                    <CustomTooltip message='DELETE'>
+                                                        <Trash className="w-4 cursor-pointer  text-gray-600" onClick={() => onDelete(appointment.id)} />
+                                                    </CustomTooltip>
+                                                )}
 
-                                            {/* EDIT */}
-                                            {/* <TooltipProvider delayDuration={200}>
-                                        <Tooltip>
-                                            <TooltipTrigger>
-                                                <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
-
-                                                }} />
-                                            </TooltipTrigger>
-                                            <TooltipContent>Edit</TooltipContent>
-                                        </Tooltip>
-                                    </TooltipProvider> */}
-
-
-                                            {/* DELETE  */}
-                                            <CustomTooltip message='DELETE'>
-                                                <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
-                                                    setModel((prev) => ({ ...prev, alert: true }))
-                                                    itemID.current = appointment.id
-                                                }} />
-                                            </CustomTooltip>
-
-                                            {/* Print Appointment */}
-                                            <AppointmentPDF appointmentId={appointment.id} onPending={(v) => setModel({ ...model, loader: v })} />
-
+                                                {/* Print Appointment */}
+                                                <AppointmentPDF appointmentId={appointment.id} onPending={(v) => setModel({ ...model, loader: v })} />
+                                            </div>
                                         </TableCell>
                                         <TableCell>
                                             <span className={cn('text-white py-1 px-3 block rounded-md group-hover:hidden', appointment.status === 'Approved' ? 'bg-green-500' : appointment.status === 'Pending' ? 'bg-yellow-500' : 'bg-red-500')}>{appointment.status}</span>
@@ -294,29 +273,14 @@ const AdminAppointment = () => {
 
             {model.appointmentDetails && <AppointmentDetailsModel
                 appointmentDetails={AppointmentDetails!}
-                onClick={() => {
-                    setModel((reset) => {
-                        return {
-                            ...reset,
-                            appointmentDetails: false
-                        }
-                    })
-                }}
+                onClick={() => setModel({ ...model, appointmentDetails: false })}
             />}
 
 
             {/* Alert Model */}
-            {model.alert && <AlertModel
-                isPending={isPending}
-                cancel={() => {
-                    setModel((reset) => {
-                        return {
-                            ...reset,
-                            alert: false
-                        }
-                    })
-                }}
-                continue={onDelete}
+            {confirmationProps.isOpen && <AlertModel
+                cancel={() => confirmationProps.onCancel()}
+                continue={() => confirmationProps.onConfirm()}
             />}
 
 

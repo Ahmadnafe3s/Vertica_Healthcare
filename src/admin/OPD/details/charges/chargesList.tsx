@@ -1,5 +1,5 @@
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import ChargeFormModel from "./chargeFormModel"
 import { Button } from "@/components/ui/button"
 import { Pencil, Plus, SearchX, Trash } from "lucide-react"
@@ -20,6 +20,11 @@ import { ChargeDetailsType, ChargeListType } from "@/types/opd_section/charges"
 import CustomPagination from "@/components/customPagination"
 import CustomTooltip from "@/components/customTooltip"
 import { parseAsInteger, useQueryState } from "nuqs"
+import usePermission from "@/authz"
+import { useConfirmation } from "@/hooks/useConfirmation"
+
+
+
 
 const CahrgesList = () => {
 
@@ -27,8 +32,11 @@ const CahrgesList = () => {
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [search, setSearch] = useQueryState('search')
 
+  // custom hooks
+  const { loadPermission, hasPermission } = usePermission()
+  const { confirm, confirmationProps } = useConfirmation()
 
-  const id = useRef<number>(0)
+
   const { opdId } = useParams()
   const [isPending, setPending] = useState<boolean>(false)
 
@@ -40,7 +48,6 @@ const CahrgesList = () => {
 
 
   // Models State
-  const [isAlert, setAlert] = useState<boolean>(false)
   const [isChargeLoading, setIsChargeLoading] = useState<boolean>(false)
   const [isChargeDetailsVisible, setIsChargeDetailsVisible] = useState<boolean>(false)
   const [isChargeFormVisible, setIsChargeFormVisible] = useState<boolean>(false)
@@ -74,19 +81,18 @@ const CahrgesList = () => {
 
 
 
-  const onDelete = async () => {
+  const onDelete = async (id: number) => {
     try {
-      const data = await deleteCharge(Number(id.current))
+      const isConfirm = await confirm()
+      if (!isConfirm) return null
+      const data = await deleteCharge(id)
       toast.success(data.message)
       // refetching list
       fetchCharges()
     } catch ({ message }: any) {
       toast.error(message)
-    } finally {
-      setAlert(false)
     }
   }
-
 
 
   const onSearch = async (date: string) => {
@@ -119,6 +125,7 @@ const CahrgesList = () => {
 
   useEffect(() => {
     fetchCharges()
+    loadPermission()
   }, [page, search])
 
 
@@ -127,9 +134,11 @@ const CahrgesList = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg text-gray-800 font-semibold">Charges</h1>
-        <Button size='sm' onClick={() => setIsChargeFormVisible(true)} >
-          <Plus /> Add Charge
-        </Button>
+        {hasPermission('create', 'charges') && (
+          <Button size='sm' onClick={() => setIsChargeFormVisible(true)} >
+            <Plus /> Add Charge
+          </Button>
+        )}
       </div>
 
       <Separator />
@@ -152,7 +161,9 @@ const CahrgesList = () => {
                 <TableHead>Standard Charge {currencySymbol()}</TableHead>
                 <TableHead>TPA Charge {currencySymbol()}</TableHead>
                 <TableHead>Net Amount {currencySymbol()}</TableHead>
-                <TableHead>Action</TableHead>
+                {(hasPermission('update', 'charges') || hasPermission('delete', 'charges')) && (
+                  <TableHead>Action</TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -173,20 +184,21 @@ const CahrgesList = () => {
                   <TableCell className="flex space-x-2">
 
                     {/* EDIT  */}
-                    <CustomTooltip message="EDIT">
-                      <Pencil className="w-4 cursor-pointer text-gray-600" onClick={async () => {
-                        await fetchChargeDetails(charge.id)
-                        setIsChargeFormVisible(true)
-                      }} />
-                    </CustomTooltip>
+                    {hasPermission('update', 'charges') && (
+                      <CustomTooltip message="EDIT">
+                        <Pencil className="w-4 cursor-pointer text-gray-600" onClick={async () => {
+                          await fetchChargeDetails(charge.id)
+                          setIsChargeFormVisible(true)
+                        }} />
+                      </CustomTooltip>
+                    )}
 
                     {/* DELETE */}
-                    <CustomTooltip message="DELETE">
-                      <Trash className="w-4 cursor-pointer text-gray-600" onClick={() => {
-                        setAlert(true)
-                        id.current = charge.id
-                      }} />
-                    </CustomTooltip>
+                    {hasPermission('delete', 'charges') && (
+                      <CustomTooltip message="DELETE">
+                        <Trash className="w-4 cursor-pointer text-gray-600" onClick={() => onDelete(charge.id)} />
+                      </CustomTooltip>
+                    )}
 
                   </TableCell>
                 </TableRow>
@@ -226,10 +238,10 @@ const CahrgesList = () => {
 
       {/* Alert Model */}
 
-      {isAlert && (
+      {confirmationProps.isOpen && (
         <AlertModel
-          cancel={() => setAlert(false)}
-          continue={onDelete}
+          cancel={() => confirmationProps.onCancel()}
+          continue={() => confirmationProps.onConfirm()}
         />
       )}
 
