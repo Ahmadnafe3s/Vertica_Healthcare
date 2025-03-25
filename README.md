@@ -48,3 +48,10 @@ export default tseslint.config({
   },
 })
 ```
+## Authorization
+
+I have implemented authorization in backend and handling unauthorized control globally in api/AxiosClient
+
+## Permission
+
+Project has dynamic permisson system in setup where you can provide permissions based on role

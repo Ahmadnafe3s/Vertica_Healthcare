@@ -32,64 +32,71 @@ import { Route } from "react-router-dom"
 
 
 
+
 const AdminRoutes = () => {
+
     return (
 
-        <Route path="admin" element={<AdminLayout />}>
+        // protected route only handling authentication 
+        <Route element={<ProtectRoutes restrictedTo="patient" />}>
 
-            {/* Dashboard */}
-            <Route
-                path="dashboard"
-                element={<ProtectRoutes protectElement={<AdminDashboard />} />}
-            />
+            <Route path="admin" element={<AdminLayout />}>
+                {/* Dashboard */}
+                <Route
+                    path="dashboard"
+                    element={<AdminDashboard />}
+                />
 
-            {/* Appoinment routes */}
-            <Route path="appointment" element={<ProtectRoutes requiredRole={["admin", "receptionist", "doctor"]} protectElement={<AppointmentLayout />} />}>
-                <Route path="" element={<AdminAppointment />} />
-                <Route path="queue" element={<QueueAppointment />} />
-                <Route path="cancelled" element={<CancelledAppointments />} />
-            </Route>
 
-            {/* OPD Routes */}
-            <Route path="opd" element={<AdminOPDlayout />}>
-                <Route path="" element={<ProtectRoutes requiredRole={["admin", "doctor", "receptionist"]} protectElement={<OPDLIST />} />} />
-                <Route path="patient/:patientId/:opdId" element={<OpdDetailsLayout />}>
-                    <Route path="" element={<VisitDetails />} />
-                    <Route path="medication" element={<Medication />} />
-                    <Route path="vital" element={<Vital />} />
-                    <Route path="operation" element={<OperationList />} />
-                    <Route path="timeline" element={<Timeline />} />
-                    <Route path="charges" element={<CahrgesList />} />
-                    <Route path="treatmenthistory" element={<TreatmentsList />} />
-                    <Route path="payment" element={<PaymentsList />} />
+                {/* Appoinment routes */}
+                <Route path="appointment" element={<AppointmentLayout />}>
+                    <Route path="" element={<AdminAppointment />} />
+                    <Route path="queue" element={<QueueAppointment />} />
+                    <Route path="cancelled" element={<CancelledAppointments />} />
                 </Route>
-            </Route>
 
-            {/* Pharmacy Routes */}
-            <Route path="pharmacy" element={<ProtectRoutes requiredRole={["admin", "pharmacist"]} protectElement={<Pharmacy />} />} >
-                <Route path="" element={<Bill />} />
-                <Route path="medicines" element={<Medicines />} />
-                <Route path="purchase" element={<Purchase />} />
-            </Route>
 
-            {/* HR Routes */}
-            <Route path="humanresource" element={<HumanResource />} >
-                <Route path="staff" element={<ProtectRoutes requiredRole={["admin", "doctor", "pharmacist", "receptionist"]} protectElement={<Staff />} />} />
-                <Route path="create" element={<ProtectRoutes requiredRole={["admin"]} protectElement={<CreateStaff />} />} />
-            </Route>
+                {/* OPD Routes */}
+                <Route path="opd" element={<AdminOPDlayout />}>
+                    <Route path="" element={<OPDLIST />} />
+                    <Route path="patient/:patientId/:opdId" element={<OpdDetailsLayout />}>
+                        <Route path="" element={<VisitDetails />} />
+                        <Route path="medication" element={<Medication />} />
+                        <Route path="vital" element={<Vital />} />
+                        <Route path="operation" element={<OperationList />} />
+                        <Route path="timeline" element={<Timeline />} />
+                        <Route path="charges" element={<CahrgesList />} />
+                        <Route path="treatmenthistory" element={<TreatmentsList />} />
+                        <Route path="payment" element={<PaymentsList />} />
+                    </Route>
+                </Route>
 
-            {/* Profile Routes */}
-            <Route path="profile" element={<ProtectRoutes requiredRole={["admin", "doctor", "pharmacist", "receptionist"]} protectElement={<HumanResource />} />} >
-                <Route path="staff/:id" element={<Staffprofile />} />
-                <Route path="edit/:id" element={<ProtectRoutes requiredRole={["admin"]} protectElement={<CreateStaff />} />} />
-                <Route path="resetpassword/:id" element={<ResetPassword />} />
-            </Route>
+                {/* Pharmacy Routes */}
+                <Route path="pharmacy" element={<Pharmacy />} >
+                    <Route path="" element={<Bill />} />
+                    <Route path="medicines" element={<Medicines />} />
+                    <Route path="purchase" element={<Purchase />} />
+                </Route>
 
-            {/* Duty Roster Routes */}
-            <Route path="dutyroster" element={<ProtectRoutes protectElement={<DutuRoster />} />}>
-                <Route path="rosterreport" element={<RosterReport />} />
-            </Route>
+                {/* HR Routes */}
+                <Route path="humanresource" element={<HumanResource />} >
+                    <Route path="staff" element={<Staff />} />
+                    <Route path="create" element={<CreateStaff />} />
+                </Route>
 
+                {/* Profile Routes */}
+                <Route path="profile" element={<HumanResource />} >
+                    <Route path="staff/:id" element={<Staffprofile />} />
+                    <Route path="edit/:id" element={<CreateStaff />} />
+                    <Route path="resetpassword/:id" element={<ResetPassword />} />
+                </Route>
+
+                {/* Duty Roster Routes */}
+                <Route path="dutyroster" element={<DutuRoster />}>
+                    <Route path="rosterreport" element={<RosterReport />} />
+                </Route>
+
+            </Route>
         </Route>
 
     )

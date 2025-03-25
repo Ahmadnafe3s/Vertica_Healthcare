@@ -1,15 +1,10 @@
-import usePermission from '@/authz'
 import { authSelector } from '@/features/auth/authSlice'
 import { useAppSelector } from '@/hooks'
-import React from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
 
-interface ProtectRoutesProps {
-    requiredRole?: string[],
-    protectElement: React.ReactNode
-}
 
-const ProtectRoutes = ({ requiredRole = [], protectElement }: ProtectRoutesProps) => {
+
+const ProtectRoutes = ({ restrictedTo }: { restrictedTo?: string }) => {
 
     const session = useAppSelector(authSelector)
 
@@ -17,11 +12,12 @@ const ProtectRoutes = ({ requiredRole = [], protectElement }: ProtectRoutesProps
         return <Navigate to="/signin" />
     }
 
-    if ((requiredRole.length > 0) && !requiredRole.includes(session.user?.role)) { // if role exists the check (means if we passed)
+    if (restrictedTo && session.user.role === restrictedTo) {
         return <Navigate to="/unauthorized" />
     }
 
-    return <>{protectElement}</>
+    return <Outlet></Outlet>
+
 }
 
 export default ProtectRoutes

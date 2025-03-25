@@ -1,6 +1,18 @@
 import { z } from 'zod'
 
 
+// Helper function for password validation
+const createPasswordSchema = (isRequired: boolean) => {
+    let schema = z.string()
+        .min(8, { message: 'Password must be at least 8 characters' })
+        .max(15, { message: 'Password should be less than 15 characters' });
+
+    return isRequired
+        ? schema
+        : schema.optional().or(z.literal('')).transform(e => e === "" ? undefined : e);
+};
+
+
 export const patientRegistrationSchema = z.object({
 
     name: z.string()
@@ -75,6 +87,11 @@ export const patientRegistrationSchema = z.object({
         .max(70)
 })
 
+
+// For optional password scenarios, create a different schema
+export const patientUpdateSchema = patientRegistrationSchema.extend({
+    password: createPasswordSchema(false), // Set to false for optional
+});
 
 
 export const DefaultValues = {

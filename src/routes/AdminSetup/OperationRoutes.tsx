@@ -8,9 +8,11 @@ import { Route } from 'react-router-dom'
 
 const SetupOperationRoutes = () => {
     return (
-        <Route path="admin/setup/operation" element={<ProtectRoutes requiredRole={['admin']} protectElement={<OperationLayout />} />}>
-            <Route path="" element={<OperationNames />} />
-            <Route path="category" element={<OperationCategories />} />
+        <Route element={<ProtectRoutes />}>
+            <Route path="admin/setup/operation" element={<OperationLayout />}>
+                <Route path="" element={<OperationNames />} />
+                <Route path="category" element={<OperationCategories />} />
+            </Route>
         </Route>
     )
 }

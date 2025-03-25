@@ -5,7 +5,9 @@ import { Route } from 'react-router-dom'
 const SetupPatientRoutes = () => {
     return (
         <>
-            <Route path='admin/setup/patient' element={<ProtectRoutes requiredRole={['admin']} protectElement={<Patients />} />} />
+            <Route element={<ProtectRoutes />}>
+                <Route path='admin/setup/patient' element={<Patients />} />
+            </Route>
         </>
     )
 }

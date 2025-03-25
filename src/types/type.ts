@@ -5,6 +5,7 @@
 export interface StaffProfile {
     id: number;
     name: string;
+    roleId: number,
     role: { name: string };
     designation: string;
     department: string;
@@ -20,7 +21,7 @@ export interface StaffProfile {
     phone: string;
     emergency_contact: string;
     email: string;
-    image: string | null; // URL to image or null if not provided
+    image: string | undefined; // URL to image or null if not provided
     current_address: string;
     permanent_address: string;
     qualification: string;

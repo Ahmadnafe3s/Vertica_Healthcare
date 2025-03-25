@@ -14,7 +14,7 @@ const Backdrop = ({ children, ...Props }: BackdropProps) => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.2 }}
                 exit={{ opacity: 0 }}
-                className='fixed inset-0 flex items-center justify-center h-screen w-screen backdrop-blur-md transition-all z-[120] bg-[#0000009c]'
+                className='fixed inset-0 flex items-center justify-center h-screen w-screen backdrop-blur transition-all z-[120] bg-[#0000009c]'
             >
                 {children}
             </motion.section>

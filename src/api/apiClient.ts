@@ -16,9 +16,19 @@ AxiosClient.interceptors.request.use((config) => {
 
     return config
 }, (error) => {
-    return Promise.reject(error); 
+    return Promise.reject(error);
 })
 
+
+// response inteceptor
+AxiosClient.interceptors.response.use(
+    response => response,
+    error => {
+        const redirect = error?.response?.data?.redirectTo
+        if (redirect) window.location.href = redirect
+        return Promise.reject(error);
+    }
+)
 
 
 

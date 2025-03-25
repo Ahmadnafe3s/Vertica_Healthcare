@@ -12,13 +12,15 @@ import { Route } from 'react-router-dom'
 
 const SetupPharmacyRoutes = () => {
     return (
-        <Route path="admin/setup/pharmacy" element={<ProtectRoutes requiredRole={['admin']} protectElement={<PharmacyLayout />} />}>
-            <Route path="" element={<MedicineCategories />} />
-            <Route path="group" element={<MedicineGroups />} />
-            <Route path="company" element={<MedicineCompany />} />
-            <Route path="unit" element={<MedicineUnits />} />
-            <Route path="duration" element={<DoseDuration />} />
-            <Route path="interval" element={<DoseIntervals />} />
+        <Route element={<ProtectRoutes />}>
+            <Route path="admin/setup/pharmacy" element={<PharmacyLayout />}>
+                <Route path="" element={<MedicineCategories />} />
+                <Route path="group" element={<MedicineGroups />} />
+                <Route path="company" element={<MedicineCompany />} />
+                <Route path="unit" element={<MedicineUnits />} />
+                <Route path="duration" element={<DoseDuration />} />
+                <Route path="interval" element={<DoseIntervals />} />
+            </Route>
         </Route>
     )
 }

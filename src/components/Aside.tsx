@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import AlertModel from './alertModel'
 import { authSelector, logout } from '@/features/auth/authSlice'
 import usePermission from '@/authz'
+import { openAside } from '@/features/aside/asideSlice'
 
 const Aside = () => {
 
@@ -22,6 +23,10 @@ const Aside = () => {
     const dispatch = useAppDispatch()
     const session = useAppSelector(authSelector)
 
+    const onNavigate = () => {
+        if (window.screen.width > 630) return null
+        dispatch(openAside(false))
+    }
 
     // making routes static
     const Routes = (session.user?.role === 'patient') ? session.user?.role : 'admin'
@@ -39,9 +44,9 @@ const Aside = () => {
 
                 <ScrollArea className='h-full '>
 
-                    <ul className='flex flex-col gap-y-2'>
+                    <ul className='flex flex-col gap-y-2 pb-10'>
 
-                        <li><Link to={{ pathname: `/${Routes}/dashboard` }} className={
+                        <li><Link to={{ pathname: `/${Routes}/dashboard` }} onClick={onNavigate} className={
                             buttonVariants({
                                 variant: 'ghost',
                                 className: 'flex text-sm items-center'
@@ -50,7 +55,7 @@ const Aside = () => {
 
 
                         {hasPermission('view', 'appointment') &&
-                            <li><Link to={{ pathname: `/${Routes}/appointment` }} className={
+                            <li><Link to={{ pathname: `/${Routes}/appointment` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
@@ -58,7 +63,7 @@ const Aside = () => {
                             }><CalendarClock className='h-4 w-4' /> Appointment</Link></li>}
 
 
-                        {hasPermission('view', 'opd') && <li><Link to={{ pathname: `/${Routes}/opd` }} className={
+                        {hasPermission('view', 'opd') && <li><Link to={{ pathname: `/${Routes}/opd` }} onClick={onNavigate} className={
                             buttonVariants({
                                 variant: 'ghost',
                                 className: 'flex text-sm items-center'
@@ -68,7 +73,7 @@ const Aside = () => {
 
                         {hasPermission('view', 'pharmacy_bill') &&
 
-                            <li><Link to={{ pathname: `/${Routes}/pharmacy` }} className={
+                            <li><Link to={{ pathname: `/${Routes}/pharmacy` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
@@ -80,7 +85,7 @@ const Aside = () => {
                         {/* only these role can see this */}
 
                         {hasPermission('view', 'human_resource') &&
-                            <li><Link to={{ pathname: '/admin/humanresource/staff' }} className={
+                            <li><Link to={{ pathname: '/admin/humanresource/staff' }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
@@ -90,7 +95,7 @@ const Aside = () => {
 
 
                         {hasPermission('view', 'duty_roster') && (
-                            <li><Link to={{ pathname: '/admin/dutyroster/rosterreport' }} className={
+                            <li><Link to={{ pathname: '/admin/dutyroster/rosterreport' }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
@@ -101,7 +106,7 @@ const Aside = () => {
 
                         {/* Tree View Links setup links */}
 
-                        {hasPermission('view', 'setup') &&
+                        {(session?.user?.role === 'admin') &&
                             <>
 
                                 <li>
@@ -119,56 +124,56 @@ const Aside = () => {
 
                                             <AccordionContent className='py-1'>
                                                 <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/charges' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <Link to={{ pathname: '/admin/setup/charges' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
                                                         <ChevronRight className='h-4 w-4' />Hospital Charges</Link>
                                                 </div>
                                             </AccordionContent>
 
                                             <AccordionContent className='py-1'>
                                                 <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/operation' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <Link to={{ pathname: '/admin/setup/operation' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
                                                         <ChevronRight className='h-4 w-4' />Operation</Link>
                                                 </div>
                                             </AccordionContent>
 
                                             <AccordionContent className='py-1'>
                                                 <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/finding' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <Link to={{ pathname: '/admin/setup/finding' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
                                                         <ChevronRight className='h-4 w-4' />Findings</Link>
                                                 </div>
                                             </AccordionContent>
 
                                             <AccordionContent className='py-1'>
                                                 <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/pharmacy' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <Link to={{ pathname: '/admin/setup/pharmacy' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
                                                         <ChevronRight className='h-4 w-4' />Pharmacy</Link>
                                                 </div>
                                             </AccordionContent>
 
                                             <AccordionContent className='py-1'>
                                                 <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/vital' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <Link to={{ pathname: '/admin/setup/vital' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
                                                         <ChevronRight className='h-4 w-4' />Vital</Link>
                                                 </div>
                                             </AccordionContent>
 
                                             <AccordionContent className='py-1'>
                                                 <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/event' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <Link to={{ pathname: '/admin/setup/event' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
                                                         <ChevronRight className='h-4 w-4' />Calendar</Link>
                                                 </div>
                                             </AccordionContent>
 
                                             <AccordionContent className='py-1'>
                                                 <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/patient' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <Link to={{ pathname: '/admin/setup/patient' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
                                                         <ChevronRight className='h-4 w-4' />Patients</Link>
                                                 </div>
                                             </AccordionContent>
 
                                             <AccordionContent className='py-1'>
                                                 <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/authorization' }} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <Link to={{ pathname: '/admin/setup/authorization' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
                                                         <ChevronRight className='h-4 w-4' />Authorization</Link>
                                                 </div>
                                             </AccordionContent>

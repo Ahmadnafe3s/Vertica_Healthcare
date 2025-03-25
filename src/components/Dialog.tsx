@@ -20,8 +20,8 @@ const Dialog = ({ children, pageTitle, className, ...props }: DialogProps) => {
         <AnimatePresence>
             <Backdrop {...props}>
                 <motion.div className="flex-1"
-                    initial={{ scale: 0.50, y: 500 }}
-                    animate={{ scale: 1, y: 0 }}
+                    initial={{ opacity: 0.3}}
+                    animate={{ opacity: 1}}
 
                 >
                     {/* // prevents modal to click backdrop */}

@@ -8,8 +8,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { currencySymbol } from "@/helpers/currencySymbol";
 import { currencyFormat } from "@/lib/utils";
 import { opdDetails } from "@/types/opd_section/opd";
-import { useAppSelector } from "@/hooks";
-import { authSelector } from "@/features/auth/authSlice";
 
 
 const VisitDetails = () => {
@@ -17,12 +15,13 @@ const VisitDetails = () => {
     const { opdId } = useParams()
     const [OPD_DETAILS, set_OPD_DETAILS] = useState<opdDetails>()
 
-    const { user } = useAppSelector(authSelector)
 
     const fetchOpdDetails = async () => {
         try {
             const data = await getOPD_Details(opdId!)
             set_OPD_DETAILS(data)
+            console.log(data);
+            
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -48,9 +47,9 @@ const VisitDetails = () => {
 
                 <div className="sm:col-span-2 flex space-x-2 items-center mb-3">
 
-                    {OPD_DETAILS?.appointment.patient.image ?
+                    {OPD_DETAILS?.appointment?.patient?.image ?
                         (<div className='w-20 h-20'>
-                            <img src={OPD_DETAILS?.appointment.patient.image!} alt="staff img" className='object-cover h-full w-full rounded-full' />
+                            <img src={OPD_DETAILS.appointment.patient.image!} alt="staff img" className='object-cover h-full w-full rounded-full' />
                         </div>)
                         :
                         (<div className='p-3 bg-red-500 rounded-full'>
@@ -59,8 +58,8 @@ const VisitDetails = () => {
                     }
 
                     <div className=''>
-                        <p className='font-semibold text-lg text-gray-900'>{OPD_DETAILS?.appointment.patient.name}</p>
-                        <p className='text-sm text-gray-500'>ID : {OPD_DETAILS?.appointment.patient.id}</p>
+                        <p className='font-semibold text-lg text-gray-900'>{OPD_DETAILS?.appointment?.patient.name}</p>
+                        <p className='text-sm text-gray-500'>ID : {OPD_DETAILS?.appointment?.patient.id}</p>
                     </div>
                 </div>
 
@@ -69,42 +68,42 @@ const VisitDetails = () => {
 
                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                     <p className='text-gray-700'>Gender</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment.patient.gender}</p>
+                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.gender}</p>
                 </div>
 
                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                     <p className='text-gray-700'>Guardian Name</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment.patient.guardian_name}</p>
+                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.guardian_name}</p>
                 </div>
 
                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                     <p className='text-gray-700'>Age</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment.patient.age}</p>
+                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.age}</p>
                 </div>
 
                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                     <p className='text-gray-700'>Blood Group</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment.patient.blood_group}</p>
+                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.blood_group}</p>
                 </div>
 
                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                     <p className='text-gray-700'>Aadhar</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment.patient.aadhar}</p>
+                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.aadhar}</p>
                 </div>
 
                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                     <p className='text-gray-700'>Phone</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment.patient.phone}</p>
+                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.phone}</p>
                 </div>
 
                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                     <p className='text-gray-700'>Address</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment.patient.address}</p>
+                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.address}</p>
                 </div>
 
                 <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
                     <p className='text-gray-700'>Alergies</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment.patient.alergies}</p>
+                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.alergies}</p>
                 </div>
 
                 <Separator className="sm:col-span-full my-8" />
@@ -151,7 +150,7 @@ const VisitDetails = () => {
                 {/* Symptoms */}
 
                 <h1 className="sm:col-span-full font-semibold text-gray-800">Symptoms</h1>
-                <p className="text-sm text-gray-500 sm:col-span-full">{OPD_DETAILS?.appointment.symptom_description}</p>
+                <p className="text-sm text-gray-500 sm:col-span-full">{OPD_DETAILS?.appointment?.symptom_description}</p>
 
                 <Separator className="sm:col-span-full my-8" />
 
@@ -161,12 +160,12 @@ const VisitDetails = () => {
 
                 <div className="sm:col-span-full flex space-x-2 items-center">
                     <div className='w-16 h-16'>
-                        <img src={OPD_DETAILS?.appointment?.doctor.image ? OPD_DETAILS?.appointment.doctor.image : OPD_DETAILS?.appointment.doctor.gender === 'male' ? '/user.png' : '/female_user.png'} alt="staff img" className='object-cover h-full w-full rounded-lg' />
+                        <img src={OPD_DETAILS?.appointment?.doctor.image ? OPD_DETAILS?.appointment?.doctor.image : OPD_DETAILS?.appointment?.doctor.gender === 'male' ? '/user.png' : '/female_user.png'} alt="staff img" className='object-cover h-full w-full rounded-lg' />
                     </div>
 
                     <div className=''>
                         <p className='font-semibold text-lg text-gray-900'>{OPD_DETAILS?.appointment?.doctor.name}</p>
-                        <p className='text-sm text-gray-500'>ID : {OPD_DETAILS?.appointment.doctor.id}</p>
+                        <p className='text-sm text-gray-500'>ID : {OPD_DETAILS?.appointment?.doctor.id}</p>
                     </div>
 
                 </div>
@@ -329,7 +328,7 @@ const VisitDetails = () => {
                     </TableBody>
                 </Table>
 
-                {OPD_DETAILS?.charges.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
+                {OPD_DETAILS?.charges?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
 
                 <Separator className="sm:col-span-full my-8" />
 
@@ -359,7 +358,7 @@ const VisitDetails = () => {
                     </TableBody>
                 </Table>
 
-                {OPD_DETAILS?.Payments.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
+                {OPD_DETAILS?.Payments?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
             </div>
         </section>
     )

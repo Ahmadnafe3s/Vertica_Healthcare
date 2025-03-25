@@ -19,8 +19,6 @@ import { parseAsInteger, useQueryState } from 'nuqs'
 import CustomPagination from '@/components/customPagination'
 import OpdBillPDF from './pdf/bill'
 import OpdsPdf from './pdf/opds'
-import { useAppSelector } from '@/hooks'
-import { authSelector } from '@/features/auth/authSlice'
 import usePermission from '@/authz'
 
 
@@ -31,12 +29,9 @@ const OPDLIST = () => {
 
   //utilities
   const opdId = useRef<string>('')
-  const patientId = useRef<number>()
-
-  const { user } = useAppSelector(authSelector)
+  const patientId = useRef(0)
 
   // my custom hook
-
   const { loadPermission, hasPermission } = usePermission()
 
   // Query params
@@ -44,10 +39,7 @@ const OPDLIST = () => {
   const [search, setSearch] = useQueryState('search')
 
   // loaders
-  const [isLoading, setLoading] = useState<{ inline: boolean, model: boolean }>({
-    inline: false,
-    model: false
-  })
+  const [isLoading, setLoading] = useState({ inline: false, model: false })
 
   // API states
   const [OPD_list, setOPD_list] = useState<OPDs>({ data: [], total_pages: 0 })
@@ -55,13 +47,7 @@ const OPDLIST = () => {
 
 
   // Model States
-  const [model, setModel] = useState<{ prescriptionForm: boolean, appointmentForm: boolean, prescriptionDetails: boolean, alert: boolean, print: boolean }>({
-    prescriptionForm: false,
-    appointmentForm: false,
-    prescriptionDetails: false,
-    alert: false,
-    print: false
-  })
+  const [model, setModel] = useState({ prescriptionForm: false, appointmentForm: false, prescriptionDetails: false, alert: false, print: false })
 
 
   // fetching opd Details
@@ -94,7 +80,7 @@ const OPDLIST = () => {
         setPrescDetails(undefined)
       )
         :
-        (data = await createPrescription(opdId.current, 2, formData))
+        (data = await createPrescription(opdId.current, patientId.current, formData))
       toast.success(data.message)
       fetchOPDs()
       setModel(prev => ({ ...prev, prescriptionForm: false }))

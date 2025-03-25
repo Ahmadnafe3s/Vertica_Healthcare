@@ -23,26 +23,28 @@ const PatientRoutes = () => {
 
 
     return (
-        <Route path="patient" element={<ProtectRoutes requiredRole={["admin", "patient"]} protectElement={<PatientLayout />} />}>
-            <Route path="dashboard" element={<PatientDashboard />} />
-            <Route path="appointment" element={<PatientAppointments />} />
-            <Route path="profile/:id" element={<PatientProfile />} />
-            <Route path="edit/:id" element={<RegisterPatient />} />
-            <Route path="resetpassword/:id" element={<PatientResetPassword />} />
-            <Route path="pharmacy" element={<PatientPharmacyBills />} />
-            {/* opd layout */}
-            <Route path="opd" element={<PatientsOpdLayout />} >
-                <Route path="" element={<PatientOpds />} />
-                {/* details layout */}
-                <Route path="details/:opdId" element={<PatinetOpdDetailsLayout />}>
-                    <Route path="" element={<PatinetOpdVisitDetails />} />
-                    <Route path="medication" element={<PatientOpdMedication />} />
-                    <Route path="vital" element={<PatientOpdVitals />} />
-                    <Route path="timeline" element={<PatientOpdTimeline />} />
-                    <Route path="operation" element={<PatientOpdOperation />} />
-                    <Route path="charges" element={<PatientOpdCharges />} />
-                    <Route path="payment" element={<PatientOpdPayments />} />
-                    {/* <Route path="findings" element={<PatientOpdFindings />} /> */}
+        <Route element={<ProtectRoutes />}>
+            <Route path="patient" element={<PatientLayout />}>
+                <Route path="dashboard" element={<PatientDashboard />} />
+                <Route path="appointment" element={<PatientAppointments />} />
+                <Route path="profile/:id" element={<PatientProfile />} />
+                <Route path="edit/:id" element={<RegisterPatient />} />
+                <Route path="resetpassword/:id" element={<PatientResetPassword />} />
+                <Route path="pharmacy" element={<PatientPharmacyBills />} />
+                {/* opd layout */}
+                <Route path="opd" element={<PatientsOpdLayout />} >
+                    <Route path="" element={<PatientOpds />} />
+                    {/* details layout */}
+                    <Route path="details/:opdId" element={<PatinetOpdDetailsLayout />}>
+                        <Route path="" element={<PatinetOpdVisitDetails />} />
+                        <Route path="medication" element={<PatientOpdMedication />} />
+                        <Route path="vital" element={<PatientOpdVitals />} />
+                        <Route path="timeline" element={<PatientOpdTimeline />} />
+                        <Route path="operation" element={<PatientOpdOperation />} />
+                        <Route path="charges" element={<PatientOpdCharges />} />
+                        <Route path="payment" element={<PatientOpdPayments />} />
+                        {/* <Route path="findings" element={<PatientOpdFindings />} /> */}
+                    </Route>
                 </Route>
             </Route>
         </Route>

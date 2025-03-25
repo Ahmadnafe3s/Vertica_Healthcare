@@ -80,13 +80,16 @@ const Navbar = () => {
             {isUserModel && <UserModel onClick={() => setUserModel(false)} onLogout={onLogout}
                 onProfile={() => {
 
-                    ['admin', 'doctor', 'pharmacist', 'receptionist'].includes(session.user?.role!) ? router(`/admin/profile/staff/${session.user?.id}`)
+                    session.user?.role !== "patient" ? router(`/admin/profile/staff/${session.user?.id}`)
                         :
                         session.user?.role === "patient" ? router(`/patient/profile/${session.user.id}`) : alert('Invalid user')
                     setUserModel(false)
                 }}
 
-                onDashboard={() => { router(`${session.user?.role}/dashboard`), setUserModel(false) }}
+                onDashboard={() => {
+                    const Routes = (session.user?.role === 'patient') ? session.user?.role : 'admin'
+                    router(`/${Routes}/dashboard`), setUserModel(false)
+                }}
             />}
 
         </>

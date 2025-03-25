@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const Permission = () => {
 
     // have to create dynamically
-    const module = ['appointment', 'queue', 'cancelled', 'opd', 'pharmacy_bill', 'medicines', 'purchase_medicine', 'prescription', 'medication', 'operation', 'charges', 'payments', 'vitals', 'timeline', 'human_resource', 'duty_roster', 'setup']
+    const module = ['appointment', 'queue', 'cancelled', 'opd', 'pharmacy_bill', 'medicines', 'purchase_medicine', 'prescription', 'medication', 'operation', 'charges', 'payments', 'vitals', 'timeline', 'human_resource', 'duty_roster']
 
 
     const dashboardPermissions = ['opd_income', 'opds', 'appointments', 'appmnt_income', 'pharmacy_income', 'pharmacy_bill' , 'medicines', 'income_expenses' , 'medicine_purchases', 'pharmacy_expenses', 'expenses', 'visitors',]

@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createStaffFormSchema } from '@/formSchemas/createStaffFormSchema'
-import { bloodGroups, degisnations, departments, maritalStatus, roles } from '@/helpers/formSelectOptions'
+import { bloodGroups, departments, designations, maritalStatus } from '@/helpers/formSelectOptions'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -54,11 +54,14 @@ const CreateStaff = () => {
 
   const fetchProfileDetails = async () => {
     try {
-      // const data = await fetchStaffProfile(Number(id))
-      // reset({
-      //   ...data,
-      //   image: undefined
-      // })
+      const data = await fetchStaffProfile(Number(id))
+      reset({
+        ...data,
+        role: data.roleId,
+        image: undefined
+      })
+      console.log(data.roleId);
+
     } catch ({ message }: any) {
       toast.error(message)
     }
@@ -76,8 +79,10 @@ const CreateStaff = () => {
 
 
   useEffect(() => {
-    if (id) fetchProfileDetails()
-    fetchRoles()
+    (async () => {
+      await fetchRoles()
+      if (id) await fetchProfileDetails()
+    })()
   }, [])
 
 
@@ -138,7 +143,7 @@ const CreateStaff = () => {
                 </SelectTrigger>
 
                 <SelectContent className='z-[200]'>
-                  {degisnations?.map((role, index) => {
+                  {designations?.map((role, index) => {
                     return <SelectItem key={index} value={role.value}>{role.label}</SelectItem>
                   })}
                 </SelectContent>
