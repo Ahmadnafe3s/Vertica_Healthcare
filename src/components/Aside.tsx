@@ -106,7 +106,7 @@ const Aside = () => {
 
                         {/* Tree View Links setup links */}
 
-                        {(session?.user?.role === 'admin') &&
+                        {hasPermission('view', 'setup') &&
                             <>
 
                                 <li>
@@ -122,61 +122,98 @@ const Aside = () => {
 
                                             {/* Links */}
 
-                                            <AccordionContent className='py-1'>
-                                                <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/charges' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                        <ChevronRight className='h-4 w-4' />Hospital Charges</Link>
-                                                </div>
-                                            </AccordionContent>
+                                            {hasPermission('view', 'setup_Hospital_Charges') && (
+                                                <AccordionContent className='py-1'>
+                                                    <div className="pl-5">
+                                                        <Link to={{ pathname: '/admin/setup/charges' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                            <ChevronRight className='h-4 w-4' />Hospital Charges</Link>
+                                                    </div>
+                                                </AccordionContent>
+                                            )}
 
-                                            <AccordionContent className='py-1'>
-                                                <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/operation' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                        <ChevronRight className='h-4 w-4' />Operation</Link>
-                                                </div>
-                                            </AccordionContent>
+                                            {hasPermission('view', 'setupOperation') && (
+                                                <AccordionContent className='py-1'>
+                                                    <div className="pl-5">
+                                                        <Link to={{ pathname: '/admin/setup/operation' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                            <ChevronRight className='h-4 w-4' />Operation</Link>
+                                                    </div>
+                                                </AccordionContent>
+                                            )}
 
-                                            <AccordionContent className='py-1'>
-                                                <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/finding' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                        <ChevronRight className='h-4 w-4' />Findings</Link>
-                                                </div>
-                                            </AccordionContent>
+                                            {hasPermission('view', 'setupFinding') && (
+                                                <AccordionContent className='py-1'>
+                                                    <div className="pl-5">
+                                                        <Link to={{ pathname: '/admin/setup/finding' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                            <ChevronRight className='h-4 w-4' />Findings</Link>
+                                                    </div>
+                                                </AccordionContent>
+                                            )}
 
-                                            <AccordionContent className='py-1'>
-                                                <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/pharmacy' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                        <ChevronRight className='h-4 w-4' />Pharmacy</Link>
-                                                </div>
-                                            </AccordionContent>
+                                            {hasPermission('view', 'setupPharmacy') && (
+                                                <AccordionContent className='py-1'>
+                                                    <div className="pl-5">
+                                                        <Link to={{ pathname: '/admin/setup/pharmacy' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                            <ChevronRight className='h-4 w-4' />Pharmacy</Link>
+                                                    </div>
+                                                </AccordionContent>
+                                            )}
 
-                                            <AccordionContent className='py-1'>
-                                                <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/vital' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                        <ChevronRight className='h-4 w-4' />Vital</Link>
-                                                </div>
-                                            </AccordionContent>
+                                            {hasPermission('view', 'setupVital') && (
+                                                <AccordionContent className='py-1'>
+                                                    <div className="pl-5">
+                                                        <Link to={{ pathname: '/admin/setup/vital' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                            <ChevronRight className='h-4 w-4' />Vital</Link>
+                                                    </div>
+                                                </AccordionContent>
+                                            )}
 
-                                            <AccordionContent className='py-1'>
-                                                <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/event' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                        <ChevronRight className='h-4 w-4' />Calendar</Link>
-                                                </div>
-                                            </AccordionContent>
 
-                                            <AccordionContent className='py-1'>
-                                                <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/patient' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                        <ChevronRight className='h-4 w-4' />Patients</Link>
-                                                </div>
-                                            </AccordionContent>
+                                            {session.user?.role === 'admin' && (
+                                                <AccordionContent className='py-1'>
+                                                    <div className="pl-5">
+                                                        <Link to={{ pathname: '/admin/setup/event' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                            <ChevronRight className='h-4 w-4' />Calendar</Link>
+                                                    </div>
+                                                </AccordionContent>
+                                            )}
 
-                                            <AccordionContent className='py-1'>
-                                                <div className="pl-5">
-                                                    <Link to={{ pathname: '/admin/setup/authorization' }} onClick={onNavigate} className='flex hover:bg-slate-100 rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                        <ChevronRight className='h-4 w-4' />Authorization</Link>
-                                                </div>
-                                            </AccordionContent>
+
+                                            {hasPermission('view', 'setupRadiology') && (
+                                                <AccordionContent className='py-1'>
+                                                    <div className="pl-5">
+                                                        <Link to={{ pathname: '/admin/setup/radiology' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                            <ChevronRight className='h-4 w-4' />Radiology</Link>
+                                                    </div>
+                                                </AccordionContent>
+                                            )}
+
+
+                                            {hasPermission('view', 'setupPathylogy') && (
+                                                <AccordionContent className='py-1'>
+                                                    <div className="pl-5">
+                                                        <Link to={{ pathname: '/admin/setup/pathylogy' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                            <ChevronRight className='h-4 w-4' />Pathylogy</Link>
+                                                    </div>
+                                                </AccordionContent>
+                                            )}
+
+                                            {hasPermission('view', 'setupPatient') && (
+                                                <AccordionContent className='py-1'>
+                                                    <div className="pl-5">
+                                                        <Link to={{ pathname: '/admin/setup/patient' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                            <ChevronRight className='h-4 w-4' />Patients</Link>
+                                                    </div>
+                                                </AccordionContent>
+                                            )}
+
+                                            {session.user?.role === 'admin' && (
+                                                <AccordionContent className='py-1'>
+                                                    <div className="pl-5">
+                                                        <Link to={{ pathname: '/admin/setup/authorization' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black  rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                            <ChevronRight className='h-4 w-4' />Authorization</Link>
+                                                    </div>
+                                                </AccordionContent>
+                                            )}
 
                                         </AccordionItem>
                                     </Accordion>
@@ -185,7 +222,7 @@ const Aside = () => {
                         }
 
                     </ul>
-                    <div className="h-16 bg-gradient-to-t from-white z-30 w-full absolute bottom-0" />
+                    <div className="h-14 bg-gradient-to-t from-white dark:from-gray-950 z-30 w-full absolute bottom-0" />
                 </ScrollArea>
 
                 {/* logout button */}

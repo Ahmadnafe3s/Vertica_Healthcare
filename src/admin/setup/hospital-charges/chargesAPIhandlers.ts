@@ -2,20 +2,21 @@
 
 import { z } from "zod"
 import { unitFormSchema } from "./chargeUnit/addUnitFormModel"
-import axios from "axios"
 import { taxFormSchema } from "./taxes/addTaxformModel"
 import { TaxType } from "./taxes/taxList"
 import { ChargeTypeformModelSchema } from "./chargeType/addChargeTypeformModel"
 import { ChargeCategoryFormSchema } from "./chargesCategory/addChargeCategoryFormModel"
 import { Charge_Type_Interface } from "./chargeType/chargeTypes"
 import { chargeNameFormSchema } from "@/formSchemas/setupSectionSchemas/ChargeNameFormSchema"
-import { chargeNamesType } from "@/types/setupTypes/chargeName"
+import { chargeNameDetailsType, chargeNamesType } from "@/types/setupTypes/chargeName"
+import AxiosClient from "@/api/apiClient"
+import { ChargeDetails } from "@/types/type"
 
 
 
 export const createChargeUnit = async (formData: z.infer<typeof unitFormSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/unit`, formData)
+        const res = await AxiosClient.post(`/api/hospitalCharge/unit`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -25,7 +26,7 @@ export const createChargeUnit = async (formData: z.infer<typeof unitFormSchema>)
 
 export const updateChargeUnit = async (id: number, formData: z.infer<typeof unitFormSchema>) => {
     try {
-        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/unit/${id}`, formData)
+        const res = await AxiosClient.put(`/api/hospitalCharge/unit/${id}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -35,7 +36,7 @@ export const updateChargeUnit = async (id: number, formData: z.infer<typeof unit
 
 export const getChargeUnitDetails = async (id: number) => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/unit/${id}`)
+        const res = await AxiosClient.get(`/api/hospitalCharge/unit/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -45,7 +46,7 @@ export const getChargeUnitDetails = async (id: number) => {
 
 export const getChargeUnitList = async () => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/unit`)
+        const res = await AxiosClient.get(`/api/hospitalCharge/unit`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -55,7 +56,7 @@ export const getChargeUnitList = async () => {
 
 export const deleteChargeUnit = async (id: number) => {
     try {
-        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/unit/${id}`)
+        const res = await AxiosClient.delete(`/api/hospitalCharge/unit/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -68,7 +69,7 @@ export const deleteChargeUnit = async (id: number) => {
 
 export const createTax = async (formData: z.infer<typeof taxFormSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/tax`, formData)
+        const res = await AxiosClient.post(`/api/hospitalCharge/tax`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -78,7 +79,7 @@ export const createTax = async (formData: z.infer<typeof taxFormSchema>) => {
 
 export const updateTax = async (id: number, formData: z.infer<typeof taxFormSchema>) => {
     try {
-        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/tax/${id}`, formData)
+        const res = await AxiosClient.put(`/api/hospitalCharge/tax/${id}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -89,7 +90,7 @@ export const updateTax = async (id: number, formData: z.infer<typeof taxFormSche
 
 export const deleteTax = async (id: number) => {
     try {
-        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/tax/${id}`)
+        const res = await AxiosClient.delete(`/api/hospitalCharge/tax/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -99,7 +100,7 @@ export const deleteTax = async (id: number) => {
 
 export const getTaxDetails = async (id: number): Promise<TaxType> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/tax/${id}`)
+        const res = await AxiosClient.get(`/api/hospitalCharge/tax/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -109,7 +110,7 @@ export const getTaxDetails = async (id: number): Promise<TaxType> => {
 
 export const getTaxesList = async () => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/tax`)
+        const res = await AxiosClient.get(`/api/hospitalCharge/tax`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -125,7 +126,7 @@ export const getTaxesList = async () => {
 
 export const createChargeType = async (formData: z.infer<typeof ChargeTypeformModelSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/type`, formData)
+        const res = await AxiosClient.post(`/api/hospitalCharge/type`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -136,7 +137,7 @@ export const createChargeType = async (formData: z.infer<typeof ChargeTypeformMo
 
 export const updateChargeType = async (id: number, formData: z.infer<typeof ChargeTypeformModelSchema>) => {
     try {
-        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/type/${id}`, formData)
+        const res = await AxiosClient.put(`/api/hospitalCharge/type/${id}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -147,7 +148,7 @@ export const updateChargeType = async (id: number, formData: z.infer<typeof Char
 
 export const deleteChargeType = async (id: number) => {
     try {
-        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/type/${id}`)
+        const res = await AxiosClient.delete(`/api/hospitalCharge/type/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -160,7 +161,7 @@ type moduleType = 'opd' | 'appointment' | 'radiology' | 'pathylogy' | 'blood_ban
 export const getChargeTypes = async (module?: moduleType): Promise<Charge_Type_Interface[]> => {
     try {
         const params = { module }
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/type`, { params })
+        const res = await AxiosClient.get(`/api/hospitalCharge/type`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -170,7 +171,7 @@ export const getChargeTypes = async (module?: moduleType): Promise<Charge_Type_I
 
 export const getChargeTypeDetails = async (id: number) => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/type/${id}`)
+        const res = await AxiosClient.get(`/api/hospitalCharge/type/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -180,7 +181,7 @@ export const getChargeTypeDetails = async (id: number) => {
 
 export const updateChargeTypeModule = async (id: number, data: any) => {
     try {
-        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/type/module/${id}`, data)
+        const res = await AxiosClient.put(`/api/hospitalCharge/type/module/${id}`, data)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -193,7 +194,7 @@ export const updateChargeTypeModule = async (id: number, data: any) => {
 
 export const createChargeCategory = async (formData: z.infer<typeof ChargeCategoryFormSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/category`, formData)
+        const res = await AxiosClient.post(`/api/hospitalCharge/category`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -203,7 +204,7 @@ export const createChargeCategory = async (formData: z.infer<typeof ChargeCatego
 
 export const updateChargeCategory = async (id: number, formData: z.infer<typeof ChargeCategoryFormSchema>) => {
     try {
-        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/category/${id}`, formData)
+        const res = await AxiosClient.put(`/api/hospitalCharge/category/${id}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -213,7 +214,7 @@ export const updateChargeCategory = async (id: number, formData: z.infer<typeof 
 
 export const deleteChargeCategory = async (id: number) => {
     try {
-        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/category/${id}`)
+        const res = await AxiosClient.delete(`/api/hospitalCharge/category/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -224,7 +225,7 @@ export const deleteChargeCategory = async (id: number) => {
 
 export const getChargeCategoryDetails = async (id: number) => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/category/${id}`)
+        const res = await AxiosClient.get(`/api/hospitalCharge/category/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -235,7 +236,7 @@ export const getChargeCategoryDetails = async (id: number) => {
 export const getChargeCategories = async (chargeTypeId?: number) => {
     try {
         const params = { chargeTypeId }
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/category`, { params })
+        const res = await AxiosClient.get(`/api/hospitalCharge/category`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -248,7 +249,7 @@ export const getChargeCategories = async (chargeTypeId?: number) => {
 
 export const createChargeName = async (formData: z.infer<typeof chargeNameFormSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/name`, formData)
+        const res = await AxiosClient.post(`/api/hospitalCharge/name`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -259,7 +260,7 @@ export const createChargeName = async (formData: z.infer<typeof chargeNameFormSc
 
 export const updateChargeName = async (id: number, formData: z.infer<typeof chargeNameFormSchema>) => {
     try {
-        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/name/${id}`, formData)
+        const res = await AxiosClient.put(`/api/hospitalCharge/name/${id}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -269,7 +270,7 @@ export const updateChargeName = async (id: number, formData: z.infer<typeof char
 
 export const deleteChargeName = async (id: number) => {
     try {
-        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/name/${id}`)
+        const res = await AxiosClient.delete(`/api/hospitalCharge/name/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -277,9 +278,9 @@ export const deleteChargeName = async (id: number) => {
 }
 
 
-export const getChargeNameDetails = async (id: number) => {
+export const getChargeNameDetails = async (id: number):Promise<chargeNameDetailsType> => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/name/${id}`)
+        const res = await AxiosClient.get(`/api/hospitalCharge/name/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -289,7 +290,7 @@ export const getChargeNameDetails = async (id: number) => {
 
 export const getChargeNames = async (params: { page?: number, search?: string, limit?: number }): Promise<chargeNamesType> => {  // will recieve object that will contain data array and total_count 0bject
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/hospitalCharge/name`, { params })
+        const res = await AxiosClient.get(`/api/hospitalCharge/name`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

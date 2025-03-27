@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { SetupVitalFormSchema } from "./setupVitalForm";
-import axios from "axios";
+import AxiosClient from "@/api/apiClient";
 
 
 
 export const createSetupVital = async (formData: z.infer<typeof SetupVitalFormSchema>) => {
     try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/setupVital`, formData)
+        const res = await AxiosClient.post(`/api/setupVital`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -16,7 +16,7 @@ export const createSetupVital = async (formData: z.infer<typeof SetupVitalFormSc
 
 export const updateSetupVital = async (id: number, formData: z.infer<typeof SetupVitalFormSchema>) => {
     try {
-        const res = await axios.put(`${import.meta.env.VITE_APP_API_URL}/api/setupVital/${id}`, formData)
+        const res = await AxiosClient.put(`/api/setupVital/${id}`, formData)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -26,7 +26,7 @@ export const updateSetupVital = async (id: number, formData: z.infer<typeof Setu
 
 export const getSetupVitalDetails = async (id: number) => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/setupVital/${id}`)
+        const res = await AxiosClient.get(`/api/setupVital/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -36,7 +36,7 @@ export const getSetupVitalDetails = async (id: number) => {
 
 export const deleteSetupVital = async (id: number) => {
     try {
-        const res = await axios.delete(`${import.meta.env.VITE_APP_API_URL}/api/setupVital/${id}`)
+        const res = await AxiosClient.delete(`/api/setupVital/${id}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -46,7 +46,7 @@ export const deleteSetupVital = async (id: number) => {
 
 export const getSetupVitals = async () => {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/setupVital`)
+        const res = await AxiosClient.get(`/api/setupVital`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

@@ -6,17 +6,11 @@ import toast from "react-hot-toast"
 import { createPermission, deletePermission, getPermissions, getRoles } from "../APIHandler"
 import { ROLE } from "../role/role"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { dashboardPermissions, Module } from "@/lib/modules"
 
 
 
 const Permission = () => {
-
-    // have to create dynamically
-    const module = ['appointment', 'queue', 'cancelled', 'opd', 'pharmacy_bill', 'medicines', 'purchase_medicine', 'prescription', 'medication', 'operation', 'charges', 'payments', 'vitals', 'timeline', 'human_resource', 'duty_roster']
-
-
-    const dashboardPermissions = ['opd_income', 'opds', 'appointments', 'appmnt_income', 'pharmacy_income', 'pharmacy_bill' , 'medicines', 'income_expenses' , 'medicine_purchases', 'pharmacy_expenses', 'expenses', 'visitors',]
-
 
     const [permissions, setPermissions] = useState(new Map())
 
@@ -109,7 +103,7 @@ const Permission = () => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {module.map((mod, i) => {
+                    {Module.map((mod, i) => {
                         return <TableRow key={i}>
                             <TableCell>{mod}</TableCell>
                             {['view', 'create', 'update', 'delete'].map((action) => {

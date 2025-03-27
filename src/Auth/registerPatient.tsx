@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Loader } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { patientRegistrationSchema, DefaultValues } from '@/formSchemas/patientRegisterFormSchema'
+import { patientRegistrationSchema, DefaultValues, patientUpdateSchema } from '@/formSchemas/patientRegisterFormSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useEffect, useState } from 'react'
@@ -26,8 +26,10 @@ const RegisterPatient = () => {
     // loading state
     const [isPending, setPending] = useState<boolean>(false)
 
-    const patientRegistrationform = useForm<z.infer<typeof patientRegistrationSchema>>({
-        resolver: zodResolver(patientRegistrationSchema),
+    const schema = id ? patientUpdateSchema : patientRegistrationSchema
+
+    const patientRegistrationform = useForm<z.infer<typeof schema>>({
+        resolver: zodResolver(schema),
         defaultValues: DefaultValues
     })
 
@@ -45,10 +47,9 @@ const RegisterPatient = () => {
         }
     }
 
-    const onSubmit = async (formData: z.infer<typeof patientRegistrationSchema>) => {
-
+    const onSubmit = async (formData: z.infer<typeof schema>) => {
         try {
-        
+
             setPending(true)
             let data
             id ? (
@@ -268,7 +269,7 @@ const RegisterPatient = () => {
 
                         {/* password */}
 
-                        <FormField control={patientRegistrationform.control} name='password' render={({ field }) => {
+                        {!id && <FormField control={patientRegistrationform.control} name='password' render={({ field }) => {
                             return <FormItem className="flex flex-col gap-3">
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
@@ -276,7 +277,7 @@ const RegisterPatient = () => {
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
-                        }} />
+                        }} />}
 
 
                         {/* alergies */}

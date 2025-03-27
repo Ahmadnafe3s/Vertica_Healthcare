@@ -25,6 +25,8 @@ AxiosClient.interceptors.response.use(
     response => response,
     error => {
         const redirect = error?.response?.data?.redirectTo
+        console.log(redirect);
+        
         if (redirect) window.location.href = redirect
         return Promise.reject(error);
     }

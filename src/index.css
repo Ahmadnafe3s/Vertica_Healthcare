@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 
+html{
+ @apply transition-colors 
+}
+
 
 
 /* .body-no-scroll {
@@ -19,6 +23,7 @@ body {
 /* body {
   background-color: #e8e8e8;
 } */
+
 
 /* calndor style */
 .sx-react-calendar-wrapper {

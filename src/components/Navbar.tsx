@@ -3,13 +3,15 @@ import MaxWidthWrapper from "./MaxWidthWrapper"
 import { buttonVariants } from "./ui/button"
 import { useAppDispatch, useAppSelector } from "@/hooks"
 import { openAside } from "@/features/aside/asideSlice"
-import { User } from "lucide-react"
+import { Moon, SunMedium, User } from "lucide-react"
 import { authSelector, logout } from "@/features/auth/authSlice"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import UserModel from "./userModel"
 
 
 const Navbar = () => {
+
+    const [isDark, setDark] = useState(false)
 
     let isAsideOpen = false
     const router = useNavigate()
@@ -30,20 +32,43 @@ const Navbar = () => {
     }
 
 
+    const handleDark = () => {
+        const toggle = !isDark
+        document.body.classList.toggle('dark')
+        localStorage.setItem('dark', JSON.stringify(toggle))
+        setDark(toggle)
+    }
+
+
+    useEffect(() => {
+        const isDark = JSON.parse(localStorage.getItem('dark') || 'false')
+        document.body.classList.toggle('dark', isDark) //  dependency
+        setDark(isDark) // if exists then add
+    }, [])
+
+
     return (
         <>
-            <section className="h-14 bg-gradient-to-r from-purple-50 to-violet-100 shadow w-full z-[100] sticky inset-x-0 top-0">
+            <section className="h-14 bg-gradient-to-r from-purple-50 to-violet-100 dark:from-slate-800 backdrop-blur shadow w-full z-[100] sticky inset-x-0 top-0">
                 <MaxWidthWrapper >
                     <header className="h-full flex justify-between items-center">
 
                         <Link to={{ pathname: '/' }} className="tracking-tight cursor-pointer z-[100] select-none">
-                            <span className="text-primary font-semibold">V</span>ertica
+                            <span className="text-primary dark:text-white font-semibold">V</span>ertica
                             {' '}
-                            <span className="text-primary font-semibold">H</span>ealtcare
+                            <span className="text-primary dark:text-white font-semibold">H</span>ealtcare
                         </Link>
 
-                        <div className="flex h-full items-center gap-x-3 sm:gap-x-0">
+                        <div className="flex h-full items-center gap-x-3">
 
+
+                            {/* Dark mode */}
+
+                            <div className="p-1 bg-black dark:bg-white rounded-full cursor-pointer active:scale-90 transition-all"
+                                onClick={handleDark}
+                            >
+                                {isDark ? <SunMedium className="size-4 text-black" /> : <Moon className="size-4 text-white" />}
+                            </div>
 
                             {session.user ?
                                 <>

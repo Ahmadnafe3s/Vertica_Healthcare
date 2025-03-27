@@ -22,17 +22,16 @@ const Dialog = ({ children, pageTitle, className, ...props }: DialogProps) => {
                 <motion.div className="flex-1"
                     initial={{ opacity: 0.3}}
                     animate={{ opacity: 1}}
-
                 >
                     {/* // prevents modal to click backdrop */}
                     <MaxWidthWrapper className='h-auto' onClick={(e) => e.stopPropagation()} >
-                        <div className={cn('rounded-lg pb-2 bg-white', className)}>
+                        <div className={cn('rounded-lg pb-2 bg-white dark:bg-gray-950 border dark:border-gray-800', className)}>
 
                             {/* hearder */}
 
                             <div className='flex justify-between items-center p-3 border-b border-gray-200'>
 
-                                <h1 className=' text-sm sm:text-lg font-semibold text-gray-800 py-1 px-4 rounded-xl'>{pageTitle}</h1>
+                                <h1 className=' text-sm sm:text-lg font-semibold text-gray-800 dark:text-neutral-300 py-1 px-4 rounded-xl'>{pageTitle}</h1>
 
                                 <div className='flex gap-x-4'>
                                     <div {...props}>

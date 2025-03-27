@@ -22,6 +22,7 @@ const usePermission = () => {
 
 
     const hasPermission = useCallback((action: string, module: string) => {
+        if (user?.role === 'admin') return true
         return PERMISSION.has(`${action}:${module}`);
     }, [PERMISSION])
 

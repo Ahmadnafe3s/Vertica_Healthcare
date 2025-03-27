@@ -70,9 +70,7 @@ export const patientRegistrationSchema = z.object({
         .email({ message: 'Enter valid email' }),
 
 
-    password: z.string()
-        .min(8, { message: 'Password must be at least 8 characters' })
-        .max(15, { message: 'Password should be less than 15 characters' }),
+    password: createPasswordSchema(true),
 
 
     alergies: z.string().optional(),

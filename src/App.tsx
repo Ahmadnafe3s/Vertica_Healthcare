@@ -20,6 +20,7 @@ import SetupEventRoutes from "./routes/AdminSetup/EventRoutes";
 import AdminRoutes from "./routes/AdminRoutes";
 import SetupPatientRoutes from "./routes/AdminSetup/patientRoutes";
 import SetupAuthzRoutes from "./routes/AdminSetup/authzRoutes";
+import SetupRadiologyRoutes from "./routes/AdminSetup/radiologyRoutes";
 
 
 
@@ -34,60 +35,66 @@ function App() {
 
 
   return (
-    <Router>
-      <Toaster toastOptions={{ duration: 2000 }} />
-      <Navbar />
+    <div className="dark:bg-gray-950 dark:text-white"> 
+      <Router>
+        <Toaster toastOptions={{ duration: 2000 }} />
+        <Navbar />
 
-      <Routes>
+        <Routes>
 
-        <Route path="/" element={<HomePage />} />
-        <Route path="signin" element={<SignIn />} />
-        <Route path="registerPatient" element={<RegisterPatient />} />
-
-
-        {/* routes with aside */}
-        <Route element={<AsideLayout />}>
-
-          {/*should have call the function*/}
-
-          {AdminRoutes()}
-
-          {PatientRoutes()}
-          
-
-          {/* Setup routes for charges*/}
-          {HospitalChargesRoutes()}
-
-          {/* Setup routes for operations*/}
-          {SetupOperationRoutes()}
-
-          {/* Setup routes for findings */}
-          {SetupFindingRoutes()}
-
-          {/* Setup routes for pharmacy */}
-          {SetupPharmacyRoutes()}
-
-          {/* Setup routes for vitals */}
-          {SetupVitalRoutes()}
-
-          {/* setup route for Event */}
-          {SetupEventRoutes()}
-
-          {/* setup route for Patinets */}
-          {SetupPatientRoutes()}
-
-          {/* setup route for Patinets */}
-          {SetupAuthzRoutes()}
-
-        </Route>
+          <Route path="/" element={<HomePage />} />
+          <Route path="signin" element={<SignIn />} />
+          <Route path="registerPatient" element={<RegisterPatient />} />
 
 
-        {/* error handlers */}
-        <Route path="*" element={<Not_found />} />
-        <Route path="/unauthorized" element={<Unauthorized />} />
+          {/* routes with aside */}
+          <Route element={<AsideLayout />}>
 
-      </Routes>
-    </Router>
+            {/*should have call the function*/}
+
+            {AdminRoutes()}
+
+            {PatientRoutes()}
+
+
+            {/* Setup routes for charges*/}
+            {HospitalChargesRoutes()}
+
+            {/* Setup routes for operations*/}
+            {SetupOperationRoutes()}
+
+            {/* Setup routes for findings */}
+            {SetupFindingRoutes()}
+
+            {/* Setup routes for pharmacy */}
+            {SetupPharmacyRoutes()}
+
+            {/* Setup routes for vitals */}
+            {SetupVitalRoutes()}
+
+            {/* setup route for Event */}
+            {SetupEventRoutes()}
+
+            {/* setup route for Patinets */}
+            {SetupPatientRoutes()}
+
+            {/* setup route for Patinets */}
+            {SetupAuthzRoutes()}
+
+            {/* setup route for radiology */}
+            {SetupRadiologyRoutes()}
+
+
+          </Route>
+
+
+          {/* error handlers */}
+          <Route path="*" element={<Not_found />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
+
+        </Routes>
+      </Router>
+    </div>
   );
 }
 
