@@ -15,7 +15,7 @@ const Radio = ({ className, name, id, text, ...props }: RadioProps) => {
                 <input type="radio" id={id} className='hidden peer' name={name} />
                 <span {...props} className={cn('inline-block ring-1 h-3 w-3 ring-gray-700 ring-offset-2 rounded-full', className)}></span>
             </label>
-            <p className='text-gray-800'>{text}</p>
+            <p className='text-gray-800 dark:text-gray-400'>{text}</p>
         </div>
     )
 }

@@ -22,6 +22,7 @@ import CustomTooltip from "@/components/customTooltip"
 import { parseAsInteger, useQueryState } from "nuqs"
 import usePermission from "@/authz"
 import { useConfirmation } from "@/hooks/useConfirmation"
+import EmptyList from "@/components/emptyList"
 
 
 
@@ -133,7 +134,7 @@ const CahrgesList = () => {
     <section className="flex flex-col gap-y-5">
 
       <div className="flex justify-between">
-        <h1 className="text-lg text-gray-800 font-semibold">Charges</h1>
+        <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Charges</h1>
         {hasPermission('create', 'charges') && (
           <Button size='sm' onClick={() => setIsChargeFormVisible(true)} >
             <Plus /> Add Charge
@@ -144,7 +145,7 @@ const CahrgesList = () => {
       <Separator />
 
       <div className="sm:w-48 space-y-1">
-        <p className="text-sm text-gray-700">Search by date</p>
+        <p className="text-sm text-gray-700 dark:text-gray-400">Search by date</p>
         <Input type="date" onChange={(e) => { onSearch(e.target.value) }} defaultValue={search!} />
       </div>
 
@@ -152,8 +153,8 @@ const CahrgesList = () => {
 
       <div className="flex flex-col min-h-[58vh] mb-20">
         <div className="flex-1">
-          <Table className="rounded-lg border">
-            <TableHeader className="bg-zinc-100">
+          <Table className="rounded-lg border dark:border-gray-800">
+            <TableHeader className="bg-zinc-100 dark:bg-gray-900">
               <TableRow>
                 <TableHead>Date</TableHead>
                 <TableHead>Charge Name</TableHead>
@@ -186,7 +187,7 @@ const CahrgesList = () => {
                     {/* EDIT  */}
                     {hasPermission('update', 'charges') && (
                       <CustomTooltip message="EDIT">
-                        <Pencil className="w-4 cursor-pointer text-gray-600" onClick={async () => {
+                        <Pencil className="w-4 cursor-pointer text-gray-600 dark:text-gray-300" onClick={async () => {
                           await fetchChargeDetails(charge.id)
                           setIsChargeFormVisible(true)
                         }} />
@@ -196,7 +197,7 @@ const CahrgesList = () => {
                     {/* DELETE */}
                     {hasPermission('delete', 'charges') && (
                       <CustomTooltip message="DELETE">
-                        <Trash className="w-4 cursor-pointer text-gray-600" onClick={() => onDelete(charge.id)} />
+                        <Trash className="w-4 cursor-pointer text-gray-600 dark:text-gray-300" onClick={() => onDelete(charge.id)} />
                       </CustomTooltip>
                     )}
 
@@ -206,7 +207,7 @@ const CahrgesList = () => {
             </TableBody>
           </Table>
 
-          {CHARGES?.data.length! < 1 && <h1 className='text-gray-900 mt-5 sm:mt-1 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
+          <EmptyList length={CHARGES.data.length} message="No charges found" />
 
         </div>
 

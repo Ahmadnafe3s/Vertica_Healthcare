@@ -10,6 +10,7 @@ import CustomPagination from '@/components/customPagination'
 import { OPDs } from '@/types/opd_section/opd'
 import PrintPatientOpds from './print/print'
 import { getOPDs } from '@/admin/OPD/opdApiHandler'
+import { Separator } from '@/components/ui/separator'
 
 
 
@@ -55,7 +56,7 @@ const PatientOpds = () => {
 
       {/* top bar */}
 
-      <div className='flex py-3 flex-row gap-y-2 items-center justify-between border-b border-gray-200'>
+      <div className='flex py-3 flex-row gap-y-2 items-center justify-between'>
         <h1 className='font-semibold tracking-tight'>OPD List</h1>
         {/* <div className='flex gap-x-2 overflow-x-auto'>
           <Button size="sm"
@@ -63,9 +64,11 @@ const PatientOpds = () => {
         </div> */}
       </div>
 
+      <Separator />
+
       {/* search bar */}
 
-      <div className='flex py-3 flex-row gap-y-4 items-center justify-between border-b border-gray-200'>
+      <div className='flex py-3 flex-row gap-y-4 items-center justify-between'>
 
         <div className='flex gap-x-2'>
           {/* use debounce to prevent api call */}
@@ -78,12 +81,13 @@ const PatientOpds = () => {
         </div>
       </div>
 
+      <Separator />
 
       {/* pagination */}
       <section className="flex flex-col mb-16 gap-y-5 min-h-[75vh]">
         <div className="flex-1 space-y-5">
-          <Table className="border rounded-lg my-10">
-            <TableHeader className='bg-gray-100 '>
+          <Table className="border rounded-lg my-10 dark:border-gray-800">
+            <TableHeader className='bg-gray-100 dark:bg-gray-900 '>
               <TableRow>
                 <TableHead>OPD No.</TableHead>
                 <TableHead>Appointment Date</TableHead>

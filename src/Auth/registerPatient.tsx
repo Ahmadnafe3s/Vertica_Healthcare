@@ -79,16 +79,16 @@ const RegisterPatient = () => {
 
     return (
 
-        <section className='bg-slate-50'>
+        <section className='bg-slate-50 dark:bg-dark'>
 
             <MaxWidthWrapper className="pt-14 md:pt-20 pb-20 lg:pb-32">
 
                 <Form {...patientRegistrationform}>
-                    <form className='ring-1 ring-gray-200 grid lg:grid-cols-3 sm:grid-cols-2 p-5 gap-5 rounded-lg' onSubmit={patientRegistrationform.handleSubmit(onSubmit)}>
+                    <form className='ring-1 ring-gray-200 dark:ring-gray-700 grid lg:grid-cols-3 sm:grid-cols-2 p-5 gap-5 rounded-lg' onSubmit={patientRegistrationform.handleSubmit(onSubmit)}>
 
                         {/* form header */}
-                        <div className='pt-2 pb-3 border-b border-gray-200 col-span-full'>
-                            <h1 className='text-xl text-gray-900 font-bold'>Register Patient</h1>
+                        <div className='pt-2 pb-3 border-b border-gray-200 dark:border-gray-700 col-span-full'>
+                            <h1 className='text-xl text-gray-900 dark:text-neutral-100 font-bold'>Register Patient</h1>
                         </div>
 
                         {/* input fields */}
@@ -144,11 +144,11 @@ const RegisterPatient = () => {
 
                         {/* DOB */}
 
-                        <FormField control={patientRegistrationform.control} name='dob' render={({ field }) => {
+                        <FormField control={patientRegistrationform.control}  name='dob' render={({ field }) => {
                             return <FormItem className="flex flex-col gap-3">
                                 <FormLabel>DOB</FormLabel>
-                                <FormControl>
-                                    <Input type='date' {...field} />
+                                <FormControl >
+                                    <Input type='date'  {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

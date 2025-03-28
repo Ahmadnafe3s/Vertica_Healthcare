@@ -32,9 +32,9 @@ const OpdsDocument = ({ opds }: OpdsDocumentProps) => {
                         {opds.map((opd) => (
                             <TR key={opd.id}>
                                 <TD>{opd.id}</TD>
-                                <TD>{opd.appointment.patient.name}</TD>
+                                <TD>{opd.patient.name}</TD>
                                 <TD>{opd.appointment.appointment_date}</TD>
-                                <TD>{opd.appointment.doctor.name}</TD>
+                                <TD>{opd.doctor.name}</TD>
                                 <TD>{opd.appointment.reference}</TD>
                                 <TD>{opd.appointment.symptom_type}</TD>
                                 <TD>{opd.appointment.previous_medical_issue}</TD>
@@ -70,7 +70,7 @@ const OpdsPdf = ({ opds }: { opds: OPDs['data'] }) => {
 
     return (
         <CustomTooltip message='Print Bill'>
-            <Printer className='cursor-pointer text-gray-600 w-5 h-5 active:scale-95' onClick={handleOpenNewTab} />
+            <Printer className='cursor-pointer text-gray-600 dark:text-gray-300 w-5 h-5 active:scale-95' onClick={handleOpenNewTab} />
         </CustomTooltip>
     )
 }

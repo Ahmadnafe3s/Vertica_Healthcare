@@ -282,7 +282,7 @@ const PurchaseMedicineForm = ({ Submit, isPending, purchaseDetails, ...props }: 
                     </section>
                 </ScrollArea>
 
-                <div className="p-2.5 flex space-x-2 border-t border-gray-200 justify-end">
+                <div className="p-2.5 flex space-x-2 justify-end">
                     <Button type='button' variant='outline' onClick={() => reset()}>Reset</Button>
                     <Button type='submit' className='flex-1 sm:flex-none'>Save Purchase</Button>
                 </div>

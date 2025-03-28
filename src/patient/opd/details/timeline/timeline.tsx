@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Calendar, Clock, Plus, SearchX } from "lucide-react"
 import { useEffect, useState } from "react"
@@ -36,7 +35,7 @@ const PatientOpdTimeline = () => {
         <section className="flex flex-col gap-y-5 pb-14">
 
             <div className="flex justify-between">
-                <h1 className="text-lg text-gray-800 font-semibold">Timeline</h1>
+                <h1 className="text-lg font-semibold">Timeline</h1>
             </div>
 
             <Separator />
@@ -58,16 +57,16 @@ const PatientOpdTimeline = () => {
                                 <span ><Calendar className="w-4 h-4 text-white" /></span>
                             </div>
 
-                            <div className="space-y-2 flex-1 border-2 border-dashed border-gray-200 p-2 rounded-lg">
+                            <div className="space-y-2 flex-1 border-2 border-dashed border-gray-200 dark:border-gray-500 p-2 rounded-lg">
 
                                 {/* Title section */}
                                 <div className=" flex justify-between items-center cursor-pointer">
-                                    <p className="text-lg font-semibold text-gray-800">{timeline.title}</p>
+                                    <p className="text-lg font-semibold text-gray-800 dark:text-gray-200">{timeline.title}</p>
                                 </div>
 
                                 <Separator />
                                 {/* Description */}
-                                <p className="text-sm text-gray-700">{timeline.description}</p>
+                                <p className="text-sm text-gray-700 dark:text-gray-400">{timeline.description}</p>
 
                             </div>
                         </div>

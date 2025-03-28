@@ -24,7 +24,7 @@ const AlertModel = ({ isPending, cancel, continue: continueAction }: alertModelP
           exit={{ scale: 0 }}
           onClick={(e)=>e.stopPropagation()}
         >
-          <div className="flex flex-col gap-2 rounded-md ring-1 p-2.5 ring-gray-200 shadow-lg w-[300px] bg-white">
+          <div className="flex flex-col gap-2 rounded-md ring-1 p-2.5 ring-gray-200 shadow-lg w-[300px] bg-white dark:bg-dark dark:ring-gray-700">
             <div className="flex justify-center mt-3">
               <div className="h-16 w-16 bg-red-500 flex items-center rounded-full">
                 <BadgeAlert className="h-12 w-12 text-white mx-auto" />
@@ -32,11 +32,11 @@ const AlertModel = ({ isPending, cancel, continue: continueAction }: alertModelP
             </div>
 
             <div className="text-center">
-              <h1 className="text-lg font-semibold text-gray-900">Alert</h1>
+              <h1 className="text-lg font-semibold text-gray-900 dark:text-neutral-300">Alert</h1>
             </div>
 
             <div className="text-center">
-              <p className="text-gray-600">Do you really want to perform the certain action?</p>
+              <p className="text-gray-600 dark:text-white">Do you really want to perform the certain action?</p>
             </div>
 
 

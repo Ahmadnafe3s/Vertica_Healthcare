@@ -21,7 +21,7 @@ const VisitDetails = () => {
             const data = await getOPD_Details(opdId!)
             set_OPD_DETAILS(data)
             console.log(data);
-            
+
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -58,7 +58,7 @@ const VisitDetails = () => {
                     }
 
                     <div className=''>
-                        <p className='font-semibold text-lg text-gray-900'>{OPD_DETAILS?.appointment?.patient.name}</p>
+                        <p className='font-semibold text-lg text-gray-900 dark:text-white'>{OPD_DETAILS?.appointment?.patient.name}</p>
                         <p className='text-sm text-gray-500'>ID : {OPD_DETAILS?.appointment?.patient.id}</p>
                     </div>
                 </div>
@@ -66,43 +66,43 @@ const VisitDetails = () => {
 
                 {/* patient Details */}
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Gender</p>
+                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                    <p className='text-gray-700 dark:text-neutral-300'>Gender</p>
                     <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.gender}</p>
                 </div>
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Guardian Name</p>
+                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                    <p className='text-gray-700 dark:text-neutral-300'>Guardian Name</p>
                     <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.guardian_name}</p>
                 </div>
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Age</p>
+                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                    <p className='text-gray-700 dark:text-neutral-300'>Age</p>
                     <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.age}</p>
                 </div>
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Blood Group</p>
+                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                    <p className='text-gray-700 dark:text-neutral-300'>Blood Group</p>
                     <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.blood_group}</p>
                 </div>
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Aadhar</p>
+                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                    <p className='text-gray-700 dark:text-neutral-300'>Aadhar</p>
                     <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.aadhar}</p>
                 </div>
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Phone</p>
+                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                    <p className='text-gray-700 dark:text-neutral-300'>Phone</p>
                     <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.phone}</p>
                 </div>
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Address</p>
+                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                    <p className='text-gray-700 dark:text-neutral-300'>Address</p>
                     <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.address}</p>
                 </div>
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Alergies</p>
+                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                    <p className='text-gray-700 dark:text-neutral-300'>Alergies</p>
                     <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.alergies}</p>
                 </div>
 
@@ -111,8 +111,8 @@ const VisitDetails = () => {
 
                 {/* Case Details */}
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>OPD No.</p>
+                <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                    <p className='text-gray-700 dark:text-neutral-300'>OPD No.</p>
                     <p className='font-semibold'>{OPD_DETAILS?.id}</p>
                 </div>
 
@@ -121,18 +121,18 @@ const VisitDetails = () => {
 
                 {/* Vital section */}
 
-                <h1 className="sm:col-span-full font-semibold text-gray-800">Vitals</h1>
+                <h1 className="sm:col-span-full font-semibold text-gray-800 dark:text-neutral-100">Vitals</h1>
 
                 {/* Can be add Vitals Here */}
 
                 {OPD_DETAILS?.Vitals?.map((measure, i) => {
-                    return <div key={i} className='space-y-1 flex justify-between bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
+                    return <div key={i} className='space-y-1 flex justify-between p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
                         <div>
-                            <p className='text-gray-700'>{measure.vital?.name}</p>
+                            <p className='text-gray-700 dark:text-gray-300'>{measure.vital?.name}</p>
                             <p className='font-semibold'>{measure?.value}</p>
                         </div>
                         <div>
-                            <p className='text-gray-700'>Date</p>
+                            <p className='text-gray-700 dark:text-gray-300'>Date</p>
                             <p className="text-sm text-gray-500">{measure?.date}</p>
                         </div>
                     </div>
@@ -142,21 +142,21 @@ const VisitDetails = () => {
 
                 {/* Prescription */}
 
-                <h1 className="sm:col-span-full font-semibold text-gray-800">Findings</h1>
+                <h1 className="sm:col-span-full font-semibold text-gray-800 dark:text-neutral-100">Findings</h1>
 
 
                 <Separator className="sm:col-span-full my-8" />
 
                 {/* Symptoms */}
 
-                <h1 className="sm:col-span-full font-semibold text-gray-800">Symptoms</h1>
+                <h1 className="sm:col-span-full font-semibold text-gray-800 dark:text-neutral-100">Symptoms</h1>
                 <p className="text-sm text-gray-500 sm:col-span-full">{OPD_DETAILS?.appointment?.symptom_description}</p>
 
                 <Separator className="sm:col-span-full my-8" />
 
                 {/* Doctors */}
 
-                <h1 className="sm:col-span-full font-semibold text-gray-800">Consultant</h1>
+                <h1 className="sm:col-span-full font-semibold text-gray-800 dark:text-neutral-100">Consultant</h1>
 
                 <div className="sm:col-span-full flex space-x-2 items-center">
                     <div className='w-16 h-16'>
@@ -164,7 +164,7 @@ const VisitDetails = () => {
                     </div>
 
                     <div className=''>
-                        <p className='font-semibold text-lg text-gray-900'>{OPD_DETAILS?.appointment?.doctor.name}</p>
+                        <p className='font-semibold text-lg text-gray-900 dark:text-white'>{OPD_DETAILS?.appointment?.doctor.name}</p>
                         <p className='text-sm text-gray-500'>ID : {OPD_DETAILS?.appointment?.doctor.id}</p>
                     </div>
 
@@ -175,7 +175,7 @@ const VisitDetails = () => {
 
                 {/* Timeline */}
 
-                <h1 className="sm:col-span-full font-semibold mb-2 text-gray-800">Timeline</h1>
+                <h1 className="sm:col-span-full font-semibold mb-2 text-gray-800 dark:text-neutral-100">Timeline</h1>
 
                 {OPD_DETAILS?.timelines?.length! > 0 ? (<ul className="sm:col-span-full relative before:absolute space-y-5 before:w-1 w-64 sm:w-[400px] mx-auto gap-3 before:h-full before:bg-gray-300 before:top-0 before:block">
 
@@ -193,13 +193,13 @@ const VisitDetails = () => {
                                     <span ><Calendar className="w-4 h-4 text-white" /></span>
                                 </div>
 
-                                <div className="space-y-2 flex-1 border-2 border-dashed border-gray-200 p-2 rounded-lg">
+                                <div className="space-y-2 flex-1 border-2 border-dashed border-gray-200 dark:border-gray-500 p-2 rounded-lg">
 
-                                    <p className=" font-semibold text-gray-800">{timeline.title}</p>
+                                    <p className=" font-semibold text-gray-800 dark:text-neutral-100">{timeline.title}</p>
 
                                     <Separator />
                                     {/* Description */}
-                                    <p className="text-sm text-gray-700">{timeline.description}</p>
+                                    <p className="text-sm text-gray-700 dark:text-neutral-400">{timeline.description}</p>
 
                                 </div>
                             </div>
@@ -235,10 +235,10 @@ const VisitDetails = () => {
 
                 {/* Medication */}
 
-                <h1 className="font-semibold text-gray-800 mb-2">Medication</h1>
+                <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Medication</h1>
 
-                <Table className="rounded-lg border w-full">
-                    <TableHeader className="bg-slate-100">
+                <Table className="rounded-lg border dark:border-gray-800 w-full">
+                    <TableHeader className="bg-slate-100 dark:bg-slate-900 ">
                         <TableRow>
                             <TableHead>Date</TableHead>
                             <TableHead>Medicine Name</TableHead>
@@ -252,12 +252,12 @@ const VisitDetails = () => {
                     <TableBody>
                         {OPD_DETAILS?.medications?.map((medication, i) => (
                             <TableRow key={i}>
-                                <TableCell className="text-gray-800 whitespace-nowrap">{medication.date}</TableCell>
+                                <TableCell className="text-gray-800 dark:text-neutral-100 whitespace-nowrap">{medication.date}</TableCell>
                                 <TableCell>{medication?.medicine.name}</TableCell>
                                 <TableCell>{medication?.category.name}</TableCell>
                                 <TableCell>{medication.dose}</TableCell>
                                 <TableCell>{medication.time}</TableCell>
-                                <TableCell className="text-gray-600">{medication.note}</TableCell>
+                                <TableCell className="text-gray-600 dark:text-gray-400">{medication.note}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -270,10 +270,10 @@ const VisitDetails = () => {
 
                 {/* Operation */}
 
-                <h1 className="font-semibold text-gray-800 mb-2">Operation</h1>
+                <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Operation</h1>
 
-                <Table className="rounded-lg border">
-                    <TableHeader className="bg-slate-100">
+                <Table className="rounded-lg border dark:border-gray-800">
+                    <TableHeader className="bg-slate-100 dark:bg-slate-900 ">
                         <TableRow>
                             <TableHead>Reference No</TableHead>
                             <TableHead>Date</TableHead>
@@ -302,10 +302,10 @@ const VisitDetails = () => {
 
                 {/* Charges */}
 
-                <h1 className="font-semibold text-gray-800 mb-2">Charges</h1>
+                <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Charges</h1>
 
-                <Table className="rounded-lg border">
-                    <TableHeader className="bg-slate-100">
+                <Table className="rounded-lg border dark:border-gray-800">
+                    <TableHeader className="bg-slate-100 dark:bg-slate-900">
                         <TableRow>
                             <TableHead>Charge Date</TableHead>
                             <TableHead>Charge Name</TableHead>
@@ -335,10 +335,10 @@ const VisitDetails = () => {
 
                 {/* Payments */}
 
-                <h1 className="font-semibold text-gray-800 mb-2">Payments</h1>
+                <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Payments</h1>
 
-                <Table className="rounded-lg border">
-                    <TableHeader className="bg-slate-100">
+                <Table className="rounded-lg border dark:border-gray-800">
+                    <TableHeader className="bg-slate-100 dark:bg-slate-900">
                         <TableRow>
                             <TableHead>Transaction ID</TableHead>
                             <TableHead>Date</TableHead>

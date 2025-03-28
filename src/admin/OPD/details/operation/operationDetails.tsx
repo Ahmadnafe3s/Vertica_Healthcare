@@ -23,77 +23,77 @@ const OperationDetailsModel = ({ operationDetails, ...props }: OperationDetailsM
                             <CalendarDays className='w-10 h-10 text-white' />
                         </div>
                         <div className=''>
-                            <p className='font-semibold text-lg text-gray-900'>{operationDetails?.date}</p>
+                            <p className='font-semibold text-lg text-gray-900 dark:text-white'>{operationDetails?.date}</p>
                             <p className='text-sm text-gray-500'>Operation Date</p>
                         </div>
                     </div>
 
                     <div className="sm:col-span-2 grid grid-cols-2 gap-2">
 
-                        <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                            <p className='text-gray-700 text-sm'>Reference No.</p>
+                        <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md'>
+                            <p className='text-gray-700 dark:text-gray-400 text-sm'>Reference No.</p>
                             <p className='font-semibold'>{operationDetails?.id}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                            <p className='text-gray-700 text-sm'>Operation Name</p>
+                        <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md'>
+                            <p className='text-gray-700 dark:text-gray-400 text-sm'>Operation Name</p>
                             <p className='font-semibold'>{operationDetails?.operationName.name}</p>
                         </div>
 
                     </div>
 
-                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                        <p className='text-gray-700'>OPD ID</p>
+                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                        <p className='text-gray-700 dark:text-gray-400'>OPD ID</p>
                         <p className='text-sm'>{operationDetails?.opdId}</p>
                     </div>
 
-                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                        <p className='text-gray-700'>Category</p>
+                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                        <p className='text-gray-700 dark:text-gray-400'>Category</p>
                         <p className='text-sm'>{operationDetails?.operationCategory.name}</p>
                     </div>
 
-                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                        <p className='text-gray-700'>Consultant</p>
+                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                        <p className='text-gray-700 dark:text-gray-400'>Consultant</p>
                         <p className='text-sm'>{operationDetails?.doctor.name}</p>
                     </div>
 
-                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                        <p className='text-gray-700'>Consultant Assistant 1</p>
+                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                        <p className='text-gray-700 dark:text-gray-400'>Consultant Assistant 1</p>
                         <p className='text-sm'>{operationDetails?.assistant_1}</p>
                     </div>
 
-                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                        <p className='text-gray-700'>Consultant Assistant 2</p>
+                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                        <p className='text-gray-700 dark:text-gray-400'>Consultant Assistant 2</p>
                         <p className='text-sm'>{operationDetails?.assistant_2}</p>
                     </div>
 
-                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                        <p className='text-gray-700'>Anesthetist</p>
+                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                        <p className='text-gray-700 dark:text-gray-400'>Anesthetist</p>
                         <p className='text-sm'>{operationDetails?.anesthetist}</p>
                     </div>
 
-                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                        <p className='text-gray-700'>Anesthesia Type</p>
+                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                        <p className='text-gray-700 dark:text-gray-400'>Anesthesia Type</p>
                         <p className='text-sm'>{operationDetails?.anesthesia_type}</p>
                     </div>
 
-                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                        <p className='text-gray-700'>OT Technician</p>
+                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                        <p className='text-gray-700 dark:text-gray-400'>OT Technician</p>
                         <p className='text-sm'>{operationDetails?.ot_technician}</p>
                     </div>
 
-                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                        <p className='text-gray-700'>OT Assistant</p>
+                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                        <p className='text-gray-700 dark:text-gray-400'>OT Assistant</p>
                         <p className='text-sm'>{operationDetails?.ot_assistant}</p>
                     </div>
 
-                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                        <p className='text-gray-700'>Note</p>
+                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                        <p className='text-gray-700 dark:text-gray-400'>Note</p>
                         <p className='text-sm'>{operationDetails?.note}</p>
                     </div>
 
-                    <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                        <p className='text-gray-700'>Result</p>
+                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                        <p className='text-gray-700 dark:text-gray-400'>Result</p>
                         <p className='text-sm'>{operationDetails?.result}</p>
                     </div>
 

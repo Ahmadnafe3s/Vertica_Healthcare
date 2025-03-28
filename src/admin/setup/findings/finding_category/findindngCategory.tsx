@@ -98,7 +98,7 @@ const FindindngCategories = () => {
     <section className="flex flex-col pb-16 gap-y-5">
 
       <div className="flex justify-between">
-        <h1 className="text-lg text-gray-800 font-semibold">Categories</h1>
+        <h1 className="text-lg font-semibold">Categories</h1>
         <Button size='sm' onClick={() => { setFindingFormVisible(true) }}>
           <Plus /> Add Category
         </Button>
@@ -106,8 +106,8 @@ const FindindngCategories = () => {
 
       <Separator />
 
-      <Table className="border rounded-lg">
-        <TableHeader className="bg-zinc-100">
+      <Table className="border rounded-lg dark:border-gray-800">
+        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
           <TableRow>
             <TableHead>ID</TableHead>
             <TableHead>Name</TableHead>
@@ -125,7 +125,7 @@ const FindindngCategories = () => {
 
                 {/* EDIT */}
                 <CustomTooltip message="EDIT">
-                  <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                  <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                     await fetchFindingCategoryDetails(finding.id)
                     setFindingFormVisible(true);
                   }} />
@@ -134,7 +134,7 @@ const FindindngCategories = () => {
 
                 {/* DELETE  */}
                 <CustomTooltip message="DELETE">
-                  <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                  <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                     setAlert(true);
                     itemID.current = finding.id
                   }} />

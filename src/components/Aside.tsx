@@ -1,6 +1,6 @@
 import { ScrollArea } from './ui/scroll-area'
 import { Link } from 'react-router-dom'
-import { Airplay, BriefcaseMedical, CalendarClock, ChevronRight, HeartPulse, Network, Settings, Watch } from 'lucide-react'
+import { Airplay, BriefcaseMedical, CalendarClock, ChevronRight, HeartPulse, Network, Radiation, Settings, Watch } from 'lucide-react'
 import { Button, buttonVariants } from './ui/button'
 import { cn } from '@/lib/utils'
 import { useAppDispatch, useAppSelector } from '@/hooks'
@@ -40,7 +40,7 @@ const Aside = () => {
 
     return (
         <>
-            <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all border-r border-zinc-200 h-[calc(100vh-56px-35px)] top-14', { 'w-52 p-2.5': isSlideOpend })}>
+            <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all border-r border-dashed border-zinc-200 dark:border-gray-800 h-[calc(100vh-56px-35px)] top-14', { 'w-52 p-2.5': isSlideOpend })}>
 
                 <ScrollArea className='h-full '>
 
@@ -79,6 +79,16 @@ const Aside = () => {
                                     className: 'flex text-sm items-center'
                                 })
                             }><BriefcaseMedical className='h-4 w-4' />Pharmacy</Link></li>
+                        }
+
+
+                        {hasPermission('view', 'radiology') &&
+                            <li><Link to={{ pathname: `/${Routes}/radiology` }} onClick={onNavigate} className={
+                                buttonVariants({
+                                    variant: 'ghost',
+                                    className: 'flex text-sm items-center'
+                                })
+                            }><Radiation className='h-4 w-4' />Radiology</Link></li>
                         }
 
 

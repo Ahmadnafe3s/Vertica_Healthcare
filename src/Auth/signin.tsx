@@ -64,13 +64,13 @@ const SignIn = () => {
 
 
   return (
-    <div className="bg-zinc-50 ">
+    <div className="bg-zinc-50 dark:bg-dark">
       <MaxWidthWrapper className="min-h-[calc(100vh-56px-1px)] flex flex-col justify-center items-center">
         <div className="sm:w-[500px] w-full">
-          <form className=" p-4 w-full flex flex-col gap-y-4 bg-white ring-1 ring-gray-200 rounded-lg" onSubmit={handleSubmit(onSignin)}>
+          <form className=" p-4 w-full flex flex-col gap-y-4 bg-white dark:bg-dark dark:ring-gray-700 ring-1 ring-gray-200 rounded-lg" onSubmit={handleSubmit(onSignin)}>
 
             <div className="text-center my-4">
-              <h1 className="text-gray-900 font-bold text-2xl tracking-tight">Vertica Healthcare</h1>
+              <h1 className="text-gray-900 dark:text-neutral-100 font-bold text-2xl tracking-tight">Vertica Healthcare</h1>
               <p className="mt-2 text-gray-500">Sign In to your account</p>
             </div>
 

@@ -11,6 +11,7 @@ import { RadioCategoryType } from "@/types/setupTypes/radiology"
 import CreateRadioCategory, { CreateRadioCategorySchema } from "./createRadioCategory"
 import { useConfirmation } from "@/hooks/useConfirmation"
 import { createRadiologytCategory, deleteRadiologyCategory, getRadiologyCategories } from "../ApiHandlers"
+import EmptyList from "@/components/emptyList"
 
 
 
@@ -80,7 +81,7 @@ const RadioCategories = () => {
         <section className="flex flex-col pb-16 gap-y-5">
 
             <div className="flex justify-between">
-                <h1 className="text-lg text-gray-800 font-semibold">Categories</h1>
+                <h1 className="text-lg font-semibold">Categories</h1>
                 <Button size='sm' onClick={() => { setCategoryFrom(true) }}>
                     <Plus /> Add Category
                 </Button>
@@ -88,8 +89,8 @@ const RadioCategories = () => {
 
             <Separator />
 
-            <Table className="border rounded-lg">
-                <TableHeader className="bg-zinc-100">
+            <Table className="border rounded-lg dark:border-gray-800">
+                <TableHeader className="bg-zinc-100 dark:bg-gray-800">
                     <TableRow>
                         <TableHead>ID</TableHead>
                         <TableHead>Name</TableHead>
@@ -107,7 +108,7 @@ const RadioCategories = () => {
 
                                 {/* DELETE  */}
                                 <CustomTooltip message="DELETE">
-                                    <Trash className="w-4 cursor-pointer  text-gray-600" onClick={() => onDelete(category.id)} />
+                                    <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={() => onDelete(category.id)} />
                                 </CustomTooltip>
 
                             </TableCell>
@@ -117,7 +118,7 @@ const RadioCategories = () => {
                 </TableBody>
             </Table>
 
-            {categories.length === 0 && <p className="text-center text-sm h-40 flex items-center justify-center text-gray-500">No categories found</p>}
+            <EmptyList length={categories.length} message="No categories found" />
 
             {/* Form Model */}
 

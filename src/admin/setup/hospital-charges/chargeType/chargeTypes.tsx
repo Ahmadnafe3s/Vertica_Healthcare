@@ -113,7 +113,7 @@ const ChargeTypes = () => {
     <section className="flex flex-col pb-16 gap-y-5">
 
       <div className="flex justify-between">
-        <h1 className="text-lg text-gray-800 font-semibold">Charge Types</h1>
+        <h1 className="text-lg font-semibold">Charge Types</h1>
         <Button size='sm' onClick={() => { setChargeTypeFormVisible(true) }}>
           <Plus /> Add Charge Type
         </Button>
@@ -121,8 +121,8 @@ const ChargeTypes = () => {
 
       <Separator />
 
-      <Table className="rounded-lg border">
-        <TableHeader className='bg-zinc-100'>
+      <Table className="rounded-lg border dark:border-gray-800">
+        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
           <TableRow>
             <TableHead >Charge Types</TableHead>
             <TableHead >Appointment</TableHead>
@@ -162,7 +162,7 @@ const ChargeTypes = () => {
                 {/* DELETE  */}
 
                 <CustomTooltip message='DELETE'>
-                  <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                  <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                     setAlert(true);
                     itemID.current = type.id
                   }} />

@@ -1,6 +1,6 @@
 import AxiosClient from "@/api/apiClient"
 import { z } from "zod"
-import { RadioParametersType } from "@/types/setupTypes/radiology"
+import { RadiologyTestNameDetailsType, RadioParametersType } from "@/types/setupTypes/radiology"
 import { CreateRadioCategorySchema } from "./category/createRadioCategory"
 import { RadioUnitSchema } from "./units/createRadioUnit"
 import { TestNameFormSchema } from "@/formSchemas/setupSectionSchemas/CreateTestNameSchema"
@@ -145,7 +145,7 @@ export const getRadiologyTests = async (params: { page?: number, limit?: number,
 }
 
 
-export const getRadiologyTestDetails = async (id: number) => {
+export const getRadiologyTestDetails = async (id: number):Promise<RadiologyTestNameDetailsType> => {
     try {
         const res = await AxiosClient.get(`/api/setupRadiology/testName/${id}`)
         return res.data

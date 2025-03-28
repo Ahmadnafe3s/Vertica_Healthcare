@@ -18,6 +18,7 @@ import { getSetupVitals } from "@/admin/setup/vitals/apiHandler";
 import { VitalType } from "@/types/opd_section/vitals";
 import usePermission from "@/authz";
 import { useConfirmation } from "@/hooks/useConfirmation";
+import EmptyList from "@/components/emptyList";
 
 
 const Vital = () => {
@@ -107,10 +108,10 @@ const Vital = () => {
 
 
     return (
-        <section className="flex flex-col gap-y-5">
+        <section className="flex flex-col gap-y-5 pb-16 flex-1 ">
 
             <div className="flex justify-between">
-                <h1 className="text-lg text-gray-800 font-semibold">Vitals</h1>
+                <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Vitals</h1>
                 {hasPermission('create', 'vitals') && (
                     <Button size='sm' onClick={() => { setVitalForm(true) }}>
                         <Plus /> Add Vital
@@ -121,14 +122,14 @@ const Vital = () => {
             <Separator />
 
             <div className="sm:w-48 space-y-1">
-                <p className="text-sm text-gray-700">Search by date</p>
+                <p className="text-sm text-gray-700 dark:text-gray-400">Search by date</p>
                 <Input type="date" onChange={(e) => { onSearch(e.target.value) }} />
             </div>
 
             <Separator />
 
-            <Table className="rounded-lg border">
-                <TableHeader className="bg-zinc-100">
+            <Table className="rounded-lg border dark:border-gray-800">
+                <TableHeader className="bg-zinc-100 dark:bg-gray-900">
                     <TableRow>
                         <TableHead>Date</TableHead>
                         <TableHead>Height (1-200 CM)</TableHead>
@@ -159,7 +160,7 @@ const Vital = () => {
                                                     <span>{detail.vital.name} {detail.value}</span>
                                                     {hasPermission('delete', 'vitals') && (
                                                         <CustomTooltip message="DELETE">
-                                                            <Trash className="w-3 text-gray-700 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            <Trash className="w-3 text-gray-700 dark:text-gray-400 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
                                                                 onClick={() => onDelete(detail.id)}
                                                             />
                                                         </CustomTooltip>
@@ -179,7 +180,7 @@ const Vital = () => {
 
             {/* error on emply list */}
 
-            {VITALS.length < 1 && <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
+            <EmptyList length={VITALS.length} message="No vitals found" />
 
             {/* model */}
 

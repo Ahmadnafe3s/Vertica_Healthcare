@@ -9,6 +9,7 @@ import DoseDurationForm from "./doseDurationForm"
 import { createDoseDuration, deleteDoseDuration, getDoseDurations } from "../apiHandler"
 import AlertModel from "@/components/alertModel"
 import CustomTooltip from "@/components/customTooltip"
+import EmptyList from "@/components/emptyList"
 
 const DoseDuration = () => {
 
@@ -82,7 +83,7 @@ const DoseDuration = () => {
         <section className="flex flex-col gap-y-5 pb-16">
 
             <div className="flex justify-between">
-                <h1 className="text-lg text-gray-800 font-semibold">Dose Durations</h1>
+                <h1 className="text-lg font-semibold">Dose Durations</h1>
                 <Button size='sm' onClick={() => setModel({ ...model, doseDurationForm: true })
                 }>
                     <Plus /> Add Duration
@@ -91,8 +92,8 @@ const DoseDuration = () => {
 
             <Separator />
 
-            <Table className="rounded-lg border">
-                <TableHeader className="bg-zinc-100">
+            <Table className="rounded-lg border dark:border-gray-800">
+                <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
                     <TableRow>
                         <TableHead>ID</TableHead>
                         <TableHead>Name</TableHead>
@@ -107,7 +108,7 @@ const DoseDuration = () => {
                             <TableCell>
                                 {/* DELETE  */}
                                 <CustomTooltip message="DELETE">
-                                    <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                                    <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                                         setModel(rest => ({ ...rest, alert: true }))
                                         itemID.current = doseDuration.id
                                     }} />
@@ -119,7 +120,8 @@ const DoseDuration = () => {
             </Table>
 
 
-            {doseDurations.length < 1 && <p className="text-gray-600">No data found</p>}
+            <EmptyList length={doseDurations.length} />
+
 
             {/* Models */}
 

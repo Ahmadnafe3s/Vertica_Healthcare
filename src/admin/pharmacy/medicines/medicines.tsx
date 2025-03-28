@@ -19,6 +19,7 @@ import { useQueryState, parseAsInteger } from 'nuqs'
 import CustomPagination from '@/components/customPagination'
 import usePermission from '@/authz'
 import { useConfirmation } from '@/hooks/useConfirmation'
+import { Separator } from '@/components/ui/separator'
 
 
 
@@ -121,7 +122,7 @@ const Medicines = () => {
       <div className='my-2 flex flex-col'>
 
         {/* top bar */}
-        <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between border-b border-gray-200'>
+        <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between'>
           <h1 className='font-semibold tracking-tight'>Medicines</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
@@ -148,9 +149,12 @@ const Medicines = () => {
           </div>
         </div>
 
+        <Separator />
+
+
         {/* search bar */}
 
-        <div className='flex py-3 items-center justify-between border-b border-gray-200'>
+        <div className='flex py-3 items-center justify-between'>
 
           <div className='flex gap-x-2 w-56'>
             <Input type='text' height='10px' placeholder='name , category , company' onChange={(e) => onSearch(e.target.value)} defaultValue={search!} />
@@ -158,10 +162,12 @@ const Medicines = () => {
 
         </div>
 
+        <Separator />
+
         <div className="flex flex-col mb-16 gap-y-10 min-h-[75vh]">
           <div className="flex-1">
-            <Table className="rounded-lg border my-10">
-              <TableHeader className='bg-zinc-100'>
+            <Table className="rounded-lg border my-10 dark:border-gray-800">
+              <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
                 <TableRow>
                   <TableHead>Medicine Name</TableHead>
                   <TableHead>Medicine Company</TableHead>
@@ -197,7 +203,7 @@ const Medicines = () => {
 
                       {hasPermission('update', 'medicines') && (
                         <CustomTooltip message='EDIT'>
-                          <Pencil className='cursor-pointer text-gray-500 w-4  active:scale-95'
+                          <Pencil className='cursor-pointer text-gray-500 dark:text-gray-400 w-4  active:scale-95'
                             onClick={async () => {
                               await fetchMedicineDetails(medicine.id)
                               setModel((rest) => ({ ...rest, MedicineForm: true }))
@@ -210,7 +216,7 @@ const Medicines = () => {
                       {/* DELETE MEDICINE */}
                       {hasPermission('delete', 'medicines') && (
                         <CustomTooltip message='DELETE'>
-                          <Trash className='cursor-pointer text-gray-500 w-4 active:scale-95 '
+                          <Trash className='cursor-pointer text-gray-500 dark:text-gray-400 w-4 active:scale-95 '
                             onClick={() => onDelete(medicine.id)}
                           />
                         </CustomTooltip>
@@ -218,7 +224,7 @@ const Medicines = () => {
 
                       {/* Fallback */}
                       {(!hasPermission('update', 'medicines') && !hasPermission('delete', 'medicines')) && (
-                        <span className='text-sm text-gray-500'>N/A</span>
+                        <span className='text-sm text-gray-500 dark:text-gray-400'>N/A</span>
                       )}
 
                     </TableCell>

@@ -88,8 +88,8 @@ const CreateStaff = () => {
 
 
   return (
-    <section className='bg-slate-50 pt-4 pb-20'>
-      <form className='p-5 grid lg:grid-cols-4 md:grid-cols-3 ring-1 ring-gray-200 rounded-lg gap-4' onSubmit={handleSubmit(onSubmit)}>
+    <section className='pt-4 pb-20'>
+      <form className='p-5 grid lg:grid-cols-4 md:grid-cols-3 ring-1 ring-gray-200 dark:ring-gray-700 rounded-lg gap-4' onSubmit={handleSubmit(onSubmit)}>
 
         {/* header */}
         <div className="col-span-full">
@@ -97,7 +97,7 @@ const CreateStaff = () => {
         </div>
 
         {/* separator */}
-        <div className="h-px bg-gray-200 col-span-full mt-3 mb-4" />
+        <div className="h-px bg-gray-200 dark:bg-gray-700 col-span-full mt-3 mb-4" />
 
 
         {/* name */}

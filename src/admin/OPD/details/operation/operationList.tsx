@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import usePermission from '@/authz';
 import { useConfirmation } from '@/hooks/useConfirmation';
 import CustomTooltip from '@/components/customTooltip';
+import EmptyList from '@/components/emptyList';
 
 
 
@@ -123,7 +124,7 @@ const OperationList = () => {
     <>
       <section className="flex flex-col gap-y-5">
         <div className="flex justify-between">
-          <h1 className="text-lg text-gray-800 font-semibold">Operations</h1>
+          <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Operations</h1>
           {hasPermission('create', 'operation') && (
             <Button size='sm' className={cn({ 'hidden': user?.role === 'receptionist' })} onClick={() => {
               setModel({ ...model, operationForm: true })
@@ -139,8 +140,8 @@ const OperationList = () => {
 
         <div className="flex flex-col min-h-[70vh] mb-20">
           <div className='flex-1'>
-            <Table className="rounded-lg border">
-              <TableHeader className='bg-zinc-100'>
+            <Table className="rounded-lg border dark:border-gray-800">
+              <TableHeader className="bg-zinc-100 dark:bg-gray-900">
                 <TableRow>
                   <TableHead>Reference No</TableHead>
                   <TableHead>Operation Date</TableHead>
@@ -173,7 +174,7 @@ const OperationList = () => {
                       {/* EDIT */}
                       {hasPermission('update', 'operation') && (
                         <CustomTooltip message='EDIT'>
-                          <Pencil className='w-4 text-gray-600 active:scale-95 cursor-pointer'
+                          <Pencil className='w-4 text-gray-600 dark:text-gray-400 active:scale-95 cursor-pointer'
                             onClick={async () => {
                               await fetchOperationDetails(opertion.id)
                               setModel({ ...model, operationForm: true });
@@ -185,7 +186,7 @@ const OperationList = () => {
                       {/* DELETE */}
                       {hasPermission('delete', 'operation') && (
                         <CustomTooltip message='DELETE'>
-                          <Trash className='w-4 text-gray-600 active:scale-95 cursor-pointer'
+                          <Trash className='w-4 text-gray-600 dark:text-gray-400 active:scale-95 cursor-pointer'
                             onClick={() => { onDelete(opertion.id) }} />
                         </CustomTooltip>
                       )}
@@ -199,7 +200,7 @@ const OperationList = () => {
 
             {/* error on emply list */}
 
-            {OPERATION_LIST?.data.length! < 1 && <h1 className='text-gray-900 mt-4 sm:mt-5 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
+            <EmptyList length={OPERATION_LIST?.data.length!} message="No operations found" />
           </div>
 
           <section>

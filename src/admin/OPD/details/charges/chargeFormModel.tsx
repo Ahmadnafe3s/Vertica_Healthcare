@@ -172,7 +172,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
                         {fields.map((charge, index) => {
 
-                            return <section key={charge.id} onClick={() => SET_INDEX(index)} className="sm:col-span-full mt-2 p-2 rounded-md grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2  items-center border-2 border-dashed border-gray-200">
+                            return <section key={charge.id} onClick={() => SET_INDEX(index)} className="sm:col-span-full mt-2 p-2 rounded-md grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2  items-center border-2 border-dashed border-gray-200 dark:border-gray-700">
 
                                 {/* Cahrge Type */}
 

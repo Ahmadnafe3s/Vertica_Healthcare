@@ -12,6 +12,7 @@ import CustomPagination from '@/components/customPagination'
 import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
 import { useDebouncedCallback } from 'use-debounce'
+import EmptyList from '@/components/emptyList'
 
 const CancelledAppointments = () => {
 
@@ -56,10 +57,10 @@ const CancelledAppointments = () => {
     }, [page, search])
 
     return (
-        <section className='bg-slate-50'>
+        <section className='bg-slate-50 dark:bg-gray-950'>
 
             <div className='flex flex-col py-3 gap-y-3'>
-                <h1 className='text-xl text-gray-900 font-semibold'>Cancelled Appointments</h1>
+                <h1 className='text-xl text-gray-900 dark:text-white font-semibold'>Cancelled Appointments</h1>
                 <Separator />
                 <div className='flex gap-x-2 w-[180px]'>
                     <Input type='text' height='10px' placeholder='search' defaultValue={search!} onChange={(e) => { onSearch(e.target.value) }} />
@@ -71,8 +72,8 @@ const CancelledAppointments = () => {
 
             <div className="flex flex-col mb-16 min-h-[75vh]">
                 <div className="flex-1">
-                    <Table className='rounded-lg border my-10'>
-                        <TableHeader className='bg-slate-100'>
+                    <Table className='rounded-lg border dark:border-gray-800 my-10'>
+                        <TableHeader className='bg-slate-100 dark:bg-gray-900'>
                             <TableRow>
                                 <TableHead>Appointment No</TableHead>
                                 <TableHead>Patient Name</TableHead>
@@ -112,7 +113,7 @@ const CancelledAppointments = () => {
                                                 <SelectValue placeholder={appointment.status} /> {isPending && <Loader className='animate-spin' />}
                                             </SelectTrigger>
 
-                                            <SelectContent className='z-[200]'>
+                                            <SelectContent align='end' className='z-[200]'>
                                                 <SelectItem value="Approved">Approved</SelectItem>
                                                 <SelectItem value="Pending">Pending</SelectItem>
                                             </SelectContent>
@@ -123,7 +124,7 @@ const CancelledAppointments = () => {
 
                         </TableBody>
                     </Table>
-                    {appointments.data.length < 1 && <p className='font-bold text-lg text-gray-800'>No data found</p>}
+                    <EmptyList length={appointments.data.length} message='No cancelled appointments found' />
                 </div>
 
                 {/* pagination */}

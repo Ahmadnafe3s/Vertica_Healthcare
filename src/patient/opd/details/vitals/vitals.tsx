@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, SearchX } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -66,7 +65,7 @@ const PatientOpdVitals = () => {
         <section className="flex flex-col gap-y-5 pb-10">
 
             <div className="flex justify-between items-center">
-                <h1 className="text-lg text-gray-800 font-semibold">Vitals</h1>
+                <h1 className="text-lg font-semibold">Vitals</h1>
                 <div className="sm:w-48 space-y-1">
                     <Input type="date" className="h-9" onChange={(e) => { onSearch(e.target.value) }} />
                 </div>
@@ -74,8 +73,8 @@ const PatientOpdVitals = () => {
 
             <Separator />
 
-            <Table className="rounded-lg border">
-                <TableHeader className="bg-zinc-100">
+            <Table className="rounded-lg border dark:border-gray-800">
+                <TableHeader className="bg-zinc-100 dark:bg-gray-900">
                     <TableRow>
                         <TableHead>Date</TableHead>
                         <TableHead>Height (1-200 CM)</TableHead>

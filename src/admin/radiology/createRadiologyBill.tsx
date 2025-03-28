@@ -8,24 +8,24 @@ import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { createPharmacyBillSchema, valuesASdefault } from "@/formSchemas/createPharmBillSchema"
 import { currencySymbol } from "@/helpers/currencySymbol"
-import { medicineBatch, medicinesBYcategory } from "@/types/pharmacy/pharmacy"
 import { medicineCategory } from "@/types/setupTypes/pharmacy"
 import { Patients } from "@/types/type"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader, Plus, X } from "lucide-react"
 import { HTMLAttributes, useEffect, useState } from "react"
-import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
+import { Controller, useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { Link } from "react-router-dom"
 import { z } from "zod"
-import { getMedicinesBatchDetails, getMedicinesBatches, getMedicinesBYcategory } from "../pharmacyApiHandler"
 import { calculateAmount } from "@/helpers/calculateAmount"
 import { useDebouncedCallback } from "use-debounce"
 import { getStaffs } from "@/admin/humanresource/HRApiHandler"
 import { staffs } from "@/types/staff/staff"
 import { Separator } from "@/components/ui/separator"
+import { createRadiologyBillSchema, RadiologyBillDefaultValues } from "@/formSchemas/createRadiologyBill"
+import { RadiologyTestNameDetailsType, RadiologyTestNameType } from "@/types/setupTypes/radiology"
+import { getRadiologyTestDetails, getRadiologyTests } from "../setup/radiology/ApiHandlers"
 
 
 
@@ -34,30 +34,33 @@ interface CreatePharmacyBillProps extends HTMLAttributes<HTMLDivElement> {
   isPending: boolean
 }
 
-const CreatePharmacyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillProps) => {
+
+
+
+const CreateRadiologyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillProps) => {
 
   // form hook
-  const { control, register, reset, setValue, watch, handleSubmit, formState: { errors } } = useForm<z.infer<typeof createPharmacyBillSchema>>({
-    resolver: zodResolver(createPharmacyBillSchema),
-    defaultValues: valuesASdefault
+  const { control, register, reset, setValue, watch, handleSubmit, formState: { errors } } = useForm<z.infer<typeof createRadiologyBillSchema>>({
+    resolver: zodResolver(createRadiologyBillSchema),
+    defaultValues: RadiologyBillDefaultValues
   })
 
-  const { fields: medicineField, append: addMedicine, remove: removeMedicine } = useFieldArray({
-    name: 'items',
+
+  const { fields: TestFields, append: AddTest, remove: RemoveTest } = useFieldArray({
+    name: 'tests',
     control
   })
 
+
   //will watch all fields
-  const items = useWatch({ name: 'items', control })
+  // const items = useWatch({ name: 'items', control })
 
 
   // API states
   const [patients, setPatients] = useState<Patients[]>([])
   const [doctors, setDoctors] = useState<staffs>({ data: [], total_pages: 0 })
   const [medCategories, setMedCategories] = useState<medicineCategory[]>([])
-  const [medNames, setMedNames] = useState<{ [key: number]: medicinesBYcategory[] }>([])
-  const [batches, setBatches] = useState<{ [key: number]: medicineBatch[] }>([])
-  const [medStocks, setMedStocks] = useState<{ [key: number]: number }>()
+  const [tests, setTests] = useState<RadiologyTestNameType>({ data: [], total_pages: 0 })
 
 
 
@@ -72,10 +75,10 @@ const CreatePharmacyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillP
 
 
 
-  const fetchMedicineCAtegories = async () => {
+  const fetchRadiologyTests = async () => {
     try {
-      const data = await getMedicineCategories()
-      setMedCategories(data)
+      const data = await getRadiologyTests({ page: 1, limit: 0 })
+      setTests(data)
     } catch ({ message }: any) {
       toast.error(message)
     }
@@ -83,10 +86,17 @@ const CreatePharmacyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillP
 
 
   // fetching and binding medicines
-  const handleCategoryChange = async (i: number, categoryId: number) => {
+
+
+  // working from here
+
+
+  const handleTestNameChange = async (testNameId: number, i: number) => {
     try {
-      const data = await getMedicinesBYcategory(categoryId)
-      setMedNames(prev => ({ ...prev, [i]: data }))
+      const data = await getRadiologyTestDetails(testNameId)
+      setValue(`tests.${i}.reportDays`, data.reportDays)
+      const date = new Date(data.reportDate).toISOString().split('T')[0]
+      setValue(`tests.${i}.reportDate`, date)
     } catch ({ message }: any) {
       toast.error(message)
     }
@@ -94,40 +104,40 @@ const CreatePharmacyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillP
 
 
   //fetching and binding batches
-  const handleMedicineChange = async (i: number, medicineId: number) => {
-    try {
-      const data = await getMedicinesBatches(medicineId)
-      setBatches(prev => ({ ...prev, [i]: data }))
-    } catch ({ message }: any) {
-      toast.error(message)
-    }
-  }
+  // const handleMedicineChange = async (i: number, medicineId: number) => {
+  //   try {
+  //     const data = await getMedicinesBatches(medicineId)
+  //     setBatches(prev => ({ ...prev, [i]: data }))
+  //   } catch ({ message }: any) {
+  //     toast.error(message)
+  //   }
+  // }
 
 
-  const handleBatchChange = async (i: number, batchId: number) => {
-    try {
-      const data = await getMedicinesBatchDetails(batchId)
-      setValue(`items.${i}.salePrice`, Number(data.purchaseMedicine.sale_price))
-      setValue(`items.${i}.tax`, Number(data.purchaseMedicine.tax))
-      setMedStocks(prev => ({ ...prev, [i]: data.quantity }))
-    } catch ({ message }: any) {
-      toast.error(message)
-    }
-  }
+  // const handleBatchChange = async (i: number, batchId: number) => {
+  //   try {
+  //     const data = await getMedicinesBatchDetails(batchId)
+  //     setValue(`items.${i}.salePrice`, Number(data.purchaseMedicine.sale_price))
+  //     setValue(`items.${i}.tax`, Number(data.purchaseMedicine.tax))
+  //     setMedStocks(prev => ({ ...prev, [i]: data.quantity }))
+  //   } catch ({ message }: any) {
+  //     toast.error(message)
+  //   }
+  // }
 
 
   // for calculating amount
-  const onQuantityChange = (i: number, qty: number) => {
+  // const onQuantityChange = (i: number, qty: number) => {
 
-    const Total = (qty * watch(`items.${i}.salePrice`))
+  //   const Total = (qty * watch(`items.${i}.salePrice`))
 
-    const Tax = watch(`items.${i}.tax`)
+  //   const Tax = watch(`items.${i}.tax`)
 
-    //for specific fields
-    const amount = calculateAmount(Total, Tax, 0).net_amount
-    setValue(`items.${i}.amount`, amount)
+  //   //for specific fields
+  //   const amount = calculateAmount(Total, Tax, 0).net_amount
+  //   setValue(`items.${i}.amount`, amount)
 
-  }
+  // }
 
 
   // fetching doctors
@@ -144,21 +154,21 @@ const CreatePharmacyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillP
 
   // Appends fields
   const appendMedicine = () => {
-    addMedicine(valuesASdefault.items)
+    // addMedicine()
   }
 
 
   // calculating price from all fields
-  useEffect(() => {
-    const discount = watch('discount')
-    const comulativeTotal = items?.reduce((sum, item) => (sum + item?.amount), 0)
-    const net_amount = calculateAmount(comulativeTotal, 0, discount).net_amount // tax is zero here coz we have already calculated tax
-    setValue(`net_amount`, net_amount)
-  }, [items, watch('discount')])
+  // useEffect(() => {
+  //   const discount = watch('discount')
+  //   const comulativeTotal = items?.reduce((sum, item) => (sum + item?.amount), 0)
+  //   const net_amount = calculateAmount(comulativeTotal, 0, discount).net_amount // tax is zero here coz we have already calculated tax
+  //   setValue(`net_amount`, net_amount)
+  // }, [items, watch('discount')])
 
 
   useEffect(() => {
-    fetchMedicineCAtegories()
+    fetchRadiologyTests()
     getDoctors()
   }, [])
 
@@ -195,7 +205,7 @@ const CreatePharmacyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillP
             )}>New Patient</Link>
           </div>
         </div>
-        
+
         <Separator className="my-2" />
 
         {/* grid for fields */}
@@ -205,104 +215,49 @@ const CreatePharmacyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillP
 
           <div className="grid lg:grid-cols-4 md:grid-cols-3 gap-5 mb-8 px-2.5">
 
-            {/* Medicines field array */}
+            {/* Tests field array */}
 
-            {medicineField.map((medicine, index) => {
+            {TestFields.map((test, index) => {
 
-              return <section key={medicine.id} className="sm:col-span-full mt-2 p-2 rounded-md grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 border-2 border-dashed border-gray-200 dark:border-gray-700">
+              return <section key={test.id} className="sm:col-span-full mt-2 p-2 rounded-md grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 border-2 border-dashed border-gray-200 dark:border-gray-700">
 
-                {/* Medicine Category */}
+                {/* Test Name */}
 
                 <div className="w-full flex flex-col gap-y-2">
-                  <Controller control={control} name={`items.${index}.categoryId`} render={({ field }) => {
+                  <Controller control={control} name={`tests.${index}.testNameId`} render={({ field }) => {
                     return <>
-                      <Label>Medicine Category</Label>
-                      <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { handleCategoryChange(index, Number(value)); field.onChange(Number(value)) }}>
+                      <Label>Test Name</Label>
+                      <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { /*handleTestNameChange(index, Number(value));*/ field.onChange(Number(value)) }}>
                         <SelectTrigger >
                           <SelectValue placeholder="Select" />
                         </SelectTrigger>
 
                         <SelectContent className='z-[200]'>
-                          {medCategories.map((category) => {
-                            return <SelectItem key={category.id} value={String(category.id)}>{category.name}</SelectItem>
+                          {tests.data.map((test) => {
+                            return <SelectItem key={test.id} value={String(test.id)}>{test.name}</SelectItem>
                           })}
                         </SelectContent>
                       </Select>
                     </>
                   }} />
-                  {errors.items?.[index]?.categoryId && <p className='text-sm text-red-500'>{errors.items?.[index].categoryId?.message}</p>}
+                  {errors.tests?.[index]?.testNameId && <p className='text-sm text-red-500'>{errors.tests?.[index].testNameId?.message}</p>}
                 </div>
 
 
-
-                {/* Medicine Names */}
+                {/* Report Days */}
 
                 <div className="w-full flex flex-col gap-y-2">
-                  <Controller control={control} name={`items.${index}.medicineId`} render={({ field }) => {
-                    const medicines = medNames?.[index] || []; // Get categories specific to the current field index getting from the object key
-                    return <>
-                      <Label>Medicine Name</Label>
-                      <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { handleMedicineChange(index, Number(value)); field.onChange(Number(value)) }}>
-                        <SelectTrigger >
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-
-                        <SelectContent className='z-[200]'>
-                          {medicines.map((medicine) => {
-                            return <SelectItem key={medicine.id} value={String(medicine.id)}>{medicine.name}</SelectItem>
-                          })}
-                        </SelectContent>
-                      </Select>
-                    </>
-                  }} />
-                  {errors.items?.[index]?.medicineId && <p className='text-sm text-red-500'>{errors.items?.[index].medicineId?.message}</p>}
+                  <Label>Report Days</Label>
+                  <Input type='number' {...register(`tests.${index}.reportDays`)} disabled />
+                  {errors.tests?.[index]?.reportDays && <p className='text-sm text-red-500'>{errors.tests?.[index].reportDays?.message}</p>}
                 </div>
 
-
-                {/* Batches */}
-
-                <div className="w-full flex flex-col space-y-2">
-                  <Controller control={control} name={`items.${index}.batchId`} render={({ field }) => {
-                    const medBatches = batches?.[index] || []
-                    return <>
-                      <Label>Batch</Label>
-                      <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { handleBatchChange(index, Number(value)); field.onChange(Number(value)) }}>
-                        <SelectTrigger >
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-
-                        <SelectContent className='z-[200]'>
-                          {medBatches.map((batch) => {
-                            return <SelectItem key={batch.id} value={String(batch.id)}>{batch.purchaseMedicine.batch_no}</SelectItem>
-                          })}
-                        </SelectContent>
-                      </Select>
-                    </>
-                  }} />
-                  {errors.items?.[index]?.batchId && <p className='text-sm text-red-500'>{errors.items?.[index]?.batchId?.message}</p>}
-                </div>
-
-
-                {/* Quantity */}
-
-                <div className="w-full flex flex-col space-y-2">
-                  <Label>Quantity</Label>
-                  <Input type='number' {...register(`items.${index}.quantity`, { valueAsNumber: true })}
-                    // max={medStocks?.[index]}
-                    defaultValue={0}
-                    onChange={(e) => { onQuantityChange(index, Number(e.target.value)) }}
-                  />
-                  {medStocks?.[index]! && <p className="text-sm text-gray-500 italic">Available qty : {medStocks[index]}</p>}
-                  {errors?.items?.[index]?.quantity && <p className='text-sm text-red-500'>{errors?.items?.[index]?.quantity?.message}</p>}
-                </div>
-
-
-                {/* Sale Price */}
+                {/* Report Date */}
 
                 <div className="w-full flex flex-col gap-y-2">
-                  <Label>Sale Price {currencySymbol()}</Label>
-                  <Input type='number' {...register(`items.${index}.salePrice`, { valueAsNumber: true })} defaultValue={0} disabled />
-                  {errors?.items?.[index]?.salePrice && <p className='text-sm text-red-500'>{errors?.items?.[index]?.salePrice.message}</p>}
+                  <Label>Report Date</Label>
+                  <Input type='date' {...register(`tests.${index}.reportDate`)} />
+                  {errors.tests?.[index]?.reportDate && <p className='text-sm text-red-500'>{errors.tests?.[index].reportDate?.message}</p>}
                 </div>
 
 
@@ -310,28 +265,26 @@ const CreatePharmacyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillP
 
                 <div className="w-full flex flex-col gap-y-2">
                   <Label>Tax %</Label>
-                  <Input type='number' {...register(`items.${index}.tax`, { valueAsNumber: true })} defaultValue={0} disabled />
-                  {errors?.items?.[index]?.tax && <p className='text-sm text-red-500'>{errors?.items?.[index]?.tax.message}</p>}
+                  <Input type='number' {...register(`tests.${index}.tax`, { valueAsNumber: true })} defaultValue={0} disabled />
+                  {errors.tests?.[index]?.tax && <p className='text-sm text-red-500'>{errors.tests?.[index].tax?.message}</p>}
                 </div>
-
 
                 {/* Amount */}
 
                 <div className="w-full flex flex-col gap-y-2">
                   <Label>Amount {currencySymbol()}</Label>
-                  <Input type="number" {...register(`items.${index}.amount`, { valueAsNumber: true })} defaultValue={0} disabled />
-                  {errors?.items?.[index]?.amount && <p className='text-sm text-red-500'>{errors?.items?.[index]?.amount.message}</p>}
+                  <Input type="number" {...register(`tests.${index}.amount`, { valueAsNumber: true })} defaultValue={0} disabled />
+                  {errors.tests?.[index]?.amount && <p className='text-sm text-red-500'>{errors.tests?.[index].amount?.message}</p>}
                 </div>
-
 
 
                 {/* Button to remove fields */}
 
-                {medicineField.length !== 1 &&
+                {TestFields.length !== 1 &&
                   <div className="h-full flex items-center gap-x-2 justify-center mt-3 sm:mt-1">
                     <CustomTooltip message="Remove">
                       <div className="p-1 bg-red-500 rounded-full text-white mt-2 sm:mt-4">
-                        <X className="w-4 h-4 cursor-pointer" onClick={() => { removeMedicine(index) }} />
+                        <X className="w-4 h-4 cursor-pointer" onClick={() => { RemoveTest(index) }} />
                       </div>
                     </CustomTooltip>
                   </div>
@@ -424,7 +377,7 @@ const CreatePharmacyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillP
         </ScrollArea>
 
         <div className="flex mt-5 mb-2 gap-x-2 sm:justify-end px-2.5">
-          <Button type='button' variant={'ghost'} onClick={() => { reset(), setMedStocks(undefined) }} >Reset</Button>
+          <Button type='button' variant={'ghost'} onClick={() => { reset() }} >Reset</Button>
           <Button type='submit' className='flex-1 sm:flex-none' >Save Bill {isPending && <Loader className='animate-spin' />}</Button>
         </div>
 
@@ -433,4 +386,7 @@ const CreatePharmacyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillP
   )
 }
 
-export default CreatePharmacyBill
+
+
+
+export default CreateRadiologyBill

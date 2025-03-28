@@ -53,51 +53,51 @@ const PatinetOpdVisitDetails = () => {
                     }
 
                     <div className=''>
-                        <p className='font-semibold text-lg text-gray-900'>{opdDetails?.appointment.patient.name}</p>
-                        <p className='text-sm text-gray-500'>ID : {opdDetails?.appointment.patient.id}</p>
+                        <p className='font-semibold text-lg text-gray-900 dark:text-white'>{opdDetails?.appointment.patient.name}</p>
+                        <p className='text-sm text-gray-400'>ID : {opdDetails?.appointment.patient.id}</p>
                     </div>
                 </div>
 
 
                 {/* patient Details */}
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Gender</p>
+                <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-800 rounded-sm'>
+                    <p className='text-gray-700 dark:text-gray-400 '>Gender</p>
                     <p className='font-semibold'>{opdDetails?.appointment.patient.gender}</p>
                 </div>
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Guardian Name</p>
+                <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-800 rounded-sm'>
+                    <p className='text-gray-700 dark:text-gray-400 '>Guardian Name</p>
                     <p className='font-semibold'>{opdDetails?.appointment.patient.guardian_name}</p>
                 </div>
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Age</p>
+                <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-800 rounded-sm'>
+                    <p className='text-gray-700 dark:text-gray-400'>Age</p>
                     <p className='font-semibold'>{opdDetails?.appointment.patient.age}</p>
                 </div>
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Blood Group</p>
+                <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-800 rounded-sm'>
+                    <p className='text-gray-700 dark:text-gray-400'>Blood Group</p>
                     <p className='font-semibold'>{opdDetails?.appointment.patient.blood_group}</p>
                 </div>
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Aadhar</p>
+                <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-800 rounded-sm'>
+                    <p className='text-gray-700 dark:text-gray-400'>Aadhar</p>
                     <p className='font-semibold'>{opdDetails?.appointment.patient.aadhar}</p>
                 </div>
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Phone</p>
+                <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-800 rounded-sm'>
+                    <p className='text-gray-700 dark:text-gray-400'>Phone</p>
                     <p className='font-semibold'>{opdDetails?.appointment.patient.phone}</p>
                 </div>
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Address</p>
+                <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-800 rounded-sm'>
+                    <p className='text-gray-700 dark:text-gray-400'>Address</p>
                     <p className='font-semibold'>{opdDetails?.appointment.patient.address}</p>
                 </div>
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>Alergies</p>
+                <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-800 rounded-sm'>
+                    <p className='text-gray-700 dark:text-gray-400'>Alergies</p>
                     <p className='font-semibold'>{opdDetails?.appointment.patient.alergies}</p>
                 </div>
 
@@ -106,8 +106,8 @@ const PatinetOpdVisitDetails = () => {
 
                 {/* Case Details */}
 
-                <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
-                    <p className='text-gray-700'>OPD No.</p>
+                <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-800  rounded-sm'>
+                    <p className='text-gray-700  dark:text-gray-400'>OPD No.</p>
                     <p className='font-semibold'>{opdDetails?.id}</p>
                 </div>
 
@@ -116,19 +116,19 @@ const PatinetOpdVisitDetails = () => {
 
                 {/* Vital section */}
 
-                <h1 className="sm:col-span-full font-semibold text-gray-800">Vitals</h1>
+                <h1 className="sm:col-span-full font-semibold text-gray-800 dark:text-gray-100">Vitals</h1>
 
                 {/* Can be add Vitals Here */}
 
                 {opdDetails?.Vitals?.map((measure, i) => {
-                    return <div key={i} className='space-y-1 flex justify-between bg-white p-2  ring-1 ring-gray-200 rounded-sm'>
+                    return <div key={i} className='space-y-1 flex justify-between p-2  ring-1 ring-gray-200 dark:ring-gray-800 rounded-sm'>
                         <div>
-                            <p className='text-gray-700'>{measure.vital?.name}</p>
+                            <p className='text-gray-700 dark:text-gray-400'>{measure.vital?.name}</p>
                             <p className='font-semibold'>{measure?.value}</p>
                         </div>
                         <div>
                             <p className='text-gray-700'>Date</p>
-                            <p className="text-sm text-gray-500">{measure?.date}</p>
+                            <p className="text-sm text-gray-400">{measure?.date}</p>
                         </div>
                     </div>
                 })}
@@ -137,21 +137,21 @@ const PatinetOpdVisitDetails = () => {
 
                 {/* Prescription */}
 
-                <h1 className="sm:col-span-full font-semibold text-gray-800">Findings</h1>
+                <h1 className="sm:col-span-full font-semibold text-gray-800 dark:text-gray-100">Findings</h1>
 
 
                 <Separator className="sm:col-span-full my-8" />
 
                 {/* Symptoms */}
 
-                <h1 className="sm:col-span-full font-semibold text-gray-800">Symptoms</h1>
+                <h1 className="sm:col-span-full font-semibold text-gray-800 dark:text-gray-100">Symptoms</h1>
                 <p className="text-sm text-gray-500 sm:col-span-full">{opdDetails?.appointment.symptom_description}</p>
 
                 <Separator className="sm:col-span-full my-8" />
 
                 {/* Doctors */}
 
-                <h1 className="sm:col-span-full font-semibold text-gray-800">Consultant</h1>
+                <h1 className="sm:col-span-full font-semibold text-gray-800 dark:text-gray-100">Consultant</h1>
 
                 <div className="sm:col-span-full flex space-x-2 items-center">
                     <div className='w-16 h-16'>
@@ -159,8 +159,8 @@ const PatinetOpdVisitDetails = () => {
                     </div>
 
                     <div className=''>
-                        <p className='font-semibold text-lg text-gray-900'>{opdDetails?.appointment?.doctor.name}</p>
-                        <p className='text-sm text-gray-500'>ID : {opdDetails?.appointment.doctor.id}</p>
+                        <p className='font-semibold text-lg'>{opdDetails?.appointment?.doctor.name}</p>
+                        <p className='text-sm text-gray-400'>ID : {opdDetails?.appointment.doctor.id}</p>
                     </div>
 
                 </div>
@@ -170,7 +170,7 @@ const PatinetOpdVisitDetails = () => {
 
                 {/* Timeline */}
 
-                <h1 className="sm:col-span-full font-semibold mb-2 text-gray-800">Timeline</h1>
+                <h1 className="sm:col-span-full font-semibold mb-2 text-gray-800 dark:text-gray-100">Timeline</h1>
 
                 {opdDetails?.timelines?.length! > 0 ? (<ul className="sm:col-span-full relative before:absolute space-y-5 before:w-1 w-64 sm:w-[400px] mx-auto gap-3 before:h-full before:bg-gray-300 before:top-0 before:block">
 
@@ -188,13 +188,13 @@ const PatinetOpdVisitDetails = () => {
                                     <span ><Calendar className="w-4 h-4 text-white" /></span>
                                 </div>
 
-                                <div className="space-y-2 flex-1 border-2 border-dashed border-gray-200 p-2 rounded-lg">
+                                <div className="space-y-2 flex-1 border-2 border-dashed border-gray-200 dark:border-gray-500 p-2 rounded-lg">
 
-                                    <p className=" font-semibold text-gray-800">{timeline.title}</p>
+                                    <p className=" font-semibold text-gray-800 dark:text-gray-100">{timeline.title}</p>
 
                                     <Separator />
                                     {/* Description */}
-                                    <p className="text-sm text-gray-700">{timeline.description}</p>
+                                    <p className="text-sm text-gray-700 dark:text-gray-400 ">{timeline.description}</p>
 
                                 </div>
                             </div>
@@ -230,10 +230,10 @@ const PatinetOpdVisitDetails = () => {
 
                 {/* Medication */}
 
-                <h1 className="font-semibold text-gray-800 mb-2">Medication</h1>
+                <h1 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">Medication</h1>
 
-                <Table className="rounded-lg border w-full">
-                    <TableHeader className="bg-slate-100">
+                <Table className="rounded-lg border dark:border-gray-800 w-full">
+                    <TableHeader className="bg-slate-100 dark:bg-gray-900">
                         <TableRow>
                             <TableHead>Date</TableHead>
                             <TableHead>Medicine Name</TableHead>
@@ -247,12 +247,12 @@ const PatinetOpdVisitDetails = () => {
                     <TableBody>
                         {opdDetails?.medications?.map((medication, i) => (
                             <TableRow key={i}>
-                                <TableCell className="text-gray-800 whitespace-nowrap">{medication.date}</TableCell>
+                                <TableCell className="text-gray-800 dark:text-gray-100 whitespace-nowrap">{medication.date}</TableCell>
                                 <TableCell>{medication?.medicine.name}</TableCell>
                                 <TableCell>{medication?.category.name}</TableCell>
                                 <TableCell>{medication.dose}</TableCell>
                                 <TableCell>{medication.time}</TableCell>
-                                <TableCell className="text-gray-600">{medication.note}</TableCell>
+                                <TableCell className="text-gray-400">{medication.note}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -265,10 +265,10 @@ const PatinetOpdVisitDetails = () => {
 
                 {/* Operation */}
 
-                <h1 className="font-semibold text-gray-800 mb-2">Operation</h1>
+                <h1 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">Operation</h1>
 
-                <Table className="rounded-lg border">
-                    <TableHeader className="bg-slate-100">
+                <Table className="rounded-lg border dark:border-gray-800">
+                    <TableHeader className="bg-slate-100 dark:bg-gray-900">
                         <TableRow>
                             <TableHead>Reference No</TableHead>
                             <TableHead>Date</TableHead>
@@ -281,7 +281,7 @@ const PatinetOpdVisitDetails = () => {
                     <TableBody>
                         {opdDetails?.Operations?.map((operation, i) => {
                             return <TableRow key={i}>
-                                <TableCell className="text-gray-700">{operation.id}</TableCell>
+                                <TableCell>{operation.id}</TableCell>
                                 <TableCell className="text-sm">{operation.date}</TableCell>
                                 <TableCell>{operation.operationName.name}</TableCell>
                                 <TableCell>{operation.operationCategory.name}</TableCell>
@@ -297,10 +297,10 @@ const PatinetOpdVisitDetails = () => {
 
                 {/* Charges */}
 
-                <h1 className="font-semibold text-gray-800 mb-2">Charges</h1>
+                <h1 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">Charges</h1>
 
-                <Table className="rounded-lg border">
-                    <TableHeader className="bg-slate-100">
+                <Table className="rounded-lg border dark:border-gray-800">
+                    <TableHeader className="bg-slate-100 dark:bg-gray-900">
                         <TableRow>
                             <TableHead>Charge Date</TableHead>
                             <TableHead>Charge Name</TableHead>
@@ -330,10 +330,10 @@ const PatinetOpdVisitDetails = () => {
 
                 {/* Payments */}
 
-                <h1 className="font-semibold text-gray-800 mb-2">Payments</h1>
+                <h1 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">Payments</h1>
 
-                <Table className="rounded-lg border">
-                    <TableHeader className="bg-slate-100">
+                <Table className="rounded-lg border dark:border-gray-800">
+                    <TableHeader className="bg-slate-100 dark:bg-gray-900">
                         <TableRow>
                             <TableHead>Transaction ID</TableHead>
                             <TableHead>Date</TableHead>

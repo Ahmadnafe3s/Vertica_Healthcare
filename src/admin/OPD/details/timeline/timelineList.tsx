@@ -107,7 +107,7 @@ const Timeline = () => {
         <section className="flex flex-col gap-y-5 pb-14">
 
             <div className="flex justify-between">
-                <h1 className="text-lg text-gray-800 font-semibold">Timeline</h1>
+                <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Timeline</h1>
                 {hasPermission('create', 'timeline') && (
                     <Button size='sm' onClick={() => {
                         setModel({ ...model, timelineForm: true })
@@ -136,17 +136,17 @@ const Timeline = () => {
                                 <span ><Calendar className="w-4 h-4 text-white" /></span>
                             </div>
 
-                            <div className="space-y-2 flex-1 border-2 border-dashed border-gray-200 p-2 rounded-lg">
+                            <div className="space-y-2 flex-1 border-2 border-dashed border-gray-200 dark:border-gray-500 p-2 rounded-lg">
 
                                 {/* Title section */}
                                 <div className=" flex justify-between items-center cursor-pointer group transition-all">
-                                    <p className="text-lg font-semibold text-gray-800">{timeline.title}</p>
+                                    <p className="text-lg font-semibold text-gray-800 dark:text-gray-200">{timeline.title}</p>
                                     <div className="flex gap-x-2">
 
                                         {/* EDIT */}
                                         {hasPermission('update', 'timeline') && (
                                             <CustomTooltip message="EDIT">
-                                                <Pencil className="w-4 h-4 text-gray-500 transition-all active:scale-90 opacity-0 group-hover:opacity-100 "
+                                                <Pencil className="w-4 h-4 text-gray-500 dark:text-gray-400 transition-all active:scale-90 opacity-0 group-hover:opacity-100 "
                                                     onClick={async () => {
                                                         await fetchTimelineDetails(timeline.id)
                                                         setModel({ ...model, timelineForm: true })
@@ -158,7 +158,7 @@ const Timeline = () => {
                                         {/* DELETE */}
                                         {hasPermission('delete', 'timeline') && (
                                             <CustomTooltip message="DELETE">
-                                                <Trash2 className="w-4 h-4 text-gray-500 transition-all active:scale-90 opacity-0 group-hover:opacity-100 "
+                                                <Trash2 className="w-4 h-4 text-gray-500 dark:text-gray-400 transition-all active:scale-90 opacity-0 group-hover:opacity-100 "
                                                     onClick={() => onDelete(timeline.id)}
                                                 />
                                             </CustomTooltip>
@@ -169,7 +169,7 @@ const Timeline = () => {
 
                                 <Separator />
                                 {/* Description */}
-                                <p className="text-sm text-gray-700">{timeline.description}</p>
+                                <p className="text-sm text-gray-700 dark:text-gray-400">{timeline.description}</p>
 
                             </div>
                         </div>

@@ -18,6 +18,7 @@ import { useQueryState, parseAsInteger } from "nuqs"
 import CustomPagination from "@/components/customPagination"
 import usePermission from "@/authz"
 import { useConfirmation } from "@/hooks/useConfirmation"
+import EmptyList from "@/components/emptyList"
 
 
 
@@ -121,7 +122,7 @@ const Medication = () => {
       <section className="flex flex-col gap-y-5">
 
         <div className="flex justify-between">
-          <h1 className="text-lg text-gray-800 font-semibold">Medication</h1>
+          <h1 className="text-lg text-gray-800 dark:text-white font-semibold">Medication</h1>
           {hasPermission('create', 'medication') && (
             <Button size='sm' onClick={() => setMedicationForm(true)}>
               <Plus /> Add Medication
@@ -132,7 +133,7 @@ const Medication = () => {
         <Separator />
 
         <div className="sm:w-48 space-y-1">
-          <p className="text-sm text-gray-700">Search by date</p>
+          <p className="text-sm text-gray-700 dark:text-gray-300">Search by date</p>
           <Input type="date" onChange={(e) => { onSearch(e.target.value) }} defaultValue={search!} />
         </div>
 
@@ -141,8 +142,8 @@ const Medication = () => {
         {/* pagination */}
         <section className="flex flex-col gap-y-5 min-h-[60vh]">
           <div className="flex-1">
-            <Table className="rounded-lg border">
-              <TableHeader className="bg-zinc-100">
+            <Table className="rounded-lg border dark:border-gray-800">
+              <TableHeader className="bg-zinc-100 dark:bg-gray-900">
                 <TableRow>
                   <TableHead>Date</TableHead>
                   <TableHead>Medicine Name</TableHead>
@@ -167,7 +168,7 @@ const Medication = () => {
                       {/* Edit */}
                       {hasPermission('update', 'medication') && (
                         <CustomTooltip message="EDIT">
-                          <Pencil className="active:scale-95 w-4 text-gray-600 cursor-pointer"
+                          <Pencil className="active:scale-95 w-4 text-gray-600 dark:text-gray-400 cursor-pointer"
                             onClick={async () => {
                               await fetchMedicationDetails(medication.id)
                               setMedicationForm(true)
@@ -179,7 +180,7 @@ const Medication = () => {
                       {/* Delete */}
                       {hasPermission('delete', 'medication') && (
                         <CustomTooltip message="DELETE">
-                          <Trash className="active:scale-95 w-4 text-gray-600 cursor-pointer"
+                          <Trash className="active:scale-95 w-4 text-gray-600 dark:text-gray-400 cursor-pointer"
                             onClick={() => onDelete(medication.id)}
                           />
                         </CustomTooltip>
@@ -192,7 +193,8 @@ const Medication = () => {
             </Table>
             {/* error on emply list */}
 
-            {medications.data.length < 1 && <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
+            <EmptyList length={medications.data.length} message="No medications found" />
+
           </div>
 
           {/* pagination buttons */}

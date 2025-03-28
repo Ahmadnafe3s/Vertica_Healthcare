@@ -29,7 +29,7 @@ const PurchaseMedicineDetailsModel = ({ purchaseDetails, ...props }: PurchaseMed
                             <Receipt className='w-10 h-10 text-white' />
                         </div>
                         <div>
-                            <h1 className='font-semibold text-lg text-gray-900'>{purchaseDetails?.purchase_date}</h1>
+                            <h1 className='font-semibold text-lg text-gray-900 dark:text-white'>{purchaseDetails?.purchase_date}</h1>
                             <p className='text-sm text-gray-500'>Purchase Date</p>
                         </div>
                     </div>
@@ -38,23 +38,23 @@ const PurchaseMedicineDetailsModel = ({ purchaseDetails, ...props }: PurchaseMed
 
                     <div className='grid sm:grid-cols-4 grid-cols-2 gap-3 lg:col-span-2'>
 
-                        <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                            <p className='text-gray-700'>Purchase No</p>
+                        <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md'>
+                            <p className='text-gray-700 dark:text-gray-400'>Purchase No</p>
                             <p className='font-semibold'>{purchaseDetails?.id}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                            <p className='text-gray-700'>Expiry Date</p>
+                        <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md'>
+                            <p className='text-gray-700 dark:text-gray-400'>Expiry Date</p>
                             <p className='font-semibold'>{purchaseDetails?.expiry_date}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                            <p className='text-gray-700'>Supplier Name</p>
+                        <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md'>
+                            <p className='text-gray-700 dark:text-gray-400'>Supplier Name</p>
                             <p className='font-semibold'>{purchaseDetails?.supplier_name}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                            <p className='text-gray-700'>Category</p>
+                        <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md'>
+                            <p className='text-gray-700 dark:text-gray-400'>Category</p>
                             <p className='font-semibold'>{purchaseDetails?.category.name}</p>
                         </div>
 
@@ -65,73 +65,73 @@ const PurchaseMedicineDetailsModel = ({ purchaseDetails, ...props }: PurchaseMed
 
                     <div className="col-span-full grid sm:grid-cols-2 lg:grid-cols-3 p-0.5 gap-2">
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Medicine Name</p>
+                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                            <p className='text-gray-700 dark:text-gray-400'>Medicine Name</p>
                             <p className='font-semibold'>{purchaseDetails?.medicine.name}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Medicine Group</p>
+                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                            <p className='text-gray-700 dark:text-gray-400'>Medicine Group</p>
                             <p className='font-semibold'>{purchaseDetails?.medicine.group.name}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Batch No.</p>
+                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                            <p className='text-gray-700 dark:text-gray-400'>Batch No.</p>
                             <p className='font-semibold'>{purchaseDetails?.batch_no}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>MRP</p>
+                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                            <p className='text-gray-700 dark:text-gray-400'>MRP</p>
                             <p className='font-semibold'>{currencyFormat(Number(purchaseDetails?.MRP))}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Sale Price</p>
+                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                            <p className='text-gray-700 dark:text-gray-400'>Sale Price</p>
                             <p className='font-semibold'>{currencyFormat(Number(purchaseDetails?.sale_price))}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Packing Quantity</p>
+                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                            <p className='text-gray-700 dark:text-gray-400'>Packing Quantity</p>
                             <p className='font-semibold'>{purchaseDetails?.packing_quantity}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Quantity</p>
+                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                            <p className='text-gray-700 dark:text-gray-400'>Quantity</p>
                             <p className='font-semibold'>{purchaseDetails?.quantity}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Purchase Price</p>
+                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                            <p className='text-gray-700 dark:text-gray-400'>Purchase Price</p>
                             <p className='font-semibold'>{currencyFormat(Number(purchaseDetails?.purchase_price))}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Amount</p>
+                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                            <p className='text-gray-700 dark:text-gray-400'>Amount</p>
                             <p className='font-semibold'>{currencyFormat(Number(purchaseDetails?.amount))}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Tax</p>
+                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                            <p className='text-gray-700 dark:text-gray-400'>Tax</p>
                             <p className='font-semibold'>{purchaseDetails?.tax}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Discount</p>
+                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                            <p className='text-gray-700 dark:text-gray-400'>Discount</p>
                             <p className='font-semibold'>{purchaseDetails?.discount}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Net Amount</p>
+                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                            <p className='text-gray-700 dark:text-gray-400'>Net Amount</p>
                             <p className='font-semibold'>{currencyFormat(Number(purchaseDetails?.total_amount))}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Payment Mode</p>
+                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                            <p className='text-gray-700 dark:text-gray-400'>Payment Mode</p>
                             <p className='font-semibold'>{purchaseDetails?.payment_mode}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Note</p>
+                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                            <p className='text-gray-700 dark:text-gray-400'>Note</p>
                             <p className='font-semibold'>{purchaseDetails?.note}</p>
                         </div>
 

@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input"
 import { useDebouncedCallback } from "use-debounce"
 import { useQueryState, parseAsInteger } from "nuqs"
 import CustomPagination from "@/components/customPagination"
+import EmptyList from "@/components/emptyList"
 
 
 
@@ -113,7 +114,7 @@ const RadiologyTests = () => {
     <section className="flex flex-col gap-y-5 pb-16 pt-5">
 
       <div className="flex justify-between">
-        <h1 className="text-lg text-gray-800 font-semibold">Radiology Tests</h1>
+        <h1 className="text-lg font-semibold">Radiology Tests</h1>
         <Button size='sm' onClick={() => setTestNameForm(true)}>
           <Plus /> Add RadiologyTest
         </Button>
@@ -123,7 +124,7 @@ const RadiologyTests = () => {
       <Separator />
 
       <div className="sm:w-48 space-y-1">
-        <p className="text-sm text-gray-700">Search</p>
+        <p className="text-sm text-gray-400">Search</p>
         <Input type="text" onChange={(e) => { onSearch(e.target.value) }} placeholder="name , short, category" />
       </div>
 
@@ -131,8 +132,8 @@ const RadiologyTests = () => {
 
       <div className="flex flex-col pb-16 min-h-[65vh] space-y-10">
         <div className="flex-1">
-          <Table className='border rounded-lg'>
-            <TableHeader className='bg-zinc-100'>
+          <Table className='border rounded-lg dark:border-gray-800'>
+            <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Short Name</TableHead>
@@ -161,7 +162,7 @@ const RadiologyTests = () => {
                     {/* EDIT */}
 
                     <CustomTooltip message='EDIT'>
-                      <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                      <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                         await fetchRadioTestDetails(test.id)
                         setTestNameForm(true)
                       }} />
@@ -170,7 +171,7 @@ const RadiologyTests = () => {
                     {/* DELETE  */}
 
                     <CustomTooltip message='DELETE'>
-                      <Trash className="w-4 cursor-pointer  text-gray-600" onClick={() => onDelete(test.id)} />
+                      <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={() => onDelete(test.id)} />
                     </CustomTooltip>
 
                   </TableCell>
@@ -178,7 +179,9 @@ const RadiologyTests = () => {
               ))}
             </TableBody>
           </Table>
-          {tests?.data.length === 0 && <div className="flex justify-center text-sm items-center h-40 text-gray-500">No Parameters Found</div>}
+          
+          <EmptyList length={tests.data.length} message="No Tests Found" />
+
         </div>
 
         {/* Pagination */}

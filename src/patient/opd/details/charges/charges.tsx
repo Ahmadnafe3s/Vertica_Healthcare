@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react"
-import {  SearchX } from "lucide-react"
+import { SearchX } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { currencySymbol } from "@/helpers/currencySymbol"
 import toast from "react-hot-toast"
@@ -14,6 +14,7 @@ import CustomPagination from "@/components/customPagination"
 import { parseAsInteger, useQueryState } from "nuqs"
 import { getChargeDetails, getCharges } from "@/admin/OPD/opdApiHandler"
 import ChargeDetailsModel from "@/admin/OPD/details/charges/chargeDetailsModel"
+import EmptyList from "@/components/emptyList"
 
 
 
@@ -81,7 +82,7 @@ const PatientOpdCharges = () => {
         <section className="flex flex-col gap-y-5">
 
             <div className="flex justify-between items-center">
-                <h1 className="text-lg text-gray-800 font-semibold">Charges</h1>
+                <h1 className="text-lg font-semibold">Charges</h1>
                 <div className="sm:w-48 space-y-1">
                     <Input type="date" onChange={(e) => { onSearch(e.target.value) }} defaultValue={search!} />
                 </div>
@@ -91,8 +92,8 @@ const PatientOpdCharges = () => {
 
             <div className="flex flex-col min-h-[70vh] mb-20">
                 <div className="flex-1">
-                    <Table className="rounded-lg border">
-                        <TableHeader className="bg-zinc-100">
+                    <Table className="rounded-lg border border-gray-800">
+                        <TableHeader className="bg-zinc-100 dark:bg-gray-900">
                             <TableRow>
                                 <TableHead>Date</TableHead>
                                 <TableHead>Charge Name</TableHead>
@@ -116,13 +117,13 @@ const PatientOpdCharges = () => {
                                     <TableCell>{charge.chargeType.charge_type}</TableCell>
                                     <TableCell>{currencyFormat(charge.standard_charge)}</TableCell>
                                     <TableCell>{currencyFormat(charge.tpa)}</TableCell>
-                                    <TableCell>{currencyFormat(charge.net_amount)}</TableCell>                                  
+                                    <TableCell>{currencyFormat(charge.net_amount)}</TableCell>
                                 </TableRow>
                             })}
                         </TableBody>
                     </Table>
 
-                    {CHARGES?.data.length! < 1 && <h1 className='text-gray-900 mt-5 sm:mt-1 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
+                    <EmptyList length={CHARGES?.data.length!} />
 
                 </div>
 

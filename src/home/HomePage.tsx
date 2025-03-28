@@ -73,16 +73,16 @@ const HomePage = () => {
                     <h2 id='services' className="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-gray-900 dark:text-neutral-50 mb-16">Our Services</h2>
 
                     <div id='services' className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-                        <div className="bg-gray-50 dark:bg-black p-8 rounded-lg shadow border-2 border-dashed border-gray-200 dark:border-gray-700 dark:border-primary-600">
+                        <div className="bg-gray-50 dark:bg-dark p-8 rounded-lg shadow border-2 border-dashed border-gray-200 dark:border-gray-700 dark:border-primary-600">
                             <h3 className="text-xl font-semibold text-blue-600 mb-4">Emergency Care</h3>
                             <p className="text-gray-600 dark:text-neutral-100">Our emergency services are available 24/7 with state-of-the-art facilities and expert care.</p>
                         </div>
 
-                        <div className="bg-gray-50 dark:bg-black  p-8 rounded-lg shadow border-2 border-dashed border-gray-200 dark:border-gray-700 dark:border-primary-600">
+                        <div className="bg-gray-50 dark:bg-dark  p-8 rounded-lg shadow border-2 border-dashed border-gray-200 dark:border-gray-700 dark:border-primary-600">
                             <h3 className="text-xl font-semibold text-blue-600 mb-4">Pediatrics</h3>
                             <p className="text-gray-600 dark:text-neutral-100">Compassionate care for children with a focus on comfort and development.</p>
                         </div>
-                        <div className="bg-gray-50 dark:bg-black  p-8 rounded-lg shadow border-2 border-dashed border-gray-200 dark:border-gray-700 dark:border-primary-600">
+                        <div className="bg-gray-50 dark:bg-dark  p-8 rounded-lg shadow border-2 border-dashed border-gray-200 dark:border-gray-700 dark:border-primary-600">
                             <h3 className="text-xl font-semibold text-blue-600 mb-4">Surgery</h3>
                             <p className="text-gray-600 dark:text-neutral-100">Advanced surgical techniques and a team of experienced surgeons ensuring your safety.</p>
                         </div>
@@ -99,7 +99,7 @@ const HomePage = () => {
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-neutral-50 text-center  my-20">What Our Patients Say</h2>
                 <div className="flex flex-wrap justify-center gap-10">
 
-                    <div className="bg-gray-50 dark:bg-black p-8 rounded-lg shadow border-2 border-dashed border-gray-200 dark:border-gray-700 max-w-xs">
+                    <div className="bg-gray-50 dark:bg-dark p-8 rounded-lg shadow border-2 border-dashed border-gray-200 dark:border-gray-700 max-w-xs">
                         <p className="text-gray-600 italic mb-4 dark:text-neutral-200">"The doctors and nurses took great care of me during my surgery. I'm so thankful for the professional and caring team!"</p>
                         <p className="text-blue-600 font-semibold">John Doe</p>
                         <p className="text-gray-500 dark:text-neutral-300">Patient</p>
@@ -112,7 +112,7 @@ const HomePage = () => {
                         </div>
                     </div>
 
-                    <div className="bg-gray-50 dark:bg-black p-8 rounded-lg shadow border-2 border-dashed border-gray-200 dark:border-gray-700 max-w-xs">
+                    <div className="bg-gray-50 dark:bg-dark p-8 rounded-lg shadow border-2 border-dashed border-gray-200 dark:border-gray-700 max-w-xs">
                         <p className="text-gray-600 italic mb-4 dark:text-neutral-200">"My child received amazing care in the pediatric department. The staff was so warm and kind, making the experience stress-free!"</p>
                         <p className="text-blue-600 font-semibold">Jane Smith</p>
                         <p className="text-gray-50 dark:text-neutral-3000">Parent</p>
@@ -125,7 +125,7 @@ const HomePage = () => {
                         </div>
                     </div>
 
-                    <div className="bg-gray-50 dark:bg-black p-8 rounded-lg shadow border-2 border-dashed border-gray-200 dark:border-gray-700 max-w-xs">
+                    <div className="bg-gray-50 dark:bg-dark p-8 rounded-lg shadow border-2 border-dashed border-gray-200 dark:border-gray-700 max-w-xs">
                         <p className="text-gray-600 italic mb-4 dark:text-neutral-200">"The emergency care team responded quickly and saved my life. I am forever grateful for their expertise and compassion."</p>
                         <p className="text-blue-600 font-semibold">Mary Johnson</p>
                         <p className="text-gray-500 dark:text-neutral-300">Patient</p>
@@ -145,7 +145,7 @@ const HomePage = () => {
 
             {/* doctors */}
 
-            <section className='bg-white dark:bg-gray-950'>
+            <section className='bg-white dark:bg-dark'>
 
                 <MaxWidthWrapper className='pt-14 md:pt-20 lg:pt-32 pb-20 lg:pb-32'>
 
@@ -157,7 +157,7 @@ const HomePage = () => {
                         {/* iterating doctors array */}
 
                         {doctors.map((doctor, index) => {
-                            return <div key={index} className='flex flex-col shadow-lg w-72 mx-auto p-2 bg-white border-gray-200 dark:bg-black dark:border-gray-700 border-dashed border-2 rounded-lg'>
+                            return <div key={index} className='flex flex-col shadow-lg dark:shadow-gray-900 w-72 mx-auto p-2 bg-white border-gray-200 dark:bg-dark dark:border-gray-700 border-dashed border-2 rounded-lg'>
                                 <div className='w-full h-48 '>
                                     <img src={doctor.image} className='object-cover rounded-lg select-none' alt="doctor image" />
                                 </div>
@@ -175,7 +175,7 @@ const HomePage = () => {
 
 
             {/* Contact Section */}
-            <div className="bg-gray-50 dark:bg-gray-950 flex items-center min-h-[calc(100vh-64px)]">
+            <div className="bg-gray-50 dark:bg-dark flex items-center min-h-[calc(100vh-64px)]">
                 <MaxWidthWrapper className="pt-14 md:pt-20 lg:pt-32 pb-20 lg:pb-48">
                     <Fade cascade damping={0.1} triggerOnce className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                         <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-neutral-100 mb-8">Get In Touch</h2>

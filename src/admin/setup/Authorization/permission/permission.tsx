@@ -67,7 +67,7 @@ const Permission = () => {
         <section className="flex flex-col pb-16 gap-y-5 pt-5">
 
             <div className="flex justify-between">
-                <h1 className="text-lg text-gray-800 font-semibold">Permission</h1>
+                <h1 className="text-lg font-semibold">Permission</h1>
                 {/* <Button size='sm' onClick={() => { setChargeTypeFormVisible(true) }}>
                     <Plus /> Add Charge Type
                 </Button> */}
@@ -77,7 +77,7 @@ const Permission = () => {
 
             {/* ROLE */}
             <div className="w-[200px] sm:w-[300px] space-y-2">
-                <p className="text-gray-600">Roles</p>
+                <p className="text-gray-400">Roles</p>
                 <Select onValueChange={(val) => { roleId.current = Number(val); fetchPermissions(Number(val)) }}>
                     <SelectTrigger>
                         <SelectValue placeholder='Select Role' />
@@ -91,8 +91,8 @@ const Permission = () => {
             </div>
 
 
-            <Table className="rounded-lg border">
-                <TableHeader className='bg-zinc-100'>
+            <Table className="rounded-lg border dark:border-gray-800">
+                <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
                     <TableRow>
                         <TableHead >Module</TableHead>
                         <TableHead >View</TableHead>
@@ -124,10 +124,10 @@ const Permission = () => {
 
             <div className="mt-10">
 
-                <h1 className="text-gray-800 font-medium mb-4">Dashboard Permission</h1>
+                <h1 className="font-medium mb-4">Dashboard Permission</h1>
 
-                <Table className="rounded-lg border">
-                    <TableHeader className='bg-zinc-100'>
+                <Table className="rounded-lg border dark:border-gray-800 pb-3">
+                    <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
                         <TableRow>
                             <TableHead >Module</TableHead>
                             {dashboardPermissions.map((action, i) => (

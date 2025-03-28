@@ -18,6 +18,7 @@ import CustomPagination from "@/components/customPagination"
 import LoaderModel from "@/components/loader"
 import CustomTooltip from "@/components/customTooltip"
 import { useQueryState, parseAsInteger } from "nuqs"
+import EmptyList from "@/components/emptyList"
 
 
 
@@ -129,7 +130,7 @@ const ChargesList = () => {
     <section className="flex flex-col gap-y-5 pb-16">
 
       <div className="flex justify-between">
-        <h1 className="text-lg text-gray-800 font-semibold">Charges</h1>
+        <h1 className="text-lg font-semibold">Charges</h1>
         <Button size='sm' onClick={() => { setChargeNameFormVisible(true) }}>
           <Plus /> Add Charge
         </Button>
@@ -138,7 +139,7 @@ const ChargesList = () => {
       <Separator />
 
       <div className="sm:w-48 space-y-1">
-        <p className="text-sm text-gray-700">Search</p>
+        <p className="text-sm text-gray-400">Search</p>
         <Input type="text" onChange={(e) => { onSearch(e.target.value) }} placeholder="name , category" />
       </div>
 
@@ -147,8 +148,8 @@ const ChargesList = () => {
       <div className="flex flex-col min-h-[58vh] gap-y-16">
         {/* child 1 */}
         <div className="flex-1">
-          <Table className="rounded-lg border">
-            <TableHeader className="bg-zinc-100">
+          <Table className="rounded-lg border dark:border-gray-800">
+            <TableHeader className="bg-zinc-100 dark:bg-gray-800">
               <TableRow >
                 <TableHead>Name</TableHead>
                 <TableHead>Charge Category</TableHead>
@@ -174,7 +175,7 @@ const ChargesList = () => {
 
                     {/* EDIT */}
                     <CustomTooltip message="EDIT">
-                      <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                      <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                         await fetchChargeNameDetails(chargeName.id);
                         setChargeNameFormVisible(true)
                       }} />
@@ -182,7 +183,7 @@ const ChargesList = () => {
 
                     {/* DELETE  */}
                     <CustomTooltip message="DELETE">
-                      <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                      <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                         setAlert(true);
                         itemID.current = chargeName.id
                       }} />
@@ -197,7 +198,7 @@ const ChargesList = () => {
 
           {/* On no data */}
 
-          {chargeNames?.data.length! < 1 && <h1 className='text-gray-900 pt-5 sm:mt-1 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
+          <EmptyList length={chargeNames.data.length} />
 
         </div>
 

@@ -12,6 +12,7 @@ import CustomPagination from '@/components/customPagination'
 import { Input } from '@/components/ui/input'
 import { useDebouncedCallback } from 'use-debounce'
 import { Separator } from '@/components/ui/separator'
+import EmptyList from '@/components/emptyList'
 
 const QueueAppointment = () => {
 
@@ -61,10 +62,10 @@ const QueueAppointment = () => {
     }, [page, search])
 
     return (
-        <section className='bg-slate-50'>
+        <section className='bg-slate-50 dark:bg-gray-950'>
 
             <div className='flex flex-col py-3 gap-y-3'>
-                <h1 className='text-xl text-gray-900 font-semibold'>Queue Appointments</h1>
+                <h1 className='text-xl text-gray-900 dark:text-white font-semibold'>Queue Appointments</h1>
                 <Separator />
                 <div className='flex gap-x-2 w-[180px]'>
                     <Input type='text' height='10px' placeholder='search' defaultValue={search!} onChange={(e) => { onSearch(e.target.value) }} />
@@ -75,8 +76,8 @@ const QueueAppointment = () => {
 
             <div className="flex flex-col mb-16 min-h-[75vh]">
                 <div className="flex-1">
-                    <Table className='rounded-lg border my-10'>
-                        <TableHeader className='bg-slate-100'>
+                    <Table className='rounded-lg border my-10 dark:border-gray-800'>
+                        <TableHeader className='bg-slate-100 dark:bg-gray-900'>
                             <TableRow>
                                 <TableHead>Appointment No</TableHead>
                                 <TableHead>Patient Name</TableHead>
@@ -127,7 +128,7 @@ const QueueAppointment = () => {
 
                         </TableBody>
                     </Table>
-                    {appointments.data.length < 1 && <p className='font-bold text-lg text-gray-800'>No data found</p>}
+                    <EmptyList length={appointments.data.length} message='No queue appointments found' />
                 </div>
 
                 <section>

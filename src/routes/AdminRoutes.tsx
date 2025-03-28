@@ -26,6 +26,7 @@ import Pharmacy from "@/admin/pharmacy/pharmacyLayout"
 import Purchase from "@/admin/pharmacy/purchaseMedicine/purchase"
 import ResetPassword from "@/admin/profile/resetpassword"
 import Staffprofile from "@/admin/profile/staffprofile"
+import RadiologyBills from "@/admin/radiology/radiologyBills"
 import ProtectRoutes from "@/guard/protectRoutes"
 import { Route } from "react-router-dom"
 
@@ -95,6 +96,9 @@ const AdminRoutes = () => {
                 <Route path="dutyroster" element={<DutuRoster />}>
                     <Route path="rosterreport" element={<RosterReport />} />
                 </Route>
+
+                {/* radiology bills */}
+                <Route path="radiology" element={<RadiologyBills />}></Route>
 
             </Route>
         </Route>

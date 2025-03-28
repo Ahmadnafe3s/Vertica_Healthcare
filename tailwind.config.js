@@ -49,7 +49,8 @@ export default {
 					'3': 'hsl(var(--chart-3))',
 					'4': 'hsl(var(--chart-4))',
 					'5': 'hsl(var(--chart-5))'
-				}
+				},
+				dark : 'oklch(0.13 0.03 261.7)'
 			},
 			keyframes: {
 				'accordion-down': {

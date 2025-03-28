@@ -20,6 +20,7 @@ import CustomPagination from '@/components/customPagination'
 import OpdBillPDF from './pdf/bill'
 import OpdsPdf from './pdf/opds'
 import usePermission from '@/authz'
+import { Separator } from '@/components/ui/separator'
 
 
 
@@ -138,7 +139,7 @@ const OPDLIST = () => {
 
       {/* top bar */}
 
-      <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between border-b border-gray-200'>
+      <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between'>
         <h1 className='font-semibold tracking-tight'>OPD - out patient list</h1>
         <div className='flex gap-x-2 overflow-x-auto'>
 
@@ -149,9 +150,11 @@ const OPDLIST = () => {
         </div>
       </div>
 
+      <Separator />
+
       {/* search bar */}
 
-      <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between border-b border-gray-200'>
+      <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between'>
 
         <div className='flex gap-x-2'>
           <Input type='text' height='10px' placeholder='opdId , patient , doctor' onChange={(e) => { onSerach(e.target.value) }} defaultValue={search!} />
@@ -164,12 +167,13 @@ const OPDLIST = () => {
         </div>
       </div>
 
+      <Separator />
 
       {/* pagination */}
       <section className="flex flex-col mb-16 gap-y-5 min-h-[75vh]">
         <div className="flex-1 space-y-5">
-          <Table className="border rounded-lg my-10">
-            <TableHeader className='bg-gray-100 '>
+          <Table className="border rounded-lg my-10 dark:border-gray-800">
+            <TableHeader className='bg-gray-100 dark:bg-gray-900'>
               <TableRow>
                 <TableHead>OPD No.</TableHead>
                 <TableHead>Patient Name</TableHead>
@@ -210,7 +214,7 @@ const OPDLIST = () => {
                       <>
                         {hasPermission('view', 'prescription') && (
                           <CustomTooltip message='prescription'>
-                            <Syringe className='cursor-pointer text-gray-600 w-5 h-5'
+                            <Syringe className='cursor-pointer text-gray-600 dark:text-neutral-300 w-5 h-5'
                               onClick={async () => {
                                 await fetchPrescriptionDetails(opd.prescriptions.id)
                                 setModel(prev => ({ ...prev, prescriptionDetails: true }))
@@ -223,7 +227,7 @@ const OPDLIST = () => {
                       <>
                         {hasPermission('create', 'prescription') && (
                           <CustomTooltip message='Add prescription'>
-                            <ClipboardPlus className='cursor-pointer text-gray-600 w-5 h-5'
+                            <ClipboardPlus className='cursor-pointer text-gray-600 dark:text-neutral-300 w-5 h-5'
                               onClick={() => { opdId.current = opd.id; patientId.current = opd.patientId; setModel(prev => ({ ...prev, prescriptionForm: true })) }}
                             />
                           </CustomTooltip>

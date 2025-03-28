@@ -167,7 +167,7 @@ const PrintPharmacyBill = ({ Id, onPending }: OpdBillPDFprops) => {
     return (
         <>
             <CustomTooltip message='Print Bill'>
-                <Printer className='cursor-pointer text-gray-600 w-4 active:scale-95' onClick={handleOpenNewTab} />
+                <Printer className='cursor-pointer text-gray-600 dark:text-gray-300 w-4 active:scale-95' onClick={handleOpenNewTab} />
             </CustomTooltip>
         </>
     );

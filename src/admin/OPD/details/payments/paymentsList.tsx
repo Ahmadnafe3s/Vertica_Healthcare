@@ -21,6 +21,7 @@ import { useQueryState, parseAsInteger } from "nuqs"
 import CustomPagination from "@/components/customPagination"
 import usePermission from "@/authz"
 import { useConfirmation } from "@/hooks/useConfirmation"
+import EmptyList from "@/components/emptyList"
 
 
 
@@ -129,7 +130,7 @@ const PaymentsList = () => {
 
     <section className="flex flex-col gap-y-5 pb-14">
       <div className="flex justify-between">
-        <h1 className="text-lg text-gray-800 font-semibold">Payments</h1>
+        <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Payments</h1>
         {hasPermission('create', 'payments') && (
           <Button size='sm' onClick={() => setIsPaymentFormVisible(true)}>
             <Plus /> Add Payment
@@ -140,7 +141,7 @@ const PaymentsList = () => {
       <Separator />
       {/* search section */}
       <div className="sm:w-48 space-y-1">
-        <p className="text-sm text-gray-700">Search by keyword</p>
+        <p className="text-sm text-gray-700 dark:text-gray-500">Search by keyword</p>
         <Input type="text" onChange={(e) => { onSearch(e.target.value) }} placeholder="transaction id , date" defaultValue={search!} />
       </div>
 
@@ -150,8 +151,8 @@ const PaymentsList = () => {
 
       <div className="flex flex-col mb-16 gap-y-10 min-h-[58vh]">
         <div className="flex-1">
-          <Table className="rounded-lg border">
-            <TableHeader className="bg-zinc-100">
+          <Table className="rounded-lg border dark:border-gray-800">
+            <TableHeader className="bg-zinc-100 dark:bg-gray-900">
               <TableRow>
                 <TableHead>Transaction ID</TableHead>
                 <TableHead>Date</TableHead>
@@ -176,7 +177,7 @@ const PaymentsList = () => {
                     {/* Edit */}
                     {hasPermission('update', 'payments') && (
                       <CustomTooltip message="EDIT">
-                        <Pencil className="w-4 cursor-pointer active:scale-90 text-gray-600" onClick={async () => {
+                        <Pencil className="w-4 cursor-pointer active:scale-90 text-gray-600 dark:text-gray-300" onClick={async () => {
                           fetchPaymetDetails(payment.id)
                         }} />
                       </CustomTooltip>
@@ -186,7 +187,7 @@ const PaymentsList = () => {
                     {/* Delete */}
                     {hasPermission('delete', 'payments') && (
                       <CustomTooltip message="DELETE">
-                        <Trash className="w-4 cursor-pointer active:scale-90 text-gray-600" onClick={() => onDelete(payment.id)} />
+                        <Trash className="w-4 cursor-pointer active:scale-90 text-gray-600 dark:text-gray-300" onClick={() => onDelete(payment.id)} />
                       </CustomTooltip>
                     )}
 
@@ -197,8 +198,8 @@ const PaymentsList = () => {
           </Table>
 
           {/* error on emply list */}
-          {paymensList.data.length < 1 && <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
-
+          <EmptyList length={paymensList.data.length} message="No payments found" />
+          
         </div>
 
         {/* pagination buttons */}

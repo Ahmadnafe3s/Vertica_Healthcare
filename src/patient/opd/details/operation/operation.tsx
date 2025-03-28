@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { useQueryState, parseAsInteger } from 'nuqs';
 import { getOperation_Details, getOperations } from '@/admin/OPD/opdApiHandler';
 import OperationDetailsModel from '@/admin/OPD/details/operation/operationDetails';
+import EmptyList from '@/components/emptyList';
 
 
 
@@ -72,7 +73,7 @@ const PatientOpdOperation = () => {
             <section className="flex flex-col gap-y-5">
 
                 <div className="flex justify-between">
-                    <h1 className="text-lg text-gray-800 font-semibold">Operations</h1>
+                    <h1 className="text-lg font-semibold">Operations</h1>
                 </div>
 
                 <Separator />
@@ -81,8 +82,8 @@ const PatientOpdOperation = () => {
 
                 <div className="flex flex-col min-h-[70vh] mb-20">
                     <div className='flex-1'>
-                        <Table className="rounded-lg border">
-                            <TableHeader className='bg-zinc-100'>
+                        <Table className="rounded-lg border dark:border-gray-800">
+                            <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
                                 <TableRow>
                                     <TableHead>Reference No</TableHead>
                                     <TableHead>Operation Date</TableHead>
@@ -115,7 +116,7 @@ const PatientOpdOperation = () => {
 
                         {/* error on emply list */}
 
-                        {OPERATION_LIST?.data.length! < 1 && <h1 className='text-gray-900 mt-4 sm:mt-5 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
+                        <EmptyList length={OPERATION_LIST?.data.length!} />
                     </div>
 
                     <section>

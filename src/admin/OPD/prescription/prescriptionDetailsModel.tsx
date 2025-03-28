@@ -28,9 +28,9 @@ const PrescriptionDetailsModel = ({ Edit, Delete, prescriptionDetails: details, 
               <Syringe className='w-10 h-10 text-white' />
             </div>
             <div>
-              <h1 className='font-semibold text-lg text-gray-900'>Prescription</h1>
+              <h1 className='font-semibold text-lg'>Prescription</h1>
               <div className="flex items-center space-x-2">
-                <p className="text-gray-600">ID : {details.id}</p>
+                <p className="text-gray-400">ID : {details.id}</p>
                 <CustomTooltip message="EDIT">
                   <Pencil className="cursor-pointer text-yellow-600 w-4 h-4" onClick={Edit} />
                 </CustomTooltip>
@@ -44,20 +44,20 @@ const PrescriptionDetailsModel = ({ Edit, Delete, prescriptionDetails: details, 
           {/*G-1 col-2 */}
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-              <p className='text-gray-700 text-sm'>OPD ID</p>
+            <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md'>
+              <p className='text-gray-700 dark:text-gray-400 text-sm'>OPD ID</p>
               <p className='font-semibold'>{details?.opdId}</p>
             </div>
-            <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-              <p className='text-gray-700 text-sm'>Appointment Date</p>
+            <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md'>
+              <p className='text-gray-700 dark:text-gray-400 text-sm'>Appointment Date</p>
               <p className='font-semibold'>{details?.opd.appointment.appointment_date}</p>
             </div>
-            <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-              <p className='text-gray-700 text-sm'>Patient</p>
+            <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md'>
+              <p className='text-gray-700 dark:text-gray-400 text-sm'>Patient</p>
               <p className='font-semibold'>{details?.opd.appointment.patient.name}</p>
             </div>
-            <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-              <p className='text-gray-700 text-sm'>Cunsultant</p>
+            <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md'>
+              <p className='text-gray-700 dark:text-gray-400 text-sm'>Cunsultant</p>
               <p className='font-semibold'>{details?.opd.appointment.doctor.name}</p>
             </div>
           </div>
@@ -71,16 +71,16 @@ const PrescriptionDetailsModel = ({ Edit, Delete, prescriptionDetails: details, 
           <div className="space-y-2">
             <h1 className="text-xl font-semibold">Header Note</h1>
             {details?.header_note ?
-              (<p className="text-gray-700">{details?.header_note}</p>)
+              (<p className="text-gray-400">{details?.header_note}</p>)
               :
-              (<p className="text-gray-700">Header is not provided</p>)
+              (<p className="text-gray-400">Header is not provided</p>)
             }
           </div>
 
           {/* Findings Table */}
 
-          <Table className="rounded-lg border">
-            <TableHeader className="bg-gray-100">
+          <Table className="rounded-lg border dark:border-gray-800">
+            <TableHeader className="bg-gray-100 dark:bg-gray-900">
               <TableRow>
                 <TableHead>Finding Name</TableHead>
                 <TableHead>Finding Category</TableHead>
@@ -101,8 +101,8 @@ const PrescriptionDetailsModel = ({ Edit, Delete, prescriptionDetails: details, 
 
           {/* Medicines Table */}
 
-          <Table className="rounded-lg border">
-            <TableHeader className="bg-gray-100">
+          <Table className="rounded-lg border dark:border-gray-800">
+            <TableHeader className="bg-gray-100 dark:bg-gray-900">
               <TableRow>
                 <TableHead>Medicine Name</TableHead>
                 <TableHead>Medicine Category</TableHead>

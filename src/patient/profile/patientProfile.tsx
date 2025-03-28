@@ -9,6 +9,7 @@ import { deletePatient, getPatientDetails } from './ApiHandlers';
 import { PatientDetails } from '@/types/patient/patient';
 import CustomTooltip from '@/components/customTooltip';
 import AlertModel from '@/components/alertModel';
+import { Separator } from '@/components/ui/separator';
 
 
 
@@ -61,7 +62,7 @@ const PatientProfile = () => {
                         <img src={profile?.image ? profile?.image : profile?.gender === 'male' ? '/user.png' : '/female_user.png'} alt="staff img" className='object-cover h-full w-full rounded-lg' />
                     </div>
                     <div className='space-y-2'>
-                        <h1 className='text-gray-900 text-2xl font-bold'>{profile?.name}</h1>
+                        <h1 className='text-gray-900 dark:text-gray-100 text-2xl font-bold'>{profile?.name}</h1>
                         {(['admin'].includes(session.user?.role!) || (session.user?.id === +id!)) && <div className='flex gap-x-2'>
                             {/* reset */}
                             <CustomTooltip message='Reset Password'>
@@ -85,36 +86,36 @@ const PatientProfile = () => {
 
                 <div className="col-span-full grid sm:grid-cols-2 lg:grid-cols-4  p-0.5 gap-2">
 
-                    <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                        <p className='text-gray-700'>ID</p>
+                    <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200  dark:border-gray-800 rounded-md'>
+                        <p className='text-gray-700 dark:text-gray-400'>ID</p>
                         <p className='font-semibold'>{profile?.id}</p>
                     </div>
-                    <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                        <p className='text-gray-700'>Role</p>
+                    <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200  dark:border-gray-800 rounded-md'>
+                        <p className='text-gray-700 dark:text-gray-400'>Role</p>
                         <p className='font-semibold'>{profile?.role}</p>
                     </div>
-                    <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                        <p className='text-gray-700'>Age</p>
+                    <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200  dark:border-gray-800 rounded-md'>
+                        <p className='text-gray-700 dark:text-gray-400'>Age</p>
                         <p className='font-semibold'>{profile?.age}</p>
                     </div>
-                    <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                        <p className='text-gray-700'>DOB</p>
+                    <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200  dark:border-gray-800 rounded-md'>
+                        <p className='text-gray-700 dark:text-gray-400'>DOB</p>
                         <p className='font-semibold'>{profile?.dob}</p>
                     </div>
-                    <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                        <p className='text-gray-700'>Gender</p>
+                    <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200  dark:border-gray-800 rounded-md'>
+                        <p className='text-gray-700 dark:text-gray-400'>Gender</p>
                         <p className='font-semibold'>{profile?.gender}</p>
                     </div>
-                    <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                        <p className='text-gray-700'>Email</p>
+                    <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200  dark:border-gray-800 rounded-md'>
+                        <p className='text-gray-700 dark:text-gray-400'>Email</p>
                         <p className='font-semibold'>{profile?.email}</p>
                     </div>
-                    <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                        <p className='text-gray-700'>Alergies</p>
+                    <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200  dark:border-gray-800 rounded-md'>
+                        <p className='text-gray-700 dark:text-gray-400'>Alergies</p>
                         <p className='font-semibold'>{profile?.alergies}</p>
                     </div>
-                    <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                        <p className='text-gray-700'>Joined with us</p>
+                    <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200  dark:border-gray-800 rounded-md'>
+                        <p className='text-gray-700 dark:text-gray-400'>Joined with us</p>
                         <p className='font-semibold'>{profile?.createdAt}</p>
                     </div>
 
@@ -128,55 +129,55 @@ const PatientProfile = () => {
 
             <div className='my-5'>
                 <h1 className='text-lg font-bold'>Profile</h1>  {/*Can be make navigator*/}
-                <div className='h-px w-full bg-gray-200 my-3' />
+
+                <Separator className='my-3' />
 
                 {/* profile data */}
 
-                <ScrollArea className='w-full ring-1 ring-gray-200 p-2 rounded-md'>
-
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 border-b border-gray-200">
-                        <p className='font-semibold text-sm text-gray-900'>Phone</p>
-                        <p className='text-gray-900 text-sm'>{profile?.phone}</p>
+                <ScrollArea className='w-full ring-1 ring-gray-200 dark:ring-gray-800 p-2 rounded-md'>
+                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Phone</p>
+                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{profile?.phone}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 border-b border-gray-200">
-                        <p className='font-semibold text-sm text-gray-900'>Email</p>
-                        <p className='text-gray-900 text-sm'>{profile?.email}</p>
+                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Email</p>
+                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{profile?.email}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 border-b border-gray-200">
-                        <p className='font-semibold text-sm text-gray-900'>Gender</p>
-                        <p className='text-gray-900 text-sm'>{profile?.gender}</p>
+                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Gender</p>
+                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{profile?.gender}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 border-b border-gray-200">
-                        <p className='font-semibold text-sm text-gray-900'>Blood Group</p>
-                        <p className='text-gray-900 text-sm'>{profile?.blood_group}</p>
+                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Blood Group</p>
+                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{profile?.blood_group}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 border-b border-gray-200">
-                        <p className='font-semibold text-sm text-gray-900'>DOB</p>
-                        <p className='text-gray-900 text-sm'>{profile?.dob}</p>
+                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>DOB</p>
+                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{profile?.dob}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 border-b border-gray-200">
-                        <p className='font-semibold text-sm text-gray-900'>Marital Status</p>
-                        <p className='text-gray-900 text-sm'>{profile?.marital_status}</p>
+                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Marital Status</p>
+                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{profile?.marital_status}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 border-b border-gray-200">
-                        <p className='font-semibold text-sm text-gray-900'>Guardian Name</p>
-                        <p className='text-gray-900 text-sm'>{profile?.guardian_name}</p>
+                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Guardian Name</p>
+                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{profile?.guardian_name}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 border-b border-gray-200">
-                        <p className='font-semibold text-sm text-gray-900'>Address</p>
-                        <p className='text-gray-900 text-sm'>{profile?.address}</p>
+                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Address</p>
+                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{profile?.address}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 border-b border-gray-200">
-                        <p className='font-semibold text-sm text-gray-900'>Aadhar</p>
-                        <p className='text-gray-900 text-sm'>{profile?.aadhar}</p>
+                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Aadhar</p>
+                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{profile?.aadhar}</p>
                     </div>
                     <ScrollBar orientation="horizontal" />
                 </ScrollArea>

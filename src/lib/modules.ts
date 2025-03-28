@@ -7,6 +7,7 @@ export const Module = [
     'pharmacy_bill',
     'medicines',
     'purchase_medicine',
+    'radiology_bill',
     'prescription',
     'medication',
     'operation',

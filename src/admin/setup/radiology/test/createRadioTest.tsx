@@ -306,7 +306,7 @@ const CreateRadioTest = ({ editDetails, Submit, isPending, ...props }: AddCharge
 
                         {parametesField.map((field, i) => {
                             return (
-                                <div key={field.id} className="col-span-full grid sm:grid-cols-2 lg:grid-cols-4 gap-2 border rounded-lg p-2">
+                                <div key={field.id} className="col-span-full grid sm:grid-cols-2 lg:grid-cols-4 gap-2 border dark:border-gray-800 rounded-lg p-2">
                                   
                                     {/* parameters */}
                                     <div className="space-y-2 p-2">

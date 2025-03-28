@@ -103,7 +103,7 @@ const OperationCategories = () => {
     <section className="flex flex-col gap-y-5 pb-16">
 
       <div className="flex justify-between">
-        <h1 className="text-lg text-gray-800 font-semibold">Category List</h1>
+        <h1 className="text-lg font-semibold">Category List</h1>
         <Button size='sm' onClick={() => { setAddOpCatFormVisible(true) }}>
           <Plus /> Add Category
         </Button>
@@ -118,8 +118,8 @@ const OperationCategories = () => {
 
       {/* <Separator /> */}
 
-      <Table className="rounded-lg border">
-        <TableHeader className="bg-zinc-100">
+      <Table className="rounded-lg border dark:border-gray-800">
+        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Action</TableHead>
@@ -134,7 +134,7 @@ const OperationCategories = () => {
                 {/* EDIT */}
 
                 <CustomTooltip message="EDIT">
-                  <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                  <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                     await fetchOperationCategoryDetails(category.id)
                     setAddOpCatFormVisible(true)
                   }} />
@@ -143,7 +143,7 @@ const OperationCategories = () => {
                 {/* DELETE  */}
 
                 <CustomTooltip message="DELETE">
-                  <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                  <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                     setAlert(true);
                     itemID.current = category.id
                   }} />

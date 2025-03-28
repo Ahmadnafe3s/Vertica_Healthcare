@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AlertModel from '@/components/alertModel'
 import { createMedicineCategory, deleteMedicineCategory, getMedicineCategories } from '../apiHandler'
 import CustomTooltip from '@/components/customTooltip'
+import EmptyList from '@/components/emptyList'
 
 const MedicineCategories = () => {
 
@@ -83,7 +84,7 @@ const MedicineCategories = () => {
     <section className="flex flex-col gap-y-5 pb-16">
 
       <div className="flex justify-between">
-        <h1 className="text-lg text-gray-800 font-semibold">Medicine Categories</h1>
+        <h1 className="text-lg font-semibold">Medicine Categories</h1>
         <Button size='sm' onClick={() => setModel(rest => ({ ...rest, medicineCategoryForm: true }))}>
           <Plus /> Add Category
         </Button>
@@ -92,8 +93,8 @@ const MedicineCategories = () => {
       <Separator />
 
 
-      <Table className='border rounded-lg'>
-        <TableHeader className='bg-zinc-100'>
+      <Table className='border rounded-lg dark:border-gray-800'>
+        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
           <TableRow>
             <TableHead>ID</TableHead>
             <TableHead>Interval</TableHead>
@@ -108,7 +109,7 @@ const MedicineCategories = () => {
               <TableCell>
                 {/* DELETE  */}
                 <CustomTooltip message='DELETE'>
-                  <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                  <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                     setModel(rest => ({ ...rest, alert: true }))
                     itemID.current = category.id
                   }} />
@@ -120,7 +121,7 @@ const MedicineCategories = () => {
       </Table>
 
 
-      {medicneCategories.length < 1 && <p className="text-gray-600">No data found</p>}
+      <EmptyList length={medicneCategories.length} message='No categories found' />
 
 
       {/* Models */}

@@ -13,6 +13,7 @@ import { useConfirmation } from "@/hooks/useConfirmation"
 import CreateTestParameter from "./createRadioParameter"
 import { createRadiologytParameter, deleteRadiologytParameter, getRadiologytParameterDetails, getRadiologytParameters, updateRadiologytParameter } from "../ApiHandlers"
 import { CreateRadioCategorySchema } from "../category/createRadioCategory"
+import EmptyList from "@/components/emptyList"
 
 
 
@@ -95,7 +96,7 @@ const SetupRadioParameters = () => {
         <section className="flex flex-col gap-y-5 pb-16 pt-5">
 
             <div className="flex justify-between">
-                <h1 className="text-lg text-gray-800 font-semibold">Radiology Parameters</h1>
+                <h1 className="text-lg font-semibold">Radiology Parameters</h1>
                 <Button size='sm' onClick={() => setParameterForm(true)}>
                     <Plus /> Add Parameter
                 </Button>
@@ -105,8 +106,8 @@ const SetupRadioParameters = () => {
             <Separator />
 
 
-            <Table className='border rounded-lg'>
-                <TableHeader className='bg-zinc-100'>
+            <Table className='border rounded-lg dark:border-gray-800'>
+                <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
                     <TableRow>
                         <TableHead>Name</TableHead>
                         <TableHead>Reference Range</TableHead>
@@ -127,7 +128,7 @@ const SetupRadioParameters = () => {
                                 {/* EDIT */}
 
                                 <CustomTooltip message='EDIT'>
-                                    <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                                    <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                                         await fetchParameterDetails(parameter.id)
                                         setParameterForm(true)
                                     }} />
@@ -136,7 +137,7 @@ const SetupRadioParameters = () => {
                                 {/* DELETE  */}
 
                                 <CustomTooltip message='DELETE'>
-                                    <Trash className="w-4 cursor-pointer  text-gray-600" onClick={() => onDelete(parameter.id)} />
+                                    <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={() => onDelete(parameter.id)} />
                                 </CustomTooltip>
 
                             </TableCell>
@@ -146,7 +147,7 @@ const SetupRadioParameters = () => {
             </Table>
 
 
-            {parameters.length === 0 && <div className="flex justify-center text-sm items-center h-40 text-gray-500">No Parameters Found</div>}
+            <EmptyList length={parameters.length} message="No Parameters Found" />
 
 
             {isParameterForm && <CreateTestParameter

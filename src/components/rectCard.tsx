@@ -16,7 +16,7 @@ const RectCard = ({ path, name, amount, visits, children }: rectCardProps) => {
         <div className="mx-auto w-full ">
             <Link to={{
                 pathname: path
-            }} className='flex items-center gap-x-4 p-2.5 bg-white dark:bg-black active:scale-95 rounded-lg ring-1 transition-all ring-gray-200 dark:ring-gray-700 hover:shadow-lg'>
+            }} className='flex items-center gap-x-4 p-2.5 bg-white dark:bg-dark active:scale-95 rounded-lg ring-1 transition-all ring-gray-200 dark:ring-gray-700 hover:shadow-lg dark:shadow-gray-800'>
                 {children}
                 <span className='mr-5 inline-block text-nowrap'>
                     <p>{name}</p>

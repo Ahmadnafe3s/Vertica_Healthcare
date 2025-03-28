@@ -33,20 +33,20 @@ const AppointmentDetailsModel = ({ appointmentDetails, ...props }: AppointmentDe
                                 <CalendarDays className='w-10 h-10 text-white' />
                             </div>
                             <div className=''>
-                                <p className='font-semibold text-lg text-gray-900'>{appointmentDetails?.appointment_date}</p>
+                                <p className='font-semibold text-lg text-gray-900 dark:text-white'>{appointmentDetails?.appointment_date}</p>
                                 <p className='text-sm text-gray-500'>Appointment Date</p>
                             </div>
                         </div>
 
                         <div className="sm:col-span-2 grid grid-cols-2 gap-2">
 
-                            <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                                <p className='text-gray-700 text-sm'>Appointment No.</p>
+                            <div className='space-y-1 dark:border-gray-700 p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
+                                <p className='text-gray-700 dark:text-neutral-300 text-sm'>Appointment No.</p>
                                 <p className='font-semibold'>{appointmentDetails?.id}</p>
                             </div>
 
-                            <div className='space-y-1 bg-white p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                                <p className='text-gray-700 '>Status</p>
+                            <div className='space-y-1 dark:border-gray-700 p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
+                                <p className='text-gray-700  dark:text-neutral-300'>Status</p>
                                 <p className={cn('text-white rounded-md bg-green-600 w-fit px-2 font-semibold',
                                     { 'bg-red-500': appointmentDetails?.status === 'Cancelled', 'bg-yellow-500': appointmentDetails?.status === 'Pending' })}>
                                     {appointmentDetails?.status}
@@ -57,63 +57,63 @@ const AppointmentDetailsModel = ({ appointmentDetails, ...props }: AppointmentDe
 
 
                         <div className="col-span-full grid sm:grid-cols-3 gap-2">
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Shift</p>
+                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Shift</p>
                                 <p className='text-sm'>{appointmentDetails?.shift}</p>
                             </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Priority</p>
+                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Priority</p>
                                 <p className='text-sm'>{appointmentDetails?.appointment_priority}</p>
-                            </div>                          
+                            </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Symptom Type</p>
+                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Symptom Type</p>
                                 <p className='text-sm'>{appointmentDetails?.symptom_type}</p>
                             </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Description</p>
+                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Description</p>
                                 <p className='text-sm'>{appointmentDetails?.symptom_description}</p>
                             </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Reference</p>
+                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Reference</p>
                                 <p className='text-sm'>{appointmentDetails?.reference}</p>
                             </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Previous Issue</p>
+                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Previous Issue</p>
                                 <p className='text-sm'>{appointmentDetails?.previous_medical_issue}</p>
                             </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Payment Mode</p>
+                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Payment Mode</p>
                                 <p className='text-sm'>{appointmentDetails?.payment_mode}</p>
-                            </div>                          
+                            </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Alternative Address</p>
+                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Alternative Address</p>
                                 <p className='text-sm'>{appointmentDetails?.alternative_address}</p>
                             </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Message</p>
+                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Message</p>
                                 <p className='text-sm'>{appointmentDetails?.message}</p>
                             </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Fees</p>
+                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Fees</p>
                                 <p className='text-sm'>{currencyFormat(Number(appointmentDetails?.fees))}</p>
                             </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Discount</p>
+                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Discount</p>
                                 <p className='text-sm'>{appointmentDetails?.discount}%</p>
                             </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Net Amount {currencySymbol()}</p>
+                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Net Amount {currencySymbol()}</p>
                                 <p className='text-sm'>{currencyFormat(appointmentDetails?.net_amount)}</p>
                             </div>
 
@@ -135,43 +135,43 @@ const AppointmentDetailsModel = ({ appointmentDetails, ...props }: AppointmentDe
                                 <PersonStanding className='w-10 h-10 text-white' />
                             </div>
                             <div className=''>
-                                <p className='font-semibold text-lg text-gray-900'>{appointmentDetails?.patient.name}</p>
-                                <p className='text-sm text-gray-500 '>Patient</p>
+                                <p className='font-semibold text-lg text-gray-900 dark:text-white'>{appointmentDetails?.patient.name}</p>
+                                <p className='text-sm text-gray-500'>Patient</p>
                             </div>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Patient ID</p>
+                        <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-800'>
+                            <p className='text-gray-700 dark:text-neutral-400'>Patient ID</p>
                             <p className='text-sm'>{appointmentDetails?.patientId}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Age</p>
+                        <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-800'>
+                            <p className='text-gray-700 dark:text-neutral-400'>Age</p>
                             <p className='text-sm'>{appointmentDetails?.patient.age}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Email</p>
+                        <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-800'>
+                            <p className='text-gray-700 dark:text-neutral-400'>Email</p>
                             <p className='text-sm'>{appointmentDetails?.patient.email}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Phone</p>
+                        <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-800'>
+                            <p className='text-gray-700 dark:text-neutral-400'>Phone</p>
                             <p className='text-sm'>{appointmentDetails?.patient.phone}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Gender</p>
+                        <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-800'>
+                            <p className='text-gray-700 dark:text-neutral-400'>Gender</p>
                             <p className='text-sm'>{appointmentDetails?.patient.gender}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Blood Group</p>
+                        <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-800'>
+                            <p className='text-gray-700 dark:text-neutral-400'>Blood Group</p>
                             <p className='text-sm'>{appointmentDetails?.patient.blood_group}</p>
                         </div>
 
-                        <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                            <p className='text-gray-700'>Address</p>
+                        <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-800'>
+                            <p className='text-gray-700 dark:text-neutral-400'>Address</p>
                             <p className='text-sm'>{appointmentDetails?.patient.address}</p>
                         </div>
 
@@ -191,33 +191,33 @@ const AppointmentDetailsModel = ({ appointmentDetails, ...props }: AppointmentDe
                                     <Cross className='w-10 h-10 text-white' />
                                 </div>
                                 <div className=''>
-                                    <p className='font-semibold text-lg text-gray-900'>{appointmentDetails?.doctor.name}</p>
+                                    <p className='font-semibold text-lg text-gray-900 dark:text-white'>{appointmentDetails?.doctor.name}</p>
                                     <p className='text-sm text-gray-500 '>Doctor</p>
                                 </div>
                             </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Doctor ID</p>
+                            <div className='space-y-1 dark:ring-gray-800 p-2  ring-1 ring-gray-200'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Doctor ID</p>
                                 <p className='text-sm'>{appointmentDetails?.doctorId}</p>
                             </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Department</p>
+                            <div className='space-y-1 dark:ring-gray-800 p-2  ring-1 ring-gray-200'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Department</p>
                                 <p className='text-sm'>{appointmentDetails?.doctor.department}</p>
                             </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>specialist</p>
+                            <div className='space-y-1 dark:ring-gray-800 p-2  ring-1 ring-gray-200'>
+                                <p className='text-gray-700 dark:text-neutral-300'>specialist</p>
                                 <p className='text-sm'>{appointmentDetails?.doctor.specialist}</p>
                             </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Gender</p>
+                            <div className='space-y-1 dark:ring-gray-800 p-2  ring-1 ring-gray-200'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Gender</p>
                                 <p className='text-sm'>{appointmentDetails?.doctor.gender}</p>
                             </div>
 
-                            <div className='space-y-1 bg-white p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700'>Phone</p>
+                            <div className='space-y-1 dark:ring-gray-800 p-2  ring-1 ring-gray-200'>
+                                <p className='text-gray-700 dark:text-neutral-300'>Phone</p>
                                 <p className='text-sm'>{appointmentDetails?.doctor.phone}</p>
                             </div>
 

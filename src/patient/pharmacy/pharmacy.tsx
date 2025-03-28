@@ -12,6 +12,7 @@ import PharmacyBillDetailsModal from '@/admin/pharmacy/pharmacyBill/pharmacyBill
 import { getPharmacyBillDetails, getPharmacyBills } from '@/admin/pharmacy/pharmacyApiHandler'
 import PrintPharmacyBills from '@/admin/pharmacy/pharmacyBill/printBill/printPharmacyBills'
 import PrintPharmacyBill from '@/admin/pharmacy/pharmacyBill/printBill/printPharmacyBill'
+import { Separator } from '@/components/ui/separator'
 
 
 
@@ -77,13 +78,15 @@ const PatientPharmacyBills = () => {
             <div className='my-2 flex flex-col pb-10'>
 
                 {/* top bar */}
-                <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between border-b border-gray-200'>
+                <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between'>
                     <h1 className='font-semibold tracking-tight'>Pharmacy Bill</h1>
                 </div>
 
                 {/* search bar */}
 
-                <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between border-b border-gray-200'>
+                <Separator />
+
+                <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between'>
 
                     <div className='flex gap-x-2'>
                         <Input type='text' height='10px' placeholder='Bill No. , Date' onChange={(e) => { onSearch(e.target.value) }} defaultValue={search!} />
@@ -94,10 +97,12 @@ const PatientPharmacyBills = () => {
                     </div>
                 </div>
 
+                <Separator />
+
                 <div className="flex flex-col pb-16 gap-y-10 min-h-[82vh]">
                     <div className="flex-1 space-y-3">
-                        <Table className='border rounded-lg my-10'>
-                            <TableHeader className='bg-slate-100'>
+                        <Table className='border rounded-lg my-10 dark:border-gray-800'>
+                            <TableHeader className='bg-slate-100 dark:bg-gray-900'>
                                 <TableRow>
                                     <TableHead>Bill No.</TableHead>
                                     <TableHead>Invoice Date</TableHead>

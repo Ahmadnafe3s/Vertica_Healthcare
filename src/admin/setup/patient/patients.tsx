@@ -10,6 +10,7 @@ import { useQueryState, parseAsInteger } from "nuqs"
 import { SetupPatients } from "@/types/setupTypes/patients"
 import { getSetupPatinets } from "./APIHandlers"
 import { Link } from "react-router-dom"
+import EmptyList from "@/components/emptyList"
 
 
 
@@ -57,10 +58,10 @@ const Patients = () => {
 
     return (
 
-        <section className="flex flex-col gap-y-5 pb-16">
+        <section className="flex flex-col gap-y-5 pt-5 pb-16">
 
             <div className="flex justify-between">
-                <h1 className="text-lg text-gray-800 font-semibold">Patients</h1>
+                <h1 className="text-lg font-semibold">Patients</h1>
                 {/* <Button size='sm' onClick={() => { setChargeNameFormVisible(true) }}>
           <Plus /> Add Charge
         </Button> */}
@@ -69,7 +70,7 @@ const Patients = () => {
             <Separator />
 
             <div className="sm:w-48 space-y-1">
-                <p className="text-sm text-gray-700">Search</p>
+                <p className="text-sm text-gray-400">Search</p>
                 <Input type="text" onChange={(e) => { onSearch(e.target.value) }} placeholder="name , category" />
             </div>
 
@@ -78,8 +79,8 @@ const Patients = () => {
             <div className="flex flex-col min-h-[70vh] gap-y-16">
                 {/* child 1 */}
                 <div className="flex-1">
-                    <Table className="rounded-lg border">
-                        <TableHeader className="bg-zinc-100">
+                    <Table className="rounded-lg border dark:border-gray-800">
+                        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
                             <TableRow >
                                 <TableHead>Name</TableHead>
                                 <TableHead>Guardian</TableHead>
@@ -101,7 +102,7 @@ const Patients = () => {
                                     <TableCell>{patient.dob}</TableCell>
                                     <TableCell>{patient.age}</TableCell>
                                     <TableCell>{patient.gender}</TableCell>
-                                    <TableCell>{patient.blood_group} %</TableCell>
+                                    <TableCell>{patient.blood_group}</TableCell>
                                     <TableCell>{patient.phone}</TableCell>
                                     <TableCell>{patient.email}</TableCell>
                                 </TableRow>
@@ -112,7 +113,7 @@ const Patients = () => {
 
                     {/* On no data */}
 
-                    {patients?.data.length! < 1 && <h1 className='text-gray-900 pt-5 sm:mt-1 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
+                    <EmptyList length={patients.data.length} message="No patients found" />
 
                 </div>
 

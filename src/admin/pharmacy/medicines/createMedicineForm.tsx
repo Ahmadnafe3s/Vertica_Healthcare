@@ -80,7 +80,7 @@ const AddMedicineFormModel = ({ Submit, isPending, medicineDetails, ...props }: 
 
     return (
         <Dialog pageTitle='Add Medicine' {...props}>
-            <form className=' bg-white rounded-md' onSubmit={handleSubmit(Submit)}>
+            <form className="rounded-md" onSubmit={handleSubmit(Submit)}>
 
                 {/* mainGrid */}
 
@@ -102,7 +102,7 @@ const AddMedicineFormModel = ({ Submit, isPending, medicineDetails, ...props }: 
                             <Controller control={control} name='categoryId' render={({ field }) => {
                                 return <>
                                     <Label>Medicine Category</Label>
-                                    <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                                    <Select value={field.value ? String(field.value) : ''} onValueChange={(value) => { field.onChange(value) }}>
                                         <SelectTrigger >
                                             <SelectValue placeholder="Select" />
                                         </SelectTrigger>

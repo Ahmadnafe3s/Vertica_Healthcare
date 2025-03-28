@@ -21,6 +21,7 @@ import { useDebouncedCallback } from 'use-debounce'
 import LoaderModel from '@/components/loader'
 import usePermission from '@/authz'
 import { useConfirmation } from '@/hooks/useConfirmation'
+import { Separator } from '@/components/ui/separator'
 
 
 
@@ -148,7 +149,7 @@ const RosterReport = () => {
         <div className='my-2 flex flex-col'>
 
             {/* top bar */}
-            <div className='flex py-3 flex-row gap-y-2 items-center justify-between border-b border-gray-200'>
+            <div className='flex py-3 flex-row gap-y-2 items-center justify-between'>
                 <h1 className='font-semibold tracking-tight'>Duty Roster</h1>
 
                 <div className='flex gap-x-2 overflow-x-auto'>
@@ -162,9 +163,12 @@ const RosterReport = () => {
             </div>
 
 
+            <Separator />
+
+
             {/* search section */}
 
-            <div className='pt-2 pb-5 space-y-2 border-b  border-gray-200'>
+            <div className='pt-2 pb-5 space-y-2'>
 
                 <Label>Search by keyword</Label>
 
@@ -189,15 +193,15 @@ const RosterReport = () => {
 
                 <div className='flex gap-x-6 pt-2'>
 
-                    <Radio text='Credentials' id='id' name='search' className={searchBy === 'credentials' ? 'bg-gray-700' : ''}
+                    <Radio text='Credentials' id='id' name='search' className={searchBy === 'credentials' ? 'bg-gray-600' : ''}
                         onClick={() => { setSearchBy('credentials') }}
                     />
 
-                    <Radio text='Date' id='Date' name='search' className={searchBy === 'date' ? 'bg-gray-700' : ''}
+                    <Radio text='Date' id='Date' name='search' className={searchBy === 'date' ? 'bg-gray-600' : ''}
                         onClick={() => { setSearchBy('date') }}
                     />
 
-                    <Radio text='Period' id='period' name='search' className={searchBy === 'period' ? 'bg-gray-700' : ''}
+                    <Radio text='Period' id='period' name='search' className={searchBy === 'period' ? 'bg-gray-600' : ''}
                         onClick={() => { setSearchBy('period') }}
                     />
 
@@ -205,12 +209,16 @@ const RosterReport = () => {
 
             </div>
 
+
+            <Separator />
+
+
             {/* paginated Table */}
 
             <div className="flex flex-col pb-16 gap-y-10 min-h-[70vh]">
                 <div className="flex-1">
-                    <Table className="rounded-lg border my-10">
-                        <TableHeader className='bg-zinc-100'>
+                    <Table className="rounded-lg border my-10 dark:border-gray-800">
+                        <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
                             <TableRow>
                                 <TableHead>Staff ID</TableHead>
                                 <TableHead>Staff</TableHead>
@@ -250,7 +258,7 @@ const RosterReport = () => {
                                         {/* Edit button */}
                                         {hasPermission('update', 'duty_roster') && (
                                             <CustomTooltip message='EDIT'>
-                                                <Pencil className='text-gray-600 w-4 h-4 cursor-pointer active:scale-95'
+                                                <Pencil className='text-gray-600 dark:text-gray-400 w-4 h-4 cursor-pointer active:scale-95'
                                                     onClick={async () => {
                                                         await fetchRosterDetails(roster.id)
                                                         setRosterFormModel(true)
@@ -263,7 +271,7 @@ const RosterReport = () => {
                                         {/* Delete */}
                                         {hasPermission('delete', 'duty_roster') && (
                                             <CustomTooltip message='DELETE'>
-                                                <Trash className='text-gray-600 w-4 h-4 cursor-pointer active:scale-95'
+                                                <Trash className='text-gray-600 dark:text-gray-400 w-4 h-4 cursor-pointer active:scale-95'
                                                     onClick={() => onDelete(roster.id)}
                                                 />
                                             </CustomTooltip>)}

@@ -12,6 +12,7 @@ import { Payment } from "@/types/opd_section/payment"
 import { useQueryState, parseAsInteger } from "nuqs"
 import CustomPagination from "@/components/customPagination"
 import { getPaymentsList } from "@/admin/OPD/opdApiHandler"
+import EmptyList from "@/components/emptyList"
 
 
 
@@ -59,7 +60,7 @@ const PatientOpdPayments = () => {
 
         <section className="flex flex-col gap-y-5 pb-10">
             <div className="flex justify-between items-center">
-                <h1 className="text-lg text-gray-800 font-semibold">Payments</h1>
+                <h1 className="text-lg font-semibold">Payments</h1>
                 <div className="sm:w-48 space-y-1">
                     <Input type="text" onChange={(e) => { onSearch(e.target.value) }} placeholder="transaction id , date" defaultValue={search!} />
                 </div>
@@ -71,8 +72,8 @@ const PatientOpdPayments = () => {
 
             <div className="flex flex-col mb-16 gap-y-10 min-h-[70vh]">
                 <div className="flex-1">
-                    <Table className="rounded-lg border">
-                        <TableHeader className="bg-zinc-100">
+                    <Table className="rounded-lg border dark:border-gray-800">
+                        <TableHeader className="bg-zinc-100 dark:bg-gray-900">
                             <TableRow>
                                 <TableHead>Transaction ID</TableHead>
                                 <TableHead>Date</TableHead>
@@ -95,7 +96,7 @@ const PatientOpdPayments = () => {
                     </Table>
 
                     {/* error on emply list */}
-                    {payments.data.length < 1 && <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>}
+                    <EmptyList length={payments.data.length} />
 
                 </div>
 

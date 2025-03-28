@@ -10,6 +10,7 @@ import { createChargeCategory, deleteChargeCategory, getChargeCategories, getCha
 import AlertModel from '@/components/alertModel'
 import CustomTooltip from '@/components/customTooltip'
 import LoaderModel from '@/components/loader'
+import EmptyList from '@/components/emptyList'
 
 
 export interface categoryType {
@@ -115,7 +116,7 @@ const CategoryList = () => {
         <section className="flex flex-col pb-16 gap-y-5">
 
             <div className="flex justify-between">
-                <h1 className="text-lg text-gray-800 font-semibold">Charge Category</h1>
+                <h1 className="text-lg  font-semibold">Charge Category</h1>
                 <Button size='sm' onClick={() => { setCategroyFormVisible(true) }}>
                     <Plus /> Add Categories
                 </Button>
@@ -123,8 +124,8 @@ const CategoryList = () => {
 
             <Separator />
 
-            <Table className="rounded-lg border">
-                <TableHeader className='bg-zinc-100'>
+            <Table className="rounded-lg border dark:border-gray-800">
+                <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
                     <TableRow>
                         <TableHead >Name</TableHead>
                         <TableHead >Charge Type</TableHead>
@@ -141,7 +142,7 @@ const CategoryList = () => {
                             <TableCell className='flex space-x-2'>
                                 {/* EDIT */}
                                 <CustomTooltip message='EDIT'>
-                                    <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                                    <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                                         await fetchChargeCategoryDetails(category.id);
                                         setCategroyFormVisible(true)
                                     }} />
@@ -149,7 +150,7 @@ const CategoryList = () => {
 
                                 {/* DELETE  */}
                                 <CustomTooltip message='DELETE'>
-                                    <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                                    <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                                         setAlert(true);
                                         itemID.current = category.id
                                     }} />
@@ -160,6 +161,7 @@ const CategoryList = () => {
                 </TableBody>
             </Table>
 
+            <EmptyList length={chargeCategories.length} />
 
             {/* Models */}
 

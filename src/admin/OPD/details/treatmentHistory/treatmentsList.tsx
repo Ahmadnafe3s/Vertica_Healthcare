@@ -46,20 +46,20 @@ const TreatmentsList = () => {
     <section className="flex flex-col gap-y-5">
 
       <div className="flex justify-between">
-        <h1 className="text-lg text-gray-800 font-semibold">Treatment History</h1>
+        <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Treatment History</h1>
       </div>
 
       <Separator />
 
       <div className="sm:w-48 space-y-1">
-        <p className="text-sm text-gray-700">Search by date</p>
+        <p className="text-sm text-gray-700 dark:text-gray-300">Search by date</p>
         <Input type="date" onChange={(e) => { onSearch(e.target.value) }} />
       </div>
 
       <div className="flex flex-col space-y-5 min-h-[60vh]">
         <div className="flex-1">
-          <Table className="rounded-lg border">
-            <TableHeader className="bg-zinc-100">
+          <Table className="rounded-lg border dark:border-gray-800">
+            <TableHeader className="bg-zinc-100 dark:bg-gray-900">
               <TableRow>
                 <TableHead>OPD ID</TableHead>
                 <TableHead>Appointment Date</TableHead>

@@ -2,10 +2,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { currencyFormat } from '@/lib/utils'
-import { FileText, Plus, Printer, SearchX, Trash } from 'lucide-react'
+import { Plus, SearchX, Trash } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { createPurchase, deletePurchaseMedicine, getPurchaseDetails, getPurchaseList } from '../pharmacyApiHandler'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { currencySymbol } from '@/helpers/currencySymbol'
 import { PurchaseMedicineFormSchema } from '@/formSchemas/purchaseMedicineFormSchema'
 import { z } from 'zod'
@@ -22,6 +22,7 @@ import PrintMedicinePurchase from './printPurchase/printPurchase'
 import PrintMedicinePurchases from './printPurchase/printPurchases'
 import usePermission from '@/authz'
 import { useConfirmation } from '@/hooks/useConfirmation'
+import { Separator } from '@/components/ui/separator'
 
 
 
@@ -35,10 +36,6 @@ const Purchase = () => {
   // query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [search, setSearch] = useQueryState('search')
-
-
-  // credential
-  const itemID = useRef('')
 
   // loading state
   const [loading, setLoading] = useState({ inline: false, model: false })
@@ -127,7 +124,7 @@ const Purchase = () => {
       <div className='my-2 flex flex-col'>
 
         {/* top bar */}
-        <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between border-b border-gray-200'>
+        <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between'>
           <h1 className='font-semibold tracking-tight'>Medicine Purchases</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
@@ -142,9 +139,11 @@ const Purchase = () => {
           </div>
         </div>
 
+        <Separator />
+
         {/* search bar */}
 
-        <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between border-b border-gray-200'>
+        <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between'>
 
           <div className='flex gap-x-2'>
             <Input type='text' height='10px' placeholder='search' onChange={(e) => onSearch(e.target.value)} defaultValue={search!} />
@@ -156,13 +155,16 @@ const Purchase = () => {
           </div>
         </div>
 
+        <Separator />
+
+
 
         {/* Paginated layout */}
 
         <div className="flex flex-col space-y-5 min-h-[75vh] mb-20">
           <div className='flex-1'>
-            <Table className="rounded-lg border my-10">
-              <TableHeader className='bg-zinc-100'>
+            <Table className="rounded-lg border my-10 dark:border-gray-800">
+              <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
                 <TableRow>
                   <TableHead>Purchase No.</TableHead>
                   <TableHead>Medicine Name</TableHead>
@@ -199,13 +201,13 @@ const Purchase = () => {
                     <TableCell>{currencyFormat(purchase.amount)}</TableCell>
                     <TableCell>{purchase.tax}%</TableCell>
                     <TableCell>{purchase.discount}%</TableCell>
-                    <TableCell className='text-gray-700 font-semibold'>{currencyFormat(purchase.total_amount)}</TableCell>
+                    <TableCell>{currencyFormat(purchase.total_amount)}</TableCell>
                     <TableCell className='flex gap-2'>
 
                       {/* Delete */}
                       {hasPermission('delete', 'purchase_medicine') && (
                         <CustomTooltip message='DELETE'>
-                          <Trash className='cursor-pointer text-gray-500 w-4  active:scale-95'
+                          <Trash className='cursor-pointer text-gray-500 dark:text-gray-400 w-4  active:scale-95'
                             onClick={() => onDelete(purchase.id)}
                           />
                         </CustomTooltip>

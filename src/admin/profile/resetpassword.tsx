@@ -41,10 +41,10 @@ const ResetPassword = () => {
 
     return (
         <section className='h-[calc(100vh-56px-1px)] flex items-center justify-center'>
-            <form className='flex-1 sm:flex-none sm:w-[400px] flex flex-col bg-white p-4 ring-1 ring-gray-200 rounded-lg gap-y-3' onSubmit={handleSubmit(onResetPassword)}>
+            <form className='flex-1 sm:flex-none sm:w-[400px] flex flex-col p-4 ring-1 ring-gray-200 dark:ring-gray-700 rounded-lg gap-y-3' onSubmit={handleSubmit(onResetPassword)}>
 
                 <div className='text-center'>
-                    <h1 className='text-lg text-gray-900 font-bold'>Reset Password</h1>
+                    <h1 className='text-lg text-gray-900 dark:text-gray-200 font-bold'>Reset Password</h1>
                     <p className='text-sm text-gray-500'>Enter your password carefully</p>
                 </div>
 

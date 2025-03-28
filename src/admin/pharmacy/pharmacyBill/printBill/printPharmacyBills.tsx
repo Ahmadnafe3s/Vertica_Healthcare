@@ -75,7 +75,7 @@ const PrintPharmacyBills = ({ PharmacyBills }: DocumentsProps) => {
 
     return (
         <CustomTooltip message='Print List'>
-            <Printer className='cursor-pointer text-gray-600 active:scale-95' onClick={handleOpenNewTab} />
+            <Printer className='cursor-pointer text-gray-600 dark:text-gray-300 active:scale-95' onClick={handleOpenNewTab} />
         </CustomTooltip>
     )
 }

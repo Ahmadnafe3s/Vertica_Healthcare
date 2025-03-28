@@ -76,7 +76,7 @@ const AppointmentListPDF = ({ appointments }: { appointments: Appointment['data'
 
     return (
         <CustomTooltip message='Print Appointments'>
-            <Printer className='cursor-pointer text-gray-600 active:scale-95' onClick={handleOpenNewTab} />
+            <Printer className='cursor-pointer text-gray-600 dark:text-neutral-200 active:scale-95' onClick={handleOpenNewTab} />
         </CustomTooltip>
     )
 }

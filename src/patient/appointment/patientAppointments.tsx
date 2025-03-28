@@ -20,6 +20,7 @@ import { authSelector } from '@/features/auth/authSlice'
 import AppointmentPDF from '@/admin/appointment/generatePDF/AppointmnetPDF'
 import CreatePatientAppointment from './createPatientAppointment'
 import AppointmentListPDF from '@/admin/appointment/generatePDF/AppointmnetListPDF'
+import { Separator } from '@/components/ui/separator'
 
 
 
@@ -112,7 +113,7 @@ const PatientAppointments = () => {
             <div className='my-2 flex flex-col'>
 
                 {/* top bar */}
-                <div className='flex flex-row gap-y-2 py-3 justify-between border-b border-gray-200'>
+                <div className='flex flex-row gap-y-2 py-3 justify-between'>
                     <h1 className='font-semibold tracking-tight'>Appointments</h1>
 
                     <div>
@@ -123,9 +124,11 @@ const PatientAppointments = () => {
                     </div>
                 </div>
 
+                <Separator />
+
                 {/* search bar */}
 
-                <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between border-b border-gray-200'>
+                <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between'>
 
                     <div className='flex gap-x-2 sm:w-[300px]'>
                         <Input type='text' height='10px' placeholder='search' defaultValue={search!} onChange={(e) => { onSearch(e.target.value) }} />
@@ -137,10 +140,12 @@ const PatientAppointments = () => {
                     </div>
                 </div>
 
+                <Separator />
+
                 <div className="flex flex-col gap-y-5 min-h-[75vh] mb-16">
                     <div className="flex-1">
-                        <Table className="border rounded-lg my-10">
-                            <TableHeader className='bg-slate-100'>
+                        <Table className="border rounded-lg my-10 dark:border-gray-800">
+                            <TableHeader className='bg-slate-100 dark:bg-gray-900'>
                                 <TableRow>
                                     <TableHead>Appointment No</TableHead>
                                     <TableHead>Appointment Date</TableHead>

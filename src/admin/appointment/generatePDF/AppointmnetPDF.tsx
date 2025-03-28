@@ -187,7 +187,7 @@ const AppointmentPDF = ({ appointmentId, onPending }: OpdBillPDFprops) => {
     return (
         <>
             <CustomTooltip message='Print Appointment'>
-                <Printer className='cursor-pointer text-gray-600 w-4 active:scale-95' onClick={handleOpenNewTab} />
+                <Printer className='cursor-pointer text-gray-600 dark:text-neutral-300 w-4 active:scale-95' onClick={handleOpenNewTab} />
             </CustomTooltip>
         </>
     );

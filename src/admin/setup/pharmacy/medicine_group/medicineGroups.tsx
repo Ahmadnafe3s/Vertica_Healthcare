@@ -10,6 +10,7 @@ import { createMedicineGroup, deleteMedicineGroup, geteMedicineGroups } from '..
 import { medicineGroup } from '@/types/setupTypes/pharmacy'
 import AlertModel from '@/components/alertModel'
 import CustomTooltip from '@/components/customTooltip'
+import EmptyList from '@/components/emptyList'
 
 
 
@@ -83,7 +84,7 @@ const MedicineGroups = () => {
         <section className="flex flex-col gap-y-5 pb-16">
 
             <div className="flex justify-between">
-                <h1 className="text-lg text-gray-800 font-semibold">Groups</h1>
+                <h1 className="text-lgfont-semibold">Groups</h1>
                 <Button size='sm' onClick={() => { setMedGroupFormVisible(true) }}>
                     <Plus /> Add Group
                 </Button>
@@ -98,8 +99,8 @@ const MedicineGroups = () => {
 
             {/* <Separator /> */}
 
-            <Table className='border rounded-lg'>
-                <TableHeader className='bg-zinc-100'>
+            <Table className='border rounded-lg dark:border-gray-800'>
+                <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
                     <TableRow>
                         <TableHead>ID</TableHead>
                         <TableHead>Name</TableHead>
@@ -114,7 +115,7 @@ const MedicineGroups = () => {
                             <TableCell>
                                 {/* DELETE  */}
                                 <CustomTooltip message='DELETE'>
-                                    <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                                    <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                                         setAlert(true);
                                         itemID.current = group.id
                                     }} />
@@ -126,7 +127,7 @@ const MedicineGroups = () => {
             </Table>
 
 
-            {medicineGroups.length < 1 && <p className="text-gray-600">No data found</p>}
+            <EmptyList length={medicineGroups.length} />
 
 
             {/* Form model */}

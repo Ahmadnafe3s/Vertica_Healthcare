@@ -18,7 +18,7 @@ const UserModel = ({ onLogout, onProfile, onDashboard, ...props }: userModelProp
     return (
         <>
             <div {...props} className='fixed top-0 left-0 h-screen w-full transition-all z-[120] bg-[#0000009c]'></div>
-            <div className="bg-white w-[300px] p-2.5 z-[150] flex flex-col ring-1 shadow rounded-xl fixed top-16 right-2 sm:right-5 ring-gray-200">
+            <div className="bg-white dark:bg-dark w-[300px] p-2.5 z-[150] flex flex-col ring-1 shadow rounded-xl fixed top-16 right-2 sm:right-5 ring-gray-200 dark:ring-gray-700">
                 <div className="flex items-center gap-x-3 my-2">
                     <img src="/user.png" alt="" className="w-12 border-2 border-gray-300 rounded-full" />
                     <div className="text-sm tracking-tight leading-tight">
@@ -26,19 +26,19 @@ const UserModel = ({ onLogout, onProfile, onDashboard, ...props }: userModelProp
                         <p>{session.user?.email}</p>
                     </div>
                 </div>
-                <div className="h-px bg-gray-200"></div>
-                <div className="my-2 text-sm text-gray-800 cursor-pointer flex flex-col gap-y-2">
+                <div className="h-px bg-gray-200 dark:bg-gray-700"></div>
+                <div className="my-2 text-sm  cursor-pointer flex flex-col gap-y-2">
                     {/* Account Button */}
-                    <div className="hover:bg-slate-100 p-2 rounded-lg" onClick={onProfile}>
-                        <p className='text-sm text-slate-800 flex items-center'><Settings className='w-5 mr-1' /> Account</p>
+                    <div className="hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-lg" onClick={onProfile}>
+                        <p className='text-sm text-slate-800 dark:text-white flex items-center'><Settings className='w-5 mr-1' /> Account</p>
                     </div>
                     {/* Separator */}
-                    <div className='h-px bg-gray-200 w-full' />
-                    <div className="hover:bg-slate-100 p-2 rounded-lg" onClick={onDashboard}>
-                        <p className='text-sm text-slate-800 flex items-center'><Airplay className='w-5 mr-1' /> Dashboard</p>
+                    <div className='h-px bg-gray-200 dark:bg-gray-700 w-full' />
+                    <div className="hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-lg" onClick={onDashboard}>
+                        <p className='text-sm text-slate-800  dark:text-white flex items-center'><Airplay className='w-5 mr-1' /> Dashboard</p>
                     </div>
                     {/* Separator */}
-                    <div className='h-px bg-gray-200 w-full' />
+                    <div className='h-px bg-gray-200 dark:bg-gray-700 w-full' />
                     <Button size={'sm'} variant={'destructive'} onClick={onLogout}>logout</Button>
                 </div>
             </div>

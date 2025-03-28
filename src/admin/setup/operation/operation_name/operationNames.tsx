@@ -106,7 +106,7 @@ const OperationNames = () => {
         <section className="flex flex-col gap-y-5 pb-16">
 
             <div className="flex justify-between">
-                <h1 className="text-lg text-gray-800 font-semibold">Operations List</h1>
+                <h1 className="text-lg font-semibold">Operations List</h1>
                 <Button size='sm' onClick={() => { setAddOperNameFormVisible(true) }}>
                     <Plus /> Add Operation
                 </Button>
@@ -124,8 +124,8 @@ const OperationNames = () => {
             <div className="flex flex-col min-h-[70vh] gap-y-16">
                 {/* child 1 */}
                 <div className="flex-1">
-                    <Table className="rounded-lg border">
-                        <TableHeader className='bg-zinc-100'>
+                    <Table className="rounded-lg border dark:border-gray-800">
+                        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
                             <TableRow>
                                 <TableHead>ID</TableHead>
                                 <TableHead>Name</TableHead>
@@ -144,7 +144,7 @@ const OperationNames = () => {
                                         {/* EDIT */}
 
                                         <CustomTooltip message='EDIT'>
-                                            <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                                            <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                                                 await fetchOperationNameDetails(name.id)
                                                 setAddOperNameFormVisible(true);
                                             }} />
@@ -153,7 +153,7 @@ const OperationNames = () => {
                                         {/* DELETE  */}
 
                                         <CustomTooltip message='DELETE'>
-                                            <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                                            <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                                                 setAlert(true);
                                                 itemID.current = name.id
                                             }} />

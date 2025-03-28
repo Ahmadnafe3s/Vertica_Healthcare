@@ -22,6 +22,8 @@ import PrintPharmacyBill from './printBill/printPharmacyBill'
 import PrintPharmacyBills from './printBill/printPharmacyBills'
 import usePermission from '@/authz'
 import { useConfirmation } from '@/hooks/useConfirmation'
+import { Separator } from '@/components/ui/separator'
+import EmptyList from '@/components/emptyList'
 
 
 
@@ -124,7 +126,7 @@ const Bill = () => {
             <div className='my-2 flex flex-col'>
 
                 {/* top bar */}
-                <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between border-b border-gray-200'>
+                <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between'>
                     <h1 className='font-semibold tracking-tight'>Pharmacy Bill</h1>
                     <div className='flex gap-x-2 overflow-x-auto'>
 
@@ -149,9 +151,11 @@ const Bill = () => {
                     </div>
                 </div>
 
+                <Separator />
+
                 {/* search bar */}
 
-                <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between border-b border-gray-200'>
+                <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between'>
 
                     <div className='flex gap-x-2'>
                         <Input type='text' height='10px' placeholder='Bill No. , Date , Patient' onChange={(e) => { onSearch(e.target.value) }} defaultValue={search!} />
@@ -162,10 +166,13 @@ const Bill = () => {
                     </div>
                 </div>
 
+                <Separator />
+
+
                 <div className="flex flex-col pb-16 gap-y-10 min-h-[80vh]">
                     <div className="flex-1 space-y-3">
-                        <Table className='border rounded-lg my-10'>
-                            <TableHeader className='bg-slate-100'>
+                        <Table className='border rounded-lg my-10 dark:border-gray-800'>
+                            <TableHeader className='bg-slate-100 dark:bg-gray-900'>
                                 <TableRow>
                                     <TableHead>Bill No.</TableHead>
                                     <TableHead>Invoice Date</TableHead>
@@ -199,7 +206,7 @@ const Bill = () => {
                                             {/* DELETE  */}
                                             {hasPermission('delete', 'pharmacy_bill') && (
                                                 <CustomTooltip message='DELETE'>
-                                                    <Trash className="w-4 cursor-pointer  text-gray-600" onClick={() => onDelete(bill.id)} />
+                                                    <Trash className="w-4 cursor-pointer dark:text-gray-300 text-gray-600" onClick={() => onDelete(bill.id)} />
                                                 </CustomTooltip>
                                             )}
 
@@ -211,7 +218,8 @@ const Bill = () => {
                                 ))}
                             </TableBody>
                         </Table>
-                        {pharmBills.data.length < 1 && <p className='font-medium text-lg text-gray-600'>No data found</p>}
+                        
+                        <EmptyList length={pharmBills.data.length} message='No bills found' />
                     </div>
 
                     {/* pagination buttons */}

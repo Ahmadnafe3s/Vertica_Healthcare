@@ -100,7 +100,7 @@ const FindingNames = () => {
     <section className="flex flex-col pb-16 gap-y-5">
 
       <div className="flex justify-between">
-        <h1 className="text-lg text-gray-800 font-semibold">Findigs</h1>
+        <h1 className="text-lg font-semibold">Findigs</h1>
         <Button size='sm' onClick={() => { setFindingNameFormVisible(true) }}>
           <Plus /> Add Finding
         </Button>
@@ -108,8 +108,8 @@ const FindingNames = () => {
 
       <Separator />
 
-      <Table className="border rounded-lg">
-        <TableHeader className="bg-zinc-100">
+      <Table className="border rounded-lg dark:border-gray-800">
+      <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
           <TableRow>
             <TableHead>Finding</TableHead>
             <TableHead>Category</TableHead>
@@ -129,7 +129,7 @@ const FindingNames = () => {
                 {/* EDIT */}
 
                 <CustomTooltip message="EDIT">
-                  <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                  <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                     await fetchFindingNameDetails(name.id)
                     setFindingNameFormVisible(true);
                   }} />
@@ -138,7 +138,7 @@ const FindingNames = () => {
 
                 {/* DELETE  */}
                 <CustomTooltip message="DELETE">
-                  <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                  <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                     setAlert(true);
                     itemID.current = name.id
                   }} />

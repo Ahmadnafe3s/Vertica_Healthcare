@@ -23,6 +23,7 @@ import AppointmentPDF from './generatePDF/AppointmnetPDF'
 import AppointmentListPDF from './generatePDF/AppointmnetListPDF'
 import usePermission from '@/authz'
 import { useConfirmation } from '@/hooks/useConfirmation'
+import EmptyList from '@/components/emptyList'
 
 
 
@@ -123,7 +124,7 @@ const AdminAppointment = () => {
             <div className='my-2 flex flex-col'>
 
                 {/* top bar */}
-                <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between border-b border-gray-200'>
+                <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between border-b border-gray-200 dark:border-gray-800'>
                     <h1 className='font-semibold tracking-tight'>Appointments</h1>
                     <div className='flex gap-x-2 overflow-x-auto'>
 
@@ -153,7 +154,7 @@ const AdminAppointment = () => {
 
                 {/* search bar */}
 
-                <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between border-b border-gray-200'>
+                <div className='flex py-3 flex-col md:flex-row gap-y-4 md:items-center md:justify-between border-b border-gray-200 dark:border-gray-800'>
 
                     <div className='flex gap-x-2'>
                         <Input type='text' height='10px' placeholder='search' defaultValue={search!} onChange={(e) => { onSearch(e.target.value) }} />
@@ -167,8 +168,8 @@ const AdminAppointment = () => {
 
                 <div className="flex flex-col gap-y-5 min-h-[75vh] mb-16">
                     <div className="flex-1">
-                        <Table className="border rounded-lg my-10">
-                            <TableHeader className='bg-slate-100'>
+                        <Table className="border rounded-lg my-10 dark:border-gray-800">
+                            <TableHeader className='bg-slate-100 dark:bg-gray-900'>
                                 <TableRow>
                                     <TableHead>Appointment No</TableHead>
                                     <TableHead>Patient Name</TableHead>
@@ -213,7 +214,7 @@ const AdminAppointment = () => {
                                                 {/* DELETE  */}
                                                 {hasPermission('delete', 'appointment') && (
                                                     <CustomTooltip message='DELETE'>
-                                                        <Trash className="w-4 cursor-pointer  text-gray-600" onClick={() => onDelete(appointment.id)} />
+                                                        <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-neutral-300" onClick={() => onDelete(appointment.id)} />
                                                     </CustomTooltip>
                                                 )}
 
@@ -230,7 +231,7 @@ const AdminAppointment = () => {
                         </Table>
 
                         {/* if no data will be recive */}
-                        {Appointments.data.length < 1 && <p className='font-bold text-lg text-gray-800'>No data found</p>}
+                        <EmptyList length={Appointments.data.length} message='No data found' />
                     </div>
 
                     {/* Pagination */}

@@ -107,7 +107,7 @@ const ChargeUnitList = () => {
     <section className="flex flex-col pb-16 gap-y-5">
 
       <div className="flex justify-between">
-        <h1 className="text-lg text-gray-800 font-semibold">Unit List</h1>
+        <h1 className="text-lg font-semibold">Unit List</h1>
         <Button size='sm' onClick={() => { setAddUnitFormVisible(true) }}>
           <Plus /> Add Unit
         </Button>
@@ -115,8 +115,8 @@ const ChargeUnitList = () => {
 
       <Separator />
 
-      <Table className="rounded-lg border">
-        <TableHeader className='bg-zinc-100'>
+      <Table className="rounded-lg border dark:border-gray-800">
+        <TableHeader className="bg-zinc-100 dark:bg-gray-800">
           <TableRow>
             <TableHead className=''>Unit Type</TableHead>
             <TableHead>Action</TableHead>
@@ -129,14 +129,14 @@ const ChargeUnitList = () => {
               <TableCell className='flex space-x-2'>
                 {/* EDIT  */}
                 <CustomTooltip message='EDIT'>
-                  <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                  <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                     fetchUnitdetails(unit.id)
                   }} />
                 </CustomTooltip>
 
                 {/* DELETE  */}
                 <CustomTooltip message='DELETE'>
-                  <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
+                  <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
                     setAlert(true);
                     itemID.current = unit.id
                   }} />

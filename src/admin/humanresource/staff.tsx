@@ -4,13 +4,15 @@ import { Label } from '@/components/ui/label'
 import { Plus, SearchX } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { Link } from 'react-router-dom'
+import { data, Link } from 'react-router-dom'
 import { getStaffs } from './HRApiHandler'
 import { useDebouncedCallback } from 'use-debounce'
 import { useQueryState, parseAsInteger } from 'nuqs'
 import { staffs } from '@/types/staff/staff'
 import CustomPagination from '@/components/customPagination'
 import usePermission from '@/authz'
+import EmptyList from '@/components/emptyList'
+import { Separator } from '@/components/ui/separator'
 
 
 
@@ -57,7 +59,7 @@ const Staff = () => {
       <div className='my-2 flex flex-col'>
 
         {/* top bar */}
-        <div className='flex py-3 justify-between gap-y-2 md:items-center md:justify-between border-b border-gray-200'>
+        <div className='flex py-3 justify-between gap-y-2 md:items-center md:justify-between'>
           <h1 className='font-semibold tracking-tight'>Staff List</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
@@ -73,9 +75,13 @@ const Staff = () => {
           </div>
         </div>
 
+
+        <Separator />
+
+
         {/* search section */}
 
-        <div className='pt-2 pb-5 space-y-2 border-b  border-gray-200'>
+        <div className='pt-2 pb-5 space-y-2'>
 
           <Label>Search by keyword</Label>
 
@@ -84,6 +90,8 @@ const Staff = () => {
           </div>
 
         </div>
+
+        <Separator />
 
         {/* pagination layout */}
         <div className="flex flex-col pb-16 min-h-[77vh]">
@@ -95,7 +103,7 @@ const Staff = () => {
                 <div className="mx-auto w-full h-28" key={i}>
                   <Link to={{
                     pathname: `/admin/profile/staff/${staff.id}`
-                  }} className='flex items-center gap-x-3 p-2.5 active:scale-95 rounded-lg ring-1 transition-all ring-gray-200 hover:shadow-lg'>
+                  }} className='flex items-center gap-x-3 p-2.5 active:scale-95 rounded-lg ring-1 transition-all ring-gray-200 dark:ring-gray-700 hover:shadow-lg dark:hover:shadow-gray-800 '>
 
                     <div className='w-24 h-24'>
                       <img src={staff.image ? staff.image : staff.gender === 'male' ? '/user.png' : '/female_user.png'} alt="staff img" className='object-cover h-full w-full rounded-lg' />
@@ -105,14 +113,16 @@ const Staff = () => {
                       <p className='font-semibold'>{staff.name}</p>
                       <p className='text-sm'>{staff.id}</p>
                       <p className='text-sm'>{staff.phone}</p>
-                      <p className='bg-gray-200 w-fit rounded-sm px-1 text-sm'>{staff.role.name}</p>
+                      <p className='bg-gray-200 dark:bg-gray-700 w-fit rounded-sm px-1 text-sm'>{staff.role.name}</p>
                     </span>
 
                   </Link>
                 </div>
               ))}
             </div>
-            {staffList?.data.length! < 1 && <h1 className='text-gray-900 font-semibold text-lg flex items-center gap-1'>Not found <SearchX className='h-5 w-5' /></h1>}
+
+            <EmptyList length={staffList.data.length} message='No staffs found' />
+
           </div>
 
           {/* Pagination */}

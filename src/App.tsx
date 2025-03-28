@@ -35,7 +35,7 @@ function App() {
 
 
   return (
-    <div className="dark:bg-gray-950 dark:text-white"> 
+    <div className="dark:bg-dark dark:text-white"> 
       <Router>
         <Toaster toastOptions={{ duration: 2000 }} />
         <Navbar />
