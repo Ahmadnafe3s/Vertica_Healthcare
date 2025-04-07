@@ -1,6 +1,6 @@
 import AxiosClient from "@/api/apiClient"
 import { z } from "zod"
-import { RadiologyTestNameDetailsType, RadioParametersType } from "@/types/setupTypes/radiology"
+import { RadiologyTestNameDetailsType, RadioParametersType, RadioTestNameParameter } from "@/types/setupTypes/radiology"
 import { CreateRadioCategorySchema } from "./category/createRadioCategory"
 import { RadioUnitSchema } from "./units/createRadioUnit"
 import { TestNameFormSchema } from "@/formSchemas/setupSectionSchemas/CreateTestNameSchema"
@@ -168,6 +168,18 @@ export const updateRadiologyTest = async (id: number, formData: z.infer<typeof T
 export const deleteRadiologyTest = async (id: number) => {
     try {
         const res = await AxiosClient.delete(`/api/setupRadiology/testName/${id}`)
+        return res.data
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message)
+    }
+}
+
+
+// Test Name Parameters
+
+export const getRadioTestNameParameters = async (testNameId: number):Promise<RadioTestNameParameter> => {
+    try {
+        const res = await AxiosClient.get(`/api/setupRadiology/testName/parameters/${testNameId}`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

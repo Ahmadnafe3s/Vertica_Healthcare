@@ -1,5 +1,4 @@
 import { fetchPatients } from "@/admin/appointment/appointmentAPIhandler"
-import { getMedicineCategories } from "@/admin/setup/pharmacy/apiHandler"
 import CustomTooltip from "@/components/customTooltip"
 import Dialog from "@/components/Dialog"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -9,12 +8,11 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { currencySymbol } from "@/helpers/currencySymbol"
-import { medicineCategory } from "@/types/setupTypes/pharmacy"
 import { Patients } from "@/types/type"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader, Plus, X } from "lucide-react"
 import { HTMLAttributes, useEffect, useState } from "react"
-import { Controller, useFieldArray, useForm } from "react-hook-form"
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import toast from "react-hot-toast"
 import { Link } from "react-router-dom"
 import { z } from "zod"
@@ -24,25 +22,28 @@ import { getStaffs } from "@/admin/humanresource/HRApiHandler"
 import { staffs } from "@/types/staff/staff"
 import { Separator } from "@/components/ui/separator"
 import { createRadiologyBillSchema, RadiologyBillDefaultValues } from "@/formSchemas/createRadiologyBill"
-import { RadiologyTestNameDetailsType, RadiologyTestNameType } from "@/types/setupTypes/radiology"
+import { RadiologyTestNameType } from "@/types/setupTypes/radiology"
 import { getRadiologyTestDetails, getRadiologyTests } from "../setup/radiology/ApiHandlers"
+import { PaymentOptions } from "@/helpers/formSelectOptions"
+import { RadiologyBillDeatils } from "@/types/radiology/radiology"
 
 
 
 interface CreatePharmacyBillProps extends HTMLAttributes<HTMLDivElement> {
   Submit: (formData: any) => void
-  isPending: boolean
+  isPending: boolean,
+  editDetails: RadiologyBillDeatils
 }
 
 
 
 
-const CreateRadiologyBill = ({ Submit, isPending, ...props }: CreatePharmacyBillProps) => {
+const CreateRadiologyBill = ({ Submit, isPending, editDetails, ...props }: CreatePharmacyBillProps) => {
 
   // form hook
   const { control, register, reset, setValue, watch, handleSubmit, formState: { errors } } = useForm<z.infer<typeof createRadiologyBillSchema>>({
     resolver: zodResolver(createRadiologyBillSchema),
-    defaultValues: RadiologyBillDefaultValues
+    defaultValues: editDetails ? { ...editDetails, tests: editDetails.RadiologyBillItems } : RadiologyBillDefaultValues
   })
 
 
@@ -51,15 +52,12 @@ const CreateRadiologyBill = ({ Submit, isPending, ...props }: CreatePharmacyBill
     control
   })
 
-
-  //will watch all fields
-  // const items = useWatch({ name: 'items', control })
+  const watchTest = useWatch({ name: 'tests', control })
 
 
   // API states
   const [patients, setPatients] = useState<Patients[]>([])
   const [doctors, setDoctors] = useState<staffs>({ data: [], total_pages: 0 })
-  const [medCategories, setMedCategories] = useState<medicineCategory[]>([])
   const [tests, setTests] = useState<RadiologyTestNameType>({ data: [], total_pages: 0 })
 
 
@@ -75,6 +73,7 @@ const CreateRadiologyBill = ({ Submit, isPending, ...props }: CreatePharmacyBill
 
 
 
+  // fetching and binding tests
   const fetchRadiologyTests = async () => {
     try {
       const data = await getRadiologyTests({ page: 1, limit: 0 })
@@ -85,59 +84,21 @@ const CreateRadiologyBill = ({ Submit, isPending, ...props }: CreatePharmacyBill
   }
 
 
-  // fetching and binding medicines
-
-
-  // working from here
-
-
+  // fetching and binding test details
   const handleTestNameChange = async (testNameId: number, i: number) => {
     try {
       const data = await getRadiologyTestDetails(testNameId)
       setValue(`tests.${i}.reportDays`, data.reportDays)
-      const date = new Date(data.reportDate).toISOString().split('T')[0]
+      const currentDate = new Date()
+      currentDate.setDate(currentDate.getDate() + data.reportDays)
+      const date = currentDate.toISOString().split('T')[0]
       setValue(`tests.${i}.reportDate`, date)
+      setValue(`tests.${i}.tax`, data.tax)
+      setValue(`tests.${i}.amount`, data.amount)
     } catch ({ message }: any) {
       toast.error(message)
     }
   }
-
-
-  //fetching and binding batches
-  // const handleMedicineChange = async (i: number, medicineId: number) => {
-  //   try {
-  //     const data = await getMedicinesBatches(medicineId)
-  //     setBatches(prev => ({ ...prev, [i]: data }))
-  //   } catch ({ message }: any) {
-  //     toast.error(message)
-  //   }
-  // }
-
-
-  // const handleBatchChange = async (i: number, batchId: number) => {
-  //   try {
-  //     const data = await getMedicinesBatchDetails(batchId)
-  //     setValue(`items.${i}.salePrice`, Number(data.purchaseMedicine.sale_price))
-  //     setValue(`items.${i}.tax`, Number(data.purchaseMedicine.tax))
-  //     setMedStocks(prev => ({ ...prev, [i]: data.quantity }))
-  //   } catch ({ message }: any) {
-  //     toast.error(message)
-  //   }
-  // }
-
-
-  // for calculating amount
-  // const onQuantityChange = (i: number, qty: number) => {
-
-  //   const Total = (qty * watch(`items.${i}.salePrice`))
-
-  //   const Tax = watch(`items.${i}.tax`)
-
-  //   //for specific fields
-  //   const amount = calculateAmount(Total, Tax, 0).net_amount
-  //   setValue(`items.${i}.amount`, amount)
-
-  // }
 
 
   // fetching doctors
@@ -154,17 +115,19 @@ const CreateRadiologyBill = ({ Submit, isPending, ...props }: CreatePharmacyBill
 
   // Appends fields
   const appendMedicine = () => {
-    // addMedicine()
+    AddTest(RadiologyBillDefaultValues.tests[0])
   }
 
 
   // calculating price from all fields
-  // useEffect(() => {
-  //   const discount = watch('discount')
-  //   const comulativeTotal = items?.reduce((sum, item) => (sum + item?.amount), 0)
-  //   const net_amount = calculateAmount(comulativeTotal, 0, discount).net_amount // tax is zero here coz we have already calculated tax
-  //   setValue(`net_amount`, net_amount)
-  // }, [items, watch('discount')])
+  useEffect(() => {
+    const discount = watch('discount')
+    const additionalTax = watch('additionalTax')
+    const comulativeTotal = watchTest?.reduce((sum, item) => (sum + item?.amount), 0)
+    const net_amount = calculateAmount(comulativeTotal, additionalTax, discount).net_amount
+    setValue(`net_amount`, net_amount)
+  }, [watchTest, watch('discount'), watch('additionalTax')])
+
 
 
   useEffect(() => {
@@ -175,7 +138,7 @@ const CreateRadiologyBill = ({ Submit, isPending, ...props }: CreatePharmacyBill
 
 
   return (
-    <Dialog pageTitle='Pharmacy Bill' {...props}>
+    <Dialog pageTitle='Radiology Bill' {...props}>
       <form onSubmit={handleSubmit(Submit)}>
         <div className='flex  gap-2 px-2.5'>
           {/* Patient Section */}
@@ -227,7 +190,7 @@ const CreateRadiologyBill = ({ Submit, isPending, ...props }: CreatePharmacyBill
                   <Controller control={control} name={`tests.${index}.testNameId`} render={({ field }) => {
                     return <>
                       <Label>Test Name</Label>
-                      <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { /*handleTestNameChange(index, Number(value));*/ field.onChange(Number(value)) }}>
+                      <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { handleTestNameChange(Number(value), index); field.onChange(Number(value)) }}>
                         <SelectTrigger >
                           <SelectValue placeholder="Select" />
                         </SelectTrigger>
@@ -306,13 +269,19 @@ const CreateRadiologyBill = ({ Submit, isPending, ...props }: CreatePharmacyBill
             </div>}
 
 
-
             {/* Date */}
 
             <div className="w-full flex flex-col gap-y-2">
               <Label>Billing Date</Label>
               <Input type="date" {...register('date')} />
               {errors.date && <p className='text-sm text-red-500'>{errors.date.message}</p>}
+            </div>
+
+            {/* previous report */}
+            <div className="w-full flex flex-col gap-y-2">
+              <Label>Previous Report Value</Label>
+              <Input type="text" {...register('previousReportValue')} />
+              {errors.previousReportValue && <p className='text-sm text-red-500'>{errors.previousReportValue.message}</p>}
             </div>
 
 
@@ -355,16 +324,47 @@ const CreateRadiologyBill = ({ Submit, isPending, ...props }: CreatePharmacyBill
 
             <div className="w-full flex flex-col gap-y-2">
               <Label>Discount%</Label>
-              <Input type='number' {...register('discount', { valueAsNumber: true })} defaultValue={0} />
+              <Input type='number' {...register('discount')} defaultValue={0} />
               {errors.discount && <p className='text-sm text-red-500'>{errors.discount.message}</p>}
+            </div>
+
+            {/* Tax */}
+
+            <div className="w-full flex flex-col gap-y-2">
+              <Label>Tax%</Label>
+              <Input type='number' {...register('additionalTax')} defaultValue={0} />
+              {errors.additionalTax && <p className='text-sm text-red-500'>{errors.additionalTax.message}</p>}
             </div>
 
             {/* Net Amount */}
             <div className="w-full flex flex-col gap-y-2">
               <Label>Net Amount {currencySymbol()}</Label>
-              <Input type='number' {...register('net_amount', { valueAsNumber: true })} defaultValue={0} />
+              <Input type='number' {...register('net_amount')} defaultValue={0} disabled />
               {errors.net_amount && <p className='text-sm text-red-500'>{errors.net_amount.message}</p>}
             </div>
+
+
+            {/* Payment Mode */}
+
+            <div className="w-full flex flex-col gap-y-2">
+              <Controller control={control} name='payment_mode' render={({ field }) => {
+                return <>
+                  <Label>Payment mode</Label>
+                  <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                    <SelectTrigger >
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+
+                    <SelectContent className='z-[200]'>
+                      {PaymentOptions.map((payment, i) => {
+                        return <SelectItem key={i} value={payment.value}>{payment.label}</SelectItem>
+                      })}
+                    </SelectContent>
+                  </Select>
+                </>
+              }} />
+              {errors.payment_mode && <p className='text-sm text-red-500'>{errors.payment_mode.message}</p>}
+            </div >
 
 
             {/* Note */}

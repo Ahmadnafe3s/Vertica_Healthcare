@@ -6,7 +6,7 @@ import toast from "react-hot-toast"
 import { createPermission, deletePermission, getPermissions, getRoles } from "../APIHandler"
 import { ROLE } from "../role/role"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { dashboardPermissions, Module } from "@/lib/modules"
+import { dashboardPermissions, Module, setupPermissions } from "@/lib/modules"
 
 
 
@@ -147,6 +147,39 @@ const Permission = () => {
                                 </TableCell>
                             })}
                         </TableRow>
+                    </TableBody>
+                </Table>
+            </div>
+
+
+
+            {/* Setup permissions */}
+
+            <div className="mt-10">
+
+                <h1 className="font-medium mb-4">Setup Permission</h1>
+
+                <Table className="rounded-lg border dark:border-gray-800 pb-3">
+                    <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
+                        <TableRow>
+                            <TableHead >Module</TableHead>
+                            <TableHead >View</TableHead>
+                            <TableHead >Create</TableHead>
+                            <TableHead >Update</TableHead>
+                            <TableHead >Delete</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {setupPermissions.map((mod) => {
+                            return <TableRow key={mod}>
+                                <TableCell>{mod}</TableCell>
+                                {['view', 'create', 'update', 'delete'].map((action) => {
+                                    const perm = `${action}:${mod}`;
+                                    const permID = permissions.get(perm)
+                                    return <TableCell key={action}><Checkbox checked={permissions.has(perm)} onCheckedChange={(value) => { handleCheckBox(Boolean(value), perm, permID?.id) }} /></TableCell>
+                                })}
+                            </TableRow>
+                        })}
                     </TableBody>
                 </Table>
             </div>

@@ -38,16 +38,7 @@ const AddChargesFormModel = ({ chargeNameDetails, Submit, isPending, ...props }:
 
   const { register, setValue, reset, control, handleSubmit, formState: { errors } } = useForm<z.infer<typeof chargeNameFormSchema>>({
     resolver: zodResolver(chargeNameFormSchema),
-    defaultValues: {
-      chargeTypeId: String(chargeNameDetails?.chargeCategory.chargeType.id),
-      categoryId: String(chargeNameDetails?.categoryId),
-      unitId: String(chargeNameDetails?.unitId),
-      taxId: String(chargeNameDetails?.taxId),
-      name: chargeNameDetails?.name,
-      tax_percentage: chargeNameDetails?.tax_percentage,
-      standard_charge: chargeNameDetails?.standard_charge,
-      tpa: chargeNameDetails?.tpa,
-    }
+    defaultValues: { ...chargeNameDetails, chargeTypeId: chargeNameDetails?.chargeCategory.chargeType.id }
   })
 
 
@@ -119,7 +110,7 @@ const AddChargesFormModel = ({ chargeNameDetails, Submit, isPending, ...props }:
             <div className="space-y-2 p-2">
               <Label>Charge Type</Label>
               <Controller control={control} name='chargeTypeId' render={({ field }) => {
-                return <Select value={field.value || ''} onValueChange={(value) => { fetchChargeCategories(Number(value)); field.onChange(value) }}>
+                return <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { fetchChargeCategories(Number(value)); field.onChange(value) }}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
@@ -138,7 +129,7 @@ const AddChargesFormModel = ({ chargeNameDetails, Submit, isPending, ...props }:
               <Label>Charge Category</Label>
               <Controller control={control} name='categoryId' render={({ field }) => {
 
-                return <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                return <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(value) }}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
@@ -158,7 +149,7 @@ const AddChargesFormModel = ({ chargeNameDetails, Submit, isPending, ...props }:
               <Label>Charge Unit</Label>
               <Controller control={control} name='unitId' render={({ field }) => {
 
-                return <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                return <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(value) }}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
@@ -187,7 +178,7 @@ const AddChargesFormModel = ({ chargeNameDetails, Submit, isPending, ...props }:
               <Label>Tax Category</Label>
               <Controller control={control} name='taxId' render={({ field }) => {
 
-                return <Select value={field.value || ''} onValueChange={(value) => { fetchTaxDetails(Number(value)); field.onChange(value) }}>
+                return <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { fetchTaxDetails(Number(value)); field.onChange(value) }}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>

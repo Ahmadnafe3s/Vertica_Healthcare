@@ -156,7 +156,7 @@ export const deleteChargeType = async (id: number) => {
 }
 
 
-type moduleType = 'opd' | 'appointment' | 'radiology' | 'pathylogy' | 'blood_bank' | 'ambulance'
+type moduleType = 'opd' | 'appointment' | 'radiology' | 'pathology' | 'blood_bank' | 'ambulance'
 
 export const getChargeTypes = async (module?: moduleType): Promise<Charge_Type_Interface[]> => {
     try {

@@ -20,6 +20,7 @@ import VisitDetails from "@/admin/OPD/details/visitDetails"
 import Vital from "@/admin/OPD/details/vital/vital"
 import AdminOPDlayout from "@/admin/OPD/opd-layout"
 import OPDLIST from "@/admin/OPD/opdList"
+import PathologyBills from "@/admin/pathology/pathology-bills"
 import Medicines from "@/admin/pharmacy/medicines/medicines"
 import Bill from "@/admin/pharmacy/pharmacyBill/pharmacyBills"
 import Pharmacy from "@/admin/pharmacy/pharmacyLayout"
@@ -99,6 +100,9 @@ const AdminRoutes = () => {
 
                 {/* radiology bills */}
                 <Route path="radiology" element={<RadiologyBills />}></Route>
+
+                {/* pathology bills */}
+                <Route path="pathology" element={<PathologyBills />}></Route>
 
             </Route>
         </Route>

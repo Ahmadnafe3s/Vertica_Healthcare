@@ -21,6 +21,7 @@ import AdminRoutes from "./routes/AdminRoutes";
 import SetupPatientRoutes from "./routes/AdminSetup/patientRoutes";
 import SetupAuthzRoutes from "./routes/AdminSetup/authzRoutes";
 import SetupRadiologyRoutes from "./routes/AdminSetup/radiologyRoutes";
+import SetupPathologyRoutes from "./routes/AdminSetup/pathology";
 
 
 
@@ -35,7 +36,7 @@ function App() {
 
 
   return (
-    <div className="dark:bg-dark dark:text-white"> 
+    <div className="dark:bg-dark dark:text-white">
       <Router>
         <Toaster toastOptions={{ duration: 2000 }} />
         <Navbar />
@@ -83,6 +84,9 @@ function App() {
 
             {/* setup route for radiology */}
             {SetupRadiologyRoutes()}
+
+            {/* setup route for pathology */}
+            {SetupPathologyRoutes()}
 
 
           </Route>

@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { paymentFormSchema } from "@/formSchemas/paymentFormSchema"
 import { currencySymbol } from "@/helpers/currencySymbol"
 import { PaymentOptions } from "@/helpers/formSelectOptions"
-import { PaymentType } from "@/types/type"
+import { paymentData } from "@/types/opd_section/payment"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader, X } from "lucide-react"
 import { HTMLAttributes } from "react"
@@ -19,7 +19,7 @@ import { z } from "zod"
 interface PaymentFormModelProps extends HTMLAttributes<HTMLDivElement> {
     Submit: (formData: z.infer<typeof paymentFormSchema>) => void;
     isPending: boolean,
-    paymentDetails: PaymentType
+    paymentDetails: paymentData
 }
 
 

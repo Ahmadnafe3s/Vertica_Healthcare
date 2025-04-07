@@ -6,6 +6,7 @@ import Lottie from 'lottie-react'
 import animationData from '../assets/animation/hospital.json'
 import { useInView } from 'motion/react'
 import { useRef } from 'react'
+import Xmarquee from '@/components/marquee'
 
 
 const doctors = [
@@ -22,8 +23,6 @@ const HomePage = () => {
 
     const animationRef = useRef(null)
     const view = useInView(animationRef)
-
-    console.log(view);
 
 
     return (

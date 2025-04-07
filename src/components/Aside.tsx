@@ -1,6 +1,6 @@
 import { ScrollArea } from './ui/scroll-area'
 import { Link } from 'react-router-dom'
-import { Airplay, BriefcaseMedical, CalendarClock, ChevronRight, HeartPulse, Network, Radiation, Settings, Watch } from 'lucide-react'
+import { Airplay, BriefcaseMedical, CalendarClock, ChevronRight, HeartPulse, Network, Radiation, Settings, TestTube, Watch } from 'lucide-react'
 import { Button, buttonVariants } from './ui/button'
 import { cn } from '@/lib/utils'
 import { useAppDispatch, useAppSelector } from '@/hooks'
@@ -82,7 +82,7 @@ const Aside = () => {
                         }
 
 
-                        {hasPermission('view', 'radiology') &&
+                        {hasPermission('view', 'radiology_bill') &&
                             <li><Link to={{ pathname: `/${Routes}/radiology` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
@@ -91,8 +91,16 @@ const Aside = () => {
                             }><Radiation className='h-4 w-4' />Radiology</Link></li>
                         }
 
+                        {hasPermission('view', 'pathology_bill') &&
+                            <li><Link to={{ pathname: `/${Routes}/pathology` }} onClick={onNavigate} className={
+                                buttonVariants({
+                                    variant: 'ghost',
+                                    className: 'flex text-sm items-center'
+                                })
+                            }><TestTube className='h-4 w-4' />Pathology</Link></li>
+                        }
 
-                        {/* only these role can see this */}
+
 
                         {hasPermission('view', 'human_resource') &&
                             <li><Link to={{ pathname: '/admin/humanresource/staff' }} onClick={onNavigate} className={
@@ -198,11 +206,11 @@ const Aside = () => {
                                             )}
 
 
-                                            {hasPermission('view', 'setupPathylogy') && (
+                                            {hasPermission('view', 'setupPathology') && (
                                                 <AccordionContent className='py-1'>
                                                     <div className="pl-5">
-                                                        <Link to={{ pathname: '/admin/setup/pathylogy' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                            <ChevronRight className='h-4 w-4' />Pathylogy</Link>
+                                                        <Link to={{ pathname: '/admin/setup/pathology' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                            <ChevronRight className='h-4 w-4' />Pathology</Link>
                                                     </div>
                                                 </AccordionContent>
                                             )}

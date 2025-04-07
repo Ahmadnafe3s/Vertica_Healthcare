@@ -2,8 +2,6 @@ import { z } from "zod";
 
 const Parameters = z.object({
     parameterId: z.coerce.number().min(1, { message: 'Parameter is required' }),
-    range: z.string().nonempty('Range is required'),
-    unit: z.string().nonempty('Unit is required'),
 })
 
 
@@ -30,8 +28,6 @@ export const TestNameFormSchema = z.object({
 
 export const ParameterDefaultValue = {
     parameters: [{
-        parameterId: 0,
-        range: '',
-        unit: ''
+        parameterId: 0
     }]
 }

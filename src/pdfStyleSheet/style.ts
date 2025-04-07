@@ -84,8 +84,8 @@ const styles = StyleSheet.create({
     divider: {
         height: 1,
         backgroundColor: '#e5e7eb',
-        marginVertical: 16,
     },
+
     borderedBox: {
         borderWidth: 1,
         // borderColor: '#d1d5db',
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     itemsCenter: { alignItems: 'center' },
     itemsEnd: { alignItems: 'flex-end' },
     justifyBetween: { justifyContent: 'space-between' },
-    justifyEnd: { justifyContent : 'flex-end' },
+    justifyEnd: { justifyContent: 'flex-end' },
 
     // Advanced spacing
     spaceY: {
@@ -133,6 +133,18 @@ const styles = StyleSheet.create({
 
     w_full: {
         width: '100%'
+    },
+
+    display: {
+        displayFlex: {
+            display: 'flex'
+        },
+        none: {
+            display: 'none'
+        },
+        block: {
+            display: 'block'
+        },
     },
 
     // Line height utilities

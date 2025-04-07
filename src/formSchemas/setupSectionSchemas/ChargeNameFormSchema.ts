@@ -2,24 +2,24 @@ import { z } from "zod";
 
 export const chargeNameFormSchema = z.object({
 
-    chargeTypeId: z.string()
+    chargeTypeId: z.coerce.number()
         .min(1, { message: "Charge type is required" })
-        .default(''),
+        .default(0),
 
-    categoryId: z.string()
+    categoryId: z.coerce.number()
         .min(1, { message: "Charge category is required" })
-        .default(''),
+        .default(0),
 
     name: z.string()
         .min(1, { message: "Name is required" }),
 
-    unitId: z.string()
+    unitId: z.coerce.number()
         .min(1, { message: "Unit is required" })
-        .default(''),
+        .default(0),
 
-    taxId: z.string()
+    taxId: z.coerce.number()
         .min(1, { message: "Tax is required" })
-        .default(''),
+        .default(0),
 
     tax_percentage: z.number(),
 

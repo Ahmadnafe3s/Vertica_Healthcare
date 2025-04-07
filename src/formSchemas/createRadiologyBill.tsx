@@ -1,4 +1,3 @@
-import test from "node:test";
 import { z } from "zod";
 
 const TestNames = z.object({
@@ -12,15 +11,15 @@ const TestNames = z.object({
 
 
 export const createRadiologyBillSchema = z.object({
-    doctor: z.string(),
-    opdId: z.string(),
+    opdId: z.string().optional(),
+    doctor: z.string().min(1, { message: 'Doctor is required' }),
     patientId: z.number().min(1, { message: 'Patient is required' }).default(0),
     date: z.string().min(1, { message: 'Date is required' }),
-    previousReportValue: z.string(),
-    additionalTax: z.number().optional(),
-    discount: z.number().optional(),
-    net_amount: z.number().int().min(1, { message: 'Net amount is required' }).default(0),
-    paymentMode: z.string().min(1, { message: 'Payment mode is required' }).default(''),
+    previousReportValue: z.string().optional(),
+    additionalTax: z.coerce.number().min(0, { message: "Tax cannot be negative" }).optional().default(0),
+    discount: z.coerce.number().min(0, { message: "Discount cannot be negative" }).optional().default(0),
+    net_amount: z.coerce.number().int().min(1, { message: 'Net amount is required' }).default(0),
+    payment_mode: z.string().min(1, { message: 'Payment mode is required' }).default(''),
     note: z.string().optional(),
 
     tests: z.array(TestNames),

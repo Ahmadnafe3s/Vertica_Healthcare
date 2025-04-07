@@ -80,3 +80,5 @@ export const TD: React.FC<TDProps> = ({ children, style, last }) => (
     <Text>{children}</Text>
   </View>
 );
+
+export { Text };

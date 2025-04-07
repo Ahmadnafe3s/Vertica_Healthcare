@@ -2,7 +2,7 @@ import { chartConfig, incomeExpenseConfig } from '@/chartConfig/chartConfig'
 import RectCard from '@/components/rectCard'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
-import { Activity, CalendarClock, DollarSign, HandCoins, HeartPulse, Package, Pill, ReceiptText, ShoppingCart } from 'lucide-react'
+import { Activity, CalendarClock, DollarSign, HandCoins, HeartPulse, Package, Pill, Radiation, Radio, ReceiptText, ShoppingCart, TestTube2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { Area, AreaChart, CartesianGrid, Label, Pie, PieChart, XAxis } from 'recharts'
 import { useEffect, useState } from 'react'
@@ -116,6 +116,30 @@ const AdminDashboard = () => {
                 {hasPermission('medicine_purchases', 'dashboard') && (
                     <RectCard name='Medicine Purchases' path={''} visits={total?.purchases ?? 0}>
                         <ShoppingCart className='h-8 w-8 text-violet-500' />
+                    </RectCard>
+                )}
+
+                {hasPermission('radiology_income', 'dashboard') && (
+                    <RectCard name='Radiology Income' path={'../radiology'} amount={total?.radiologyIncome ?? 0}>
+                        <Radiation className='h-8 w-8 text-yellow-500' />
+                    </RectCard>
+                )}
+
+                {hasPermission('radiology_bills', 'dashboard') && (
+                    <RectCard name='Radiology Bills' path={'../radiology'} visits={total?.radiologyBills ?? 0}>
+                        <ReceiptText className='h-8 w-8 text-rose-500' />
+                    </RectCard>
+                )}
+
+                {hasPermission('pathology_income', 'dashboard') && (
+                    <RectCard name='Pathology Income' path={'../pathology'} amount={total?.pathologyIncome ?? 0}>
+                        <TestTube2 className='h-8 w-8 text-gray-500' />
+                    </RectCard>
+                )}
+
+                {hasPermission('pathology_bills', 'dashboard') && (
+                    <RectCard name='Pathology Bills' path={'../radiology'} visits={total?.radiologyBills ?? 0}>
+                        <ReceiptText className='h-8 w-8 text-violet-500' />
                     </RectCard>
                 )}
 

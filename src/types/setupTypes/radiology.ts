@@ -41,6 +41,24 @@ export type RadiologyTestNameType = {
     total_pages: number
 }
 
+export type Parameter = {
+    id: number,
+    name: string,
+    note: string,
+    from: string
+    to: string
+    unit: {
+        name: string
+    }
+}
+
+export type RadioTestNameParameter = Array<{
+    id: number
+    radioTestId: number
+    parameterId: number
+    parameter: Parameter
+}>
+
 
 export type RadiologyTestNameDetailsType = {
     id: number,
@@ -62,9 +80,7 @@ export type RadiologyTestNameDetailsType = {
     },
     RadioTestNameParameter: Array<{
         id: number,
-        RadioTestId: number,
+        radioTestId: number,
         parameterId: number,
-        unit: string,
-        range: string
     }>
 }

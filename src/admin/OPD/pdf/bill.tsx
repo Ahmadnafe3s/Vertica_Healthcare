@@ -9,6 +9,7 @@ import { Table, TD, TH, TR } from '@/components/pdfTable';
 import { currencyFormat } from '@/lib/utils';
 import { Printer } from 'lucide-react';
 import CustomTooltip from '@/components/customTooltip';
+import { address, hospital_name, hospital_slogan } from '@/globalData';
 
 
 
@@ -35,13 +36,13 @@ const BillPDF = ({ bill }: BillPDFProps) => {
                 {/* header */}
                 <View style={styles.header}>
                     <View style={styles.spaceY}>
-                        <Text style={[styles.text.bold, styles.text.xl]}>Vertical Healthcare</Text>
-                        <Text style={[styles.text.sm, styles.text.lightGray, styles.text.italic]}>Your Health is our priority</Text>
+                        <Text style={[styles.text.bold, styles.text.xl]}>{hospital_name}</Text>
+                        <Text style={[styles.text.sm, styles.text.lightGray, styles.text.italic]}>{hospital_slogan}</Text>
                     </View>
                     <View style={[styles.text.sm, styles.spaceY]}>
-                        <Text>New Market purwa</Text>
-                        <Text>Tulsipur , Balrampur</Text>
-                        <Text>U.P , India , 271208</Text>
+                        <Text>{address.street}</Text>
+                        <Text>{address.city + ', ' + address.district}</Text>
+                        <Text>{address.zip}</Text>
                     </View>
                 </View>
 

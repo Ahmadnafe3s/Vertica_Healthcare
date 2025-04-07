@@ -38,6 +38,7 @@ const CreateRadioTest = ({ editDetails, Submit, isPending, ...props }: AddCharge
     const [chargeCategories, setChargeCategories] = useState<categoryType[]>([])
     const [chargeNames, setChargeNames] = useState<chargeNamesType>({ data: [], total_pages: 0 })
     const [parameters, setParameters] = useState<RadioParametersType[]>([])
+    const [parameterData, setParameterData] = useState<{ [key: number]: { range: string, unit: string } }>() // only for view
 
 
     const { register, setValue, reset, control, handleSubmit, formState: { errors } } = useForm<z.infer<typeof TestNameFormSchema>>({
@@ -76,7 +77,6 @@ const CreateRadioTest = ({ editDetails, Submit, isPending, ...props }: AddCharge
         try {
             const data = await getChargeNames({ page: 1, limit: 0, search: String(chargeCategoryId) })
             setChargeNames(data)
-            console.log(data);
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -105,11 +105,11 @@ const CreateRadioTest = ({ editDetails, Submit, isPending, ...props }: AddCharge
         }
     }
 
+
     const handleParameterChange = async (parameterId: number, index: number) => {
         try {
             const data = await getRadiologytParameterDetails(parameterId)
-            setValue(`parameters.${index}.range`, `${data.from} - ${data.to}`)
-            setValue(`parameters.${index}.unit`, data.unit.name)
+            setParameterData(prev => ({ ...prev, [index]: { range: `${data.from} - ${data.to}`, unit: data.unit.name } }))
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -139,6 +139,9 @@ const CreateRadioTest = ({ editDetails, Submit, isPending, ...props }: AddCharge
             handleChargeTypeChange(editDetails.chargeTypeId)
             handleChargeCategoryChange(editDetails.chargeCategoryId)
             handleChargeNameChange(editDetails.chargeNameId)
+            editDetails.RadioTestNameParameter.map(async (item, i) => {
+                await handleParameterChange(item.parameterId, i)
+            })
         }
     }, [])
 
@@ -307,7 +310,7 @@ const CreateRadioTest = ({ editDetails, Submit, isPending, ...props }: AddCharge
                         {parametesField.map((field, i) => {
                             return (
                                 <div key={field.id} className="col-span-full grid sm:grid-cols-2 lg:grid-cols-4 gap-2 border dark:border-gray-800 rounded-lg p-2">
-                                  
+
                                     {/* parameters */}
                                     <div className="space-y-2 p-2">
                                         <Label>Parameter</Label>
@@ -331,16 +334,14 @@ const CreateRadioTest = ({ editDetails, Submit, isPending, ...props }: AddCharge
 
                                     <div className="space-y-2 p-2">
                                         <Label>Unit</Label>
-                                        <Input type="text" {...register(`parameters.${i}.unit`)} disabled />
-                                        {errors?.parameters?.[i]?.unit && <p className='text-sm text-red-500'>{errors?.parameters?.[i]?.unit?.message}</p>}
+                                        <Input type="text" defaultValue={parameterData?.[i]?.unit} disabled />
                                     </div>
 
                                     {/* range */}
 
                                     <div className="space-y-2 p-2">
                                         <Label>Range</Label>
-                                        <Input type="text" {...register(`parameters.${i}.range`)} disabled />
-                                        {errors?.parameters?.[i]?.range && <p className='text-sm text-red-500'>{errors?.parameters?.[i]?.range?.message}</p>}
+                                        <Input type="text" defaultValue={parameterData?.[i]?.range} disabled />
                                     </div>
 
 
@@ -387,3 +388,7 @@ const CreateRadioTest = ({ editDetails, Submit, isPending, ...props }: AddCharge
 
 
 export default CreateRadioTest
+
+
+
+// NOTE : Unit and Range are only for displaying purpose and will not be saved

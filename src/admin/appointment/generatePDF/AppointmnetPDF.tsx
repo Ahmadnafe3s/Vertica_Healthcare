@@ -9,6 +9,7 @@ import { Printer } from 'lucide-react';
 import CustomTooltip from '@/components/customTooltip';
 import { AppointmentDetails } from '@/types/appointment/appointment';
 import { getAppointmentDetails } from '../appointmentAPIhandler';
+import { address, hospital_name, hospital_slogan } from '@/globalData';
 
 
 
@@ -30,13 +31,13 @@ const Documents = ({ Details }: DocumentProps) => {
                 {/* header */}
                 <View style={styles.header}>
                     <View style={styles.spaceY}>
-                        <Text style={[styles.text.bold, styles.text.xl]}>Vertical Healthcare</Text>
-                        <Text style={[styles.text.sm, styles.text.lightGray, styles.text.italic]}>Your Health is our priority</Text>
+                        <Text style={[styles.text.bold, styles.text.xl]}>{hospital_name}</Text>
+                        <Text style={[styles.text.sm, styles.text.lightGray, styles.text.italic]}>{hospital_slogan}</Text>
                     </View>
                     <View style={[styles.text.sm, styles.spaceY]}>
-                        <Text>New Market purwa</Text>
-                        <Text>Tulsipur , Balrampur</Text>
-                        <Text>U.P , India , 271208</Text>
+                        <Text>{address.street}</Text>
+                        <Text>{address.city + ', ' + address.district}</Text>
+                        <Text>{address.zip}</Text>
                     </View>
                 </View>
 
@@ -138,7 +139,7 @@ const Documents = ({ Details }: DocumentProps) => {
                     </Table>
                 </View>
 
-                <View style={[styles.spacing.mt4 , styles.spaceY , styles.itemsEnd ]}>
+                <View style={[styles.spacing.mt4, styles.spaceY, styles.itemsEnd]}>
                     <Text >Total : {currencyFormat(Details?.fees)}</Text>
                     <Text>Discount : {Details.discount} %</Text>
                     <Text style={styles.text.bold}>Net Amount : {currencyFormat(Details?.net_amount)}</Text>

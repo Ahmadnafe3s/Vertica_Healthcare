@@ -8,6 +8,10 @@ export const Module = [
     'medicines',
     'purchase_medicine',
     'radiology_bill',
+    'radiology_report',
+    'pathology_bill',
+    'pathology_report',
+    'sample_collection',
     'prescription',
     'medication',
     'operation',
@@ -24,9 +28,44 @@ export const Module = [
     'setupPharmacy',
     'setupVital',
     'setupPatient',
-    'setupRadiology'
+    'setupRadiology',
+    'setupPathology'
 ];
 
+
+
+export const setupPermissions = [
+    'setup',
+    'setup_Hospital_Charges',
+    'charge_unit',
+    'charge_category',
+    'charge_name',
+    'charge_type',
+    'charge_tax',
+    'setupOperation',
+    'operation_category',
+    'setupFinding',
+    'finding_category',
+    'setupPharmacy',
+    'medicine_group',
+    'medicine_company',
+    'medicine_unit',
+    'dose_duration',
+    'dose_interval',
+    'medicine_category',
+    'setupVital',
+    'setupPatient',
+    'setupRadiology',
+    'radiology_category',
+    'radiology_test',
+    'radiology_parameter',
+    'radiology_unit',
+    'setupPathology',
+    'pathology_category',
+    'pathology_test',
+    'pathology_parameter',
+    'pathology_unit'
+]
 
 
 
@@ -36,6 +75,10 @@ export const dashboardPermissions = [
     'appointments',
     'appmnt_income',
     'pharmacy_income',
+    'radiology_income',
+    'radiology_bills',
+    'pathology_income',
+    'pathology_bills',
     'pharmacy_bill',
     'medicines',
     'income_expenses',
