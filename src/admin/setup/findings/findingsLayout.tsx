@@ -1,3 +1,4 @@
+import PermissionProtectedAction from "@/components/permission-protected-actions"
 import { buttonVariants } from "@/components/ui/button"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { ChartBarStacked, Tags } from "lucide-react"
@@ -13,17 +14,22 @@ const FindingsLayout = () => {
 
                         {/* we provide relative path like this */}
 
-                        <Link to={``} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <Tags /> Findings
-                        </Link>
+                        <PermissionProtectedAction action='view' module='setupFinding'>
+                            <Link to={``} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <Tags /> Findings
+                            </Link>
+                        </PermissionProtectedAction>
 
-                        <Link to={`category`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <ChartBarStacked /> Categories
-                        </Link>
+
+                        <PermissionProtectedAction action='view' module='finding_category'>
+                            <Link to={`category`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <ChartBarStacked /> Categories
+                            </Link>
+                        </PermissionProtectedAction>
 
                     </div>
 

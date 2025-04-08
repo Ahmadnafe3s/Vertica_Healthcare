@@ -1,37 +1,36 @@
 import { medicineCategory } from '@/types/setupTypes/pharmacy'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { z } from 'zod'
 import toast from 'react-hot-toast'
 import MedicineCategoryForm, { MedicineCategoryFormSchema } from './medicineCategoryForm'
 import { Button } from '@/components/ui/button'
-import { Plus, Trash } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import AlertModel from '@/components/alertModel'
 import { createMedicineCategory, deleteMedicineCategory, getMedicineCategories } from '../apiHandler'
-import CustomTooltip from '@/components/customTooltip'
 import EmptyList from '@/components/emptyList'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import PermissionTableActions from '@/components/permission-table-actions'
+import { useConfirmation } from '@/hooks/useConfirmation'
+
+
+
 
 const MedicineCategories = () => {
 
-  // credentials
-  const itemID = useRef<number>(0)
-
+  const { confirm, confirmationProps } = useConfirmation()
 
   // Loaders
   const [isPending, setPending] = useState<boolean>(false)
 
 
   // model states
-  const [model, setModel] = useState<{ alert: boolean, medicineCategoryForm: boolean }>({
-    alert: false,
-    medicineCategoryForm: false
-  })
+  const [form, setForm] = useState<boolean>(false)
 
 
   // API States
   const [medicneCategories, setMedicneCategories] = useState<medicineCategory[]>([])
-
 
 
   const handleSubmit = async (formData: z.infer<typeof MedicineCategoryFormSchema>) => {
@@ -39,7 +38,7 @@ const MedicineCategories = () => {
       setPending(true)
       const data = await createMedicineCategory(formData)
       toast.success(data.message)
-      setModel({ ...model, medicineCategoryForm: false })
+      setForm(false)
       fetchMedicineCategories()
     } catch ({ message }: any) {
       toast.error(message);
@@ -49,17 +48,15 @@ const MedicineCategories = () => {
   }
 
 
-  const onDelete = async () => {
+  const onDelete = async (id: number) => {
     try {
-      setPending(true)
-      const data = await deleteMedicineCategory(itemID.current)
+      const isConfirmed = await confirm()
+      if (!isConfirmed) return null
+      const data = await deleteMedicineCategory(id)
       toast.success(data.message)
       fetchMedicineCategories()
     } catch ({ message }: any) {
       toast.error(message);
-    } finally {
-      setPending(false);
-      setModel(rest => ({ ...rest, alert: false }))
     }
   }
 
@@ -85,9 +82,11 @@ const MedicineCategories = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Medicine Categories</h1>
-        <Button size='sm' onClick={() => setModel(rest => ({ ...rest, medicineCategoryForm: true }))}>
-          <Plus /> Add Category
-        </Button>
+        <PermissionProtectedAction action='create' module='medicine_category'>
+          <Button size='sm' onClick={() => setForm(true)}>
+            <Plus /> Add Category
+          </Button>
+        </PermissionProtectedAction>
       </div>
 
       <Separator />
@@ -106,14 +105,12 @@ const MedicineCategories = () => {
             <TableRow key={category.id}>
               <TableCell>{category.id}</TableCell>
               <TableCell>{category.name}</TableCell>
-              <TableCell>
-                {/* DELETE  */}
-                <CustomTooltip message='DELETE'>
-                  <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
-                    setModel(rest => ({ ...rest, alert: true }))
-                    itemID.current = category.id
-                  }} />
-                </CustomTooltip>
+              <TableCell className='flex'>
+                <PermissionTableActions
+                  module='medicine_category'
+                  onDelete={() => onDelete(category.id)}
+                  exclude={{ edit: true }}
+                />
               </TableCell>
             </TableRow>
           ))}
@@ -126,18 +123,18 @@ const MedicineCategories = () => {
 
       {/* Models */}
 
-      {model.medicineCategoryForm && (
+      {form && (
         <MedicineCategoryForm
           Submit={handleSubmit}
           isPending={isPending}
-          onClick={() => setModel(rest => ({ ...rest, medicineCategoryForm: false }))}
+          onClick={() => setForm(false)}
         />
       )}
 
-      {model.alert && (
+      {confirmationProps.isOpen && (
         <AlertModel
-          continue={onDelete}
-          cancel={() => setModel(rest => ({ ...rest, alert: false }))}
+          continue={() => confirmationProps.onConfirm()}
+          cancel={() => confirmationProps.onCancel()}
         />
       )}
 

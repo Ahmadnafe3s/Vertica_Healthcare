@@ -76,7 +76,7 @@ const AddChargeCategoryFormModel = ({ Submit, categoryDetails, isPending, ...pro
           <Controller control={control} name="chargeTypeId" render={({ field }) => {
             return <>
               <Label>Charge Type</Label>
-              <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+              <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(value) }}>
                 <SelectTrigger >
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>

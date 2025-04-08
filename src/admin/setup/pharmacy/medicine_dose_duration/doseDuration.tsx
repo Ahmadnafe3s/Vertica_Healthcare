@@ -2,31 +2,29 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { doseDuration } from "@/types/setupTypes/pharmacy"
-import { Plus, Trash } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { Plus } from "lucide-react"
+import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import DoseDurationForm from "./doseDurationForm"
 import { createDoseDuration, deleteDoseDuration, getDoseDurations } from "../apiHandler"
 import AlertModel from "@/components/alertModel"
-import CustomTooltip from "@/components/customTooltip"
 import EmptyList from "@/components/emptyList"
+import { useConfirmation } from "@/hooks/useConfirmation"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+import PermissionTableActions from "@/components/permission-table-actions"
+
+
+
 
 const DoseDuration = () => {
 
-    // credentials
-    const itemID = useRef<number>(0)
+    const { confirm, confirmationProps } = useConfirmation()
 
 
     // Loaders
     const [isPending, setPending] = useState<boolean>(false)
 
-
-    // model states
-    const [model, setModel] = useState<{ alert: boolean, doseDurationForm: boolean }>({
-        alert: false,
-        doseDurationForm: false
-    })
-
+    const [form, setForm] = useState(false)
 
     // API States
     const [doseDurations, setDoseDurations] = useState<doseDuration[]>([])
@@ -38,7 +36,7 @@ const DoseDuration = () => {
             setPending(true)
             const data = await createDoseDuration(formData)
             toast.success(data.message)
-            setModel({ ...model, doseDurationForm: false })
+            setForm(false)
             fetchDoseDurations()
         } catch ({ message }: any) {
             toast.error(message);
@@ -48,17 +46,15 @@ const DoseDuration = () => {
     }
 
 
-    const onDelete = async () => {
+    const onDelete = async (id: number) => {
         try {
-            setPending(true)
-            const data = await deleteDoseDuration(itemID.current)
+            const isConfirmed = await confirm()
+            if (!isConfirmed) return null
+            const data = await deleteDoseDuration(id)
             toast.success(data.message)
             fetchDoseDurations()
         } catch ({ message }: any) {
             toast.error(message);
-        } finally {
-            setPending(false);
-            setModel(rest => ({ ...rest, alert: false }))
         }
     }
 
@@ -84,10 +80,11 @@ const DoseDuration = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Dose Durations</h1>
-                <Button size='sm' onClick={() => setModel({ ...model, doseDurationForm: true })
-                }>
-                    <Plus /> Add Duration
-                </Button>
+                <PermissionProtectedAction action='create' module='dose_duration'>
+                    <Button size='sm' onClick={() => setForm(true)}>
+                        <Plus /> Add Duration
+                    </Button>
+                </PermissionProtectedAction>
             </div>
 
             <Separator />
@@ -105,14 +102,14 @@ const DoseDuration = () => {
                         <TableRow key={doseDuration.id}>
                             <TableCell>{doseDuration.id}</TableCell>
                             <TableCell>{doseDuration.duration}</TableCell>
-                            <TableCell>
-                                {/* DELETE  */}
-                                <CustomTooltip message="DELETE">
-                                    <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
-                                        setModel(rest => ({ ...rest, alert: true }))
-                                        itemID.current = doseDuration.id
-                                    }} />
-                                </CustomTooltip>
+                            <TableCell className="flex">
+
+                                <PermissionTableActions
+                                    module="dose_duration"
+                                    onDelete={() => onDelete(doseDuration.id)}
+                                    exclude={{ edit: true }}
+                                />
+
                             </TableCell>
                         </TableRow>
                     ))}
@@ -125,19 +122,18 @@ const DoseDuration = () => {
 
             {/* Models */}
 
-            {model.doseDurationForm && (
+            {form && (
                 <DoseDurationForm
                     isPending={isPending}
                     Submit={handleSubmit}
-                    onClick={() => setModel(rest => ({ ...rest, doseDurationForm: false }))}
+                    onClick={() => setForm(false)}
                 />
             )}
 
-            {model.alert && (
+            {confirmationProps.isOpen && (
                 <AlertModel
-                    continue={onDelete}
-                    isPending={isPending}
-                    cancel={() => setModel(rest => ({ ...rest, alert: false }))}
+                    continue={() => confirmationProps.onConfirm()}
+                    cancel={() => confirmationProps.onCancel()}
                 />
             )}
 

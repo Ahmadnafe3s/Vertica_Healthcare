@@ -1,16 +1,18 @@
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Plus, Trash } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { Plus, } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import MedicineGroupFrom, { MedicineGroupFromSchema } from './medicineGroupFrom'
 import { z } from 'zod'
 import { createMedicineGroup, deleteMedicineGroup, geteMedicineGroups } from '../apiHandler'
 import { medicineGroup } from '@/types/setupTypes/pharmacy'
 import AlertModel from '@/components/alertModel'
-import CustomTooltip from '@/components/customTooltip'
 import EmptyList from '@/components/emptyList'
+import { useConfirmation } from '@/hooks/useConfirmation'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import PermissionTableActions from '@/components/permission-table-actions'
 
 
 
@@ -18,9 +20,7 @@ import EmptyList from '@/components/emptyList'
 
 const MedicineGroups = () => {
 
-    // credentials
-    const itemID = useRef<number>(0)
-
+    const { confirm, confirmationProps } = useConfirmation()
 
     // Loaders
     const [isPending, setPending] = useState<boolean>(false)
@@ -28,7 +28,6 @@ const MedicineGroups = () => {
 
     // model states
     const [isMedGroupFormVisible, setMedGroupFormVisible] = useState<boolean>(false)
-    const [isAlert, setAlert] = useState<boolean>(false)
 
 
     // API States
@@ -60,17 +59,15 @@ const MedicineGroups = () => {
     }
 
 
-    const onDelete = async () => {
+    const onDelete = async (id: number) => {
         try {
-            setPending(true)
-            const data = await deleteMedicineGroup(itemID.current)
+            const isConfirmed = await confirm()
+            if (!isConfirmed) return null
+            const data = await deleteMedicineGroup(id)
             toast.success(data.message)
             fetchMedicineGroups()
         } catch ({ message }: any) {
             toast.error(message);
-        } finally {
-            setAlert(false)
-            setPending(false)
         }
     }
 
@@ -85,9 +82,11 @@ const MedicineGroups = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lgfont-semibold">Groups</h1>
-                <Button size='sm' onClick={() => { setMedGroupFormVisible(true) }}>
-                    <Plus /> Add Group
-                </Button>
+                <PermissionProtectedAction action='create' module='medicine_group'>
+                    <Button size='sm' onClick={() => { setMedGroupFormVisible(true) }}>
+                        <Plus /> Add Group
+                    </Button>
+                </PermissionProtectedAction>
             </div>
 
             <Separator />
@@ -112,14 +111,14 @@ const MedicineGroups = () => {
                         <TableRow key={group.id}>
                             <TableCell>{group.id}</TableCell>
                             <TableCell>{group.name}</TableCell>
-                            <TableCell>
-                                {/* DELETE  */}
-                                <CustomTooltip message='DELETE'>
-                                    <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
-                                        setAlert(true);
-                                        itemID.current = group.id
-                                    }} />
-                                </CustomTooltip>
+                            <TableCell className='flex'>
+
+                                <PermissionTableActions
+                                    module='medicine_group'
+                                    onDelete={() => onDelete(group.id)}
+                                    exclude={{ edit: true }}
+                                />
+
                             </TableCell>
                         </TableRow>
                     ))}
@@ -144,11 +143,10 @@ const MedicineGroups = () => {
 
             {/* alert model */}
 
-            {isAlert && (
+            {confirmationProps.isOpen && (
                 <AlertModel
-                    isPending={isPending}
-                    cancel={() => setAlert(false)}
-                    continue={onDelete}
+                    continue={() => confirmationProps.onConfirm()}
+                    cancel={() => confirmationProps.onCancel()}
                 />
             )}
 

@@ -20,16 +20,7 @@ export const Module = [
     'vitals',
     'timeline',
     'human_resource',
-    'duty_roster',
-    'setup',
-    'setup_Hospital_Charges',
-    'setupOperation',
-    'setupFinding',
-    'setupPharmacy',
-    'setupVital',
-    'setupPatient',
-    'setupRadiology',
-    'setupPathology'
+    'duty_roster'
 ];
 
 
@@ -39,7 +30,6 @@ export const setupPermissions = [
     'setup_Hospital_Charges',
     'charge_unit',
     'charge_category',
-    'charge_name',
     'charge_type',
     'charge_tax',
     'setupOperation',

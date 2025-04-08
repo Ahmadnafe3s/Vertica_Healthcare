@@ -1,3 +1,4 @@
+import PermissionProtectedAction from '@/components/permission-protected-actions'
 import { buttonVariants } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { ChartBarStacked, Slice } from 'lucide-react'
@@ -13,18 +14,22 @@ const OperationLayout = () => {
 
                         {/* we provide relative path like this */}
 
-                        <Link to={``} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <Slice /> Operations
-                        </Link>
+                        <PermissionProtectedAction action='view' module='setupOperation'>
+                            <Link to={``} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <Slice /> Operations
+                            </Link>
+                        </PermissionProtectedAction>
 
-                        <Link to={`category`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <ChartBarStacked /> Categories
-                        </Link>
-                
+                        <PermissionProtectedAction action='view' module='operation_category'>
+                            <Link to={`category`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <ChartBarStacked /> Categories
+                            </Link>
+                        </PermissionProtectedAction>
+
                     </div>
 
                     <ScrollBar orientation='horizontal' />

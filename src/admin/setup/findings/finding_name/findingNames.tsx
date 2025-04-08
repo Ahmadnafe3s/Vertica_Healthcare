@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Pencil, Plus, Trash } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { Plus, } from "lucide-react"
+import { useEffect, useState } from "react"
 import { z } from "zod"
 import FindingNameForm, { FindingNameFormSchema } from "./findingNameForm"
 import { createFindingName, deleteFindingName, getFindingNameDetails, getFindingNames, updateFindingName } from "../apiHandler"
@@ -10,20 +10,19 @@ import toast from "react-hot-toast"
 import { findingName } from "@/types/setupTypes/finding"
 import LoaderModel from "@/components/loader"
 import AlertModel from "@/components/alertModel"
-import CustomTooltip from "@/components/customTooltip"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+import PermissionTableActions from "@/components/permission-table-actions"
+import { useConfirmation } from "@/hooks/useConfirmation"
 
 const FindingNames = () => {
-  // credentials
-  const itemID = useRef<number>(0)
 
+  const { confirm, confirmationProps } = useConfirmation()
 
   // Loaders
   const [isPending, setPending] = useState<boolean>(false)
 
-
   // model states
   const [isFindingNameFormVisible, setFindingNameFormVisible] = useState<boolean>(false)
-  const [isAlert, setAlert] = useState<boolean>(false)
   const [loaderModel, setLoaderModel] = useState<boolean>(false)
 
   // API States
@@ -76,17 +75,15 @@ const FindingNames = () => {
   }
 
 
-  const onDelete = async () => {
+  const onDelete = async (id: number) => {
     try {
-      setPending(true)
-      const data = await deleteFindingName(itemID.current)
+      const isConfirmed = await confirm()
+      if (!isConfirmed) return null
+      const data = await deleteFindingName(id)
       toast.success(data.message)
       fetchFindingNames()
     } catch ({ message }: any) {
       toast.error(message)
-    } finally {
-      setAlert(false)
-      setPending(false)
     }
   }
 
@@ -101,15 +98,17 @@ const FindingNames = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Findigs</h1>
-        <Button size='sm' onClick={() => { setFindingNameFormVisible(true) }}>
-          <Plus /> Add Finding
-        </Button>
+        <PermissionProtectedAction action='create' module='setupFinding'>
+          <Button size='sm' onClick={() => { setFindingNameFormVisible(true) }}>
+            <Plus /> Add Finding
+          </Button>
+        </PermissionProtectedAction>
       </div>
 
       <Separator />
 
       <Table className="border rounded-lg dark:border-gray-800">
-      <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
+        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
           <TableRow>
             <TableHead>Finding</TableHead>
             <TableHead>Category</TableHead>
@@ -123,26 +122,16 @@ const FindingNames = () => {
               <TableCell>{name.name}</TableCell>
               <TableCell>{name.category.name}</TableCell>
               <TableCell>{name.description}</TableCell>
-
               <TableCell className='flex space-x-2'>
 
-                {/* EDIT */}
-
-                <CustomTooltip message="EDIT">
-                  <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
+                <PermissionTableActions
+                  module='setupFinding'
+                  onEdit={async () => {
                     await fetchFindingNameDetails(name.id)
-                    setFindingNameFormVisible(true);
-                  }} />
-                </CustomTooltip>
-
-
-                {/* DELETE  */}
-                <CustomTooltip message="DELETE">
-                  <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
-                    setAlert(true);
-                    itemID.current = name.id
-                  }} />
-                </CustomTooltip>
+                    setFindingNameFormVisible(true)
+                  }}
+                  onDelete={() => onDelete(name.id)}
+                />
 
               </TableCell>
             </TableRow>
@@ -174,12 +163,10 @@ const FindingNames = () => {
 
       {/* Alert model */}
 
-      {isAlert && (
+      {confirmationProps.isOpen && (
         <AlertModel
-          cancel={() => setAlert(false)}
-          continue={onDelete}
-          isPending={isPending}
-        />
+          cancel={() => confirmationProps.onCancel()}
+          continue={() => confirmationProps.onConfirm()} />
       )}
 
     </section>

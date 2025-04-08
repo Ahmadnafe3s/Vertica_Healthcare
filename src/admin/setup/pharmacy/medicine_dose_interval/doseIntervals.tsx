@@ -1,37 +1,32 @@
 import { doseInterval } from '@/types/setupTypes/pharmacy'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { createDoseInterval, deleteDoseInterval, getDoseIntervals } from '../apiHandler'
 import { z } from 'zod'
 import DoseIntervalForm, { DoseIntervalFormSchema } from './doseIntervalForm'
 import { Button } from '@/components/ui/button'
-import { Plus, Trash } from 'lucide-react'
+import { Plus, } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import AlertModel from '@/components/alertModel'
-import CustomTooltip from '@/components/customTooltip'
 import EmptyList from '@/components/emptyList'
+import { useConfirmation } from '@/hooks/useConfirmation'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import PermissionTableActions from '@/components/permission-table-actions'
+
+
 
 const DoseIntervals = () => {
 
-    // credentials
-    const itemID = useRef<number>(0)
-
+    const { confirm, confirmationProps } = useConfirmation()
 
     // Loaders
     const [isPending, setPending] = useState<boolean>(false)
 
-
-    // model states
-    const [model, setModel] = useState<{ alert: boolean, doseIntervalForm: boolean }>({
-        alert: false,
-        doseIntervalForm: false
-    })
-
+    const [form, setForm] = useState(false)
 
     // API States
     const [doseIntervals, setDoseIntervals] = useState<doseInterval[]>([])
-
 
 
     const handleSubmit = async (formData: z.infer<typeof DoseIntervalFormSchema>) => {
@@ -39,7 +34,7 @@ const DoseIntervals = () => {
             setPending(true)
             const data = await createDoseInterval(formData)
             toast.success(data.message)
-            setModel({ ...model, doseIntervalForm: false })
+            setForm(false)
             fetchDoseIntervals()
         } catch ({ message }: any) {
             toast.error(message);
@@ -49,17 +44,15 @@ const DoseIntervals = () => {
     }
 
 
-    const onDelete = async () => {
+    const onDelete = async (id: number) => {
         try {
-            setPending(true)
-            const data = await deleteDoseInterval(itemID.current)
+            const isConfirmed = await confirm()
+            if (!isConfirmed) return null
+            const data = await deleteDoseInterval(id)
             toast.success(data.message)
             fetchDoseIntervals()
         } catch ({ message }: any) {
             toast.error(message);
-        } finally {
-            setPending(false);
-            setModel(rest => ({ ...rest, alert: false }))
         }
     }
 
@@ -84,9 +77,11 @@ const DoseIntervals = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Dose Intervals</h1>
-                <Button size='sm' onClick={() => setModel(rest => ({ ...rest, doseIntervalForm: true }))}>
-                    <Plus /> Add Interval
-                </Button>
+                <PermissionProtectedAction action='create' module='dose_interval'>
+                    <Button size='sm' onClick={() => setForm(true)}>
+                        <Plus /> Add Interval
+                    </Button>
+                </PermissionProtectedAction>
             </div>
 
             <Separator />
@@ -105,14 +100,14 @@ const DoseIntervals = () => {
                         <TableRow key={Interval.id}>
                             <TableCell>{Interval.id}</TableCell>
                             <TableCell>{Interval.interval}</TableCell>
-                            <TableCell>
-                                {/* DELETE  */}
-                                <CustomTooltip message='DELETE'>
-                                    <Trash className="w-4 cursor-pointer  dark:text-gray-400 text-gray-600" onClick={async () => {
-                                        setModel(rest => ({ ...rest, alert: true }))
-                                        itemID.current = Interval.id
-                                    }} />
-                                </CustomTooltip>
+                            <TableCell className='flex'>
+
+                                <PermissionTableActions
+                                    module='dose_interval'
+                                    onDelete={() => onDelete(Interval.id)}
+                                    exclude={{ edit: true }}
+                                />
+
                             </TableCell>
                         </TableRow>
                     ))}
@@ -125,19 +120,18 @@ const DoseIntervals = () => {
 
             {/* Models */}
 
-            {model.doseIntervalForm && (
+            {form && (
                 <DoseIntervalForm
                     Submit={handleSubmit}
                     isPending={isPending}
-                    onClick={() => setModel(rest => ({ ...rest, doseIntervalForm: false }))}
+                    onClick={() => setForm(false)}
                 />
             )}
 
-            {model.alert && (
+            {confirmationProps.isOpen && (
                 <AlertModel
-                    continue={onDelete}
-                    isPending={isPending}
-                    cancel={() => setModel(rest => ({ ...rest, alert: false }))}
+                    continue={() => confirmationProps.onConfirm()}
+                    cancel={() => confirmationProps.onCancel()}
                 />
             )}
         </section>

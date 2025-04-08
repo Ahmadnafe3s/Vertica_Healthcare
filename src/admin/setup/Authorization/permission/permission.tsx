@@ -7,16 +7,16 @@ import { createPermission, deletePermission, getPermissions, getRoles } from "..
 import { ROLE } from "../role/role"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { dashboardPermissions, Module, setupPermissions } from "@/lib/modules"
+import { useQueryState, parseAsInteger } from "nuqs"
 
 
 
 const Permission = () => {
 
     const [permissions, setPermissions] = useState(new Map())
+    const [roleId, setRoleId] = useQueryState('roleId', parseAsInteger)
 
     const [roles, setRoles] = useState<ROLE[]>([])
-    const roleId = useRef<number>()
-
 
     const fetchRoles = async () => {
         try {
@@ -31,15 +31,15 @@ const Permission = () => {
     // creating and deleting both
     const handleCheckBox = async (isAllow: boolean, permission: string, PID?: number) => {
         try {
-            if (!roleId.current) return toast.error('Please select role')
+            if (!roleId) return toast.error('Please select role')
             let data
             isAllow ?
-                (data = await createPermission(permission, roleId.current)) // updating current set
+                (data = await createPermission(permission, roleId)) // updating current set
                 :
                 (PID && (data = await deletePermission(permission, PID))) // if permission id will present then it will work
 
             // both time updating
-            fetchPermissions(roleId.current)
+            fetchPermissions()
             toast.success(data.message)
         } catch ({ message }: any) {
             toast.error(message)
@@ -47,9 +47,9 @@ const Permission = () => {
     }
 
 
-    const fetchPermissions = async (RoleId: number) => {
+    const fetchPermissions = async () => {
         try {
-            const data = await getPermissions({ roleId: RoleId })
+            const data = await getPermissions({ roleId: Number(roleId) })
             setPermissions(new Map(data.map((p) => [p.name, p]))); // setting map
         } catch ({ message }: any) {
             toast.error(message)
@@ -60,6 +60,10 @@ const Permission = () => {
     useEffect(() => {
         fetchRoles()
     }, [])
+
+    useEffect(() => {
+        fetchPermissions()
+    }, [roleId])
 
 
 
@@ -78,7 +82,7 @@ const Permission = () => {
             {/* ROLE */}
             <div className="w-[200px] sm:w-[300px] space-y-2">
                 <p className="text-gray-400">Roles</p>
-                <Select onValueChange={(val) => { roleId.current = Number(val); fetchPermissions(Number(val)) }}>
+                <Select defaultValue={String(roleId)} onValueChange={(val) => { setRoleId(+val) }}>
                     <SelectTrigger>
                         <SelectValue placeholder='Select Role' />
                     </SelectTrigger>

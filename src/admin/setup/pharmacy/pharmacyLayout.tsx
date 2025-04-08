@@ -1,3 +1,4 @@
+import PermissionProtectedAction from '@/components/permission-protected-actions'
 import { buttonVariants } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Boxes, Building2, ChartBarStacked, Clock3, Repeat2, Ruler } from 'lucide-react'
@@ -13,42 +14,56 @@ const PharmacyLayout = () => {
 
                         {/* we provide relative path like this */}
 
-                        <Link to={``} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <ChartBarStacked /> Medicine Category
-                        </Link>
+                        <PermissionProtectedAction action='view' module='setupPharmacy'>
+                            <Link to={``} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <ChartBarStacked /> Medicine Category
+                            </Link>
+                        </PermissionProtectedAction>
 
-                        <Link to={`interval`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                          <Repeat2 /> Dose Interval
-                        </Link>
+                        <PermissionProtectedAction action='view' module='dose_interval'>
+                            <Link to={`interval`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <Repeat2 /> Dose Interval
+                            </Link>
+                        </PermissionProtectedAction>
 
-                        <Link to={`duration`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                          <Clock3 /> Dose Duration
-                        </Link>
+                        <PermissionProtectedAction action='view' module='dose_duration'>
+                            <Link to={`duration`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <Clock3 /> Dose Duration
+                            </Link>
+                        </PermissionProtectedAction>
 
-                        <Link to={`unit`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                           <Ruler /> Units
-                        </Link>
 
-                        <Link to={`company`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <Building2 /> Company
-                        </Link>
+                        <PermissionProtectedAction action='view' module='medicine_unit'>
+                            <Link to={`unit`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <Ruler /> Units
+                            </Link>
+                        </PermissionProtectedAction>
 
-                        <Link to={`group`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <Boxes /> Medicine Group
-                        </Link>
 
+                        <PermissionProtectedAction action='view' module='medicine_company'>
+                            <Link to={`company`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <Building2 /> Company
+                            </Link>
+                        </PermissionProtectedAction>
+
+
+                        <PermissionProtectedAction action='view' module='medicine_group'>
+                            <Link to={`group`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <Boxes /> Medicine Group
+                            </Link>
+                        </PermissionProtectedAction>
 
                     </div>
 

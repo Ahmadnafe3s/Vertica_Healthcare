@@ -1,36 +1,34 @@
+import AlertModel from "@/components/alertModel"
+import LoaderModel from "@/components/loader"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+import PermissionTableActions from "@/components/permission-table-actions"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Pencil, Plus, Trash } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
-import SetupVitalForm, { SetupVitalFormSchema } from "./setupVitalForm"
+import { useConfirmation } from "@/hooks/useConfirmation"
 import { SetupVital } from "@/types/setupTypes/vital"
+import { Plus } from "lucide-react"
+import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { createSetupVital, deleteSetupVital, getSetupVitalDetails, getSetupVitals, updateSetupVital } from "./apiHandler"
-import CustomTooltip from "@/components/customTooltip"
 import { z } from "zod"
-import LoaderModel from "@/components/loader"
-import AlertModel from "@/components/alertModel"
+import { createSetupVital, deleteSetupVital, getSetupVitalDetails, getSetupVitals, updateSetupVital } from "./apiHandler"
+import SetupVitalForm, { SetupVitalFormSchema } from "./setupVitalForm"
+
+
 
 
 const SetupVitals = () => {
 
-    // credentials
-    const itemID = useRef<number>(0)
+    const { confirm, confirmationProps } = useConfirmation()
 
     // Loaders
-    const [loading, setloading] = useState<{ inline: boolean, model: boolean }>({ inline: false, model: false })
+    const [loading, setloading] = useState({ inline: false, model: false })
 
     // API states
     const [vitals, setVitals] = useState<SetupVital[]>([])
     const [vitalDetails, setVitalDetails] = useState<SetupVital>()
 
-
-    // model states
-    const [model, setModel] = useState<{ alert: boolean, setupVitalForm: boolean }>({
-        alert: false,
-        setupVitalForm: false
-    })
+    const [form, setForm] = useState(false)
 
 
 
@@ -44,7 +42,7 @@ const SetupVitals = () => {
                 data = await createSetupVital(formData)
             toast.success(data.message)
             fetchSetupVitals()
-            setModel(prev => ({ ...prev, setupVitalForm: false }))
+            setForm(false)
         } catch ({ message }: any) {
             toast.error(message)
         } finally { setloading(prev => ({ ...prev, inline: false })) }
@@ -73,17 +71,15 @@ const SetupVitals = () => {
     }
 
 
-    const onDelete = async () => {
+    const onDelete = async (id: number) => {
         try {
-            setloading(prev => ({ ...prev, inline: true }))
-            const data = await deleteSetupVital(itemID.current)
+            const isConfirmed = await confirm()
+            if (!isConfirmed) return null
+            const data = await deleteSetupVital(id)
             toast.success(data.message)
             fetchSetupVitals()
         } catch ({ message }: any) {
             toast.error(message)
-        } finally {
-            setloading(prev => ({ ...prev, inline: false }))
-            setModel(prev => ({ ...prev, alert: false }))
         }
     }
 
@@ -98,9 +94,11 @@ const SetupVitals = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Vitals</h1>
-                <Button size='sm' onClick={() => setModel(rest => ({ ...rest, setupVitalForm: true }))}>
-                    <Plus /> Add Vital
-                </Button>
+                <PermissionProtectedAction action='create' module='setupVital'>
+                    <Button size='sm' onClick={() => setForm(true)}>
+                        <Plus /> Add Vital
+                    </Button>
+                </PermissionProtectedAction>
             </div>
 
             <Separator />
@@ -123,23 +121,14 @@ const SetupVitals = () => {
                             <TableCell>{vital.unit}</TableCell>
                             <TableCell className='flex space-x-2'>
 
-                                {/* EDIT */}
-
-                                <CustomTooltip message='EDIT'>
-                                    <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
+                                <PermissionTableActions
+                                    module='setupVital'
+                                    onDelete={() => onDelete(vital.id)}
+                                    onEdit={async () => {
                                         await fetchVitalDetails(vital.id)
-                                        setModel(prev => ({ ...prev, setupVitalForm: true }))
-                                    }} />
-                                </CustomTooltip>
-
-                                {/* DELETE  */}
-
-                                <CustomTooltip message='DELETE'>
-                                    <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
-                                        setModel(prev => ({ ...prev, alert: true }))
-                                        itemID.current = vital.id
-                                    }} />
-                                </CustomTooltip>
+                                        setForm(true)
+                                    }}
+                                />
 
                             </TableCell>
                         </TableRow>
@@ -148,22 +137,22 @@ const SetupVitals = () => {
             </Table>
 
 
-            {model.setupVitalForm && <SetupVitalForm
+            {form && <SetupVitalForm
                 setupVitalDetails={vitalDetails!}
                 Submit={handleSubmit}
                 isPending={loading.inline}
-                onClick={() => { setModel(prev => ({ ...prev, setupVitalForm: false })); setVitalDetails(undefined) }}
+                onClick={() => { setForm(false); setVitalDetails(undefined) }}
             />}
+
 
             {/* loader model */}
 
             {loading.model && <LoaderModel />}
 
-            {model.alert && (
+            {confirmationProps.isOpen && (
                 <AlertModel
-                    cancel={() => setModel(prev => ({ ...prev, alert: false }))}
-                    continue={onDelete}
-                    isPending={loading.inline}
+                    continue={() => confirmationProps.onConfirm()}
+                    cancel={() => confirmationProps.onCancel()}
                 />
             )}
         </section>

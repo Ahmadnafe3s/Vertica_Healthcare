@@ -1,31 +1,30 @@
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Plus, Trash } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { Plus, } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
 import { createMedicineCompany, deleteMedicineCompany, getMedicineCompanies } from '../apiHandler'
 import { medicineComapny } from '@/types/setupTypes/pharmacy'
 import AlertModel from '@/components/alertModel'
 import MedicineCompanyForm, { MedicineCompanyFormSchema } from './medicineCompanyForm'
-import CustomTooltip from '@/components/customTooltip'
 import EmptyList from '@/components/emptyList'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import PermissionTableActions from '@/components/permission-table-actions'
+import { useConfirmation } from '@/hooks/useConfirmation'
+
+
+
 
 const MedicineCompany = () => {
 
-    // credentials
-    const itemID = useRef<number>(0)
-
+    const { confirm, confirmationProps } = useConfirmation()
 
     // Loaders
     const [isPending, setPending] = useState<boolean>(false)
 
-    // model states
-    const [model, setModel] = useState<{ medicineCompanyForm: boolean, alert: boolean }>({
-        medicineCompanyForm: false,
-        alert: false
-    })
+    const [form, setForm] = useState(false)
 
 
     // API States
@@ -37,10 +36,7 @@ const MedicineCompany = () => {
             setPending(true)
             const data = await createMedicineCompany(formData)
             toast.success(data.message)
-            setModel({
-                ...model,
-                medicineCompanyForm: false
-            })
+            setForm(false)
             fetchMedicineComapnies()
         } catch ({ message }: any) {
             toast.error(message);
@@ -60,20 +56,15 @@ const MedicineCompany = () => {
     }
 
 
-    const onDelete = async () => {
+    const onDelete = async (id: number) => {
         try {
-            setPending(true)
-            const data = await deleteMedicineCompany(itemID.current)
+            const isConfirmed = await confirm()
+            if (!isConfirmed) return null
+            const data = await deleteMedicineCompany(id)
             toast.success(data.message)
             fetchMedicineComapnies()
         } catch ({ message }: any) {
             toast.error(message);
-        } finally {
-            setModel({
-                ...model,
-                alert: false
-            })
-            setPending(false)
         }
     }
 
@@ -88,14 +79,11 @@ const MedicineCompany = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Comapnies</h1>
-                <Button size='sm' onClick={() => {
-                    setModel({
-                        ...model,
-                        medicineCompanyForm: true
-                    })
-                }}>
-                    <Plus /> Add Company
-                </Button>
+                <PermissionProtectedAction action='create' module='medicine_company'>
+                    <Button size='sm' onClick={() => { setForm(true) }}>
+                        <Plus /> Add Company
+                    </Button>
+                </PermissionProtectedAction>
             </div>
 
             <Separator />
@@ -120,17 +108,14 @@ const MedicineCompany = () => {
                         <TableRow key={company.id}>
                             <TableCell>{company.id}</TableCell>
                             <TableCell>{company.name}</TableCell>
-                            <TableCell>
-                                {/* DELETE  */}
-                                <CustomTooltip message='DELETE'>
-                                    <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-600" onClick={async () => {
-                                        setModel({
-                                            ...model,
-                                            alert: true
-                                        })
-                                        itemID.current = company.id
-                                    }} />
-                                </CustomTooltip>
+                            <TableCell className='flex'>
+
+                                <PermissionTableActions
+                                    module='medicine_company'
+                                    onDelete={() => onDelete(company.id)}
+                                    exclude={{ edit: true }}
+                                />
+
                             </TableCell>
                         </TableRow>
                     ))}
@@ -143,34 +128,22 @@ const MedicineCompany = () => {
 
             {/* Form model */}
 
-            {model.medicineCompanyForm && (
+            {form && (
                 <MedicineCompanyForm
                     Submit={handleSubmit}
                     isPending={isPending}
-                    onClick={() => {
-                        setModel({
-                            ...model,
-                            medicineCompanyForm: false
-                        })
-                    }}
+                    onClick={() => setForm(false)}
                 />
             )}
 
             {/* alert model */}
 
-            {model.alert && (
+            {confirmationProps.isOpen && (
                 <AlertModel
-                    isPending={isPending}
-                    continue={onDelete}
-                    cancel={() => {
-                        setModel({
-                            ...model,
-                            alert: false
-                        })
-                    }}
+                    continue={() => confirmationProps.onConfirm()}
+                    cancel={() => confirmationProps.onCancel()}
                 />
             )}
-
         </section>
     )
 }

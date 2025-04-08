@@ -5,16 +5,16 @@ import { Button, buttonVariants } from './ui/button'
 import { cn } from '@/lib/utils'
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import AlertModel from './alertModel'
 import { authSelector, logout } from '@/features/auth/authSlice'
-import usePermission from '@/authz'
 import { openAside } from '@/features/aside/asideSlice'
+import PermissionProtectedAction from './permission-protected-actions'
+
+
+
 
 const Aside = () => {
-
-    // custom
-    const { loadPermission, hasPermission } = usePermission()
 
     // model
     const [isAlert, setAlert] = useState<boolean>(false)
@@ -31,16 +31,10 @@ const Aside = () => {
     // making routes static
     const Routes = (session.user?.role === 'patient') ? session.user?.role : 'admin'
 
-    useEffect(() => {
-        (async () => {
-            await loadPermission()
-        })()
-    }, [])
-
 
     return (
         <>
-            <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all border-r border-dashed border-zinc-200 dark:border-gray-800 h-[calc(100vh-56px-35px)] top-14', { 'w-52 p-2.5': isSlideOpend })}>
+            <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all sm:border-r border-dashed border-zinc-200 dark:border-gray-800 h-[calc(100vh-56px-35px)] top-14', { 'border-r w-52 p-2.5': isSlideOpend })}>
 
                 <ScrollArea className='h-full '>
 
@@ -53,191 +47,205 @@ const Aside = () => {
                             })
                         }><Airplay className='h-4 w-4' /> Dashboard</Link></li>
 
+                        {/* Appointment */}
 
-                        {hasPermission('view', 'appointment') &&
+                        <PermissionProtectedAction action='view' module='appointment'>
                             <li><Link to={{ pathname: `/${Routes}/appointment` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
                                 })
-                            }><CalendarClock className='h-4 w-4' /> Appointment</Link></li>}
+                            }><CalendarClock className='h-4 w-4' /> Appointment</Link></li>
+                        </PermissionProtectedAction>
 
+                        {/* OPD */}
 
-                        {hasPermission('view', 'opd') && <li><Link to={{ pathname: `/${Routes}/opd` }} onClick={onNavigate} className={
-                            buttonVariants({
-                                variant: 'ghost',
-                                className: 'flex text-sm items-center'
-                            })
-                        }><HeartPulse className='h-4 w-4' /> OPD - Out Patient</Link></li>
-                        }
+                        <PermissionProtectedAction action='view' module='opd'>
+                            <li><Link to={{ pathname: `/${Routes}/opd` }} onClick={onNavigate} className={
+                                buttonVariants({
+                                    variant: 'ghost',
+                                    className: 'flex text-sm items-center'
+                                })
+                            }><HeartPulse className='h-4 w-4' /> OPD - Out Patient</Link></li>
+                        </PermissionProtectedAction>
 
-                        {hasPermission('view', 'pharmacy_bill') &&
+                        {/* Pharmacy */}
 
+                        <PermissionProtectedAction action='view' module='pharmacy_bill'>
                             <li><Link to={{ pathname: `/${Routes}/pharmacy` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
                                 })
                             }><BriefcaseMedical className='h-4 w-4' />Pharmacy</Link></li>
-                        }
+                        </PermissionProtectedAction>
 
-
-                        {hasPermission('view', 'radiology_bill') &&
+                        {/* Radiology */}
+                        <PermissionProtectedAction action='view' module='radiology_bill'>
                             <li><Link to={{ pathname: `/${Routes}/radiology` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
                                 })
                             }><Radiation className='h-4 w-4' />Radiology</Link></li>
-                        }
+                        </PermissionProtectedAction>
 
-                        {hasPermission('view', 'pathology_bill') &&
+                        {/* Pathology */}
+                        <PermissionProtectedAction action='view' module='pathology_bill'>
                             <li><Link to={{ pathname: `/${Routes}/pathology` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
                                 })
                             }><TestTube className='h-4 w-4' />Pathology</Link></li>
-                        }
+                        </PermissionProtectedAction>
 
-
-
-                        {hasPermission('view', 'human_resource') &&
+                        {/* Human Resource */}
+                        <PermissionProtectedAction action='view' module='human_resource'>
                             <li><Link to={{ pathname: '/admin/humanresource/staff' }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
                                 })
                             }><Network className='h-4 w-4' />Human Resource</Link></li>
-                        }
+                        </PermissionProtectedAction>
 
-
-                        {hasPermission('view', 'duty_roster') && (
+                        {/* Duty Roster */}
+                        <PermissionProtectedAction action='view' module='duty_roster'>
                             <li><Link to={{ pathname: '/admin/dutyroster/rosterreport' }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
                                 })
                             }><Watch className='h-4 w-4' />Duty Roster</Link></li>
-                        )}
+                        </PermissionProtectedAction>
 
 
                         {/* Tree View Links setup links */}
 
-                        {hasPermission('view', 'setup') &&
-                            <>
+                        <li>
+                            <Accordion type="single" collapsible >
+                                <AccordionItem value="item-1" className='border-none'>
 
-                                <li>
-                                    <Accordion type="single" collapsible >
-                                        <AccordionItem value="item-1" className='border-none'>
+                                    {/* Setup Trigger */}
+                                    <PermissionProtectedAction action='view' module='setup'>
+                                        <AccordionTrigger className={buttonVariants({
+                                            variant: 'ghost',
+                                            className: 'justify-between items-center'
+                                        })}>
+                                            <div className='flex gap-2'><Settings className='h-4 w-4' />  Setup</div>
+                                        </AccordionTrigger>
+                                    </PermissionProtectedAction>
 
-                                            <AccordionTrigger className={buttonVariants({
-                                                variant: 'ghost',
-                                                className: 'justify-between items-center'
-                                            })}>
-                                                <div className='flex gap-2'><Settings className='h-4 w-4' />  Setup</div>
-                                            </AccordionTrigger>
+                                    {/* Hospital Charges */}
 
-                                            {/* Links */}
+                                    <PermissionProtectedAction action='view' module='setup_Hospital_Charges'>
+                                        <AccordionContent className='py-1'>
+                                            <div className="pl-5">
+                                                <Link to={{ pathname: '/admin/setup/charges' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <ChevronRight className='h-4 w-4' />Hospital Charges</Link>
+                                            </div>
+                                        </AccordionContent>
+                                    </PermissionProtectedAction>
 
-                                            {hasPermission('view', 'setup_Hospital_Charges') && (
-                                                <AccordionContent className='py-1'>
-                                                    <div className="pl-5">
-                                                        <Link to={{ pathname: '/admin/setup/charges' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                            <ChevronRight className='h-4 w-4' />Hospital Charges</Link>
-                                                    </div>
-                                                </AccordionContent>
-                                            )}
+                                    {/* Setup Operation */}
+                                    <PermissionProtectedAction action='view' module='setupOperation'>
+                                        <AccordionContent className='py-1'>
+                                            <div className="pl-5">
+                                                <Link to={{ pathname: '/admin/setup/operation' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <ChevronRight className='h-4 w-4' />Operation</Link>
+                                            </div>
+                                        </AccordionContent>
+                                    </PermissionProtectedAction>
 
-                                            {hasPermission('view', 'setupOperation') && (
-                                                <AccordionContent className='py-1'>
-                                                    <div className="pl-5">
-                                                        <Link to={{ pathname: '/admin/setup/operation' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                            <ChevronRight className='h-4 w-4' />Operation</Link>
-                                                    </div>
-                                                </AccordionContent>
-                                            )}
+                                    {/* Setup Finding */}
+                                    <PermissionProtectedAction action='view' module='setupFinding'>
+                                        <AccordionContent className='py-1'>
+                                            <div className="pl-5">
+                                                <Link to={{ pathname: '/admin/setup/finding' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <ChevronRight className='h-4 w-4' />Findings</Link>
+                                            </div>
+                                        </AccordionContent>
+                                    </PermissionProtectedAction>
 
-                                            {hasPermission('view', 'setupFinding') && (
-                                                <AccordionContent className='py-1'>
-                                                    <div className="pl-5">
-                                                        <Link to={{ pathname: '/admin/setup/finding' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                            <ChevronRight className='h-4 w-4' />Findings</Link>
-                                                    </div>
-                                                </AccordionContent>
-                                            )}
-
-                                            {hasPermission('view', 'setupPharmacy') && (
-                                                <AccordionContent className='py-1'>
-                                                    <div className="pl-5">
-                                                        <Link to={{ pathname: '/admin/setup/pharmacy' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                            <ChevronRight className='h-4 w-4' />Pharmacy</Link>
-                                                    </div>
-                                                </AccordionContent>
-                                            )}
-
-                                            {hasPermission('view', 'setupVital') && (
-                                                <AccordionContent className='py-1'>
-                                                    <div className="pl-5">
-                                                        <Link to={{ pathname: '/admin/setup/vital' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                            <ChevronRight className='h-4 w-4' />Vital</Link>
-                                                    </div>
-                                                </AccordionContent>
-                                            )}
+                                    {/* Setup Pharmacy */}
+                                    <PermissionProtectedAction action='view' module='setupPharmacy'>
+                                        <AccordionContent className='py-1'>
+                                            <div className="pl-5">
+                                                <Link to={{ pathname: '/admin/setup/pharmacy' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <ChevronRight className='h-4 w-4' />Pharmacy</Link>
+                                            </div>
+                                        </AccordionContent>
+                                    </PermissionProtectedAction>
 
 
-                                            {session.user?.role === 'admin' && (
-                                                <AccordionContent className='py-1'>
-                                                    <div className="pl-5">
-                                                        <Link to={{ pathname: '/admin/setup/event' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                            <ChevronRight className='h-4 w-4' />Calendar</Link>
-                                                    </div>
-                                                </AccordionContent>
-                                            )}
+                                    {/* Setup Vital */}
+                                    <PermissionProtectedAction action='view' module='setupVital'>
+                                        <AccordionContent className='py-1'>
+                                            <div className="pl-5">
+                                                <Link to={{ pathname: '/admin/setup/vital' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <ChevronRight className='h-4 w-4' />Vital</Link>
+                                            </div>
+                                        </AccordionContent>
+                                    </PermissionProtectedAction>
+
+                                    {/* Setup Event */}
+                                    {session.user?.role === 'admin' && (
+                                        <AccordionContent className='py-1'>
+                                            <div className="pl-5">
+                                                <Link to={{ pathname: '/admin/setup/event' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <ChevronRight className='h-4 w-4' />Calendar</Link>
+                                            </div>
+                                        </AccordionContent>
+                                    )}
 
 
-                                            {hasPermission('view', 'setupRadiology') && (
-                                                <AccordionContent className='py-1'>
-                                                    <div className="pl-5">
-                                                        <Link to={{ pathname: '/admin/setup/radiology' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                            <ChevronRight className='h-4 w-4' />Radiology</Link>
-                                                    </div>
-                                                </AccordionContent>
-                                            )}
+                                    {/* Setup Radiology */}
+                                    <PermissionProtectedAction action='view' module='setupRadiology'>
+                                        <AccordionContent className='py-1'>
+                                            <div className="pl-5">
+                                                <Link to={{ pathname: '/admin/setup/radiology' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <ChevronRight className='h-4 w-4' />Radiology</Link>
+                                            </div>
+                                        </AccordionContent>
+                                    </PermissionProtectedAction>
 
 
-                                            {hasPermission('view', 'setupPathology') && (
-                                                <AccordionContent className='py-1'>
-                                                    <div className="pl-5">
-                                                        <Link to={{ pathname: '/admin/setup/pathology' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                            <ChevronRight className='h-4 w-4' />Pathology</Link>
-                                                    </div>
-                                                </AccordionContent>
-                                            )}
+                                    {/* Setup Pathology */}
+                                    <PermissionProtectedAction action='view' module='setupPathology'>
+                                        <AccordionContent className='py-1'>
+                                            <div className="pl-5">
+                                                <Link to={{ pathname: '/admin/setup/pathology' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <ChevronRight className='h-4 w-4' />Pathology</Link>
+                                            </div>
+                                        </AccordionContent>
+                                    </PermissionProtectedAction>
 
-                                            {hasPermission('view', 'setupPatient') && (
-                                                <AccordionContent className='py-1'>
-                                                    <div className="pl-5">
-                                                        <Link to={{ pathname: '/admin/setup/patient' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                            <ChevronRight className='h-4 w-4' />Patients</Link>
-                                                    </div>
-                                                </AccordionContent>
-                                            )}
 
-                                            {session.user?.role === 'admin' && (
-                                                <AccordionContent className='py-1'>
-                                                    <div className="pl-5">
-                                                        <Link to={{ pathname: '/admin/setup/authorization' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black  rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                            <ChevronRight className='h-4 w-4' />Authorization</Link>
-                                                    </div>
-                                                </AccordionContent>
-                                            )}
+                                    {/* Setup Patient */}
+                                    <PermissionProtectedAction action='view' module='setupPatient'>
+                                        <AccordionContent className='py-1'>
+                                            <div className="pl-5">
+                                                <Link to={{ pathname: '/admin/setup/patient' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <ChevronRight className='h-4 w-4' />Patients</Link>
+                                            </div>
+                                        </AccordionContent>
+                                    </PermissionProtectedAction>
 
-                                        </AccordionItem>
-                                    </Accordion>
-                                </li>
-                            </>
-                        }
+
+                                    {session.user?.role === 'admin' && (
+                                        <AccordionContent className='py-1'>
+                                            <div className="pl-5">
+                                                <Link to={{ pathname: '/admin/setup/authorization' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black  rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <ChevronRight className='h-4 w-4' />Authorization</Link>
+                                            </div>
+                                        </AccordionContent>
+                                    )}
+
+                                </AccordionItem>
+                            </Accordion>
+                        </li>
+
 
                     </ul>
                     <div className="h-14 bg-gradient-to-t from-white dark:from-gray-950 z-30 w-full absolute bottom-0" />
@@ -249,14 +257,16 @@ const Aside = () => {
                     <Button variant={'destructive'} size='sm' className='flex-1' onClick={() => setAlert(true)}>Logout</Button>
                 </div >
 
-            </div>
+            </div >
 
             {/* Alert model */}
 
-            {isAlert && (<AlertModel
-                continue={() => { dispatch(logout()); setAlert(false) }}
-                cancel={() => { setAlert(false) }}
-            />)}
+            {
+                isAlert && (<AlertModel
+                    continue={() => { dispatch(logout()); setAlert(false) }}
+                    cancel={() => { setAlert(false) }}
+                />)
+            }
         </>
     )
 }

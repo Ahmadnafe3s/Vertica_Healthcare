@@ -11,6 +11,9 @@ import AlertModel from '@/components/alertModel'
 import CustomTooltip from '@/components/customTooltip'
 import LoaderModel from '@/components/loader'
 import EmptyList from '@/components/emptyList'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import PermissionTableActions from '@/components/permission-table-actions'
+import { useConfirmation } from '@/hooks/useConfirmation'
 
 
 export interface categoryType {
@@ -30,6 +33,8 @@ const CategoryList = () => {
     // credentials
     const itemID = useRef<number>(0)
 
+    // my custom hook
+    const { confirm, confirmationProps } = useConfirmation()
 
     // Loaders
     const [isPending, setPending] = useState<boolean>(false)
@@ -92,17 +97,15 @@ const CategoryList = () => {
     }
 
 
-    const onDelete = async () => {
+    const onDelete = async (id: number) => {
         try {
-            const data = await deleteChargeCategory(itemID.current);
+            const isConfirmed = await confirm()
+            if (!isConfirmed) return null
+            const data = await deleteChargeCategory(id);
             toast.success(data.message)
             fetchChargeCategories()
         } catch ({ message }: any) {
             toast.error(message)
-            setLoaderModel(false)
-        } finally {
-            setPending(false);
-            setAlert(false)
         }
     }
 
@@ -117,9 +120,12 @@ const CategoryList = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg  font-semibold">Charge Category</h1>
-                <Button size='sm' onClick={() => { setCategroyFormVisible(true) }}>
-                    <Plus /> Add Categories
-                </Button>
+
+                <PermissionProtectedAction action="create" module="charge_category">
+                    <Button size='sm' onClick={() => { setCategroyFormVisible(true) }}>
+                        <Plus /> Add Categories
+                    </Button>
+                </PermissionProtectedAction>
             </div>
 
             <Separator />
@@ -140,21 +146,15 @@ const CategoryList = () => {
                             <TableCell>{category.chargeType.charge_type}</TableCell>
                             <TableCell>{category.description}</TableCell>
                             <TableCell className='flex space-x-2'>
-                                {/* EDIT */}
-                                <CustomTooltip message='EDIT'>
-                                    <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
+                                {/* has actions */}
+                                <PermissionTableActions
+                                    module='charge_category'
+                                    onEdit={async () => {
                                         await fetchChargeCategoryDetails(category.id);
                                         setCategroyFormVisible(true)
-                                    }} />
-                                </CustomTooltip>
-
-                                {/* DELETE  */}
-                                <CustomTooltip message='DELETE'>
-                                    <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
-                                        setAlert(true);
-                                        itemID.current = category.id
-                                    }} />
-                                </CustomTooltip>
+                                    }}
+                                    onDelete={() => onDelete(category.id)}
+                                />
                             </TableCell>
                         </TableRow>
                     })}
@@ -179,11 +179,10 @@ const CategoryList = () => {
 
             {/* Alert Model */}
 
-            {isAlert && (
+            {confirmationProps.isOpen && (
                 <AlertModel
-                    continue={onDelete}
-                    cancel={() => { setCategoryeDetails(undefined); setAlert(false) }}
-                    isPending={isPending}
+                    continue={() => { confirmationProps.onConfirm() }}
+                    cancel={() => { confirmationProps.onCancel() }}
                 />
             )}
 

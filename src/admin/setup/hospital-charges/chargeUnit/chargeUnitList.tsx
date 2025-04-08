@@ -1,14 +1,16 @@
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Pencil, Plus, Trash } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import AddUnitFormModel, { unitFormSchema } from './addUnitFormModel'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { z } from 'zod'
 import toast from 'react-hot-toast'
 import { createChargeUnit, deleteChargeUnit, getChargeUnitDetails, getChargeUnitList, updateChargeUnit } from '../chargesAPIhandlers'
 import AlertModel from '@/components/alertModel'
-import CustomTooltip from '@/components/customTooltip'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import PermissionTableActions from '@/components/permission-table-actions'
+import { useConfirmation } from '@/hooks/useConfirmation'
 
 
 export interface unitType {
@@ -19,9 +21,7 @@ export interface unitType {
 
 const ChargeUnitList = () => {
 
-  // credentials
-  const itemID = useRef<number>(0)
-
+  const { confirm, confirmationProps } = useConfirmation()
 
   // Loaders
   const [isPending, setPending] = useState<boolean>(false)
@@ -29,13 +29,10 @@ const ChargeUnitList = () => {
 
   // model states
   const [isAddUnitFormVisible, setAddUnitFormVisible] = useState<boolean>(false)
-  const [isAlert, setAlert] = useState<boolean>(false)
-
 
   // API States
   const [unitDetails, setUnitdetails] = useState<unitType | undefined>(undefined)
   const [unitsList, setUnitsList] = useState<unitType[]>([])
-
 
 
   // performing upsert 
@@ -84,15 +81,15 @@ const ChargeUnitList = () => {
 
 
   // deleting details
-  const onDelete = async () => {
+  const onDelete = async (id: number) => {
     try {
-      const data = await deleteChargeUnit(itemID.current)
+      const isConfirmed = await confirm()
+      if (!isConfirmed) return null
+      const data = await deleteChargeUnit(id)
       toast.success(data.message)
       fetchUnitsList()
     } catch ({ message }: any) {
       toast.error(message)
-    } finally {
-      setAlert(false)
     }
   }
 
@@ -108,9 +105,11 @@ const ChargeUnitList = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Unit List</h1>
-        <Button size='sm' onClick={() => { setAddUnitFormVisible(true) }}>
-          <Plus /> Add Unit
-        </Button>
+        <PermissionProtectedAction action='create' module='charge_unit'>
+          <Button size='sm' onClick={() => { setAddUnitFormVisible(true) }}>
+            <Plus /> Add Unit
+          </Button>
+        </PermissionProtectedAction>
       </div>
 
       <Separator />
@@ -127,20 +126,15 @@ const ChargeUnitList = () => {
             return <TableRow key={unit.id}>
               <TableCell>{unit.unit_type}</TableCell>
               <TableCell className='flex space-x-2'>
-                {/* EDIT  */}
-                <CustomTooltip message='EDIT'>
-                  <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
-                    fetchUnitdetails(unit.id)
-                  }} />
-                </CustomTooltip>
 
-                {/* DELETE  */}
-                <CustomTooltip message='DELETE'>
-                  <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
-                    setAlert(true);
-                    itemID.current = unit.id
-                  }} />
-                </CustomTooltip>
+                <PermissionTableActions
+                  module='charge_unit'
+                  onEdit={() => {
+                    fetchUnitdetails(unit.id)
+                  }}
+                  onDelete={() => { onDelete(unit.id) }}
+                />
+
               </TableCell>
             </TableRow>
           })}
@@ -158,9 +152,9 @@ const ChargeUnitList = () => {
 
 
       {/* Alert model */}
-      {isAlert && <AlertModel
-        cancel={() => setAlert(false)}
-        continue={onDelete}
+      {confirmationProps.isOpen && <AlertModel
+        cancel={() => confirmationProps.onCancel()}
+        continue={confirmationProps.onConfirm}
       />}
 
     </section>

@@ -1,15 +1,17 @@
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Pencil, Plus, Trash } from "lucide-react"
+import { Plus, } from "lucide-react"
 import AddTaxformModel, { taxFormSchema } from "./addTaxformModel"
 import toast from "react-hot-toast"
 import { createTax, deleteTax, getTaxDetails, getTaxesList, updateTax } from "../chargesAPIhandlers"
 import { z } from "zod"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import AlertModel from "@/components/alertModel"
 import LoaderModel from "@/components/loader"
-import CustomTooltip from "@/components/customTooltip"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+import PermissionTableActions from "@/components/permission-table-actions"
+import { useConfirmation } from "@/hooks/useConfirmation"
 
 export interface TaxType {
   id: number,
@@ -20,24 +22,18 @@ export interface TaxType {
 
 const TaxList = () => {
 
-  // credentials
-  const itemID = useRef<number>(0)
-
+  const { confirm, confirmationProps } = useConfirmation()
 
   // Loaders
   const [isPending, setPending] = useState<boolean>(false)
   const [isLoader, setLoader] = useState<boolean>(false)
 
-
   // model states
   const [isAddTaxFormVisible, setAddTaxFormVisible] = useState<boolean>(false)
-  const [isAlert, setAlert] = useState<boolean>(false)
-
 
   // API States
   const [taxestList, setTaxlist] = useState<TaxType[]>([])
   const [taxDetails, setTaxDetails] = useState<TaxType | undefined>(undefined)
-
 
 
   const handleSubmit = async (formData: z.infer<typeof taxFormSchema>) => {
@@ -87,18 +83,15 @@ const TaxList = () => {
   }
 
 
-  const onDelete = async () => {
+  const onDelete = async (id: number) => {
     try {
-      setPending(true)
-      const data = await deleteTax(itemID.current)
+      const isConfirmed = await confirm()
+      if (!isConfirmed) return null
+      const data = await deleteTax(id)
       fetchTaxesList();
       toast.success(data.message);
-      setPending(false)
     } catch ({ message }: any) {
       toast.error(message)
-    } finally {
-      setAlert(false)
-      setPending(false)
     }
   }
 
@@ -107,14 +100,18 @@ const TaxList = () => {
     fetchTaxesList()
   }, [])
 
+
+
   return (
     <section className="flex flex-col pb-16 gap-y-5">
 
       <div className="flex justify-between">
         <h1 className="text-lg  font-semibold">Taxes List</h1>
-        <Button size='sm' onClick={() => setAddTaxFormVisible(true)}>
-          <Plus /> Add Tax
-        </Button>
+        <PermissionProtectedAction action='create' module='charge_tax'>
+          <Button size='sm' onClick={() => setAddTaxFormVisible(true)}>
+            <Plus /> Add Tax
+          </Button>
+        </PermissionProtectedAction>
       </div>
 
       <Separator />
@@ -134,23 +131,16 @@ const TaxList = () => {
               <TableCell>{tax.percentage}%</TableCell>
               <TableCell className='flex space-x-2'>
 
-                {/* EDIT  */}
-
-                <CustomTooltip message="EDIT">
-                  <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
+                <PermissionTableActions
+                  module="charge_tax"
+                  onEdit={async () => {
                     await fetchTaxdetails(tax.id)
                     setAddTaxFormVisible(true)
-                  }} />
-                </CustomTooltip>
-
-                {/* DELETE  */}
-
-                <CustomTooltip message="DELETE">
-                  <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
-                    setAlert(true);
-                    itemID.current = tax.id
-                  }} />
-                </CustomTooltip>
+                  }}
+                  onDelete={() => onDelete(tax.id)}
+                  editTooltip="Modify Tax"
+                  deleteTooltip="Delete Tax"
+                />
 
               </TableCell>
             </TableRow>
@@ -177,11 +167,10 @@ const TaxList = () => {
 
 
       {/* alert model */}
-      {isAlert && (
+      {confirmationProps.isOpen && (
         <AlertModel
-          isPending={isPending}
-          cancel={() => setAlert(false)}
-          continue={onDelete}
+          cancel={() => confirmationProps.onCancel()}
+          continue={() => confirmationProps.onConfirm()}
         />
       )}
 

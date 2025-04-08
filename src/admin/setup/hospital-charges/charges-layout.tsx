@@ -1,3 +1,4 @@
+import PermissionProtectedAction from "@/components/permission-protected-actions"
 import { buttonVariants } from "@/components/ui/button"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { ChartBarStacked, EllipsisVertical, Menu, ReceiptText, Ruler } from "lucide-react"
@@ -13,35 +14,45 @@ const ChargesLayout = () => {
 
                         {/* we provide relative path like this */}
 
-                        <Link to={``} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <Menu /> Charges
-                        </Link>
+                        <PermissionProtectedAction action='view' module='setup_Hospital_Charges'>
+                            <Link to={``} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <Menu /> Charges
+                            </Link>
+                        </PermissionProtectedAction>
 
-                        <Link to={`category`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <ChartBarStacked /> Categories
-                        </Link>
+                        <PermissionProtectedAction action="view" module="charge_category">
+                            <Link to={`category`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <ChartBarStacked /> Categories
+                            </Link>
+                        </PermissionProtectedAction>
 
-                        <Link to={`types`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <EllipsisVertical />Charge Types
-                        </Link>
+                        <PermissionProtectedAction action='view' module='charge_type'>
+                            <Link to={`types`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <EllipsisVertical />Charge Types
+                            </Link>
+                        </PermissionProtectedAction>
 
-                        <Link to={`tax`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <ReceiptText /> Taxes
-                        </Link>
+                        <PermissionProtectedAction action='view' module='charge_tax'>
+                            <Link to={`tax`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <ReceiptText /> Taxes
+                            </Link>
+                        </PermissionProtectedAction>
 
-                        <Link to={`units`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <Ruler /> Units
-                        </Link>
+                        <PermissionProtectedAction action='view' module='charge_unit'>
+                            <Link to={`units`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <ReceiptText /> Units
+                            </Link>
+                        </PermissionProtectedAction>
 
                     </div>
 

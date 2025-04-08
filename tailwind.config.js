@@ -1,7 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 export default {
 	darkMode: ["class"],
-	content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
+	content: [
+		"./index.html",
+		"./src/**/*.{js,ts,jsx,tsx}",
+	],
 	theme: {
 		extend: {
 			borderRadius: {
@@ -50,7 +53,7 @@ export default {
 					'4': 'hsl(var(--chart-4))',
 					'5': 'hsl(var(--chart-5))'
 				},
-				dark : 'oklch(0.13 0.03 261.7)'
+				dark: 'oklch(0.13 0.03 261.7)'
 			},
 			keyframes: {
 				'accordion-down': {

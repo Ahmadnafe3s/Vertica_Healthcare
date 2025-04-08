@@ -1,35 +1,29 @@
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Trash } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { Plus } from "lucide-react"
+import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import MedicineUnitForm from "./medicineUnitForm"
 import { medicineUnit } from "@/types/setupTypes/pharmacy"
 import { createMedicineUnit, deleteMedicineUnit, getMedicineUnits } from "../apiHandler"
 import AlertModel from "@/components/alertModel"
-import CustomTooltip from "@/components/customTooltip"
 import EmptyList from "@/components/emptyList"
+import { useConfirmation } from "@/hooks/useConfirmation"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+import PermissionTableActions from "@/components/permission-table-actions"
 
 
 
 
 const MedicineUnits = () => {
 
-  // credentials
-  const itemID = useRef<number>(0)
-
+  const { confirm, confirmationProps } = useConfirmation()
 
   // Loaders
   const [isPending, setPending] = useState<boolean>(false)
 
-
-  // model states
-  const [model, setModel] = useState<{ alert: boolean, medUnitForm: boolean }>({
-    alert: false,
-    medUnitForm: false
-  })
-
+  const [form, setForm] = useState(false)
 
   // API States
   const [medicineUnits, setMedicineUnits] = useState<medicineUnit[]>([])
@@ -41,7 +35,7 @@ const MedicineUnits = () => {
       setPending(true)
       const data = await createMedicineUnit(formData)
       toast.success(data.message)
-      setModel({ ...model, medUnitForm: false })
+      setForm(false)
       fetchMedicineUnits()
     } catch ({ message }: any) {
       toast.error(message);
@@ -51,17 +45,15 @@ const MedicineUnits = () => {
   }
 
 
-  const onDelete = async () => {
+  const onDelete = async (id: number) => {
     try {
-      setPending(true)
-      const data = await deleteMedicineUnit(itemID.current)
+      const isConfirmed = await confirm()
+      if (!isConfirmed) return null
+      const data = await deleteMedicineUnit(id)
       toast.success(data.message)
       fetchMedicineUnits()
     } catch ({ message }: any) {
       toast.error(message);
-    } finally {
-      setPending(false);
-      setModel(rest => ({ ...rest, alert: false }))
     }
   }
 
@@ -87,10 +79,11 @@ const MedicineUnits = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Units</h1>
-        <Button size='sm' onClick={() => setModel({ ...model, medUnitForm: true })
-        }>
-          <Plus /> Add Unit
-        </Button>
+        <PermissionProtectedAction action='create' module='medicine_unit'>
+          <Button size='sm' onClick={() => setForm(true)}>
+            <Plus /> Add Unit
+          </Button>
+        </PermissionProtectedAction>
       </div>
 
       <Separator />
@@ -108,14 +101,14 @@ const MedicineUnits = () => {
             <TableRow key={unit.id}>
               <TableCell>{unit.id}</TableCell>
               <TableCell>{unit.name}</TableCell>
-              <TableCell>
-                {/* DELETE  */}
-                <CustomTooltip message="DELETE">
-                  <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
-                    setModel(rest => ({ ...rest, alert: true }))
-                    itemID.current = unit.id
-                  }} />
-                </CustomTooltip>
+              <TableCell className="flex">
+
+                <PermissionTableActions
+                  module="medicine_unit"
+                  onDelete={() => onDelete(unit.id)}
+                  exclude={{ edit: true }}
+                />
+
               </TableCell>
             </TableRow>
           ))}
@@ -128,21 +121,21 @@ const MedicineUnits = () => {
 
       {/* Models */}
 
-      {model.medUnitForm && (
+      {form && (
         <MedicineUnitForm
           isPending={isPending}
           Submit={handleSubmit}
-          onClick={() => setModel({ ...model, medUnitForm: false })}
+          onClick={() => setForm(false)}
         />
       )}
 
 
       {/* Alert mdoel */}
 
-      {model.alert && (
+      {confirmationProps.isOpen && (
         <AlertModel
-          continue={onDelete}
-          cancel={() => setModel(rest => ({ ...rest, alert: false }))}
+          continue={() => confirmationProps.onConfirm()}
+          cancel={() => confirmationProps.onCancel()}
         />
       )}
 

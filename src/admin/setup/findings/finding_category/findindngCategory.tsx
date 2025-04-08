@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Pencil, Plus, Trash } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { Plus, } from "lucide-react"
+import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import FindingCategoryForm, { FindingCategoryFormSchema } from "./findingCategoryForm"
 import AlertModel from "@/components/alertModel"
@@ -10,20 +10,21 @@ import { z } from "zod"
 import { createFindingCategory, deleteFindingCategory, getFindingCategories, getFindingCategoryDetails, updateFindingCategory } from "../apiHandler"
 import { findingCategory } from "@/types/setupTypes/finding"
 import LoaderModel from "@/components/loader"
-import CustomTooltip from "@/components/customTooltip"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+import PermissionTableActions from "@/components/permission-table-actions"
+import { useConfirmation } from "@/hooks/useConfirmation"
+
+
 
 const FindindngCategories = () => {
-  // credentials
-  const itemID = useRef<number>(0)
 
+  const { confirm, confirmationProps } = useConfirmation()
 
   // Loaders
   const [isPending, setPending] = useState<boolean>(false)
 
-
   // model states
   const [isFindingFormVisible, setFindingFormVisible] = useState<boolean>(false)
-  const [isAlert, setAlert] = useState<boolean>(false)
   const [loaderModel, setLoaderModel] = useState<boolean>(false)
 
   // API States
@@ -76,15 +77,15 @@ const FindindngCategories = () => {
   }
 
 
-  const onDelete = async () => {
+  const onDelete = async (id: number) => {
     try {
-      const data = await deleteFindingCategory(itemID.current)
+      const isConfirmed = await confirm()
+      if (!isConfirmed) return null
+      const data = await deleteFindingCategory(id)
       toast.success(data.message)
       fetchFindingCategories()
     } catch ({ message }: any) {
       toast.error(message)
-    } finally {
-      setAlert(false)
     }
   }
 
@@ -99,9 +100,11 @@ const FindindngCategories = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Categories</h1>
-        <Button size='sm' onClick={() => { setFindingFormVisible(true) }}>
-          <Plus /> Add Category
-        </Button>
+        <PermissionProtectedAction action='create' module='finding_category'>
+          <Button size='sm' onClick={() => { setFindingFormVisible(true) }}>
+            <Plus /> Add Category
+          </Button>
+        </PermissionProtectedAction>
       </div>
 
       <Separator />
@@ -120,25 +123,16 @@ const FindindngCategories = () => {
             return <TableRow key={finding.id}>
               <TableCell>{finding.id}</TableCell>
               <TableCell>{finding.name}</TableCell>
-
               <TableCell className='flex space-x-2'>
 
-                {/* EDIT */}
-                <CustomTooltip message="EDIT">
-                  <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
+                <PermissionTableActions
+                  module="finding_category"
+                  onEdit={async () => {
                     await fetchFindingCategoryDetails(finding.id)
-                    setFindingFormVisible(true);
-                  }} />
-                </CustomTooltip>
-
-
-                {/* DELETE  */}
-                <CustomTooltip message="DELETE">
-                  <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
-                    setAlert(true);
-                    itemID.current = finding.id
-                  }} />
-                </CustomTooltip>
+                    setFindingFormVisible(true)
+                  }}
+                  onDelete={() => onDelete(finding.id)}
+                />
 
               </TableCell>
 
@@ -168,11 +162,10 @@ const FindindngCategories = () => {
 
       {/* Alert Model */}
 
-      {isAlert && (
+      {confirmationProps.isOpen && (
         <AlertModel
-          cancel={() => setAlert(false)}
-          continue={onDelete}
-          isPending={isPending}
+          cancel={() => confirmationProps.onCancel()}
+          continue={() => confirmationProps.onConfirm()}
         />
       )}
 

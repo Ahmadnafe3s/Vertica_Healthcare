@@ -1,22 +1,22 @@
+import CustomPagination from "@/components/customPagination"
+import EmptyList from "@/components/emptyList"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { SearchX } from "lucide-react"
-import { useDebouncedCallback } from "use-debounce"
+import { SetupPatients } from "@/types/setupTypes/patients"
+import { parseAsInteger, useQueryState } from "nuqs"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import CustomPagination from "@/components/customPagination"
-import { useQueryState, parseAsInteger } from "nuqs"
-import { SetupPatients } from "@/types/setupTypes/patients"
-import { getSetupPatinets } from "./APIHandlers"
 import { Link } from "react-router-dom"
-import EmptyList from "@/components/emptyList"
+import { useDebouncedCallback } from "use-debounce"
+import { getSetupPatinets } from "./APIHandlers"
 
 
 
 
 
 const Patients = () => {
+
 
     // params
     const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
@@ -31,7 +31,7 @@ const Patients = () => {
 
     const fetchPatients = async () => {
         try {
-            const data = await getSetupPatinets({ page, limit: search ? 100 : 10, search: search! })
+            const data = await getSetupPatinets({ page, limit: 10, search: search! })
             setPatients(data)
 
         } catch ({ message }: any) {
@@ -42,12 +42,8 @@ const Patients = () => {
 
 
     const onSearch = useDebouncedCallback(async (value: string) => {
-        if (value) {
-            setPage(1)
-            setSearch(value)
-            return null
-        }
-        setSearch(null) // if no value then null
+        value ? setSearch(value) : setSearch(null)
+        setPage(1)
     }, 400)
 
 

@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Pencil, Plus, Trash } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { Plus, } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import AddOperationNameModel, { AddOperationNameFormSchema } from './addOperationNameModel'
 import { createOperationName, deleteOperationName, getOperationNameDetails, getOperationNames, updateOperationName } from '../operationsAPIhandlers'
@@ -10,13 +10,13 @@ import { z } from 'zod'
 import { operationNameType } from '@/types/setupTypes/setupOpeartion'
 import LoaderModel from '@/components/loader'
 import AlertModel from '@/components/alertModel'
-import CustomTooltip from '@/components/customTooltip'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import PermissionTableActions from '@/components/permission-table-actions'
+import { useConfirmation } from '@/hooks/useConfirmation'
 
 const OperationNames = () => {
 
-    // credentials
-    const itemID = useRef<number>(0)
-
+    const { confirm, confirmationProps } = useConfirmation()
 
     // Loaders
     const [isPending, setPending] = useState<boolean>(false)
@@ -25,13 +25,11 @@ const OperationNames = () => {
 
     // model states
     const [isAddOperNameFormVisible, setAddOperNameFormVisible] = useState<boolean>(false)
-    const [isAlert, setAlert] = useState<boolean>(false)
 
 
     // API States
     const [operationNames, setoperationNames] = useState<operationNameType[]>([])
     const [operationNameDetails, setoperationNameDetails] = useState<operationNameType | undefined>(undefined)
-
 
 
     // handling both upsert
@@ -82,17 +80,15 @@ const OperationNames = () => {
     }
 
 
-    const onDelete = async () => {
+    const onDelete = async (id: number) => {
         try {
-            setPending(true)
-            const data = await deleteOperationName(itemID.current)
+            const isConfirmed = await confirm()
+            if (!isConfirmed) return null
+            const data = await deleteOperationName(id)
             toast.success(data.message)
             fetchOperationNames()
         } catch ({ message }: any) {
             toast.error(message)
-        } finally {
-            setAlert(false)
-            setPending(false)
         }
     }
 
@@ -107,9 +103,11 @@ const OperationNames = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Operations List</h1>
-                <Button size='sm' onClick={() => { setAddOperNameFormVisible(true) }}>
-                    <Plus /> Add Operation
-                </Button>
+                <PermissionProtectedAction action='create' module='setupOperation'>
+                    <Button size='sm' onClick={() => { setAddOperNameFormVisible(true) }}>
+                        <Plus /> Add Operation
+                    </Button>
+                </PermissionProtectedAction>
             </div>
 
             <Separator />
@@ -141,23 +139,14 @@ const OperationNames = () => {
                                     <TableCell>{name.category.name}</TableCell>
                                     <TableCell className='flex space-x-2'>
 
-                                        {/* EDIT */}
-
-                                        <CustomTooltip message='EDIT'>
-                                            <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
+                                        <PermissionTableActions
+                                            module='setupOperation'
+                                            onEdit={async () => {
                                                 await fetchOperationNameDetails(name.id)
-                                                setAddOperNameFormVisible(true);
-                                            }} />
-                                        </CustomTooltip>
-
-                                        {/* DELETE  */}
-
-                                        <CustomTooltip message='DELETE'>
-                                            <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
-                                                setAlert(true);
-                                                itemID.current = name.id
-                                            }} />
-                                        </CustomTooltip>
+                                                setAddOperNameFormVisible(true)
+                                            }}
+                                            onDelete={() => onDelete(name.id)}
+                                        />
 
                                     </TableCell>
                                 </TableRow>
@@ -185,11 +174,10 @@ const OperationNames = () => {
 
             {/* AlertModel */}
 
-            {isAlert && (
+            {confirmationProps.isOpen && (
                 <AlertModel
-                    cancel={() => { setAlert(false) }}
-                    continue={onDelete}
-                    isPending={isPending}
+                    cancel={() => confirmationProps.onCancel()}
+                    continue={() => confirmationProps.onConfirm()}
                 />
             )}
         </section>

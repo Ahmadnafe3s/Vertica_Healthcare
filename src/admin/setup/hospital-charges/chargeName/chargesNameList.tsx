@@ -3,10 +3,10 @@ import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { currencySymbol } from "@/helpers/currencySymbol"
-import { Pencil, Plus, SearchX, Trash } from "lucide-react"
+import { Plus } from "lucide-react"
 import { useDebouncedCallback } from "use-debounce"
 import AddChargesFormModel from "./addChargeNameFormModel"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { z } from "zod"
 import { chargeNameFormSchema } from "@/formSchemas/setupSectionSchemas/ChargeNameFormSchema"
 import toast from "react-hot-toast"
@@ -16,9 +16,12 @@ import { currencyFormat } from "@/lib/utils"
 import AlertModel from "@/components/alertModel"
 import CustomPagination from "@/components/customPagination"
 import LoaderModel from "@/components/loader"
-import CustomTooltip from "@/components/customTooltip"
 import { useQueryState, parseAsInteger } from "nuqs"
 import EmptyList from "@/components/emptyList"
+import { useConfirmation } from "@/hooks/useConfirmation"
+import PermissionTableActions from "@/components/permission-table-actions"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+
 
 
 
@@ -26,20 +29,18 @@ import EmptyList from "@/components/emptyList"
 
 const ChargesList = () => {
 
+  // my custom hook
+  const { confirm, confirmationProps } = useConfirmation()
+
   // params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [search, setSearch] = useQueryState('search')
 
-  // credentials
-  const itemID = useRef<number>(0)
-
   // Loaders
   const [isPending, setPending] = useState<boolean>(false)
 
-
   // model states
   const [isChargeNameFormVisible, setChargeNameFormVisible] = useState<boolean>(false)
-  const [isAlert, setAlert] = useState<boolean>(false)
   const [loaderModel, setLoaderModel] = useState<boolean>(false)
 
   // API States
@@ -87,7 +88,6 @@ const ChargesList = () => {
     try {
       const data = await getChargeNames({ page, limit: search ? 100 : 10, search: search! })
       setchargeNames(data)
-      console.log(data);
 
     } catch ({ message }: any) {
       toast.error(message)
@@ -95,17 +95,15 @@ const ChargesList = () => {
   }
 
 
-  const onDelete = async () => {
+  const onDelete = async (id: number) => {
     try {
-      setPending(true)
-      const data = await deleteChargeName(itemID.current)
+      const isConfirmed = await confirm()
+      if (!isConfirmed) return null
+      const data = await deleteChargeName(id)
       toast.success(data.message)
       fetChargeNames()
     } catch ({ message }: any) {
       toast.error(message)
-    } finally {
-      setPending(false)
-      setAlert(false)
     }
   }
 
@@ -125,15 +123,20 @@ const ChargesList = () => {
   }, [page, search])
 
 
+
   return (
 
     <section className="flex flex-col gap-y-5 pb-16">
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Charges</h1>
-        <Button size='sm' onClick={() => { setChargeNameFormVisible(true) }}>
-          <Plus /> Add Charge
-        </Button>
+
+        <PermissionProtectedAction action='create' module='setup_Hospital_Charges'>
+          <Button size='sm' onClick={() => { setChargeNameFormVisible(true) }}>
+            <Plus /> Add Charge
+          </Button>
+        </PermissionProtectedAction>
+
       </div>
 
       <Separator />
@@ -173,21 +176,15 @@ const ChargesList = () => {
                   <TableCell>{currencyFormat(chargeName.tpa)}</TableCell>
                   <TableCell className='flex space-x-2'>
 
-                    {/* EDIT */}
-                    <CustomTooltip message="EDIT">
-                      <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
-                        await fetchChargeNameDetails(chargeName.id);
+                    {/* it has both edit and delete */}
+                    <PermissionTableActions
+                      module='setup_Hospital_Charges'
+                      onEdit={async () => {
+                        await fetchChargeNameDetails(chargeName.id)
                         setChargeNameFormVisible(true)
-                      }} />
-                    </CustomTooltip>
-
-                    {/* DELETE  */}
-                    <CustomTooltip message="DELETE">
-                      <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
-                        setAlert(true);
-                        itemID.current = chargeName.id
-                      }} />
-                    </CustomTooltip>
+                      }}
+                      onDelete={() => onDelete(chargeName.id)}
+                    />
 
                   </TableCell>
                 </TableRow>
@@ -236,10 +233,9 @@ const ChargesList = () => {
       {/* Alert Model */}
 
       {
-        isAlert && <AlertModel
-          cancel={() => setAlert(false)}
-          continue={onDelete}
-          isPending={isPending}
+        confirmationProps.isOpen && <AlertModel
+          cancel={() => confirmationProps.onCancel()}
+          continue={confirmationProps.onConfirm}
         />
       }
 

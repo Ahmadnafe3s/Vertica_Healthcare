@@ -1,3 +1,4 @@
+import PermissionProtectedAction from '@/components/permission-protected-actions'
 import { buttonVariants } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { FlaskConical, ChartBarStacked, ReceiptText, Ruler } from 'lucide-react'
@@ -13,30 +14,38 @@ const SetupPathologyLayout = () => {
 
             {/* we provide relative path like this */}
 
-            <Link to={``} className={buttonVariants({
-              variant: 'outline'
-            })}>
-              <FlaskConical /> Test Names
-            </Link>
+            <PermissionProtectedAction action='view' module='setupPathology'>
+              <Link to={``} className={buttonVariants({
+                variant: 'outline'
+              })}>
+                <FlaskConical /> Test Names
+              </Link>
+            </PermissionProtectedAction>
 
-            <Link to={`category`} className={buttonVariants({
-              variant: 'outline'
-            })}>
-              <ChartBarStacked /> Categories
-            </Link>
+            <PermissionProtectedAction action='view' module='pathology_category'>
+              <Link to={`category`} className={buttonVariants({
+                variant: 'outline'
+              })}>
+                <ChartBarStacked /> Categories
+              </Link>
+            </PermissionProtectedAction>
+
+            <PermissionProtectedAction action='view' module='pathology_parameter'>
+              <Link to={`parameter`} className={buttonVariants({
+                variant: 'outline'
+              })}>
+                <ReceiptText /> Parameters
+              </Link>
+            </PermissionProtectedAction>
 
 
-            <Link to={`parameter`} className={buttonVariants({
-              variant: 'outline'
-            })}>
-              <ReceiptText /> Parameters
-            </Link>
-
-            <Link to={`units`} className={buttonVariants({
-              variant: 'outline'
-            })}>
-              <Ruler /> Units
-            </Link>
+            <PermissionProtectedAction action='view' module='pathology_unit'>
+              <Link to={`units`} className={buttonVariants({
+                variant: 'outline'
+              })}>
+                <Ruler /> Units
+              </Link>
+            </PermissionProtectedAction>
 
           </div>
 

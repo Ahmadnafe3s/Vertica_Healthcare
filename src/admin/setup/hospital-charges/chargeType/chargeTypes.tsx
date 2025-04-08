@@ -1,15 +1,17 @@
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Plus, Trash } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { Plus } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { z } from 'zod'
 import AddChargeTypeformModel, { ChargeTypeformModelSchema } from './addChargeTypeformModel'
 import toast from 'react-hot-toast'
 import { createChargeType, deleteChargeType, getChargeTypes, updateChargeType, updateChargeTypeModule } from '../chargesAPIhandlers'
 import { Checkbox } from '@/components/ui/checkbox'
 import AlertModel from '@/components/alertModel'
-import CustomTooltip from '@/components/customTooltip'
+import PermissionTableActions from '@/components/permission-table-actions'
+import { useConfirmation } from '@/hooks/useConfirmation'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
 
 
 
@@ -27,9 +29,7 @@ export interface Charge_Type_Interface {
 
 const ChargeTypes = () => {
 
-  // credentials
-  const itemID = useRef<number>(0)
-
+  const { confirm, confirmationProps } = useConfirmation()
 
   // Loaders
   const [isPending, setPending] = useState<boolean>(false)
@@ -37,7 +37,6 @@ const ChargeTypes = () => {
 
   // model states
   const [isChargeTypeFormVisible, setChargeTypeFormVisible] = useState<boolean>(false)
-  const [isAlert, setAlert] = useState<boolean>(false)
 
 
   // API States
@@ -88,18 +87,16 @@ const ChargeTypes = () => {
 
 
 
-  const onDelete = async () => {
+  const onDelete = async (id: number) => {
     try {
-      setPending(true)
-      const data = await deleteChargeType(itemID.current)
+      const isConfirmed = await confirm()
+      if (!isConfirmed) return null
+      const data = await deleteChargeType(id)
       toast.success(data.message)
       fetchChargeTypes()
       setPending(false)
     } catch ({ message }: any) {
       toast.error(message)
-    } finally {
-      setAlert(false)
-      setPending(false)
     }
   }
 
@@ -114,9 +111,11 @@ const ChargeTypes = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Charge Types</h1>
-        <Button size='sm' onClick={() => { setChargeTypeFormVisible(true) }}>
-          <Plus /> Add Charge Type
-        </Button>
+        <PermissionProtectedAction action='create' module='charge_type'>
+          <Button size='sm' onClick={() => { setChargeTypeFormVisible(true) }}>
+            <Plus /> Add Charge Type
+          </Button>
+        </PermissionProtectedAction>
       </div>
 
       <Separator />
@@ -144,30 +143,12 @@ const ChargeTypes = () => {
               <TableCell><Checkbox checked={type.radiology} onCheckedChange={(value) => { updateModule(type.id, { radiology: value }) }} /></TableCell>
               <TableCell><Checkbox checked={type.blood_bank} onCheckedChange={(value) => { updateModule(type.id, { blood_bank: value }) }} /></TableCell>
               <TableCell><Checkbox checked={type.ambulance} onCheckedChange={(value) => { updateModule(type.id, { ambulance: value }) }} /></TableCell>
-              <TableCell className='space-x-2'>
-
-                {/* EDIT 
-                <TooltipProvider delayDuration={200}>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Pencil className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
-
-                      }} />
-                    </TooltipTrigger>
-                    <TooltipContent>Edit</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider> */}
-
-
-                {/* DELETE  */}
-
-                <CustomTooltip message='DELETE'>
-                  <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
-                    setAlert(true);
-                    itemID.current = type.id
-                  }} />
-                </CustomTooltip>
-
+              <TableCell className='flex space-x-2'>
+                <PermissionTableActions
+                  module='charge_type'
+                  onDelete={() => onDelete(type.id)}
+                  exclude={{ edit: true }}
+                />
               </TableCell>
             </TableRow>
           })}
@@ -191,11 +172,10 @@ const ChargeTypes = () => {
 
 
       {/* Alert */}
-      {isAlert && (
+      {confirmationProps.isOpen && (
         <AlertModel
-          isPending={isPending}
-          cancel={() => { setAlert(false) }}
-          continue={onDelete}
+          cancel={() => confirmationProps.onCancel()}
+          continue={() => confirmationProps.onConfirm()}
         />
       )}
 
