@@ -52,27 +52,6 @@ export interface Doctors {
 
 
 
-
-
-
-
-
-
-
-
-
-// // Have to delete
-// export interface ChargeListType {
-//     id: number
-//     date: string,
-//     name: string,
-//     charge_type: string,
-//     tpa: number,
-//     amount: number
-//     net_amount: number
-// }
-
-
 export interface ChargeDetails {
     id: number,
     caseId: number,
@@ -89,3 +68,9 @@ export interface ChargeDetails {
 }
 
 
+
+// Params
+
+export type Params = { page?: number, limit?: number, search?: string | null }
+
+export type OIParams = { opdId?: string, ipdId?: string }

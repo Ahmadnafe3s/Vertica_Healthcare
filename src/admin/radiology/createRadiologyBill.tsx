@@ -131,6 +131,7 @@ const CreateRadiologyBill = ({ Submit, isPending, editDetails, ...props }: Creat
 
 
   useEffect(() => {
+    if (editDetails) onPatientSearch(String(editDetails.patientId))
     fetchRadiologyTests()
     getDoctors()
   }, [])
@@ -144,7 +145,7 @@ const CreateRadiologyBill = ({ Submit, isPending, editDetails, ...props }: Creat
           {/* Patient Section */}
           <div>
             <Controller name='patientId' control={control} render={({ field }) => {
-              return <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(Number(value)) }}>
+              return <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(value) }}>
                 <SelectTrigger className='sm:w-[300px] w-40'>
                   <SelectValue placeholder="Search" />
                 </SelectTrigger>

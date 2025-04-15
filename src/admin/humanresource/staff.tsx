@@ -1,25 +1,23 @@
+import CustomPagination from '@/components/customPagination'
+import EmptyList from '@/components/emptyList'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
 import { buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Plus, SearchX } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
+import { staffs } from '@/types/staff/staff'
+import { Plus } from 'lucide-react'
+import { parseAsInteger, useQueryState } from 'nuqs'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { data, Link } from 'react-router-dom'
-import { getStaffs } from './HRApiHandler'
+import { Link } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
-import { useQueryState, parseAsInteger } from 'nuqs'
-import { staffs } from '@/types/staff/staff'
-import CustomPagination from '@/components/customPagination'
-import usePermission from '@/authz'
-import EmptyList from '@/components/emptyList'
-import { Separator } from '@/components/ui/separator'
+import { getStaffs } from './HRApiHandler'
 
 
 
 const Staff = () => {
 
-  // custom hooks
-  const { loadPermission, hasPermission } = usePermission()
 
   // query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
@@ -50,7 +48,6 @@ const Staff = () => {
 
   useEffect(() => {
     fetchStaffs()
-    loadPermission()
   }, [page, search])
 
 
@@ -63,14 +60,12 @@ const Staff = () => {
           <h1 className='font-semibold tracking-tight'>Staff List</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
-            {/* visible for only admin */}
-
-            {hasPermission('create', 'human_resource') && (
+            <PermissionProtectedAction action='create' module='human_resource'>
               <Link to={'../create'}
                 className={buttonVariants({ variant: 'default', size: 'sm', className: 'flex gap-x-1' })}>
                 <Plus />Add Staff
               </Link>
-            )}
+            </PermissionProtectedAction>
 
           </div>
         </div>

@@ -1,15 +1,14 @@
-import { pdf, Document, Page, Text, View } from '@react-pdf/renderer';
-import { useEffect, useState } from 'react';
-import styles from '@/pdfStyleSheet/style'
-import toast from 'react-hot-toast';
-import { currencySymbol } from '@/helpers/currencySymbol';
 import { Table, TD, TH, TR } from '@/components/pdfTable';
-import { currencyFormat } from '@/lib/utils';
-import { Printer } from 'lucide-react';
-import CustomTooltip from '@/components/customTooltip';
-import { AppointmentDetails } from '@/types/appointment/appointment';
-import { getAppointmentDetails } from '../appointmentAPIhandler';
 import { address, hospital_name, hospital_slogan } from '@/globalData';
+import { currencySymbol } from '@/helpers/currencySymbol';
+import { currencyFormat } from '@/lib/utils';
+import styles from '@/pdfStyleSheet/style';
+import { AppointmentDetails } from '@/types/appointment/appointment';
+import { Document, Page, pdf, Text, View } from '@react-pdf/renderer';
+import { Printer } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { getAppointmentDetails } from '../appointmentAPIhandler';
 
 
 
@@ -187,9 +186,11 @@ const AppointmentPDF = ({ appointmentId, onPending }: OpdBillPDFprops) => {
 
     return (
         <>
-            <CustomTooltip message='Print Appointment'>
-                <Printer className='cursor-pointer text-gray-600 dark:text-neutral-300 w-4 active:scale-95' onClick={handleOpenNewTab} />
-            </CustomTooltip>
+            <div className='relative size-full flex space-x-2'>
+                <Printer className='cursor-pointer text-gray-600 hover:text-gray-800 dark:text-neutral-300 w-4 active:scale-95' onClick={handleOpenNewTab} />
+                <span>Print</span>
+                <span className='absolute inset-0 z-10' onClick={handleOpenNewTab} />
+            </div>
         </>
     );
 };

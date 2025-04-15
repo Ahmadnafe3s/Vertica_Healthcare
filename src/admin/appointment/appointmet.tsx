@@ -1,36 +1,36 @@
 import AddAppointment from '@/admin/appointment/AddAppointment'
+import AlertModel from '@/components/alertModel'
+import CustomPagination from '@/components/customPagination'
+import EmptyList from '@/components/emptyList'
+import LoaderModel from '@/components/loader'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import PermissionTableActions from '@/components/permission-table-actions'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { appointmentFormSchema } from '@/formSchemas/AppointmentFormSchema'
+import { currencySymbol } from '@/helpers/currencySymbol'
+import { useConfirmation } from '@/hooks/useConfirmation'
 import { cn, currencyFormat } from '@/lib/utils'
-import { Ban, FileText, ListMinus, Plus, Printer, Trash } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { Appointment, AppointmentDetails } from '@/types/appointment/appointment'
+import { Ban, ListMinus, Plus } from 'lucide-react'
+import { parseAsInteger, useQueryState } from 'nuqs'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
+import { useDebouncedCallback } from 'use-debounce'
+import { z } from 'zod'
 import { createAppointment, deleteAppointment, fetchAppointments, getAppointmentDetails } from './appointmentAPIhandler'
 import AppointmentDetailsModel from './appointmentDetailsModel'
-import AlertModel from '@/components/alertModel'
-import { currencySymbol } from '@/helpers/currencySymbol'
-import { Appointment, AppointmentDetails } from '@/types/appointment/appointment'
-import LoaderModel from '@/components/loader'
-import { appointmentFormSchema } from '@/formSchemas/AppointmentFormSchema'
-import { z } from 'zod'
-import CustomTooltip from '@/components/customTooltip'
-import { useDebouncedCallback } from 'use-debounce'
-import CustomPagination from '@/components/customPagination'
-import { useQueryState, parseAsInteger } from 'nuqs'
-import AppointmentPDF from './generatePDF/AppointmnetPDF'
 import AppointmentListPDF from './generatePDF/AppointmnetListPDF'
-import usePermission from '@/authz'
-import { useConfirmation } from '@/hooks/useConfirmation'
-import EmptyList from '@/components/emptyList'
+import AppointmentPDF from './generatePDF/AppointmnetPDF'
+
 
 
 
 const AdminAppointment = () => {
 
     // custom hooks
-    const { loadPermission, hasPermission } = usePermission()
     const { confirm, confirmationProps } = useConfirmation()
 
     // params
@@ -114,7 +114,6 @@ const AdminAppointment = () => {
 
     useEffect(() => {
         getAppointments();
-        loadPermission()
     }, [page, search])
 
 
@@ -128,25 +127,25 @@ const AdminAppointment = () => {
                     <h1 className='font-semibold tracking-tight'>Appointments</h1>
                     <div className='flex gap-x-2 overflow-x-auto'>
 
-                        {hasPermission('create', 'appointment') && (
+                        <PermissionProtectedAction action='create' module='appointment'>
                             <Button type='button' size={'sm'}
                                 onClick={() => { setModel((prev) => ({ ...prev, addAppointmentForm: true })) }} >
                                 <Plus /> Appointment
                             </Button>
-                        )}
+                        </PermissionProtectedAction>
 
-                        {hasPermission('view', 'queue') && (
+                        <PermissionProtectedAction action='view' module='appointment'>
                             <Link to={'queue'} className={buttonVariants({
                                 variant: 'default', size: 'sm', className: 'flex gap-x-1'
                             })}>
                                 <ListMinus /> Queue </Link>
-                        )}
+                        </PermissionProtectedAction>
 
-                        {hasPermission('view', 'cancelled') && (
+                        <PermissionProtectedAction action='view' module='appointment'>
                             <Link to={'cancelled'} className={buttonVariants({
                                 variant: 'destructive', size: 'sm', className: 'flex gap-x-1'
                             })}><Ban /> Cancelled </Link>
-                        )}
+                        </PermissionProtectedAction>
 
                     </div>
                 </div>
@@ -211,15 +210,14 @@ const AdminAppointment = () => {
                                         <TableCell>{currencyFormat(appointment.net_amount)}</TableCell>
                                         <TableCell >
                                             <div className='flex items-center space-x-2'>
-                                                {/* DELETE  */}
-                                                {hasPermission('delete', 'appointment') && (
-                                                    <CustomTooltip message='DELETE'>
-                                                        <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-neutral-300" onClick={() => onDelete(appointment.id)} />
-                                                    </CustomTooltip>
-                                                )}
 
-                                                {/* Print Appointment */}
-                                                <AppointmentPDF appointmentId={appointment.id} onPending={(v) => setModel({ ...model, loader: v })} />
+                                                <PermissionTableActions
+                                                    module='appointment'
+                                                    onDelete={() => onDelete(appointment.id)}
+                                                    exclude={{ edit: true }}
+                                                    include={<AppointmentPDF appointmentId={appointment.id} onPending={(v) => setModel({ ...model, loader: v })} />}
+                                                />
+
                                             </div>
                                         </TableCell>
                                         <TableCell>

@@ -1,5 +1,4 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { SearchX } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { useParams } from "react-router-dom"

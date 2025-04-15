@@ -1,21 +1,21 @@
 import { fetchDoctors } from "@/admin/appointment/appointmentAPIhandler"
+import { getOperationCategories, getOperationNames } from "@/admin/setup/operation/operationsAPIhandlers"
+import Dialog from "@/components/Dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { operationFormSchema } from "@/formSchemas/addOperationFormSchema"
+import { operationDetailsType } from "@/types/opd_section/operationType"
+import { operationCategoryType, operationNameType } from "@/types/setupTypes/setupOpeartion"
 import { Doctors } from "@/types/type"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader, X } from "lucide-react"
+import { Loader } from "lucide-react"
 import { HTMLAttributes, useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import { operationCategoryType, operationNameType } from "@/types/setupTypes/setupOpeartion"
-import { getOperationCategories, getOperationNames } from "@/admin/setup/operation/operationsAPIhandlers"
-import Dialog from "@/components/Dialog"
-import { operationDetailsType } from "@/types/opd_section/operationType"
 
 
 interface OperationFormProps extends HTMLAttributes<HTMLDivElement> {
@@ -27,29 +27,15 @@ interface OperationFormProps extends HTMLAttributes<HTMLDivElement> {
 const OperationForm = ({ Submit, isPending, operationDetails: details, ...props }: OperationFormProps) => {
 
     // API State
-    const [options, setOptions] = useState<{ doctors: Doctors[], operationCategories: operationCategoryType[], operationNames: operationNameType[] }>({
-        doctors: [],
-        operationCategories: [],
-        operationNames: []
-    })
+    const [doctors, setDoctors] = useState<Doctors[]>([]);
+    const [categories, setCategories] = useState<operationCategoryType[]>([]);
+    const [operationNames, setOperationNames] = useState<operationNameType[]>([]);
 
 
-    const { register, reset, watch, handleSubmit, control, formState: { errors } } = useForm<z.infer<typeof operationFormSchema>>({
+
+    const { register, reset, handleSubmit, control, formState: { errors } } = useForm<z.infer<typeof operationFormSchema>>({
         resolver: zodResolver(operationFormSchema),
-        defaultValues: {
-            categoryId: String(details?.categoryId),
-            oprNameId: String(details?.oprNameId),
-            date: details?.date,
-            doctorId: String(details?.doctorId),
-            assistant_1: details?.assistant_1,
-            assistant_2: details?.assistant_2,
-            ot_technician: details?.ot_technician,
-            ot_assistant: details?.ot_assistant,
-            anesthetist: details?.anesthetist,
-            anesthesia_type: details?.anesthesia_type,
-            note: details?.note,
-            result: details?.result
-        }
+        defaultValues: details
     })
 
 
@@ -58,12 +44,7 @@ const OperationForm = ({ Submit, isPending, operationDetails: details, ...props 
     const fethctOperationCategories = async () => {
         try {
             const data = await getOperationCategories()
-            setOptions((rest) => {
-                return {
-                    ...rest,
-                    operationCategories: data
-                }
-            })
+            setCategories(data)
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -73,12 +54,7 @@ const OperationForm = ({ Submit, isPending, operationDetails: details, ...props 
     const handleCategoryChange = async (categoryId: number) => {
         try {
             const data = await getOperationNames(categoryId)
-            setOptions((rest) => {
-                return {
-                    ...rest,
-                    operationNames: data
-                }
-            })
+            setOperationNames(data)
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -89,13 +65,7 @@ const OperationForm = ({ Submit, isPending, operationDetails: details, ...props 
     const fetchDoctorsList = async () => {
         try {
             const data = await fetchDoctors()
-            setOptions((rest) => {
-                return {
-                    ...rest,
-                    doctors: data
-                }
-            })
-
+            setDoctors(data)
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -110,11 +80,11 @@ const OperationForm = ({ Submit, isPending, operationDetails: details, ...props 
 
 
     return (
-        <Dialog pageTitle="Operation" {...props} className="sm:w-[500px] mx-auto">
+        <Dialog pageTitle="Operation" {...props}>
             <form onSubmit={handleSubmit(Submit)}>
-                <ScrollArea className='h-[60vh]'>
+                <ScrollArea className='h-[50vh]'>
 
-                    <div className="grid gap-5 sm:grid-cols-2 mt-5 px-4 pb-5">
+                    <div className="grid gap-5 sm:grid-cols-3 mt-5 px-4 pb-5">
 
                         {/* Category */}
 
@@ -122,13 +92,13 @@ const OperationForm = ({ Submit, isPending, operationDetails: details, ...props 
                             <Controller control={control} name='categoryId' render={({ field }) => {
                                 return <>
                                     <Label>Category</Label>
-                                    <Select value={field.value || ''} onValueChange={(value) => { handleCategoryChange(Number(value)); field.onChange(value) }}>
+                                    <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { handleCategoryChange(Number(value)); field.onChange(value) }}>
                                         <SelectTrigger >
                                             <SelectValue placeholder="Select" />
                                         </SelectTrigger>
 
                                         <SelectContent className='z-[200]'>
-                                            {options.operationCategories.map((category, i) => {
+                                            {categories.map((category, i) => {
                                                 return <SelectItem key={i} value={String(category.id)}>{category.name}</SelectItem>
                                             })}
                                         </SelectContent>
@@ -146,13 +116,13 @@ const OperationForm = ({ Submit, isPending, operationDetails: details, ...props 
                             <Controller control={control} name='oprNameId' render={({ field }) => {
                                 return <>
                                     <Label>Operation Name</Label>
-                                    <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                                    <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(value) }}>
                                         <SelectTrigger >
                                             <SelectValue placeholder="Select" />
                                         </SelectTrigger>
 
                                         <SelectContent className='z-[200]'>
-                                            {options.operationNames.map((name, i) => {
+                                            {operationNames.map((name, i) => {
                                                 return <SelectItem key={i} value={String(name.id)}>{name.name}</SelectItem>
                                             })}
                                         </SelectContent>
@@ -179,13 +149,13 @@ const OperationForm = ({ Submit, isPending, operationDetails: details, ...props 
                             <Controller control={control} name='doctorId' render={({ field }) => {
                                 return <>
                                     <Label>Consultant Doctor</Label>
-                                    <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                                    <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(value) }}>
                                         <SelectTrigger >
                                             <SelectValue placeholder="Select" />
                                         </SelectTrigger>
 
                                         <SelectContent className='z-[200]'>
-                                            {options.doctors.map((doctor, i) => {
+                                            {doctors.map((doctor, i) => {
                                                 return <SelectItem key={i} value={String(doctor.staff.id)}>{doctor.staff.name}</SelectItem>
                                             })}
                                         </SelectContent>
@@ -274,7 +244,7 @@ const OperationForm = ({ Submit, isPending, operationDetails: details, ...props 
 
                 <div className="flex mt-5 mb-2 p-3 gap-x-2 sm:justify-end">
                     <Button variant='outline' onClick={() => reset()}>Reset</Button>
-                    <Button type='submit' className='flex-1'>{details ? 'Update' : 'Save'} {isPending && <Loader className='animate-spin' />}</Button>
+                    <Button type='submit' className='flex-1 sm:flex-none'>{details ? 'Update' : 'Save'} {isPending && <Loader className='animate-spin' />}</Button>
                 </div>
             </form>
         </Dialog>

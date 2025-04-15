@@ -6,7 +6,7 @@ import HomePage from "./home/HomePage";
 import RegisterPatient from "./Auth/registerPatient";
 import { Toaster } from "react-hot-toast";
 import { useAppDispatch } from "./hooks";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { checkSession } from "./features/auth/authSlice";
 import Not_found from "./error/not_found";
 import Unauthorized from "./error/unauthorized";
@@ -22,15 +22,20 @@ import SetupPatientRoutes from "./routes/AdminSetup/patientRoutes";
 import SetupAuthzRoutes from "./routes/AdminSetup/authzRoutes";
 import SetupRadiologyRoutes from "./routes/AdminSetup/radiologyRoutes";
 import SetupPathologyRoutes from "./routes/AdminSetup/pathology";
+import { PermissionContext } from "./contexts/permission-provider";
+import SetupBedRoutes from "./routes/AdminSetup/bed-routes";
+import IndexRoutes from "./routes";
 
 
 
 function App() {
 
   const dispatch = useAppDispatch()
+  const { removePermissions } = useContext(PermissionContext)
 
 
   useEffect(() => {
+    removePermissions()
     dispatch(checkSession())
   }, [dispatch])
 
@@ -87,6 +92,12 @@ function App() {
 
             {/* setup route for pathology */}
             {SetupPathologyRoutes()}
+
+            {/* setup route for bed */}
+            {SetupBedRoutes()}
+
+            {/* Index route */}
+            {IndexRoutes()}
 
 
           </Route>

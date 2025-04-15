@@ -1,9 +1,14 @@
 // have to create dynamically
 export const Module = [
     'appointment',
-    'queue',
-    'cancelled',
     'opd',
+    'prescription',
+    'medication',
+    'operation',
+    'charges',
+    'payments',
+    'vitals',
+    'timeline',
     'pharmacy_bill',
     'medicines',
     'purchase_medicine',
@@ -12,13 +17,6 @@ export const Module = [
     'pathology_bill',
     'pathology_report',
     'sample_collection',
-    'prescription',
-    'medication',
-    'operation',
-    'charges',
-    'payments',
-    'vitals',
-    'timeline',
     'human_resource',
     'duty_roster'
 ];
@@ -47,14 +45,15 @@ export const setupPermissions = [
     'setupPatient',
     'setupRadiology',
     'radiology_category',
-    'radiology_test',
     'radiology_parameter',
     'radiology_unit',
     'setupPathology',
     'pathology_category',
-    'pathology_test',
     'pathology_parameter',
-    'pathology_unit'
+    'pathology_unit',
+    'setupBed',
+    'bed_group',
+    'bed_floor'
 ]
 
 

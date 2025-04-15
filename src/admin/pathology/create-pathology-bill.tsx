@@ -131,6 +131,7 @@ const CreatePathologyBill = ({ Submit, isPending, editDetails, ...props }: Creat
 
 
     useEffect(() => {
+        if (editDetails) onPatientSearch(String(editDetails.patientId))
         fetchPathologyTests()
         getDoctors()
     }, [])

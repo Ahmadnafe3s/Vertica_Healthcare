@@ -68,7 +68,7 @@ const MedicationForm = ({ Submit, isPending, medicationDetails, ...props }: Medi
 
 
     return (
-        <Dialog pageTitle={'Medictaion'} {...props} className='sm:w-[400px] mx-auto'>
+        <Dialog pageTitle={'Medictaion'} {...props} className='sm:w-[400px]'>
             <form onSubmit={handleSubmit(Submit)}>
 
                 {/* mainGrid */}

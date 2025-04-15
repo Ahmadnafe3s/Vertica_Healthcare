@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { currencySymbol } from "@/helpers/currencySymbol";
 import { currencyFormat } from "@/lib/utils";
 import { opdDetails } from "@/types/opd_section/opd";
+import PermissionProtectedAction from "@/components/permission-protected-actions";
 
 
 const VisitDetails = () => {
@@ -138,12 +139,6 @@ const VisitDetails = () => {
                     </div>
                 })}
 
-                <Separator className="sm:col-span-full my-8" />
-
-                {/* Prescription */}
-
-                <h1 className="sm:col-span-full font-semibold text-gray-800 dark:text-neutral-100">Findings</h1>
-
 
                 <Separator className="sm:col-span-full my-8" />
 
@@ -235,130 +230,140 @@ const VisitDetails = () => {
 
                 {/* Medication */}
 
-                <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Medication</h1>
+                <PermissionProtectedAction action="view" module="medication">
+                    <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Medication</h1>
 
-                <Table className="rounded-lg border dark:border-gray-800 w-full">
-                    <TableHeader className="bg-slate-100 dark:bg-slate-900 ">
-                        <TableRow>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Medicine Name</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead>Dose</TableHead>
-                            <TableHead>Time</TableHead>
-                            <TableHead>Note</TableHead>
-                        </TableRow>
-                    </TableHeader>
-
-                    <TableBody>
-                        {OPD_DETAILS?.medications?.map((medication, i) => (
-                            <TableRow key={i}>
-                                <TableCell className="text-gray-800 dark:text-neutral-100 whitespace-nowrap">{medication.date}</TableCell>
-                                <TableCell>{medication?.medicine.name}</TableCell>
-                                <TableCell>{medication?.category.name}</TableCell>
-                                <TableCell>{medication.dose}</TableCell>
-                                <TableCell>{medication.time}</TableCell>
-                                <TableCell className="text-gray-600 dark:text-gray-400">{medication.note}</TableCell>
+                    <Table className="rounded-lg border dark:border-gray-800 w-full">
+                        <TableHeader className="bg-slate-100 dark:bg-slate-900 ">
+                            <TableRow>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Medicine Name</TableHead>
+                                <TableHead>Category</TableHead>
+                                <TableHead>Dose</TableHead>
+                                <TableHead>Time</TableHead>
+                                <TableHead>Note</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+
+                        <TableBody>
+                            {OPD_DETAILS?.medications?.map((medication, i) => (
+                                <TableRow key={i}>
+                                    <TableCell className="text-gray-800 dark:text-neutral-100 whitespace-nowrap">{medication.date}</TableCell>
+                                    <TableCell>{medication?.medicine.name}</TableCell>
+                                    <TableCell>{medication?.category.name}</TableCell>
+                                    <TableCell>{medication.dose}</TableCell>
+                                    <TableCell>{medication.time}</TableCell>
+                                    <TableCell className="text-gray-600 dark:text-gray-400">{medication.note}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
 
 
-                {OPD_DETAILS?.medications?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
+                    {OPD_DETAILS?.medications?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
 
-                <Separator className="sm:col-span-full my-8" />
+                    <Separator className="sm:col-span-full my-8" />
+
+                </PermissionProtectedAction>
 
                 {/* Operation */}
 
-                <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Operation</h1>
+                <PermissionProtectedAction action="view" module="operation">
+                    <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Operation</h1>
 
-                <Table className="rounded-lg border dark:border-gray-800">
-                    <TableHeader className="bg-slate-100 dark:bg-slate-900 ">
-                        <TableRow>
-                            <TableHead>Reference No</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Operation Name</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead>OT Technician</TableHead>
-                        </TableRow>
-                    </TableHeader>
-
-                    <TableBody>
-                        {OPD_DETAILS?.Operations?.map((operation, i) => {
-                            return <TableRow key={i}>
-                                <TableCell className="text-gray-700">{operation.id}</TableCell>
-                                <TableCell className="text-sm">{operation.date}</TableCell>
-                                <TableCell>{operation.operationName.name}</TableCell>
-                                <TableCell>{operation.operationCategory.name}</TableCell>
-                                <TableCell>{operation.ot_technician}</TableCell>
+                    <Table className="rounded-lg border dark:border-gray-800">
+                        <TableHeader className="bg-slate-100 dark:bg-slate-900 ">
+                            <TableRow>
+                                <TableHead>Reference No</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Operation Name</TableHead>
+                                <TableHead>Category</TableHead>
+                                <TableHead>OT Technician</TableHead>
                             </TableRow>
-                        })}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
 
-                {OPD_DETAILS?.Operations?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
+                        <TableBody>
+                            {OPD_DETAILS?.Operations?.map((operation, i) => {
+                                return <TableRow key={i}>
+                                    <TableCell className="text-gray-700">{operation.id}</TableCell>
+                                    <TableCell className="text-sm">{operation.date}</TableCell>
+                                    <TableCell>{operation.operationName.name}</TableCell>
+                                    <TableCell>{operation.operationCategory.name}</TableCell>
+                                    <TableCell>{operation.ot_technician}</TableCell>
+                                </TableRow>
+                            })}
+                        </TableBody>
+                    </Table>
 
-                <Separator className="sm:col-span-full my-8" />
+                    {OPD_DETAILS?.Operations?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
+
+                    <Separator className="sm:col-span-full my-8" />
+                </PermissionProtectedAction>
+
 
                 {/* Charges */}
 
-                <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Charges</h1>
+                <PermissionProtectedAction action="view" module="charges">
+                    <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Charges</h1>
 
-                <Table className="rounded-lg border dark:border-gray-800">
-                    <TableHeader className="bg-slate-100 dark:bg-slate-900">
-                        <TableRow>
-                            <TableHead>Charge Date</TableHead>
-                            <TableHead>Charge Name</TableHead>
-                            <TableHead>Std Charge {currencySymbol()}</TableHead>
-                            <TableHead>TPA {currencySymbol()}</TableHead>
-                            <TableHead>Net Amount {currencySymbol()}</TableHead>
-                        </TableRow>
-                    </TableHeader>
-
-                    <TableBody>
-                        {OPD_DETAILS?.charges?.map((charge, i) => {
-                            return <TableRow key={i}>
-                                <TableCell className="whitespace-nowrap">{charge.date}</TableCell>
-                                <TableCell>{charge.chargeNames.name}</TableCell>
-                                <TableCell>{currencyFormat(charge.standard_charge)}</TableCell>
-                                <TableCell>{currencyFormat(charge.tpa)}</TableCell>
-                                <TableCell>{currencyFormat(charge.net_amount)}</TableCell>
+                    <Table className="rounded-lg border dark:border-gray-800">
+                        <TableHeader className="bg-slate-100 dark:bg-slate-900">
+                            <TableRow>
+                                <TableHead>Charge Date</TableHead>
+                                <TableHead>Charge Name</TableHead>
+                                <TableHead>Std Charge {currencySymbol()}</TableHead>
+                                <TableHead>TPA {currencySymbol()}</TableHead>
+                                <TableHead>Net Amount {currencySymbol()}</TableHead>
                             </TableRow>
-                        })}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
 
-                {OPD_DETAILS?.charges?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
+                        <TableBody>
+                            {OPD_DETAILS?.charges?.map((charge, i) => {
+                                return <TableRow key={i}>
+                                    <TableCell className="whitespace-nowrap">{charge.date}</TableCell>
+                                    <TableCell>{charge.chargeNames.name}</TableCell>
+                                    <TableCell>{currencyFormat(charge.standard_charge)}</TableCell>
+                                    <TableCell>{currencyFormat(charge.tpa)}</TableCell>
+                                    <TableCell>{currencyFormat(charge.net_amount)}</TableCell>
+                                </TableRow>
+                            })}
+                        </TableBody>
+                    </Table>
 
-                <Separator className="sm:col-span-full my-8" />
+                    {OPD_DETAILS?.charges?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
+
+                    <Separator className="sm:col-span-full my-8" />
+                </PermissionProtectedAction>
 
 
                 {/* Payments */}
 
-                <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Payments</h1>
+                <PermissionProtectedAction action="view" module="payments">
+                    <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Payments</h1>
 
-                <Table className="rounded-lg border dark:border-gray-800">
-                    <TableHeader className="bg-slate-100 dark:bg-slate-900">
-                        <TableRow>
-                            <TableHead>Transaction ID</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Payment Mode</TableHead>
-                            <TableHead>Paid Amount {currencySymbol()}</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {OPD_DETAILS?.Payments?.map((payment) => {
-                            return <TableRow key={payment.id}>
-                                <TableCell className="font-semibold">{payment.id}</TableCell>
-                                <TableCell className="whitespace-nowrap">{payment.date}</TableCell>
-                                <TableCell >{payment.payment_mode}</TableCell>
-                                <TableCell >{currencyFormat(payment.amount)}</TableCell>
+                    <Table className="rounded-lg border dark:border-gray-800">
+                        <TableHeader className="bg-slate-100 dark:bg-slate-900">
+                            <TableRow>
+                                <TableHead>Transaction ID</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Payment Mode</TableHead>
+                                <TableHead>Paid Amount {currencySymbol()}</TableHead>
                             </TableRow>
-                        })}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {OPD_DETAILS?.Payments?.map((payment) => {
+                                return <TableRow key={payment.id}>
+                                    <TableCell className="font-semibold">{payment.id}</TableCell>
+                                    <TableCell className="whitespace-nowrap">{payment.date}</TableCell>
+                                    <TableCell >{payment.payment_mode}</TableCell>
+                                    <TableCell >{currencyFormat(payment.amount)}</TableCell>
+                                </TableRow>
+                            })}
+                        </TableBody>
+                    </Table>
 
-                {OPD_DETAILS?.Payments?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
+                    {OPD_DETAILS?.Payments?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
+                </PermissionProtectedAction>
             </div>
         </section>
     )

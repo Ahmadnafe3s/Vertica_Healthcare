@@ -1,19 +1,20 @@
+import AlertModel from "@/components/alertModel"
+import EmptyList from "@/components/emptyList"
+import LoaderModel from "@/components/loader"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+import PermissionTableActions from "@/components/permission-table-actions"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Pencil, Plus, Trash } from "lucide-react"
+import { useConfirmation } from "@/hooks/useConfirmation"
+import { RadioParametersType } from "@/types/setupTypes/radiology"
+import { Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import CustomTooltip from "@/components/customTooltip"
 import { z } from "zod"
-import LoaderModel from "@/components/loader"
-import AlertModel from "@/components/alertModel"
-import { RadioParametersType } from "@/types/setupTypes/radiology"
-import { useConfirmation } from "@/hooks/useConfirmation"
-import CreateTestParameter from "./createRadioParameter"
 import { createRadiologytParameter, deleteRadiologytParameter, getRadiologytParameterDetails, getRadiologytParameters, updateRadiologytParameter } from "../ApiHandlers"
 import { CreateRadioCategorySchema } from "../category/createRadioCategory"
-import EmptyList from "@/components/emptyList"
+import CreateTestParameter from "./createRadioParameter"
 
 
 
@@ -97,9 +98,11 @@ const SetupRadioParameters = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Radiology Parameters</h1>
-                <Button size='sm' onClick={() => setParameterForm(true)}>
-                    <Plus /> Add Parameter
-                </Button>
+                <PermissionProtectedAction action='create' module='radiology_parameter'>
+                    <Button size='sm' onClick={() => setParameterForm(true)}>
+                        <Plus /> Add Parameter
+                    </Button>
+                </PermissionProtectedAction>
             </div>
 
 
@@ -125,20 +128,14 @@ const SetupRadioParameters = () => {
                             <TableCell>{parameter.note}</TableCell>
                             <TableCell className='flex space-x-2'>
 
-                                {/* EDIT */}
-
-                                <CustomTooltip message='EDIT'>
-                                    <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
+                                <PermissionTableActions
+                                    module="radiology_parameter"
+                                    onEdit={async () => {
                                         await fetchParameterDetails(parameter.id)
                                         setParameterForm(true)
-                                    }} />
-                                </CustomTooltip>
-
-                                {/* DELETE  */}
-
-                                <CustomTooltip message='DELETE'>
-                                    <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={() => onDelete(parameter.id)} />
-                                </CustomTooltip>
+                                    }}
+                                    onDelete={() => onDelete(parameter.id)}
+                                />
 
                             </TableCell>
                         </TableRow>

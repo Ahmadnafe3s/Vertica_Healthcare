@@ -55,7 +55,7 @@ const TimelineFormModel = ({ Submit, timelineDetails, isPending, ...props }: Tim
 
                         {/* Description */}
 
-                        <div className="w-full flex flex-col gap-y-2 px-3">
+                        <div className="w-full flex flex-col gap-y-2">
                             <Label>Description</Label>
                             <Textarea  {...register('description')} />
                             {errors.description && <p className='text-sm text-red-500'>{errors.description.message}</p>}

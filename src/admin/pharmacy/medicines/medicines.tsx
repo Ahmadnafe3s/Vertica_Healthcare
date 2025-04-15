@@ -1,32 +1,31 @@
+import AlertModel from '@/components/alertModel'
+import CustomPagination from '@/components/customPagination'
+import LoaderModel from '@/components/loader'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import PermissionTableActions from '@/components/permission-table-actions'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ListMinus, Pencil, Plus, SearchX, Trash } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { AddMedicinesFormSchema } from '@/formSchemas/addMedicinesFormSchema'
+import { useConfirmation } from '@/hooks/useConfirmation'
+import { medicineDetails, paginatedMedicines } from '@/types/pharmacy/pharmacy'
+import { ListMinus, Plus, SearchX } from 'lucide-react'
+import { parseAsInteger, useQueryState } from 'nuqs'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { createMedicine, deleteMedicine, getMedicinedetails, getMedicineList, updateMedicine } from '../pharmacyApiHandler'
-import AlertModel from '@/components/alertModel'
-import { AddMedicinesFormSchema } from '@/formSchemas/addMedicinesFormSchema'
-import { z } from 'zod'
-import LoaderModel from '@/components/loader'
-import { medicineDetails, paginatedMedicines } from '@/types/pharmacy/pharmacy'
+import { Link } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
-import CustomTooltip from '@/components/customTooltip'
+import { z } from 'zod'
+import { createMedicine, deleteMedicine, getMedicinedetails, getMedicineList, updateMedicine } from '../pharmacyApiHandler'
 import AddMedicineFormModel from './createMedicineForm'
 import MedicineDetailsModel from './medicineDetailsModel'
-import { useQueryState, parseAsInteger } from 'nuqs'
-import CustomPagination from '@/components/customPagination'
-import usePermission from '@/authz'
-import { useConfirmation } from '@/hooks/useConfirmation'
-import { Separator } from '@/components/ui/separator'
 
 
 
 const Medicines = () => {
 
   // custom hooks
-  const { loadPermission, hasPermission } = usePermission()
   const { confirm, confirmationProps } = useConfirmation()
 
   // query params
@@ -112,7 +111,6 @@ const Medicines = () => {
 
   useEffect(() => {
     fetchMedicineList();
-    loadPermission()
   }, [page, search])
 
 
@@ -126,16 +124,15 @@ const Medicines = () => {
           <h1 className='font-semibold tracking-tight'>Medicines</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
-            {hasPermission('create', 'medicines') && (
+            <PermissionProtectedAction action='create' module='medicines'>
               <Button className='flex gap-x-1' size={'sm'}
                 onClick={() => setModel(rest => ({ ...rest, MedicineForm: true }))}>
                 <Plus />
                 Add Medicine
               </Button>
-            )}
+            </PermissionProtectedAction>
 
-
-            {hasPermission('view', 'purchase_medicine') && (
+            <PermissionProtectedAction action='view' module='purchase_medicine'>
               <Link to={'../purchase'} className={buttonVariants({
                 variant: 'default',
                 size: 'sm',
@@ -144,7 +141,7 @@ const Medicines = () => {
                 <ListMinus />
                 Purcahse
               </Link>
-            )}
+            </PermissionProtectedAction>
 
           </div>
         </div>
@@ -198,35 +195,15 @@ const Medicines = () => {
                       {medicine.quantity === 0 ? (<span className='text-red-600 animate-pulse'>out of stock</span>) : medicine.quantity}
                     </TableCell>
                     <TableCell className='flex gap-2'>
-
-                      {/* edit mode */}
-
-                      {hasPermission('update', 'medicines') && (
-                        <CustomTooltip message='EDIT'>
-                          <Pencil className='cursor-pointer text-gray-500 dark:text-gray-400 w-4  active:scale-95'
-                            onClick={async () => {
-                              await fetchMedicineDetails(medicine.id)
-                              setModel((rest) => ({ ...rest, MedicineForm: true }))
-                            }}
-                          />
-                        </CustomTooltip>
-                      )}
-
-
-                      {/* DELETE MEDICINE */}
-                      {hasPermission('delete', 'medicines') && (
-                        <CustomTooltip message='DELETE'>
-                          <Trash className='cursor-pointer text-gray-500 dark:text-gray-400 w-4 active:scale-95 '
-                            onClick={() => onDelete(medicine.id)}
-                          />
-                        </CustomTooltip>
-                      )}
-
-                      {/* Fallback */}
-                      {(!hasPermission('update', 'medicines') && !hasPermission('delete', 'medicines')) && (
-                        <span className='text-sm text-gray-500 dark:text-gray-400'>N/A</span>
-                      )}
-
+                      {/* DELETE & EDIT */}
+                      <PermissionTableActions
+                        module='medicines'
+                        onEdit={async () => {
+                          await fetchMedicineDetails(medicine.id)
+                          setModel((rest) => ({ ...rest, MedicineForm: true }))
+                        }}
+                        onDelete={() => onDelete(medicine.id)}
+                      />
                     </TableCell>
                   </TableRow>
                 })}

@@ -1,23 +1,23 @@
+import { getStaffs } from '@/admin/humanresource/HRApiHandler'
+import { getRadioTestNameParameters } from '@/admin/setup/radiology/ApiHandlers'
+import Dialog from '@/components/Dialog'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { LabReportFormSchema } from '@/formSchemas/approvedBYschema'
+import { RadioTestReport } from '@/types/radiology/radiology'
+import { staffs } from '@/types/staff/staff'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from 'lucide-react'
 import { HTMLAttributes, useEffect, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import Dialog from '@/components/Dialog'
-import { getRadioTestNameParameters } from '@/admin/setup/radiology/ApiHandlers'
-import { getStaffs } from '@/admin/humanresource/HRApiHandler'
-import { staffs } from '@/types/staff/staff'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table'
 import { Textarea } from '../../components/ui/textarea'
-import { RadioTestReport } from '@/types/radiology/radiology'
-import usePermission from '@/authz'
-import { LabReportFormSchema } from '@/formSchemas/approvedBYschema'
 
 
 
@@ -32,7 +32,6 @@ interface RadiologyReportFormProps extends HTMLAttributes<HTMLDivElement> {
 
 const RadiologyReportForm = ({ Submit, isPending, editDetails, testNameId, ...props }: RadiologyReportFormProps) => {
 
-    const { hasPermission, loadPermission } = usePermission()
 
     // API states
     const [staffs, setStaffs] = useState<staffs>({ data: [], total_pages: 0 })
@@ -91,7 +90,6 @@ const RadiologyReportForm = ({ Submit, isPending, editDetails, testNameId, ...pr
             :
             (fetchRadioTestNameParameters(testNameId))
         fetchStaffs()
-        loadPermission()
     }, [testNameId])
 
 
@@ -188,11 +186,11 @@ const RadiologyReportForm = ({ Submit, isPending, editDetails, testNameId, ...pr
 
                 </ScrollArea>
 
-                {(hasPermission('update', 'radiology_report') || hasPermission('create', 'radiology_report')) &&
+                <PermissionProtectedAction action='create' module='radiology_report'>
                     <div className="flex mt-5 mb-2 p-3">
                         <Button type='submit' className='flex-1 sm:flex-none'>{editDetails ? 'Update' : 'Save Report'} {isPending && <Loader className='animate-spin' />}</Button>
                     </div>
-                }
+                </PermissionProtectedAction>
 
             </form>
         </Dialog>

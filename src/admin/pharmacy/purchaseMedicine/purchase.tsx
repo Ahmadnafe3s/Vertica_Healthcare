@@ -1,28 +1,28 @@
+import AlertModel from '@/components/alertModel'
+import CustomPagination from '@/components/customPagination'
+import LoaderModel from '@/components/loader'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import PermissionTableActions from '@/components/permission-table-actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { currencyFormat } from '@/lib/utils'
-import { Plus, SearchX, Trash } from 'lucide-react'
-import toast from 'react-hot-toast'
-import { createPurchase, deletePurchaseMedicine, getPurchaseDetails, getPurchaseList } from '../pharmacyApiHandler'
-import { useEffect, useState } from 'react'
-import { currencySymbol } from '@/helpers/currencySymbol'
 import { PurchaseMedicineFormSchema } from '@/formSchemas/purchaseMedicineFormSchema'
-import { z } from 'zod'
+import { currencySymbol } from '@/helpers/currencySymbol'
+import { useConfirmation } from '@/hooks/useConfirmation'
+import { currencyFormat } from '@/lib/utils'
 import { medicinePurchaseDetails, medicinePurchases } from '@/types/opd_section/purchaseMedicine'
-import CustomPagination from '@/components/customPagination'
-import AlertModel from '@/components/alertModel'
-import LoaderModel from '@/components/loader'
-import CustomTooltip from '@/components/customTooltip'
-import PurchaseMedicineDetailsModel from './purchaseMedicineDetailsModel'
-import PurchaseMedicineForm from './purchaseMedicine'
+import { Plus, SearchX } from 'lucide-react'
+import { parseAsInteger, useQueryState } from 'nuqs'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useDebouncedCallback } from 'use-debounce'
-import { useQueryState, parseAsInteger } from 'nuqs'
+import { z } from 'zod'
+import { createPurchase, deletePurchaseMedicine, getPurchaseDetails, getPurchaseList } from '../pharmacyApiHandler'
 import PrintMedicinePurchase from './printPurchase/printPurchase'
 import PrintMedicinePurchases from './printPurchase/printPurchases'
-import usePermission from '@/authz'
-import { useConfirmation } from '@/hooks/useConfirmation'
-import { Separator } from '@/components/ui/separator'
+import PurchaseMedicineForm from './purchaseMedicine'
+import PurchaseMedicineDetailsModel from './purchaseMedicineDetailsModel'
 
 
 
@@ -30,7 +30,6 @@ import { Separator } from '@/components/ui/separator'
 const Purchase = () => {
 
   // custom hooks
-  const { loadPermission, hasPermission } = usePermission()
   const { confirm, confirmationProps } = useConfirmation()
 
   // query params
@@ -114,7 +113,6 @@ const Purchase = () => {
 
   useEffect(() => {
     fetchPurchases()
-    loadPermission()
   }, [page, search])
 
 
@@ -128,13 +126,13 @@ const Purchase = () => {
           <h1 className='font-semibold tracking-tight'>Medicine Purchases</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
-            {hasPermission('create', 'purchase_medicine') && (
+            <PermissionProtectedAction action='create' module='purchase_medicine'>
               <Button className='flex gap-x-1' size={'sm'}
                 onClick={() => setModel(rest => ({ ...rest, createPurchaseForm: true }))}>
                 <Plus />
-                Add Purchase
+                Create Purchase
               </Button>
-            )}
+            </PermissionProtectedAction>
 
           </div>
         </div>
@@ -203,19 +201,13 @@ const Purchase = () => {
                     <TableCell>{purchase.discount}%</TableCell>
                     <TableCell>{currencyFormat(purchase.total_amount)}</TableCell>
                     <TableCell className='flex gap-2'>
-
                       {/* Delete */}
-                      {hasPermission('delete', 'purchase_medicine') && (
-                        <CustomTooltip message='DELETE'>
-                          <Trash className='cursor-pointer text-gray-500 dark:text-gray-400 w-4  active:scale-95'
-                            onClick={() => onDelete(purchase.id)}
-                          />
-                        </CustomTooltip>
-                      )}
-
-                      {/* Print purchase Details */}
-                      <PrintMedicinePurchase Id={purchase.id} onPending={(v) => setLoading({ ...loading, model: v })} />
-
+                      <PermissionTableActions
+                        module='purchase_medicine'
+                        onDelete={() => onDelete(purchase.id)}
+                        exclude={{ edit: true }}
+                        include={<PrintMedicinePurchase Id={purchase.id} onPending={(v) => setLoading({ ...loading, model: v })} />}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}

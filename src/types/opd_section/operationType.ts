@@ -2,6 +2,7 @@ export interface operationDetailsType {  // it is only object (return by server)
     id: string,
     patientId: number,
     opdId: number,
+    ipdId : number,
     categoryId: number,
     oprNameId: number,
     date: string,
@@ -19,9 +20,6 @@ export interface operationDetailsType {  // it is only object (return by server)
     },
     operationCategory: {
         name: string
-    },
-    patient: {
-        name: string,
     },
     doctor: {
         name: string,

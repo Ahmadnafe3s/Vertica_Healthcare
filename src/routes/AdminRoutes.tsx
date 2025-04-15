@@ -39,7 +39,7 @@ const AdminRoutes = () => {
 
     return (
 
-        // protected route only handling authentication 
+        // protected route only handling authentication
         <Route element={<ProtectRoutes restrictedTo="patient" />}>
 
             <Route path="admin" element={<AdminLayout />}>
@@ -61,7 +61,7 @@ const AdminRoutes = () => {
                 {/* OPD Routes */}
                 <Route path="opd" element={<AdminOPDlayout />}>
                     <Route path="" element={<OPDLIST />} />
-                    <Route path="patient/:patientId/:opdId" element={<OpdDetailsLayout />}>
+                    <Route path="patient/:pId/:opdId" element={<OpdDetailsLayout />}>
                         <Route path="" element={<VisitDetails />} />
                         <Route path="medication" element={<Medication />} />
                         <Route path="vital" element={<Vital />} />

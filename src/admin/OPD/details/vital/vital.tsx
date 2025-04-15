@@ -1,109 +1,38 @@
-import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, SearchX, Trash } from "lucide-react";
-import VitalFormModel from "./vitalFormModel";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import toast from "react-hot-toast";
-import { createVital, deleteVitals, getVitals, searchVital } from "../../opdApiHandler";
-import groupedBYdate from "@/helpers/groupVitals";
 import AlertModel from "@/components/alertModel";
-import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
-import { z } from "zod";
-import { vitalFormSchema } from "@/formSchemas/vitalFormSchema";
 import CustomTooltip from "@/components/customTooltip";
-import { SetupVital } from "@/types/setupTypes/vital";
-import { getSetupVitals } from "@/admin/setup/vitals/apiHandler";
-import { VitalType } from "@/types/opd_section/vitals";
-import usePermission from "@/authz";
-import { useConfirmation } from "@/hooks/useConfirmation";
 import EmptyList from "@/components/emptyList";
+import PermissionProtectedAction from "@/components/permission-protected-actions";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import groupedBYdate from "@/helpers/groupVitals";
+import { Plus, Trash } from "lucide-react";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
+import useVitalHandlers from "./vital-handlers";
+import VitalFormModel from "../../../../components/form-modals/vital-form-modal";
 
 
 const Vital = () => {
 
-    // custom hook
-    const { hasPermission, loadPermission } = usePermission()
-    const { confirm, confirmationProps } = useConfirmation()
 
-    const { patientId, opdId } = useParams()
-
-    const [VITALS, SET_VITALS] = useState<VitalType[]>([])
-    const [setupVitals, setSetupVitals] = useState<SetupVital[]>([])
-
-    // pending STate
-    const [isPending, setPending] = useState<boolean>(false)
-
-
-    // models State
-    const [vitalForm, setVitalForm] = useState(false)
-
-
-    // creating vital
-    const handleSubmit = async (formData: z.infer<typeof vitalFormSchema>) => {
-        try {
-            setPending(true)
-            const data = await createVital(Number(patientId), opdId!, formData)
-            toast.success(data.message)
-            setVitalForm(false)
-            fetchVitalsList()
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally {
-            setPending(false)
-        }
-    }
-
-
-    const fetchVitalsList = async () => {
-        try {
-            const data = await getVitals(opdId!)
-            SET_VITALS(data)
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }
-
-    const fetchSetupVitals = async () => {
-        try {
-            const data = await getSetupVitals()
-            setSetupVitals(data)
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }
-
-
-    const onDelete = async (id: number) => {
-        try {
-            const isConfirm = await confirm()
-            if (!isConfirm) return null
-            const data = await deleteVitals(id)
-            toast.success(data.message)
-            fetchVitalsList()
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }
+    const { vitals, getVitals, getSetupVitals, setupVitals, form, setForm, isPending, handleSubmit, onDelete, confirmationProps } = useVitalHandlers()
 
 
     // this handles filtering by date
 
     const onSearch = async (date: string) => {
         try {
-            const data = await searchVital(opdId!, date)
-            SET_VITALS(data)
+            await getVitals(date)
         } catch ({ message }: any) {
             toast.error(message)
         }
     }
 
-
     useEffect(() => {
-        fetchVitalsList()
-        fetchSetupVitals()
-        loadPermission()
+        getVitals()
+        getSetupVitals()
     }, [])
 
 
@@ -112,11 +41,11 @@ const Vital = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Vitals</h1>
-                {hasPermission('create', 'vitals') && (
-                    <Button size='sm' onClick={() => { setVitalForm(true) }}>
+                <PermissionProtectedAction action='create' module='vitals'>
+                    <Button size='sm' onClick={() => { setForm(true) }}>
                         <Plus /> Add Vital
                     </Button>
-                )}
+                </PermissionProtectedAction>
             </div>
 
             <Separator />
@@ -143,7 +72,7 @@ const Vital = () => {
                 </TableHeader>
 
                 <TableBody>
-                    {groupedBYdate(VITALS).map((vital, i) => {
+                    {groupedBYdate(vitals).map((vital, i) => {
                         return (
                             <TableRow key={i}>
                                 <TableCell>{vital.date}</TableCell>
@@ -158,13 +87,13 @@ const Vital = () => {
                                             {detail ? (
                                                 <div className="flex space-x-1 group">
                                                     <span>{detail.vital.name} {detail.value}</span>
-                                                    {hasPermission('delete', 'vitals') && (
+                                                    <PermissionProtectedAction action='delete' module='vitals'>
                                                         <CustomTooltip message="DELETE">
                                                             <Trash className="w-3 text-gray-700 dark:text-gray-400 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
                                                                 onClick={() => onDelete(detail.id)}
                                                             />
                                                         </CustomTooltip>
-                                                    )}
+                                                    </PermissionProtectedAction>
                                                 </div>
                                             )
                                                 : ""} {/* Render the value or an empty string if missing */}
@@ -180,15 +109,15 @@ const Vital = () => {
 
             {/* error on emply list */}
 
-            <EmptyList length={VITALS.length} message="No vitals found" />
+            <EmptyList length={vitals.length} message="No vitals found" />
 
             {/* model */}
 
-            {vitalForm && <VitalFormModel
+            {form && <VitalFormModel
                 vitalOptions={setupVitals}
                 Submit={handleSubmit}
                 isPending={isPending}
-                onClick={() => setVitalForm(false)}
+                onClick={() => setForm(false)}
             />}
 
 

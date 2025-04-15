@@ -1,24 +1,23 @@
 import { chartConfig, incomeExpenseConfig } from '@/chartConfig/chartConfig'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
 import RectCard from '@/components/rectCard'
+import StaffCalendar from '@/components/staffCalendar'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
-import { Activity, CalendarClock, DollarSign, HandCoins, HeartPulse, Package, Pill, Radiation, Radio, ReceiptText, ShoppingCart, TestTube2 } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { AdminDash_MM_IncExp, AdminDashAppmtReport, AdminDashTotalCount, AdminDashVisitors } from '@/types/dashboard/adminDashboard'
+import { Activity, CalendarClock, DollarSign, HandCoins, HeartPulse, Package, Pill, Radiation, ReceiptText, ShoppingCart, TestTube2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Area, AreaChart, CartesianGrid, Label, Pie, PieChart, XAxis } from 'recharts'
-import { useEffect, useState } from 'react'
-import { AdminDash_MM_IncExp, AdminDashAppmtReport, AdminDashTotalCount, AdminDashVisitors } from '@/types/dashboard/adminDashboard'
 import { getAdminDash_MM_IncExp, getAdminDashAppointmentReport, getAdminDashIncExp, getAdminDashVisitors } from './apiHandler'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Default_MM_Inc_Exp_Data } from './defaultChartdata'
-import StaffCalendar from '@/components/staffCalendar'
-import usePermission from '@/authz'
 
 
 
 
 const AdminDashboard = () => {
 
-    const { loadPermission, hasPermission } = usePermission()
 
     // Api states
     const [total, setTotalCount] = useState<AdminDashTotalCount>()
@@ -61,7 +60,6 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         fetchAdminDashStats()
-        loadPermission()
     }, [])
 
     return (
@@ -71,83 +69,97 @@ const AdminDashboard = () => {
             {/* total income section */}
             <div className='grid lg:grid-cols-4 sm:grid-cols-2 gap-4'>
 
-                {hasPermission('opd_income', 'dashboard') && (
+                {/* opd income */}
+                <PermissionProtectedAction action='opd_income' module='dashboard'>
                     <RectCard name='OPD Income' path={'../opd'} amount={total?.opdIncome ?? 0}>
                         <HeartPulse className='h-8 w-8 text-red-500' />
                     </RectCard>
-                )}
+                </PermissionProtectedAction>
 
-                {hasPermission('opds', 'dashboard') && (
+                {/* opds */}
+                <PermissionProtectedAction action='opds' module='dashboard'>
                     <RectCard name='Total OPDs' path={'../opd'} visits={total?.opds ?? 0}>
                         <Activity className='h-8 w-8 text-amber-500' />
                     </RectCard>
-                )}
+                </PermissionProtectedAction>
 
-                {hasPermission('appmnt_income', 'dashboard') && (
+                {/* appmnt income */}
+                <PermissionProtectedAction action='appmnt_income' module='dashboard'>
                     <RectCard name='Appointment Income' path={'../appointment'} amount={total?.appointmentIncome ?? 0}>
                         <CalendarClock className='h-8 w-8 text-slate-500' />
                     </RectCard>
-                )}
+                </PermissionProtectedAction>
 
-                {hasPermission('pharmacy_income', 'dashboard') && (
+                {/* pharmacy income */}
+                <PermissionProtectedAction action='pharmacy_income' module='dashboard'>
                     <RectCard name='Pharmacy Income' path={'../pharmacy'} amount={total?.pharmacyIncome ?? 0}>
                         <Pill className='h-8 w-8 text-green-500' />
                     </RectCard>
-                )}
+                </PermissionProtectedAction>
 
-                {hasPermission('pharmacy_bill', 'dashboard') && (
-                    <RectCard name='Pharmacy Bills' path={''} visits={total?.pharmacyBills ?? 0}>
+                {/* pharmacy bills */}
+                <PermissionProtectedAction action='pharmacy_bills' module='dashboard'>
+                    <RectCard name='Pharmacy Bills' path={'../pharmacy'} visits={total?.pharmacyBills ?? 0}>
                         <ReceiptText className='h-8 w-8 text-blue-500' />
                     </RectCard>
-                )}
+                </PermissionProtectedAction>
 
-                {hasPermission('medicines', 'dashboard') && (
-                    <RectCard name='Total Medicines' path={'/admin/pharmacy/medicines'} visits={total?.medicines ?? 0}>
+                {/* medicines */}
+                <PermissionProtectedAction action='medicines' module='dashboard'>
+                    <RectCard name='Total Medicines' path={'../pharmacy/medicines'} visits={total?.medicines ?? 0}>
                         <Package className='h-8 w-8 text-teal-500' />
                     </RectCard>
-                )}
+                </PermissionProtectedAction>
 
-                {hasPermission('pharmacy_expenses', 'dashboard') && (
-                    <RectCard name='Pharmacy Expenses' path={''} amount={total?.pharmacyExpenses ?? 0}>
+                {/* pharmacy expenses */}
+                <PermissionProtectedAction action='pharmacy_expenses' module='dashboard'>
+                    <RectCard name='Pharmacy Expenses' path={'../pharmacy'} amount={total?.pharmacyExpenses ?? 0}>
                         <HandCoins className='h-8 w-8 text-yellow-500' />
                     </RectCard>
-                )}
+                </PermissionProtectedAction>
 
-                {hasPermission('medicine_purchases', 'dashboard') && (
-                    <RectCard name='Medicine Purchases' path={''} visits={total?.purchases ?? 0}>
+                {/* medicine purchases */}
+                <PermissionProtectedAction action='medicine_purchases' module='dashboard'>
+                    <RectCard name='Medicine Purchases' path={'../pharmacy/medicines'} visits={total?.purchases ?? 0}>
                         <ShoppingCart className='h-8 w-8 text-violet-500' />
                     </RectCard>
-                )}
+                </PermissionProtectedAction>
 
-                {hasPermission('radiology_income', 'dashboard') && (
+                {/* radiology income */}
+                <PermissionProtectedAction action='radiology_income' module='dashboard'>
                     <RectCard name='Radiology Income' path={'../radiology'} amount={total?.radiologyIncome ?? 0}>
                         <Radiation className='h-8 w-8 text-yellow-500' />
                     </RectCard>
-                )}
+                </PermissionProtectedAction>
 
-                {hasPermission('radiology_bills', 'dashboard') && (
+                {/* radiology bills */}
+                <PermissionProtectedAction action='radiology_bills' module='dashboard'>
                     <RectCard name='Radiology Bills' path={'../radiology'} visits={total?.radiologyBills ?? 0}>
                         <ReceiptText className='h-8 w-8 text-rose-500' />
                     </RectCard>
-                )}
+                </PermissionProtectedAction>
 
-                {hasPermission('pathology_income', 'dashboard') && (
+                {/* pathology income */}
+                <PermissionProtectedAction action='pathology_income' module='dashboard'>
                     <RectCard name='Pathology Income' path={'../pathology'} amount={total?.pathologyIncome ?? 0}>
                         <TestTube2 className='h-8 w-8 text-gray-500' />
                     </RectCard>
-                )}
+                </PermissionProtectedAction>
 
-                {hasPermission('pathology_bills', 'dashboard') && (
-                    <RectCard name='Pathology Bills' path={'../radiology'} visits={total?.radiologyBills ?? 0}>
+                {/* pathology bills */}
+                <PermissionProtectedAction action='pathology_bills' module='dashboard'>
+                    <RectCard name='Pathology Bills' path={'../pathology'} visits={total?.pathologyBills ?? 0}>
                         <ReceiptText className='h-8 w-8 text-violet-500' />
                     </RectCard>
-                )}
+                </PermissionProtectedAction>
 
-                {hasPermission('expenses', 'dashboard') && (
-                    <RectCard name='Expenses' path={''} amount={total?.expenses! ?? 0}>
-                        <DollarSign className='h-8 w-8 text-pink-500 ' />
+                {/* expenses */}
+                <PermissionProtectedAction action='expenses' module='dashboard'>
+                    <RectCard name='Expenses' path={'../expenses'} amount={total?.expenses! ?? 0}>
+                        <DollarSign className='h-8 w-8 text-pink-500' />
                     </RectCard>
-                )}
+                </PermissionProtectedAction>
+
             </div>
 
 
@@ -158,7 +170,7 @@ const AdminDashboard = () => {
 
                 <div className="grid lg:grid-cols-3 gap-3 items-center">
                     {/* Montly Income & expenses Chart */}
-                    {hasPermission('income_expenses', 'dashboard') && (
+                    <PermissionProtectedAction action='income_expenses' module='dashboard'>
                         <div className="w-full">
                             <Card  >
                                 <CardHeader>
@@ -238,13 +250,12 @@ const AdminDashboard = () => {
                                 </CardFooter>
                             </Card>
                         </div>
-                    )}
-
+                    </PermissionProtectedAction>
 
 
                     {/* pie chart 1 */}
 
-                    {hasPermission('appointments', 'dashboard') && (
+                    <PermissionProtectedAction action='appointments' module='dashboard'>
                         <div >
                             <Card className="flex flex-col mx-auto">
                                 <CardHeader className="items-center pb-0">
@@ -308,13 +319,13 @@ const AdminDashboard = () => {
                                 </CardFooter>
                             </Card>
                         </div>
-                    )}
+                    </PermissionProtectedAction>
 
 
 
                     {/* numbers of services */}
 
-                    {hasPermission('visitors', 'dashboard') && (
+                    <PermissionProtectedAction action='visitors' module='dashboard'>
                         <div className="lg:col-span-1">
 
                             <Card className="flex flex-col mx-auto">
@@ -344,8 +355,7 @@ const AdminDashboard = () => {
                             </Card>
 
                         </div>
-                    )}
-
+                    </PermissionProtectedAction>
                 </div>
             </div>
 

@@ -19,10 +19,8 @@ import { parseAsInteger, useQueryState } from 'nuqs'
 import CustomPagination from '@/components/customPagination'
 import OpdBillPDF from './pdf/bill'
 import OpdsPdf from './pdf/opds'
-import usePermission from '@/authz'
 import { Separator } from '@/components/ui/separator'
-
-
+import PermissionProtectedAction from '@/components/permission-protected-actions'
 
 
 
@@ -31,9 +29,6 @@ const OPDLIST = () => {
   //utilities
   const opdId = useRef<string>('')
   const patientId = useRef(0)
-
-  // my custom hook
-  const { loadPermission, hasPermission } = usePermission()
 
   // Query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
@@ -130,7 +125,6 @@ const OPDLIST = () => {
 
   useEffect(() => {
     fetchOPDs()
-    loadPermission()
   }, [page, search])
 
 
@@ -210,30 +204,28 @@ const OPDLIST = () => {
                   <TableCell>{opd.appointment.previous_medical_issue}</TableCell>
 
                   <TableCell className='flex gap-x-2 items-center print:hidden'>
+
                     {opd.prescriptions?.id ?
-                      <>
-                        {hasPermission('view', 'prescription') && (
-                          <CustomTooltip message='prescription'>
-                            <Syringe className='cursor-pointer text-gray-600 dark:text-neutral-300 w-5 h-5'
-                              onClick={async () => {
-                                await fetchPrescriptionDetails(opd.prescriptions.id)
-                                setModel(prev => ({ ...prev, prescriptionDetails: true }))
-                              }}
-                            />
-                          </CustomTooltip>
-                        )}
-                      </>
+                      <PermissionProtectedAction action='view' module='prescription'>
+                        <CustomTooltip message='prescription'>
+                          <Syringe className='cursor-pointer text-gray-600 dark:text-neutral-300 w-5 h-5'
+                            onClick={async () => {
+                              await fetchPrescriptionDetails(opd.prescriptions.id)
+                              setModel(prev => ({ ...prev, prescriptionDetails: true }))
+                            }}
+                          />
+                        </CustomTooltip>
+                      </PermissionProtectedAction>
                       :
-                      <>
-                        {hasPermission('create', 'prescription') && (
-                          <CustomTooltip message='Add prescription'>
-                            <ClipboardPlus className='cursor-pointer text-gray-600 dark:text-neutral-300 w-5 h-5'
-                              onClick={() => { opdId.current = opd.id; patientId.current = opd.patientId; setModel(prev => ({ ...prev, prescriptionForm: true })) }}
-                            />
-                          </CustomTooltip>
-                        )}
-                      </>
+                      <PermissionProtectedAction action='create' module='prescription'>
+                        <CustomTooltip message='Add prescription'>
+                          <ClipboardPlus className='cursor-pointer text-gray-600 dark:text-neutral-300 w-5 h-5'
+                            onClick={() => { opdId.current = opd.id; patientId.current = opd.patientId; setModel(prev => ({ ...prev, prescriptionForm: true })) }}
+                          />
+                        </CustomTooltip>
+                      </PermissionProtectedAction>
                     }
+
                     {/* prints bill */}
                     <OpdBillPDF opdId={opd.id} onPending={(value) => setLoading({ ...isLoading, model: value })} />
                   </TableCell>

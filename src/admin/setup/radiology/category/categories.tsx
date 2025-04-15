@@ -1,17 +1,18 @@
+import AlertModel from "@/components/alertModel"
+import EmptyList from "@/components/emptyList"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+import PermissionTableActions from "@/components/permission-table-actions"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Trash } from "lucide-react"
+import { useConfirmation } from "@/hooks/useConfirmation"
+import { RadioCategoryType } from "@/types/setupTypes/radiology"
+import { Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import AlertModel from "@/components/alertModel"
 import { z } from "zod"
-import CustomTooltip from "@/components/customTooltip"
-import { RadioCategoryType } from "@/types/setupTypes/radiology"
-import CreateRadioCategory, { CreateRadioCategorySchema } from "./createRadioCategory"
-import { useConfirmation } from "@/hooks/useConfirmation"
 import { createRadiologytCategory, deleteRadiologyCategory, getRadiologyCategories } from "../ApiHandlers"
-import EmptyList from "@/components/emptyList"
+import CreateRadioCategory, { CreateRadioCategorySchema } from "./createRadioCategory"
 
 
 
@@ -82,9 +83,11 @@ const RadioCategories = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Categories</h1>
-                <Button size='sm' onClick={() => { setCategoryFrom(true) }}>
-                    <Plus /> Add Category
-                </Button>
+                <PermissionProtectedAction action="create" module="radiology_category">
+                    <Button size='sm' onClick={() => { setCategoryFrom(true) }}>
+                        <Plus /> Add Category
+                    </Button>
+                </PermissionProtectedAction>
             </div>
 
             <Separator />
@@ -103,16 +106,13 @@ const RadioCategories = () => {
                         return <TableRow key={category.id}>
                             <TableCell>{category.id}</TableCell>
                             <TableCell>{category.name}</TableCell>
-
                             <TableCell className='flex space-x-2'>
-
-                                {/* DELETE  */}
-                                <CustomTooltip message="DELETE">
-                                    <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={() => onDelete(category.id)} />
-                                </CustomTooltip>
-
+                                <PermissionTableActions
+                                    module="radiology_category"
+                                    onDelete={() => onDelete(category.id)}
+                                    exclude={{ edit: true }}
+                                />
                             </TableCell>
-
                         </TableRow>
                     })}
                 </TableBody>

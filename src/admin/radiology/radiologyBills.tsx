@@ -1,25 +1,25 @@
+import AlertModel from '@/components/alertModel'
+import CustomPagination from '@/components/customPagination'
+import EmptyList from '@/components/emptyList'
+import LoaderModel from '@/components/loader'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import PermissionTableActions from '@/components/permission-table-actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { currencyFormat } from '@/lib/utils'
-import { Pencil, Plus, Radio, Trash } from 'lucide-react'
-import toast from 'react-hot-toast'
-import { z } from 'zod'
-import { useEffect, useState } from 'react'
-import CustomTooltip from '@/components/customTooltip'
-import LoaderModel from '@/components/loader'
-import AlertModel from '@/components/alertModel'
-import { useQueryState, parseAsInteger } from 'nuqs'
-import CustomPagination from '@/components/customPagination'
-import { useDebouncedCallback } from 'use-debounce'
-import usePermission from '@/authz'
-import { useConfirmation } from '@/hooks/useConfirmation'
 import { Separator } from '@/components/ui/separator'
-import EmptyList from '@/components/emptyList'
-import { PaginatedRadiologyBills, RadiologyBillDeatils } from '@/types/radiology/radiology'
-import { createRadiologyBill, deleteRadiologyBill, getRadiologyBillDetails, getRadiologyBills, updateRadiologyBill } from './APIHandlers'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { createRadiologyBillSchema } from '@/formSchemas/createRadiologyBill'
 import { currencySymbol } from '@/helpers/currencySymbol'
+import { useConfirmation } from '@/hooks/useConfirmation'
+import { currencyFormat } from '@/lib/utils'
+import { PaginatedRadiologyBills, RadiologyBillDeatils } from '@/types/radiology/radiology'
+import { Plus } from 'lucide-react'
+import { parseAsInteger, useQueryState } from 'nuqs'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useDebouncedCallback } from 'use-debounce'
+import { z } from 'zod'
+import { createRadiologyBill, deleteRadiologyBill, getRadiologyBillDetails, getRadiologyBills, updateRadiologyBill } from './APIHandlers'
 import CreateRadiologyBill from './createRadiologyBill'
 import RadiologyBillDetailsModal from './radiologyBillDetails'
 
@@ -29,7 +29,6 @@ import RadiologyBillDetailsModal from './radiologyBillDetails'
 const RadiologyBills = () => {
 
   // custom hooks
-  const { loadPermission, hasPermission } = usePermission()
   const { confirm, confirmationProps } = useConfirmation()
 
   // query params
@@ -123,7 +122,6 @@ const RadiologyBills = () => {
 
   useEffect(() => {
     fetchRadiologyBills()
-    loadPermission()
   }, [page, search])
 
 
@@ -136,12 +134,12 @@ const RadiologyBills = () => {
           <h1 className='font-semibold tracking-tight'>Radiology Bill</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
-            {hasPermission('create', 'radiology_bill') && (
+            <PermissionProtectedAction module='radiology_bill' action='create'>
               <Button
                 size={'sm'}
                 onClick={() => setModel(prev => ({ ...prev, radiologyForm: true }))}
               > <Plus /> Generate Bill</Button>
-            )}
+            </PermissionProtectedAction>
 
           </div>
         </div>
@@ -201,26 +199,15 @@ const RadiologyBills = () => {
                     <TableCell>{currencyFormat(bill.net_amount)}</TableCell>
                     <TableCell>{bill.payment_mode}</TableCell>
                     <TableCell className='flex space-x-2'>
-
-                      {/* EDIT  */}
-                      {hasPermission('update', 'radiology_bill') && (
-                        <CustomTooltip message='EDIT'>
-                          <Pencil className="w-4 cursor-pointer dark:text-gray-300 text-gray-600" onClick={async () => {
-                            await fetchRadiologyBillDetails(bill.id)
-                            setModel(prev => ({ ...prev, radiologyForm: true }))
-                          }} />
-                        </CustomTooltip>
-                      )}
-
-                      {/* DELETE  */}
-                      {hasPermission('delete', 'radiology_bill') && (
-                        <CustomTooltip message='DELETE'>
-                          <Trash className="w-4 cursor-pointer dark:text-gray-300 text-gray-600" onClick={() => onDelete(bill.id)} />
-                        </CustomTooltip>
-                      )}
-
-                      {/* Print Bill */}
-
+                      {/* EDIT , DELETE  */}
+                      <PermissionTableActions
+                        module='radiology_bill'
+                        onEdit={async () => {
+                          await fetchRadiologyBillDetails(bill.id)
+                          setModel(prev => ({ ...prev, radiologyForm: true }))
+                        }}
+                        onDelete={() => onDelete(bill.id)}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}

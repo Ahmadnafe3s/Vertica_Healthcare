@@ -1,22 +1,22 @@
+import { getStaffs } from "@/admin/humanresource/HRApiHandler"
 import { sampleCollectionSchema } from "@/formSchemas/sampleCollectionSchema"
+import { hospital_name } from "@/globalData"
+import { PathologySampleCollectionDet } from "@/types/pathology/pathology"
+import { RadiologySampleCollectionDet } from "@/types/radiology/radiology"
+import { staffs } from "@/types/staff/staff"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Loader } from "lucide-react"
+import { HTMLAttributes, useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
+import toast from "react-hot-toast"
 import { z } from "zod"
 import Dialog from "./Dialog"
-import { HTMLAttributes, useEffect, useState } from "react"
-import { ScrollArea } from "./ui/scroll-area"
-import { Label } from "./ui/label"
-import { Input } from "./ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
-import { Loader } from "lucide-react"
+import PermissionProtectedAction from "./permission-protected-actions"
 import { Button } from "./ui/button"
-import { staffs } from "@/types/staff/staff"
-import { getStaffs } from "@/admin/humanresource/HRApiHandler"
-import toast from "react-hot-toast"
-import { RadiologySampleCollectionDet } from "@/types/radiology/radiology"
-import { hospital_name } from "@/globalData"
-import usePermission from "@/authz"
-import { PathologySampleCollectionDet } from "@/types/pathology/pathology"
+import { Input } from "./ui/input"
+import { Label } from "./ui/label"
+import { ScrollArea } from "./ui/scroll-area"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 
 
 interface SampleCollectionFormProps extends HTMLAttributes<HTMLDivElement> {
@@ -31,7 +31,6 @@ const SampleCollectionForm = ({ isPending, Submit, editDetails, Role, ...props }
 
     const [staffs, setStaffs] = useState<staffs>({ data: [], total_pages: 0 })
 
-    const { hasPermission, loadPermission } = usePermission()
 
     const { control, register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof sampleCollectionSchema>>({
         resolver: zodResolver(sampleCollectionSchema),
@@ -51,7 +50,6 @@ const SampleCollectionForm = ({ isPending, Submit, editDetails, Role, ...props }
 
     useEffect(() => {
         fetchStaffs()
-        loadPermission()
     }, [])
 
 
@@ -104,11 +102,11 @@ const SampleCollectionForm = ({ isPending, Submit, editDetails, Role, ...props }
                     </div>
                 </ScrollArea>
 
-                {(hasPermission('update', 'sample_collection') || hasPermission('create', 'sample_collection')) &&
+                <PermissionProtectedAction action='create' module='sample_collection'>
                     <div className="flex mt-5 mb-2 p-3">
                         <Button type='submit' className='flex-1'>{editDetails ? 'Update' : 'Save Sample Collection'} {isPending && <Loader className='animate-spin' />}</Button>
                     </div>
-                }
+                </PermissionProtectedAction>
 
             </form>
         </Dialog>

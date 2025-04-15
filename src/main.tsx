@@ -1,21 +1,27 @@
+import { NuqsAdapter } from 'nuqs/adapters/react'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
 import { Provider } from 'react-redux'
-import { persistor, store } from './store.ts'
 import { PersistGate } from 'redux-persist/integration/react'
-import { NuqsAdapter } from 'nuqs/adapters/react'
+import App from './App.tsx'
+import { PermissionProvider } from './contexts/permission-provider.tsx'
+import './index.css'
+import { persistor, store } from './store.ts'
+import SidebarProvider from './contexts/sidebar-provider.tsx'
 
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <NuqsAdapter>
-          <App />
-        </NuqsAdapter>
-      </PersistGate>
+      <PermissionProvider>
+        <SidebarProvider>
+          <PersistGate loading={null} persistor={persistor}>
+            <NuqsAdapter>
+              <App />
+            </NuqsAdapter>
+          </PersistGate>
+        </SidebarProvider>
+      </PermissionProvider>
     </Provider>
   </StrictMode>,
 )

@@ -1,15 +1,15 @@
-import { ScrollArea } from './ui/scroll-area'
-import { Link } from 'react-router-dom'
-import { Airplay, BriefcaseMedical, CalendarClock, ChevronRight, HeartPulse, Network, Radiation, Settings, TestTube, Watch } from 'lucide-react'
-import { Button, buttonVariants } from './ui/button'
-import { cn } from '@/lib/utils'
-import { useAppDispatch, useAppSelector } from '@/hooks'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion'
-import { useState } from 'react'
-import AlertModel from './alertModel'
+import { SidebarContext } from '@/contexts/sidebar-provider'
 import { authSelector, logout } from '@/features/auth/authSlice'
-import { openAside } from '@/features/aside/asideSlice'
+import { useAppDispatch, useAppSelector } from '@/hooks'
+import { cn } from '@/lib/utils'
+import { Airplay, BriefcaseMedical, CalendarClock, ChevronRight, HeartPulse, Network, Radiation, Settings, Stethoscope, TestTube, Watch } from 'lucide-react'
+import { useContext, useState } from 'react'
+import { Link } from 'react-router-dom'
+import AlertModel from './alertModel'
 import PermissionProtectedAction from './permission-protected-actions'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion'
+import { Button, buttonVariants } from './ui/button'
+import { ScrollArea } from './ui/scroll-area'
 
 
 
@@ -18,14 +18,14 @@ const Aside = () => {
 
     // model
     const [isAlert, setAlert] = useState<boolean>(false)
+    const { isSidebarOpen, toggleSidebar } = useContext(SidebarContext)
 
-    const isSlideOpend = useAppSelector((state) => state.asideReducer)
     const dispatch = useAppDispatch()
     const session = useAppSelector(authSelector)
 
+
     const onNavigate = () => {
-        if (window.screen.width > 630) return null
-        dispatch(openAside(false))
+        toggleSidebar()
     }
 
     // making routes static
@@ -34,7 +34,7 @@ const Aside = () => {
 
     return (
         <>
-            <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all sm:border-r border-dashed border-zinc-200 dark:border-gray-800 h-[calc(100vh-56px-35px)] top-14', { 'border-r w-52 p-2.5': isSlideOpend })}>
+            <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all sm:border-r border-dashed border-zinc-200 dark:border-gray-800 h-[calc(100vh-56px-35px)] top-14', { 'border-r w-52 p-2.5': isSidebarOpen })}>
 
                 <ScrollArea className='h-full '>
 
@@ -67,6 +67,15 @@ const Aside = () => {
                                     className: 'flex text-sm items-center'
                                 })
                             }><HeartPulse className='h-4 w-4' /> OPD - Out Patient</Link></li>
+                        </PermissionProtectedAction>
+
+                        <PermissionProtectedAction action='view' module='ipd'>
+                            <li><Link to={{ pathname: `/ipd` }} onClick={onNavigate} className={
+                                buttonVariants({
+                                    variant: 'ghost',
+                                    className: 'flex text-sm items-center'
+                                })
+                            }><Stethoscope className='h-4 w-4' /> IPD - In Patient</Link></li>
                         </PermissionProtectedAction>
 
                         {/* Pharmacy */}
@@ -136,6 +145,17 @@ const Aside = () => {
                                             <div className='flex gap-2'><Settings className='h-4 w-4' />  Setup</div>
                                         </AccordionTrigger>
                                     </PermissionProtectedAction>
+
+                                    {/* Authorization */}
+
+                                    {session.user?.role === 'admin' && (
+                                        <AccordionContent className='py-1'>
+                                            <div className="pl-5">
+                                                <Link to={{ pathname: '/admin/setup/authorization' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black  rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <ChevronRight className='h-4 w-4' />Authorization</Link>
+                                            </div>
+                                        </AccordionContent>
+                                    )}
 
                                     {/* Hospital Charges */}
 
@@ -232,15 +252,15 @@ const Aside = () => {
                                         </AccordionContent>
                                     </PermissionProtectedAction>
 
-
-                                    {session.user?.role === 'admin' && (
+                                    {/* setup bed */}
+                                    <PermissionProtectedAction action='view' module='setupBed'>
                                         <AccordionContent className='py-1'>
                                             <div className="pl-5">
-                                                <Link to={{ pathname: '/admin/setup/authorization' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black  rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
-                                                    <ChevronRight className='h-4 w-4' />Authorization</Link>
+                                                <Link to={{ pathname: '/admin/setup/bed' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <ChevronRight className='h-4 w-4' />Bed</Link>
                                             </div>
                                         </AccordionContent>
-                                    )}
+                                    </PermissionProtectedAction>
 
                                 </AccordionItem>
                             </Accordion>
@@ -252,7 +272,7 @@ const Aside = () => {
                 </ScrollArea>
 
                 {/* logout button */}
-                <div className={cn('sm:flex gap-2 items-center transition-all', isSlideOpend ? 'flex' : 'hidden')}>
+                <div className={cn('sm:flex gap-2 items-center transition-all', isSidebarOpen ? 'flex' : 'hidden')}>
                     <img src="/user.png" alt="" className="w-9 border-2 border-gray-300 rounded-full" />
                     <Button variant={'destructive'} size='sm' className='flex-1' onClick={() => setAlert(true)}>Logout</Button>
                 </div >

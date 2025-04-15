@@ -1,29 +1,29 @@
 import CardBox from "@/components/card-box"
 import CustomTooltip from "@/components/customTooltip"
 import Dialog from "@/components/Dialog"
+import LoaderModel from "@/components/loader"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
 import SampleCollectionForm from "@/components/sample-collection-form"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { LabReportFormSchema } from "@/formSchemas/approvedBYschema"
 import { sampleCollectionSchema } from "@/formSchemas/sampleCollectionSchema"
 import { currencySymbol } from "@/helpers/currencySymbol"
 import { currencyFormat } from "@/lib/utils"
-import { CalendarDays, Eye, Plus, UserRoundPlus } from "lucide-react"
-import { HTMLAttributes, useEffect, useRef, useState } from "react"
-import { z } from "zod"
-import toast from "react-hot-toast"
-import LoaderModel from "@/components/loader"
-import usePermission from "@/authz"
 import { PathologyBillDeatils, PathologySampleCollectionDet, PathTestReport } from "@/types/pathology/pathology"
+import { CalendarDays, Eye, Plus, UserRoundPlus } from "lucide-react"
+import { HTMLAttributes, useRef, useState } from "react"
+import toast from "react-hot-toast"
+import { z } from "zod"
 import { createPathologyReport, createPathSampleCollection, getPathologyReportDetails, getPathSampleCollectionDetails, updatePathologyReport, updatePathSampleCollection } from "./api-handlers"
 import PathologyReportForm from "./pathology-report-from"
-import { LabReportFormSchema } from "@/formSchemas/approvedBYschema"
-import PrintPathTestReport from "./print/print-path-test-report"
 import PrintPathologyBill from "./print/print-path-bill"
+import PrintPathTestReport from "./print/print-path-test-report"
 
 
 
 interface PharmacyDetailsProps extends HTMLAttributes<HTMLDivElement> {
-    details: PathologyBillDeatils
+    details: PathologyBillDeatils,
 }
 
 
@@ -31,9 +31,9 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
 
     const itemId = useRef(0)
     const testId = useRef(0)
-    const [view, setView] = useState({ collection: false, report: false })
+    const index = useRef(0) // for updating the view of collection and report icons
 
-    const { hasPermission, loadPermission } = usePermission()
+    const [view, setView] = useState<{ [key: number]: { collection?: boolean, report?: boolean } }>()
 
     const [loading, setLoading] = useState({ inline: false, model: false })
     const [collectionForm, setCollectionForm] = useState(false)
@@ -55,7 +55,8 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                 (data = await createPathSampleCollection(formData, itemId.current))
             toast.success(data.message)
             setCollectionForm(false)
-            setView({ ...view, collection: true })
+            setView({ ...view, [index.current]: { collection: true } })
+            index.current = 0
         } catch ({ message }: any) {
             toast.error(message)
         } finally {
@@ -78,7 +79,8 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                 )
             toast.success(data.message)
             setReportForm(false)
-            setView({ ...view, report: true })
+            setView({ ...view, [index.current]: { report: true } })
+            index.current = 0
         } catch ({ message }: any) {
             toast.error(message)
         } finally {
@@ -92,7 +94,7 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
             setLoading(prev => ({ ...prev, model: true }))
             const data = await getPathologyReportDetails(itemId)
             console.log(data);
-            
+
             setReportDetails(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -114,10 +116,6 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
         }
     }
 
-
-    useEffect(() => {
-        loadPermission()
-    }, [])
 
 
     return (
@@ -196,65 +194,61 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                         <TableCell>{item.reportDate}</TableCell>
                                         {/* Collector */}
                                         <TableCell className="flex">
-                                            {item.PathSampleCollection?.id || view.collection ?
-                                                <>
-                                                    {hasPermission('view', 'sample_collection') ?
-                                                        <CustomTooltip message="View Collector">
-                                                            <Eye className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
-                                                                onClick={async () => {
-                                                                    await fetchCollectionDetails(item.id)
-                                                                    setCollectionForm(true)
-                                                                }}
-                                                            />
-                                                        </CustomTooltip>
-                                                        :
-                                                        <p className="text-sm">N/A</p>
-                                                    }
 
-
-                                                </>
+                                            {item.PathSampleCollection?.id || view?.[i]?.collection ?
+                                                <PermissionProtectedAction action="view" module="sample_collection">
+                                                    <CustomTooltip message="View Collector">
+                                                        <Eye className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
+                                                            onClick={async () => {
+                                                                await fetchCollectionDetails(item.id)
+                                                                setCollectionForm(true)
+                                                            }}
+                                                        />
+                                                    </CustomTooltip>
+                                                </PermissionProtectedAction>
                                                 :
-                                                <>
-                                                    {hasPermission('create', 'sample_collection') ?
-                                                        <CustomTooltip message="Add User">
-                                                            <UserRoundPlus className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
-                                                                onClick={() => { setCollectionForm(true); itemId.current = item.id }}
-                                                            />
-                                                        </CustomTooltip>
-                                                        :
-                                                        <p className="text-sm">N/A</p>
-                                                    }
-                                                </>}
+                                                <PermissionProtectedAction action="create" module="sample_collection">
+                                                    <CustomTooltip message="Add User">
+                                                        <UserRoundPlus className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
+                                                            onClick={() => {
+                                                                setCollectionForm(true);
+                                                                itemId.current = item.id
+                                                                index.current = i
+                                                            }}
+                                                        />
+                                                    </CustomTooltip>
+                                                </PermissionProtectedAction>
+                                            }
+
                                         </TableCell>
 
                                         {/* Approved By or Report */}
                                         <TableCell>
-                                            {item.PathologyReport?.id || view.report ?
-                                                <>
-                                                    {hasPermission('view', 'pathology_report') ?
-                                                        <CustomTooltip message="View Collector">
-                                                            <Eye className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
-                                                                onClick={async () => {
-                                                                    await fetchReportDetails(item.id)
-                                                                    setReportForm(true)
-                                                                }}
-                                                            />
-                                                        </CustomTooltip>
-                                                        :
-                                                        <p className="text-sm">N/A</p>
-                                                    }
-                                                </> : <>
-                                                    {hasPermission('create', 'pathology_report') ?
-                                                        <CustomTooltip message="Add Report">
-                                                            <Plus className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
-                                                                // testId for getting testName parameters && itemId for REREFERENCE
-                                                                onClick={() => { setReportForm(true); testId.current = item.testNameId, itemId.current = item.id }}
-                                                            />
-                                                        </CustomTooltip>
-                                                        :
-                                                        <p className="text-sm">N/A</p>
-                                                    }
-                                                </>}
+                                            {item.PathologyReport?.id || view?.[i]?.report ?
+
+                                                <PermissionProtectedAction action='view' module='pathology_report'>
+                                                    <CustomTooltip message="View Collector">
+                                                        <Eye className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
+                                                            onClick={async () => {
+                                                                await fetchReportDetails(item.id)
+                                                                setReportForm(true)
+                                                            }}
+                                                        />
+                                                    </CustomTooltip>
+                                                </PermissionProtectedAction>
+
+                                                :
+
+                                                <PermissionProtectedAction action='create' module='pathology_report'>
+                                                    < CustomTooltip message="Add Report">
+                                                        <Plus className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
+                                                            // testId for getting testName parameters && itemId for REREFERENCE
+                                                            onClick={() => { setReportForm(true); testId.current = item.testNameId, itemId.current = item.id, index.current = i }}
+                                                        />
+                                                    </CustomTooltip>
+                                                </PermissionProtectedAction>
+                                            }
+
                                         </TableCell>
                                         <TableCell>{item.tax} %</TableCell>
                                         <TableCell>{currencyFormat(item.amount)}</TableCell>

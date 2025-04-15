@@ -1,27 +1,30 @@
+import AlertModel from '@/components/alertModel'
+import CustomPagination from '@/components/customPagination'
+import EmptyList from '@/components/emptyList'
+import LoaderModel from '@/components/loader'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import ProtectedTable from '@/components/protected-table'
+import Radio from '@/components/radio'
+import TableActions from '@/components/table-actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Pencil, Plus, SearchX, Trash } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import AssignRosterFormModel from './formModel/AssignRosterFormModel'
+import { AssignRosterSchema } from '@/formSchemas/assignRosterFormSchema'
+import { useConfirmation } from '@/hooks/useConfirmation'
+import { RosterDataType, Rosters } from '@/types/dutyRoster/DutyRoster'
+import { Plus } from 'lucide-react'
+import { parseAsInteger, useQueryState } from 'nuqs'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import calculateShiftDuration from '@/helpers/calculateHours'
-import AlertModel from '@/components/alertModel'
-import Radio from '@/components/radio'
-import { createRoster, deleteRoster, getRosterDetails, getRosters, updateRoster } from './apihandlers'
-import CustomTooltip from '@/components/customTooltip'
-import { AssignRosterSchema } from '@/formSchemas/assignRosterFormSchema'
-import { z } from 'zod'
-import { RosterDetails, Rosters } from '@/types/dutyRoster/DutyRoster'
-import { useQueryState, parseAsInteger } from 'nuqs'
-import CustomPagination from '@/components/customPagination'
 import { useDebouncedCallback } from 'use-debounce'
-import LoaderModel from '@/components/loader'
-import usePermission from '@/authz'
-import { useConfirmation } from '@/hooks/useConfirmation'
-import { Separator } from '@/components/ui/separator'
+import { z } from 'zod'
+import { createRoster, deleteRoster, getRosters, updateRoster } from './apihandlers'
+import AssignRosterFormModel from './formModel/AssignRosterFormModel'
+import { Link } from 'react-router-dom'
+
+
 
 
 
@@ -29,7 +32,6 @@ import { Separator } from '@/components/ui/separator'
 const RosterReport = () => {
 
     // custom hooks
-    const { loadPermission, hasPermission } = usePermission()
     const { confirm, confirmationProps } = useConfirmation()
 
 
@@ -39,9 +41,8 @@ const RosterReport = () => {
     const [date, setDate] = useQueryState('date')
     const [period, setPeriod] = useState({ startDate: '', endDate: '' })
 
-
     // laoding States
-    const [loading, setLoading] = useState<{ inlineLoader: boolean, modelLoader: boolean }>({ inlineLoader: false, modelLoader: false })
+    const [loading, setLoading] = useState({ inlineLoader: false, modelLoader: false })
 
     // model states
     const [rosterFormModel, setRosterFormModel] = useState(false)
@@ -51,9 +52,7 @@ const RosterReport = () => {
 
     // API states
     const [rosterList, setRosterList] = useState<Rosters>({ data: [], total_pages: 0 })
-    const [rosterDetails, setRosterDetails] = useState<RosterDetails | undefined>(undefined)
-
-    const router = useNavigate()
+    const [current, setCurrent] = useState<RosterDataType | null>(null)
 
 
     // Performing both upsert
@@ -61,9 +60,9 @@ const RosterReport = () => {
         try {
             let data;
             setLoading({ ...loading, inlineLoader: true })
-            rosterDetails ? (
-                data = await updateRoster(formData, rosterDetails.id),
-                setRosterDetails(undefined)
+            current ? (
+                data = await updateRoster(formData, current.id),
+                setCurrent(null)
             ) :
                 (data = await createRoster(formData))
             toast.success(data.message)
@@ -89,17 +88,6 @@ const RosterReport = () => {
         } catch ({ message }: any) {
             toast.error(message)
         }
-    }
-
-
-    const fetchRosterDetails = async (id: number) => {
-        try {
-            setLoading({ ...loading, modelLoader: true })
-            const data = await getRosterDetails(id)
-            setRosterDetails(data)
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally { setLoading({ ...loading, modelLoader: false }) }
     }
 
 
@@ -135,10 +123,6 @@ const RosterReport = () => {
     }
 
 
-    useEffect(() => {
-        loadPermission()
-    }, [])
-
 
     useEffect(() => {
         fetchRosters()
@@ -153,11 +137,11 @@ const RosterReport = () => {
                 <h1 className='font-semibold tracking-tight'>Duty Roster</h1>
 
                 <div className='flex gap-x-2 overflow-x-auto'>
-                    {hasPermission('create', 'duty_roster') && (
+                    <PermissionProtectedAction action='create' module='duty_roster'>
                         <Button size='sm' onClick={() => setRosterFormModel(true)}>
                             <Plus /> Add Roster
                         </Button>
-                    )}
+                    </PermissionProtectedAction>
                 </div>
 
             </div>
@@ -215,74 +199,56 @@ const RosterReport = () => {
 
             {/* paginated Table */}
 
-            <div className="flex flex-col pb-16 gap-y-10 min-h-[70vh]">
+            <div className="flex flex-col pb-16 pt-5 gap-y-10 min-h-[70vh]">
                 <div className="flex-1">
-                    <Table className="rounded-lg border my-10 dark:border-gray-800">
-                        <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
-                            <TableRow>
-                                <TableHead>Staff ID</TableHead>
-                                <TableHead>Staff</TableHead>
-                                <TableHead>Start Date</TableHead>
-                                <TableHead>End Date</TableHead>
-                                <TableHead>Shift Start Time</TableHead>
-                                <TableHead>Shift End Time</TableHead>
-                                <TableHead>Shift Hour</TableHead>
-                                <TableHead>Shift</TableHead>
-                                <TableHead>Department</TableHead>
-                                <TableHead>Note</TableHead>
-                                {(hasPermission('update', 'duty_roster') || hasPermission('delete', 'duty_roster')) && (
-                                    <TableHead>Action</TableHead>
-                                )}
-                            </TableRow>
-                        </TableHeader>
+                    <ProtectedTable
+                        module='duty_roster' renderTable={(show, canUpdate, canDelete) => (
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Staff ID</TableHead>
+                                        <TableHead>Staff</TableHead>
+                                        <TableHead>Shift</TableHead>
+                                        <TableHead>Department</TableHead>
+                                        <TableHead>Start Time</TableHead>
+                                        <TableHead>End Time</TableHead>
+                                        <TableHead>Start Date</TableHead>
+                                        <TableHead>End Date</TableHead>
+                                        <TableHead>Note</TableHead>
+                                        {show && <TableHead>Action</TableHead>}
+                                    </TableRow>
+                                </TableHeader>
 
-                        <TableBody>
-
-                            {rosterList?.data.map((roster, i) => {
-                                return <TableRow key={i}>
-                                    <TableCell
-                                        className='font-semibold text-blue-600 cursor-pointer hover:text-blue-500'
-                                        onClick={() => router(`/admin/profile/staff/${roster.staffId}`)}>
-                                        {roster.staffId}
-                                    </TableCell>
-                                    <TableCell className="font-medium cursor-pointer">{roster.staff.name}</TableCell>
-                                    <TableCell>{roster.shiftStartDate}</TableCell>
-                                    <TableCell>{roster.shiftEndDate}</TableCell>
-                                    <TableCell>{roster.shiftStartTime}</TableCell>
-                                    <TableCell>{roster.shiftEndTime}</TableCell>
-                                    <TableCell>{calculateShiftDuration(roster.shiftStartTime, roster.shiftEndTime)}</TableCell>
-                                    <TableCell>{roster.shift}</TableCell>
-                                    <TableCell>{roster.staff.department}</TableCell>
-                                    <TableCell>{roster.note}</TableCell>
-                                    <TableCell className='flex gap-x-2'>
-                                        {/* Edit button */}
-                                        {hasPermission('update', 'duty_roster') && (
-                                            <CustomTooltip message='EDIT'>
-                                                <Pencil className='text-gray-600 dark:text-gray-400 w-4 h-4 cursor-pointer active:scale-95'
-                                                    onClick={async () => {
-                                                        await fetchRosterDetails(roster.id)
-                                                        setRosterFormModel(true)
-                                                    }}
-                                                />
-                                            </CustomTooltip>
-                                        )}
-
-
-                                        {/* Delete */}
-                                        {hasPermission('delete', 'duty_roster') && (
-                                            <CustomTooltip message='DELETE'>
-                                                <Trash className='text-gray-600 dark:text-gray-400 w-4 h-4 cursor-pointer active:scale-95'
-                                                    onClick={() => onDelete(roster.id)}
-                                                />
-                                            </CustomTooltip>)}
-                                    </TableCell>
-                                </TableRow>
-                            })}
-                        </TableBody>
-                    </Table>
+                                <TableBody>
+                                    {rosterList.data.map((item, i) => (
+                                        <TableRow key={i}>
+                                            <TableCell>
+                                                <Link className='text-blue-500 hover:underline font-semibold' to={`/admin/profile/staff/${item.staffId}`}>{item.staffId}</Link>
+                                            </TableCell>
+                                            <TableCell>{item.staff.name}</TableCell>
+                                            <TableCell>{item.shift}</TableCell>
+                                            <TableCell>{item.staff.department}</TableCell>
+                                            <TableCell>{item.shiftStartTime}</TableCell>
+                                            <TableCell>{item.shiftEndTime}</TableCell>
+                                            <TableCell>{item.shiftStartDate}</TableCell>
+                                            <TableCell>{item.shiftEndDate}</TableCell>
+                                            <TableCell>{item.note}</TableCell>
+                                            <TableActions
+                                                show={show}
+                                                canUpdate={canUpdate}
+                                                canDelete={canDelete}
+                                                onEdit={() => { setCurrent(item); setRosterFormModel(true) }}
+                                                onDelete={() => onDelete(item.id)}
+                                            />
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
+                    />
 
                     {/* error on emply list */}
-                    {rosterList.data.length < 1 && <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>Not found <SearchX className='h-5 w-5' /></h1>}
+                    <EmptyList length={rosterList.data.length} message="No Roster Found" />
                 </div>
 
                 {/* pagination */}
@@ -304,11 +270,11 @@ const RosterReport = () => {
             {
                 rosterFormModel && <AssignRosterFormModel
                     Submit={handleSubmit}
-                    rosterDetails={rosterDetails!}
+                    rosterDetails={current!}
                     isPending={loading.inlineLoader}
                     onClick={() => {
                         setRosterFormModel(false)
-                        setRosterDetails(undefined)
+                        setCurrent(null)
                     }}
                 />
             }
@@ -324,6 +290,7 @@ const RosterReport = () => {
             }
 
             {loading.modelLoader && <LoaderModel />}
+
 
         </div >
     )

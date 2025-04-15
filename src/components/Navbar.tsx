@@ -1,29 +1,26 @@
+import { SidebarContext } from "@/contexts/sidebar-provider"
+import { authSelector, logout } from "@/features/auth/authSlice"
+import { useAppDispatch, useAppSelector } from "@/hooks"
+import { Moon, SunMedium, User } from "lucide-react"
+import { useContext, useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import MaxWidthWrapper from "./MaxWidthWrapper"
 import { buttonVariants } from "./ui/button"
-import { useAppDispatch, useAppSelector } from "@/hooks"
-import { openAside } from "@/features/aside/asideSlice"
-import { Moon, SunMedium, User } from "lucide-react"
-import { authSelector, logout } from "@/features/auth/authSlice"
-import { useEffect, useState } from "react"
 import UserModel from "./userModel"
+
 
 
 const Navbar = () => {
 
     const [isDark, setDark] = useState(false)
+    const { toggleSidebar } = useContext(SidebarContext)
 
-    let isAsideOpen = false
+
     const router = useNavigate()
 
     const dispatch = useAppDispatch()
     const session = useAppSelector(authSelector)
     const [isUserModel, setUserModel] = useState<boolean>(false)
-
-    const asideController = () => {
-        isAsideOpen = !isAsideOpen
-        dispatch(openAside(isAsideOpen))
-    }
 
 
     const onLogout = () => {
@@ -78,7 +75,7 @@ const Navbar = () => {
                                         <img src="/user.png" alt="" className="object-cover" srcSet="" />
                                     </div>
 
-                                    <div onClick={asideController}
+                                    <div onClick={toggleSidebar}
                                         className="w-10 rounded-md flex flex-col gap-2 p-2 shadow ring-1 ring-gray-200 bg-gray-100 transition-all active:scale-95 cursor-pointer sm:hidden">
                                         <div className="h-px bg-gray-700 w-full"></div>
                                         <div className="h-px bg-gray-700 w-full"></div>

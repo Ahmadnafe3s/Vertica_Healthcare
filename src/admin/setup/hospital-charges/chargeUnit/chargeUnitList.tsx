@@ -1,16 +1,17 @@
+import AlertModel from '@/components/alertModel'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import ProtectedTable from '@/components/protected-table'
+import TableActions from '@/components/table-actions'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Plus } from 'lucide-react'
-import AddUnitFormModel, { unitFormSchema } from './addUnitFormModel'
-import { useEffect, useState } from 'react'
-import { z } from 'zod'
-import toast from 'react-hot-toast'
-import { createChargeUnit, deleteChargeUnit, getChargeUnitDetails, getChargeUnitList, updateChargeUnit } from '../chargesAPIhandlers'
-import AlertModel from '@/components/alertModel'
-import PermissionProtectedAction from '@/components/permission-protected-actions'
-import PermissionTableActions from '@/components/permission-table-actions'
 import { useConfirmation } from '@/hooks/useConfirmation'
+import { Plus } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { z } from 'zod'
+import { createChargeUnit, deleteChargeUnit, getChargeUnitDetails, getChargeUnitList, updateChargeUnit } from '../chargesAPIhandlers'
+import AddUnitFormModel, { unitFormSchema } from './addUnitFormModel'
 
 
 export interface unitType {
@@ -35,7 +36,7 @@ const ChargeUnitList = () => {
   const [unitsList, setUnitsList] = useState<unitType[]>([])
 
 
-  // performing upsert 
+  // performing upsert
   const handleSubmit = async (formData: z.infer<typeof unitFormSchema>) => {
     try {
       let data;
@@ -114,32 +115,36 @@ const ChargeUnitList = () => {
 
       <Separator />
 
-      <Table className="rounded-lg border dark:border-gray-800">
-        <TableHeader className="bg-zinc-100 dark:bg-gray-800">
-          <TableRow>
-            <TableHead className=''>Unit Type</TableHead>
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {unitsList.map((unit) => {
-            return <TableRow key={unit.id}>
-              <TableCell>{unit.unit_type}</TableCell>
-              <TableCell className='flex space-x-2'>
+      <ProtectedTable
+        module='charge_unit'
+        renderTable={(show, canUpdate, canDelete) => (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Unit Type</TableHead>
+                {show && <TableHead>Action</TableHead>}
+              </TableRow>
+            </TableHeader>
 
-                <PermissionTableActions
-                  module='charge_unit'
-                  onEdit={() => {
-                    fetchUnitdetails(unit.id)
-                  }}
-                  onDelete={() => { onDelete(unit.id) }}
-                />
-
-              </TableCell>
-            </TableRow>
-          })}
-        </TableBody>
-      </Table>
+            <TableBody>
+              {unitsList.map((item, i) => (
+                <TableRow key={i}>
+                  <TableCell>{item.unit_type}</TableCell>
+                  {/* has own table cell */}
+                  <TableActions
+                    show={show}
+                    canUpdate={canUpdate}
+                    canDelete={canDelete}
+                    onEdit={async () => { await fetchUnitdetails(item.id), setAddUnitFormVisible(true) }}
+                    onDelete={() => onDelete(item.id)}
+                    exclude={{ edit: true }}
+                  />
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      />
 
       {/* Models */}
 

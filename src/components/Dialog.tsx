@@ -1,10 +1,9 @@
-import React, { HTMLAttributes } from "react"
-import MaxWidthWrapper from "./MaxWidthWrapper"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip"
-import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { motion, AnimatePresence } from 'motion/react'
+import { X } from "lucide-react"
+import { AnimatePresence, motion } from 'motion/react'
+import React, { HTMLAttributes } from "react"
 import Backdrop from "./backdrop"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip"
 
 
 interface DialogProps extends HTMLAttributes<HTMLDivElement> {
@@ -20,12 +19,12 @@ const Dialog = ({ children, pageTitle, className, ...props }: DialogProps) => {
         <AnimatePresence>
             <Backdrop {...props}>
                 <motion.div className="flex-1"
-                    initial={{ opacity: 0.3}}
-                    animate={{ opacity: 1}}
+                    initial={{ opacity: 0.3 }}
+                    animate={{ opacity: 1 }}
                 >
                     {/* // prevents modal to click backdrop */}
-                    <MaxWidthWrapper className='h-auto' onClick={(e) => e.stopPropagation()} >
-                        <div className={cn('rounded-lg pb-2 bg-white dark:bg-dark border dark:border-gray-800', className)}>
+                    <div className={cn('px-3 mx-auto max-w-screen-lg', className)} onClick={(e) => e.stopPropagation()}>
+                        <div className={cn('rounded-lg pb-2 bg-white dark:bg-dark border dark:border-gray-800')}>
 
                             {/* hearder */}
 
@@ -49,10 +48,10 @@ const Dialog = ({ children, pageTitle, className, ...props }: DialogProps) => {
                             {/* children of modal */}
                             <div className="pt-3">{children}</div>
                         </div>
-                    </MaxWidthWrapper>
+                    </div>
                 </motion.div>
             </Backdrop>
-        </AnimatePresence>
+        </AnimatePresence >
     )
 }
 

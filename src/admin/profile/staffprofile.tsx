@@ -57,8 +57,8 @@ const Staffprofile = () => {
                         <img src={profile?.image ? profile?.image : profile?.gender === 'male' ? '/user.png' : '/female_user.png'} alt="staff img" className='object-cover h-full w-full rounded-lg' />
                     </div>
                     <div className='space-y-2'>
-                        <h1 className='text-gray-900 dark:text-gray-100 dark:text-gray-100 text-2xl font-bold'>{profile?.name}</h1>
-                        
+                        <h1 className='text-gray-900 dark:text-gray-100 text-2xl font-bold'>{profile?.name}</h1>
+
                         {/* Profile Actions */}
                         <div className='flex gap-x-2'>
                             {(session.user?.role === 'admin' || session.user?.id === profile?.id) &&

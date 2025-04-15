@@ -1,10 +1,10 @@
-import usePermission from "@/authz";
-import { ReactNode, useEffect } from "react";
+import { PermissionContext } from "@/contexts/permission-provider";
+import { ReactNode, useContext } from "react";
 
 
 interface PermissionProtectedActionProps {
     children: ReactNode;
-    action: 'view' | 'create';
+    action: 'view' | 'create' | 'delete' | 'update' | string;
     module: string;
 }
 
@@ -14,19 +14,10 @@ const PermissionProtectedAction = ({
     module
 }: PermissionProtectedActionProps) => {
 
-    const { hasPermission, loadPermission } = usePermission();
+    const { hasPermission } = useContext(PermissionContext)
 
-    useEffect(() => {
-        loadPermission();
-    }, [])
+    return hasPermission(action, module) ? <>{children}</> : null;
 
-    const isPermitted = hasPermission(action, module);
-
-    if (!isPermitted) return null;
-
-    return (
-        <main>{children}</main>
-    )
 }
 
 

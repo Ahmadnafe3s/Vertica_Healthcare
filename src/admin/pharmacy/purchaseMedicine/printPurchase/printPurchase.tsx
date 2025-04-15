@@ -1,14 +1,14 @@
-import { pdf, Document, Page, Text, View } from '@react-pdf/renderer';
-import { useEffect, useState } from 'react';
-import styles from '@/pdfStyleSheet/style'
-import toast from 'react-hot-toast';
-import { currencySymbol } from '@/helpers/currencySymbol';
 import { Table, TD, TH, TR } from '@/components/pdfTable';
+import { address, hospital_name, hospital_slogan } from '@/globalData';
+import { currencySymbol } from '@/helpers/currencySymbol';
 import { currencyFormat } from '@/lib/utils';
-import { Printer } from 'lucide-react';
-import CustomTooltip from '@/components/customTooltip';
-import { getPharmacyBillDetails, getPurchaseDetails } from '../../pharmacyApiHandler';
+import styles from '@/pdfStyleSheet/style';
 import { medicinePurchaseDetails } from '@/types/opd_section/purchaseMedicine';
+import { Document, Page, pdf, Text, View } from '@react-pdf/renderer';
+import { Printer } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { getPurchaseDetails } from '../../pharmacyApiHandler';
 
 
 
@@ -30,13 +30,13 @@ const Documents = ({ Details }: { Details: medicinePurchaseDetails }) => {
                 {/* header */}
                 <View style={styles.header}>
                     <View style={styles.spaceY}>
-                        <Text style={[styles.text.bold, styles.text.xl]}>Vertical Healthcare</Text>
-                        <Text style={[styles.text.sm, styles.text.lightGray, styles.text.italic]}>Your Health is our priority</Text>
+                        <Text style={[styles.text.bold, styles.text.xl]}>{hospital_name}</Text>
+                        <Text style={[styles.text.sm, styles.text.lightGray, styles.text.italic]}>{hospital_slogan}</Text>
                     </View>
                     <View style={[styles.text.sm, styles.spaceY]}>
-                        <Text>New Market purwa</Text>
-                        <Text>Tulsipur , Balrampur</Text>
-                        <Text>U.P , India , 271208</Text>
+                        <Text>{address.street}</Text>
+                        <Text>{address.city + ', ' + address.district}</Text>
+                        <Text>{address.zip}</Text>
                     </View>
                 </View>
 
@@ -170,9 +170,11 @@ const PrintMedicinePurchase = ({ Id, onPending }: PrintMedicinePurchaseProps) =>
 
     return (
         <>
-            <CustomTooltip message='Print Bill'>
-                <Printer className='cursor-pointer text-gray-600 dark:text-gray-400 w-4 active:scale-95' onClick={handleOpenNewTab} />
-            </CustomTooltip>
+            <div className='relative size-full flex space-x-2'>
+                <Printer className='cursor-pointer text-gray-600 hover:text-gray-800 dark:text-neutral-300 w-4 active:scale-95' onClick={handleOpenNewTab} />
+                <span>Print</span>
+                <span className='absolute inset-0 z-10' onClick={handleOpenNewTab} />
+            </div>
         </>
     );
 };

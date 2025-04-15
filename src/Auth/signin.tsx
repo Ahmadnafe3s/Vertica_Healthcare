@@ -10,9 +10,10 @@ import { signInformSchema } from '@/formSchemas/signinFormSchema'
 import { zodResolver } from "@hookform/resolvers/zod"
 import toast from 'react-hot-toast'
 import axios from 'axios'
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector } from "@/hooks"
 import { authSelector, setUser } from "@/features/auth/authSlice"
+import { PermissionContext } from "@/contexts/permission-provider"
 
 
 
@@ -22,6 +23,7 @@ const SignIn = () => {
   const dispatch = useAppDispatch()
   const router = useNavigate()
   const session = useAppSelector(authSelector)
+  const { removePermissions } = useContext(PermissionContext)
 
   const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof signInformSchema>>({
     resolver: zodResolver(signInformSchema)
@@ -44,6 +46,8 @@ const SignIn = () => {
       localStorage.setItem('token', JSON.stringify(response.data.token))
 
       const route = user.role === "patient" ? 'patient' : 'admin'
+
+      await removePermissions()
 
       router(`/${route}/dashboard`)
 

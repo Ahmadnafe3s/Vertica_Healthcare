@@ -1,3 +1,4 @@
+import PermissionProtectedAction from "@/components/permission-protected-actions"
 import { buttonVariants } from "@/components/ui/button"
 import { ScrollBar } from "@/components/ui/scroll-area"
 import { ScrollArea } from "@radix-ui/react-scroll-area"
@@ -14,30 +15,40 @@ const SetupRadiologyLayout = () => {
 
             {/* we provide relative path like this */}
 
-            <Link to={``} className={buttonVariants({
-              variant: 'outline'
-            })}>
-              <FlaskConical /> Test Names
-            </Link>
-
-            <Link to={`category`} className={buttonVariants({
-              variant: 'outline'
-            })}>
-              <ChartBarStacked /> Categories
-            </Link>
+            <PermissionProtectedAction action='view' module='setupRadiology'>
+              <Link to={``} className={buttonVariants({
+                variant: 'outline'
+              })}>
+                <FlaskConical /> Test Names
+              </Link>
+            </PermissionProtectedAction>
 
 
-            <Link to={`parameter`} className={buttonVariants({
-              variant: 'outline'
-            })}>
-              <ReceiptText /> Parameters
-            </Link>
+            <PermissionProtectedAction action='view' module='radiology_category'>
+              <Link to={`category`} className={buttonVariants({
+                variant: 'outline'
+              })}>
+                <ChartBarStacked /> Categories
+              </Link>
+            </PermissionProtectedAction>
 
-            <Link to={`units`} className={buttonVariants({
-              variant: 'outline'
-            })}>
-              <Ruler /> Units
-            </Link>
+
+            <PermissionProtectedAction action='view' module='radiology_parameter'>
+              <Link to={`parameter`} className={buttonVariants({
+                variant: 'outline'
+              })}>
+                <ReceiptText /> Parameters
+              </Link>
+            </PermissionProtectedAction>
+
+            <PermissionProtectedAction action='view' module='radiology_unit'>
+              <Link to={`units`} className={buttonVariants({
+                variant: 'outline'
+              })}>
+                <Ruler /> Units
+              </Link>
+            </PermissionProtectedAction>
+
 
           </div>
 

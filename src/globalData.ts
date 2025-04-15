@@ -9,3 +9,7 @@ export const address = {
     district: 'Balrampur',
     zip: 'U.P, India, 271208'
 }
+
+
+
+export const page_limit = 10

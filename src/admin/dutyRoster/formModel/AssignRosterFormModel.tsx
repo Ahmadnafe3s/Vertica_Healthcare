@@ -1,27 +1,27 @@
+import { getStaffs } from '@/admin/humanresource/HRApiHandler'
+import Dialog from '@/components/Dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AssignRosterSchema } from '@/formSchemas/assignRosterFormSchema'
+import { RosterDataType } from '@/types/dutyRoster/DutyRoster'
+import { staffs } from '@/types/staff/staff'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from 'lucide-react'
+import { useQueryState } from 'nuqs'
 import { HTMLAttributes, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import { z } from 'zod'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import Dialog from '@/components/Dialog'
-import { staffs } from '@/types/staff/staff'
-import { getStaffs } from '@/admin/humanresource/HRApiHandler'
-import { useQueryState } from 'nuqs'
 import { useDebouncedCallback } from 'use-debounce'
-import { RosterDetails } from '@/types/dutyRoster/DutyRoster'
+import { z } from 'zod'
 
 
 
 interface AssignRosterFormModelProps extends HTMLAttributes<HTMLDivElement> {
   Submit: (formData: any) => void
-  rosterDetails: RosterDetails
+  rosterDetails: RosterDataType
   isPending: boolean
 }
 
@@ -46,7 +46,7 @@ const AssignRosterFormModel = ({ Submit, rosterDetails, isPending, ...props }: A
   // fetching staffs list
   const fetchStaffs = async () => {
     try {
-      const data = await getStaffs({ limit: search ? 10 : 5, search: search! })
+      const data = await getStaffs({ search: search! })
       setStaff(data)
     } catch ({ message }: any) {
       toast.error(message)

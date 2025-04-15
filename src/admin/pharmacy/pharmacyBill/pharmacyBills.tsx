@@ -1,36 +1,36 @@
+import AlertModel from '@/components/alertModel'
+import CustomPagination from '@/components/customPagination'
+import EmptyList from '@/components/emptyList'
+import LoaderModel from '@/components/loader'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import PermissionTableActions from '@/components/permission-table-actions'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { currencyFormat } from '@/lib/utils'
-import { ListMinus, Plus, Trash } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import CreatePharmacyBill from './createPharmacyBill'
-import toast from 'react-hot-toast'
-import { createPharmacyBill, deletePharmacyBill, getPharmacyBillDetails, getPharmacyBills } from '../pharmacyApiHandler'
 import { createPharmacyBillSchema } from '@/formSchemas/createPharmBillSchema'
-import { z } from 'zod'
-import { useEffect, useState } from 'react'
+import { useConfirmation } from '@/hooks/useConfirmation'
+import { currencyFormat } from '@/lib/utils'
 import { pharmacyBillDetail, pharmacyBills } from '@/types/pharmacy/pharmacy'
-import CustomTooltip from '@/components/customTooltip'
-import PharmacyBillDetailsModal from './pharmacyBillDetailsModal'
-import LoaderModel from '@/components/loader'
-import AlertModel from '@/components/alertModel'
-import { useQueryState, parseAsInteger } from 'nuqs'
-import CustomPagination from '@/components/customPagination'
+import { ListMinus, Plus } from 'lucide-react'
+import { parseAsInteger, useQueryState } from 'nuqs'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { Link } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
+import { z } from 'zod'
+import { createPharmacyBill, deletePharmacyBill, getPharmacyBillDetails, getPharmacyBills } from '../pharmacyApiHandler'
+import CreatePharmacyBill from './createPharmacyBill'
+import PharmacyBillDetailsModal from './pharmacyBillDetailsModal'
 import PrintPharmacyBill from './printBill/printPharmacyBill'
 import PrintPharmacyBills from './printBill/printPharmacyBills'
-import usePermission from '@/authz'
-import { useConfirmation } from '@/hooks/useConfirmation'
-import { Separator } from '@/components/ui/separator'
-import EmptyList from '@/components/emptyList'
+
 
 
 
 const Bill = () => {
 
     // custom hooks
-    const { loadPermission, hasPermission } = usePermission()
     const { confirm, confirmationProps } = useConfirmation()
 
     // query params
@@ -117,7 +117,6 @@ const Bill = () => {
 
     useEffect(() => {
         fetchParmacyBills()
-        loadPermission()
     }, [page, search])
 
 
@@ -130,14 +129,14 @@ const Bill = () => {
                     <h1 className='font-semibold tracking-tight'>Pharmacy Bill</h1>
                     <div className='flex gap-x-2 overflow-x-auto'>
 
-                        {hasPermission('create', 'pharmacy_bill') && (
+                        <PermissionProtectedAction action='create' module='pharmacy_bill'>
                             <Button
                                 size={'sm'}
                                 onClick={() => setModel(prev => ({ ...prev, createPharmacyBill: true }))}
                             > <Plus /> Generate Bill</Button>
-                        )}
+                        </PermissionProtectedAction>
 
-                        {hasPermission('view', 'medicines') && (
+                        <PermissionProtectedAction action='view' module='medicines'>
                             < Link to={'medicines'} className={buttonVariants({
                                 variant: 'default',
                                 size: 'sm',
@@ -146,7 +145,7 @@ const Bill = () => {
                                 <ListMinus />
                                 Medicines
                             </Link>
-                        )}
+                        </PermissionProtectedAction>
 
                     </div>
                 </div>
@@ -203,22 +202,19 @@ const Bill = () => {
                                         <TableCell>{bill.discount} %</TableCell>
                                         <TableCell>{currencyFormat(bill.net_amount)}</TableCell>
                                         <TableCell className='flex space-x-2'>
-                                            {/* DELETE  */}
-                                            {hasPermission('delete', 'pharmacy_bill') && (
-                                                <CustomTooltip message='DELETE'>
-                                                    <Trash className="w-4 cursor-pointer dark:text-gray-300 text-gray-600" onClick={() => onDelete(bill.id)} />
-                                                </CustomTooltip>
-                                            )}
-
-                                            {/* Print Bill */}
-                                            <PrintPharmacyBill Id={bill.id} onPending={(v) => setLoading({ ...isLodaing, model: v })} />
-
+                                            {/* Delete and Print */}
+                                            <PermissionTableActions
+                                                module='pharmacy_bill'
+                                                onDelete={() => onDelete(bill.id)}
+                                                exclude={{ edit: true }}
+                                                include={<PrintPharmacyBill Id={bill.id} onPending={(v) => setLoading({ ...isLodaing, model: v })} />}
+                                            />
                                         </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
-                        
+
                         <EmptyList length={pharmBills.data.length} message='No bills found' />
                     </div>
 

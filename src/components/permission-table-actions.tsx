@@ -1,8 +1,8 @@
-import usePermission from '@/authz';
 import { MoreHorizontal, Pencil, Trash } from 'lucide-react'; // Assuming you're using Lucide icons
-import { useEffect } from 'react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { ReactNode, useContext } from 'react';
 import { Button } from './ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { PermissionContext } from '@/contexts/permission-provider';
 
 
 interface PermissionActionsProps {
@@ -13,7 +13,8 @@ interface PermissionActionsProps {
     exclude?: {
         edit?: boolean;
         delete?: boolean;
-    }
+    },
+    include?: ReactNode
 }
 
 
@@ -22,21 +23,18 @@ const PermissionTableActions = ({
     onEdit,
     onDelete,
     exclude = { edit: false, delete: false },
+    include
 }: PermissionActionsProps) => {
 
-    const { hasPermission, loadPermission } = usePermission();
+    const { hasPermission } = useContext(PermissionContext)
 
-    // Load permissions on mount
-    useEffect(() => {
-        loadPermission();
-    }, []);
 
     const canUpdate = !exclude.edit && hasPermission('update', module);
     const canDelete = !exclude.delete && hasPermission('delete', module);
 
 
     // If no permissions, show N/A badge
-    if (!canUpdate && !canDelete) {
+    if (!canUpdate && !canDelete && !include) {
         return (
             <div className='px-1 py-0.5 text-[12px] cursor-not-allowed bg-red-500 text-white rounded-full'>
                 N/A
@@ -52,7 +50,15 @@ const PermissionTableActions = ({
                     <MoreHorizontal />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align='end' className='p-0.5 dark:border-gray-800'>
+            <DropdownMenuContent align='end' className='p-0.5 dark:border-gray-800 z-[200]'>
+                {include && (
+                    <DropdownMenuItem>
+                        <button type='button' className='relative flex items-center w-full space-x-2 h-5 hover:text-gray-600 dark:hover:text-gray-400'>
+                            {include}
+                        </button>
+                    </DropdownMenuItem>
+                )}
+
                 {canUpdate && (
                     <DropdownMenuItem>
                         <button type='button' onClick={onEdit} className='flex items-center w-full space-x-2 h-5 hover:text-gray-600 dark:hover:text-gray-400'>

@@ -15,9 +15,9 @@ import { getStaffs } from '@/admin/humanresource/HRApiHandler'
 import { staffs } from '@/types/staff/staff'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table'
 import { Textarea } from '../../components/ui/textarea'
-import usePermission from '@/authz'
 import { getPathTestNameParameters } from '../setup/pathology/api-handler'
 import { PathTestReport } from '@/types/pathology/pathology'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
 
 
 
@@ -32,7 +32,6 @@ interface PathologyReportFormProps extends HTMLAttributes<HTMLDivElement> {
 
 const PathologyReportForm = ({ Submit, isPending, editDetails, testNameId, ...props }: PathologyReportFormProps) => {
 
-    const { hasPermission, loadPermission } = usePermission()
 
     // API states
     const [staffs, setStaffs] = useState<staffs>({ data: [], total_pages: 0 })
@@ -91,7 +90,6 @@ const PathologyReportForm = ({ Submit, isPending, editDetails, testNameId, ...pr
             :
             (fetchPathTestNameParameters(testNameId))
         fetchStaffs()
-        loadPermission()
     }, [testNameId])
 
 
@@ -188,12 +186,11 @@ const PathologyReportForm = ({ Submit, isPending, editDetails, testNameId, ...pr
 
                 </ScrollArea>
 
-                {(hasPermission('update', 'pathology_report') || hasPermission('create', 'pathology_report')) &&
+                <PermissionProtectedAction action='create' module='pathology_report'>
                     <div className="flex mt-5 mb-2 p-3">
                         <Button type='submit' className='flex-1 sm:flex-none'>{editDetails ? 'Update' : 'Save Report'} {isPending && <Loader className='animate-spin' />}</Button>
                     </div>
-                }
-
+                </PermissionProtectedAction>
             </form>
         </Dialog>
     )

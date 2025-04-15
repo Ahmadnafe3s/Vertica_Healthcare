@@ -1,105 +1,22 @@
+import AlertModel from "@/components/alertModel"
+import CustomTooltip from "@/components/customTooltip"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Calendar, Clock, Pencil, Plus, SearchX, Trash2 } from "lucide-react"
-import TimelineFormModel from "./timelineFormModel"
-import { useEffect, useState } from "react"
-import AlertModel from "@/components/alertModel"
-import toast from "react-hot-toast"
-import { createTimeline, deleteTimeline, getTimelineDetails, getTimelines, updateTimeine } from "../../opdApiHandler"
-import { useParams } from "react-router-dom"
-import { timelineFormSchema } from "@/formSchemas/timelineFormSchema"
-import { z } from "zod"
-import { timeline } from "@/types/opd_section/timeline"
-import LoaderModel from "@/components/loader"
-import usePermission from "@/authz"
-import { useConfirmation } from "@/hooks/useConfirmation"
-import CustomTooltip from "@/components/customTooltip"
+import { Calendar, Clock, Pencil, Plus, SearchX, Trash } from "lucide-react"
+import { useEffect } from "react"
+import useTimelineHandlers from "./timeline-handlers"
+import TimelineFormModel from "../../../../components/form-modals/timeline-form-modal"
+import EmptyList from "@/components/emptyList"
 
 const Timeline = () => {
 
-    // custom hook
-    const { hasPermission, loadPermission } = usePermission()
-    const { confirm, confirmationProps } = useConfirmation()
+    const { timelines, getTimelines, current, setCurrent, isPending, form, setForm, handleSubmit, onDelete, confirmationProps } = useTimelineHandlers()
 
-    const { patientId, opdId } = useParams()
-
-    // pending states
-    const [isPending, setPending] = useState<boolean>(false)
-
-
-    // API states
-    const [timelines, setTimelines] = useState<timeline[]>([])
-    const [timelineDetails, setTimelineDetails] = useState<timeline>()
-
-
-    // model state
-    const [model, setModel] = useState({ timelineForm: false, loaderModel: false })
-
-
-    const handleSubmit = async (formData: z.infer<typeof timelineFormSchema>) => {
-        try {
-            setPending(true)
-            let data;
-
-            timelineDetails ? (
-                data = await updateTimeine(timelineDetails.id, formData), setTimelineDetails(undefined))
-                :
-                (data = await createTimeline(opdId!, Number(patientId), formData))
-
-            toast.success(data.message)
-            fetchTimelines()
-            setModel(rest => ({
-                ...rest,
-                timelineForm: false
-            }))
-
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally {
-            setPending(false)
-        }
-    }
-
-
-    const fetchTimelines = async () => {
-        try {
-            const data = await getTimelines(opdId!)
-            setTimelines(data)
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }
-
-
-    // fetching details for edir mode
-
-    const fetchTimelineDetails = async (id: number) => {
-        try {
-            setModel({ ...model, loaderModel: true })
-            const data = await getTimelineDetails(id)
-            setTimelineDetails(data)
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }
-
-
-    const onDelete = async (id: number) => {
-        try {
-            const isConfirm = await confirm()
-            if (!isConfirm) return null
-            const data = await deleteTimeline(id)  // timeline id
-            toast.success(data.message)
-            fetchTimelines()
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }
 
 
     useEffect(() => {
-        fetchTimelines()
-        loadPermission()
+        getTimelines()
     }, [])
 
 
@@ -108,19 +25,18 @@ const Timeline = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Timeline</h1>
-                {hasPermission('create', 'timeline') && (
+                <PermissionProtectedAction action='create' module='timeline'>
                     <Button size='sm' onClick={() => {
-                        setModel({ ...model, timelineForm: true })
+                        setForm(true)
                     }}>
                         <Plus /> Add Timeline
                     </Button>
-                )}
+                </PermissionProtectedAction>
             </div>
 
             <Separator />
 
             {timelines.length > 0 ? (<ul className="relative before:absolute space-y-5 before:w-1 w-64 sm:w-[400px] lg:w-[550px] mx-auto gap-3 before:h-full before:bg-gray-300 before:top-0 before:block">
-
 
 
                 {timelines.map((timeline, i) => {
@@ -141,29 +57,19 @@ const Timeline = () => {
                                 {/* Title section */}
                                 <div className=" flex justify-between items-center cursor-pointer group transition-all">
                                     <p className="text-lg font-semibold text-gray-800 dark:text-gray-200">{timeline.title}</p>
-                                    <div className="flex gap-x-2">
+                                    <div className="flex gap-x-2 opacity-0 group-hover:opacity-100">
 
-                                        {/* EDIT */}
-                                        {hasPermission('update', 'timeline') && (
-                                            <CustomTooltip message="EDIT">
-                                                <Pencil className="w-4 h-4 text-gray-500 dark:text-gray-400 transition-all active:scale-90 opacity-0 group-hover:opacity-100 "
-                                                    onClick={async () => {
-                                                        await fetchTimelineDetails(timeline.id)
-                                                        setModel({ ...model, timelineForm: true })
-                                                    }}
-                                                />
+                                        <PermissionProtectedAction action='update' module='timeline'>
+                                            <CustomTooltip message="Edit">
+                                                <Pencil className="w-4 h-4 text-gray-500 dark:text-gray-400 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { setCurrent(timeline); setForm(true) }} />
                                             </CustomTooltip>
-                                        )}
+                                        </PermissionProtectedAction>
 
-                                        {/* DELETE */}
-                                        {hasPermission('delete', 'timeline') && (
-                                            <CustomTooltip message="DELETE">
-                                                <Trash2 className="w-4 h-4 text-gray-500 dark:text-gray-400 transition-all active:scale-90 opacity-0 group-hover:opacity-100 "
-                                                    onClick={() => onDelete(timeline.id)}
-                                                />
+                                        <PermissionProtectedAction action='delete' module='timeline'>
+                                            <CustomTooltip message="Delete">
+                                                <Trash className="w-4 h-4 text-gray-500 dark:text-gray-400 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => onDelete(timeline.id)} />
                                             </CustomTooltip>
-                                        )}
-
+                                        </PermissionProtectedAction>
                                     </div>
                                 </div>
 
@@ -188,7 +94,7 @@ const Timeline = () => {
             </ul>
             )
                 :
-                <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>No data found <SearchX className='h-5 w-5' /></h1>
+                <EmptyList length={timelines.length} message="No timelines found" />
             }
 
 
@@ -197,17 +103,11 @@ const Timeline = () => {
 
             {/* Form model */}
 
-            {model.timelineForm && <TimelineFormModel
+            {form && <TimelineFormModel
                 Submit={handleSubmit}
-                timelineDetails={timelineDetails!}
+                timelineDetails={current!}
                 isPending={isPending}
-                onClick={() => {
-                    setModel({
-                        ...model,
-                        timelineForm: false
-                    })
-                    setTimelineDetails(undefined)
-                }}
+                onClick={() => { setForm(false); setCurrent(null) }}
             />}
 
 
@@ -217,10 +117,6 @@ const Timeline = () => {
                 cancel={() => confirmationProps.onCancel()}
                 continue={() => confirmationProps.onConfirm()}
             />}
-
-
-            {/* Loader Model */}
-            {model.loaderModel && (<LoaderModel />)}
 
         </section>
     )

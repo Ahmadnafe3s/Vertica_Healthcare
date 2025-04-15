@@ -1,16 +1,20 @@
-import CustomTooltip from "@/components/customTooltip"
 import Dialog from "@/components/Dialog"
+import PermissionTableActions from "@/components/permission-table-actions"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { prescriptionDetail } from "@/types/opd_section/prescription"
-import { Pencil, Syringe, Trash } from "lucide-react"
+import { Syringe } from "lucide-react"
 import { HTMLAttributes } from "react"
+
+
 
 interface PrescriptionDetailsProps extends HTMLAttributes<HTMLDivElement> {
   prescriptionDetails: prescriptionDetail
   Edit: () => void
   Delete: () => void
 }
+
+
 
 const PrescriptionDetailsModel = ({ Edit, Delete, prescriptionDetails: details, ...props }: PrescriptionDetailsProps) => {
 
@@ -31,12 +35,12 @@ const PrescriptionDetailsModel = ({ Edit, Delete, prescriptionDetails: details, 
               <h1 className='font-semibold text-lg'>Prescription</h1>
               <div className="flex items-center space-x-2">
                 <p className="text-gray-400">ID : {details.id}</p>
-                <CustomTooltip message="EDIT">
-                  <Pencil className="cursor-pointer text-yellow-600 w-4 h-4" onClick={Edit} />
-                </CustomTooltip>
-                <CustomTooltip message="DELETE">
-                  <Trash className="cursor-pointer text-red-600 w-4 h-4" onClick={Delete} />
-                </CustomTooltip>
+                {/* Edit and Delete */}
+                <PermissionTableActions
+                  module="prescription"
+                  onEdit={Edit}
+                  onDelete={Delete}
+                />
               </div>
             </div>
           </div>

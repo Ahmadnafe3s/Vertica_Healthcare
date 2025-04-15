@@ -1,27 +1,27 @@
+import AlertModel from "@/components/alertModel"
+import CustomPagination from "@/components/customPagination"
+import EmptyList from "@/components/emptyList"
+import LoaderModel from "@/components/loader"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+import PermissionTableActions from "@/components/permission-table-actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { currencySymbol } from "@/helpers/currencySymbol"
-import { Pencil, Plus, SearchX, Trash } from "lucide-react"
-import { useEffect, useState } from "react"
-import PaymentFormModel from "./paymentFormModel"
-import toast from "react-hot-toast"
-import { createPayment, deletePayment, getPaymentDetails, getPaymentsList, updatePayment } from "../../opdApiHandler"
-import { useParams } from "react-router-dom"
-import { currencyFormat } from "@/lib/utils"
 import { paymentFormSchema } from "@/formSchemas/paymentFormSchema"
-import { z } from "zod"
-import LoaderModel from "@/components/loader"
-import AlertModel from "@/components/alertModel"
-import { useDebouncedCallback } from 'use-debounce'
-import { Payment, paymentData } from "@/types/opd_section/payment"
-import CustomTooltip from "@/components/customTooltip"
-import { useQueryState, parseAsInteger } from "nuqs"
-import CustomPagination from "@/components/customPagination"
-import usePermission from "@/authz"
+import { currencySymbol } from "@/helpers/currencySymbol"
 import { useConfirmation } from "@/hooks/useConfirmation"
-import EmptyList from "@/components/emptyList"
+import { currencyFormat } from "@/lib/utils"
+import { Payment, paymentData } from "@/types/opd_section/payment"
+import { Plus } from "lucide-react"
+import { parseAsInteger, useQueryState } from "nuqs"
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import { useParams } from "react-router-dom"
+import { useDebouncedCallback } from 'use-debounce'
+import { z } from "zod"
+import { createPayment, deletePayment, getPaymentDetails, getPaymentsList, updatePayment } from "../../opdApiHandler"
+import PaymentFormModel from "./paymentFormModel"
 
 
 
@@ -30,7 +30,6 @@ import EmptyList from "@/components/emptyList"
 const PaymentsList = () => {
 
   // custom hooks
-  const { loadPermission, hasPermission } = usePermission()
   const { confirm, confirmationProps } = useConfirmation()
 
   // Query params
@@ -122,7 +121,6 @@ const PaymentsList = () => {
   // fetching list initially on load
   useEffect(() => {
     fetchPaymetsList()
-    loadPermission()
   }, [page, search])
 
 
@@ -131,11 +129,11 @@ const PaymentsList = () => {
     <section className="flex flex-col gap-y-5 pb-14">
       <div className="flex justify-between">
         <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Payments</h1>
-        {hasPermission('create', 'payments') && (
+        <PermissionProtectedAction action='create' module='payments'>
           <Button size='sm' onClick={() => setIsPaymentFormVisible(true)}>
             <Plus /> Add Payment
           </Button>
-        )}
+        </PermissionProtectedAction>
       </div>
 
       <Separator />
@@ -159,9 +157,7 @@ const PaymentsList = () => {
                 <TableHead>Payment Mode</TableHead>
                 <TableHead>Paid Amount {currencySymbol()}</TableHead>
                 <TableHead>Note</TableHead>
-                {(hasPermission('update', 'payments') || hasPermission('delete', 'payments')) && (
-                  <TableHead>Action</TableHead>
-                )}
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -174,22 +170,13 @@ const PaymentsList = () => {
                   <TableCell >{payment.note}</TableCell>
                   <TableCell className="flex space-x-2">
 
-                    {/* Edit */}
-                    {hasPermission('update', 'payments') && (
-                      <CustomTooltip message="EDIT">
-                        <Pencil className="w-4 cursor-pointer active:scale-90 text-gray-600 dark:text-gray-300" onClick={async () => {
-                          fetchPaymetDetails(payment.id)
-                        }} />
-                      </CustomTooltip>
-                    )}
-
-
-                    {/* Delete */}
-                    {hasPermission('delete', 'payments') && (
-                      <CustomTooltip message="DELETE">
-                        <Trash className="w-4 cursor-pointer active:scale-90 text-gray-600 dark:text-gray-300" onClick={() => onDelete(payment.id)} />
-                      </CustomTooltip>
-                    )}
+                    <PermissionTableActions
+                      module="payments"
+                      onEdit={async () => {
+                        fetchPaymetDetails(payment.id)
+                      }}
+                      onDelete={() => onDelete(payment.id)}
+                    />
 
                   </TableCell>
                 </TableRow>
@@ -199,7 +186,7 @@ const PaymentsList = () => {
 
           {/* error on emply list */}
           <EmptyList length={paymensList.data.length} message="No payments found" />
-          
+
         </div>
 
         {/* pagination buttons */}

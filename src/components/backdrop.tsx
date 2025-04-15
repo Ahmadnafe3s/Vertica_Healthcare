@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { HTMLAttributes, ReactNode } from 'react'
+import { HTMLAttributes, ReactNode, useEffect } from 'react'
 
 interface BackdropProps extends HTMLAttributes<HTMLDivElement> {
     children: ReactNode
@@ -7,6 +7,16 @@ interface BackdropProps extends HTMLAttributes<HTMLDivElement> {
 
 
 const Backdrop = ({ children, ...Props }: BackdropProps) => {
+
+    const body = document.body.style
+
+    useEffect(() => {
+        body.overflow = 'hidden'
+        return () => {
+            body.overflow = 'auto'
+        }
+    }, [])
+
     return (
         <div {...Props}>
             <motion.section

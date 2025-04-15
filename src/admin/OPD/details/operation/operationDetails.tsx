@@ -43,8 +43,8 @@ const OperationDetailsModel = ({ operationDetails, ...props }: OperationDetailsM
                     </div>
 
                     <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>OPD ID</p>
-                        <p className='text-sm'>{operationDetails?.opdId}</p>
+                        <p className='text-gray-700 dark:text-gray-400'>{operationDetails?.ipdId ? 'IPD ID' : 'OPD ID'}</p>
+                        <p className='text-sm'>{operationDetails?.ipdId ? operationDetails?.ipdId : operationDetails?.opdId}</p>
                     </div>
 
                     <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>

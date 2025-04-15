@@ -1,26 +1,26 @@
+import AlertModel from '@/components/alertModel'
+import CustomPagination from '@/components/customPagination'
+import EmptyList from '@/components/emptyList'
+import LoaderModel from '@/components/loader'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import PermissionTableActions from '@/components/permission-table-actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { currencyFormat } from '@/lib/utils'
-import { Pencil, Plus, Trash } from 'lucide-react'
-import toast from 'react-hot-toast'
-import { z } from 'zod'
-import { useEffect, useState } from 'react'
-import CustomTooltip from '@/components/customTooltip'
-import LoaderModel from '@/components/loader'
-import AlertModel from '@/components/alertModel'
-import { useQueryState, parseAsInteger } from 'nuqs'
-import CustomPagination from '@/components/customPagination'
-import { useDebouncedCallback } from 'use-debounce'
-import usePermission from '@/authz'
-import { useConfirmation } from '@/hooks/useConfirmation'
 import { Separator } from '@/components/ui/separator'
-import EmptyList from '@/components/emptyList'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { createRadiologyBillSchema } from '@/formSchemas/createRadiologyBill'
 import { currencySymbol } from '@/helpers/currencySymbol'
+import { useConfirmation } from '@/hooks/useConfirmation'
+import { currencyFormat } from '@/lib/utils'
+import { PaginatedPathologyBills, PathologyBillDeatils } from '@/types/pathology/pathology'
+import { Plus } from 'lucide-react'
+import { parseAsInteger, useQueryState } from 'nuqs'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useDebouncedCallback } from 'use-debounce'
+import { z } from 'zod'
 import { createPathologyBill, deletePathologyBill, getPathologyBillDetails, getPathologyBills, updatePathologyBill } from './api-handlers'
 import CreatePathologyBill from './create-pathology-bill'
-import { PaginatedPathologyBills, PathologyBillDeatils } from '@/types/pathology/pathology'
 import PathologyBillDetailsModal from './pathology-bill-details'
 
 
@@ -29,7 +29,6 @@ import PathologyBillDetailsModal from './pathology-bill-details'
 const PathologyBills = () => {
 
   // custom hooks
-  const { loadPermission, hasPermission } = usePermission()
   const { confirm, confirmationProps } = useConfirmation()
 
   // query params
@@ -123,7 +122,6 @@ const PathologyBills = () => {
 
   useEffect(() => {
     fetchRadiologyBills()
-    loadPermission()
   }, [page, search])
 
 
@@ -137,12 +135,12 @@ const PathologyBills = () => {
           <h1 className='font-semibold tracking-tight'>Pathology Bill</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
-            {hasPermission('create', 'pathology_bill') && (
+            <PermissionProtectedAction action='create' module='pathology_bill'>
               <Button
                 size={'sm'}
                 onClick={() => setModel(prev => ({ ...prev, radiologyForm: true }))}
               > <Plus /> Generate Bill</Button>
-            )}
+            </PermissionProtectedAction>
 
           </div>
         </div>
@@ -203,24 +201,14 @@ const PathologyBills = () => {
                     <TableCell>{bill.payment_mode}</TableCell>
                     <TableCell className='flex space-x-2'>
 
-                      {/* EDIT  */}
-                      {hasPermission('update', 'pathology_bill') && (
-                        <CustomTooltip message='EDIT'>
-                          <Pencil className="w-4 cursor-pointer dark:text-gray-300 text-gray-600" onClick={async () => {
-                            await fetchRadiologyBillDetails(bill.id)
-                            setModel(prev => ({ ...prev, radiologyForm: true }))
-                          }} />
-                        </CustomTooltip>
-                      )}
-
-                      {/* DELETE  */}
-                      {hasPermission('delete', 'pathology_bill') && (
-                        <CustomTooltip message='DELETE'>
-                          <Trash className="w-4 cursor-pointer dark:text-gray-300 text-gray-600" onClick={() => onDelete(bill.id)} />
-                        </CustomTooltip>
-                      )}
-
-                      {/* Print Bill */}
+                      <PermissionTableActions
+                        module='pathology_bill'
+                        onEdit={async () => {
+                          await fetchRadiologyBillDetails(bill.id)
+                          setModel(prev => ({ ...prev, radiologyForm: true }))
+                        }}
+                        onDelete={() => onDelete(bill.id)}
+                      />
 
                     </TableCell>
                   </TableRow>
@@ -271,6 +259,7 @@ const PathologyBills = () => {
           }}
         />
       )}
+
 
       {isLodaing.model && <LoaderModel />}
 

@@ -1,13 +1,14 @@
+import AlertModel from '@/components/alertModel'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import PermissionTableActions from '@/components/permission-table-actions'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Plus, Trash } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { z } from 'zod'
-import toast from 'react-hot-toast'
-import AlertModel from '@/components/alertModel'
-import CustomTooltip from '@/components/customTooltip'
 import { useConfirmation } from '@/hooks/useConfirmation'
+import { Plus } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { z } from 'zod'
 import { createRadiologytUnit, deleteRadiologytUnit, getRadiologytUnits } from '../ApiHandlers'
 import CreateRadiologyUnit, { RadioUnitSchema } from './createRadioUnit'
 
@@ -36,7 +37,7 @@ const RadiologyUnits = () => {
     const [unitsList, setUnitsList] = useState<RadiologyUnitType[]>([])
 
 
-    // performing upsert 
+    // performing upsert
     const handleSubmit = async (formData: z.infer<typeof RadioUnitSchema>) => {
         try {
             setPending(true)
@@ -89,9 +90,11 @@ const RadiologyUnits = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Unit List</h1>
-                <Button size='sm' onClick={() => { setUnitForm(true) }}>
-                    <Plus /> Add Unit
-                </Button>
+                <PermissionProtectedAction action='create' module='radiology_unit'>
+                    <Button size='sm' onClick={() => { setUnitForm(true) }}>
+                        <Plus /> Add Unit
+                    </Button>
+                </PermissionProtectedAction>
             </div>
 
             <Separator />
@@ -108,10 +111,13 @@ const RadiologyUnits = () => {
                         return <TableRow key={unit.id}>
                             <TableCell>{unit.name}</TableCell>
                             <TableCell className='flex space-x-2'>
-                                {/* DELETE  */}
-                                <CustomTooltip message='DELETE'>
-                                    <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={() => onDelete(unit.id)} />
-                                </CustomTooltip>
+
+                                <PermissionTableActions
+                                    module='radiology_unit'
+                                    onDelete={() => onDelete(unit.id)}
+                                    exclude={{ edit: true }}
+                                />
+
                             </TableCell>
                         </TableRow>
                     })}

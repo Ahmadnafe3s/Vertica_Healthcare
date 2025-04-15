@@ -1,28 +1,28 @@
 
-import { useEffect, useState } from "react"
-import ChargeFormModel from "./chargeFormModel"
-import { Button } from "@/components/ui/button"
-import { Pencil, Plus, SearchX, Trash } from "lucide-react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { currencySymbol } from "@/helpers/currencySymbol"
-import toast from "react-hot-toast"
-import { createCharges, deleteCharge, getChargeDetails, getCharges, updateCharge } from "../../opdApiHandler"
-import { useParams } from "react-router-dom"
 import AlertModel from "@/components/alertModel"
-import { currencyFormat } from "@/lib/utils"
-import ChargeDetailsModel from "./chargeDetailsModel"
-import { Separator } from "@/components/ui/separator"
-import { Input } from "@/components/ui/input"
-import LoaderModel from "@/components/loader"
-import { chargeFormSchema } from "@/formSchemas/chargeFormSchema"
-import { z } from "zod"
-import { ChargeDetailsType, ChargeListType } from "@/types/opd_section/charges"
 import CustomPagination from "@/components/customPagination"
-import CustomTooltip from "@/components/customTooltip"
-import { parseAsInteger, useQueryState } from "nuqs"
-import usePermission from "@/authz"
-import { useConfirmation } from "@/hooks/useConfirmation"
 import EmptyList from "@/components/emptyList"
+import LoaderModel from "@/components/loader"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+import PermissionTableActions from "@/components/permission-table-actions"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { chargeFormSchema } from "@/formSchemas/chargeFormSchema"
+import { currencySymbol } from "@/helpers/currencySymbol"
+import { useConfirmation } from "@/hooks/useConfirmation"
+import { currencyFormat } from "@/lib/utils"
+import { ChargeDetailsType, ChargeListType } from "@/types/opd_section/charges"
+import { Plus } from "lucide-react"
+import { parseAsInteger, useQueryState } from "nuqs"
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import { useParams } from "react-router-dom"
+import { z } from "zod"
+import { createCharges, deleteCharge, getChargeDetails, getCharges, updateCharge } from "../../opdApiHandler"
+import ChargeDetailsModel from "./chargeDetailsModel"
+import ChargeFormModel from "./chargeFormModel"
 
 
 
@@ -34,7 +34,6 @@ const CahrgesList = () => {
   const [search, setSearch] = useQueryState('search')
 
   // custom hooks
-  const { loadPermission, hasPermission } = usePermission()
   const { confirm, confirmationProps } = useConfirmation()
 
 
@@ -126,7 +125,6 @@ const CahrgesList = () => {
 
   useEffect(() => {
     fetchCharges()
-    loadPermission()
   }, [page, search])
 
 
@@ -135,11 +133,11 @@ const CahrgesList = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Charges</h1>
-        {hasPermission('create', 'charges') && (
+        <PermissionProtectedAction action='create' module='charges'>
           <Button size='sm' onClick={() => setIsChargeFormVisible(true)} >
             <Plus /> Add Charge
           </Button>
-        )}
+        </PermissionProtectedAction>
       </div>
 
       <Separator />
@@ -162,9 +160,7 @@ const CahrgesList = () => {
                 <TableHead>Standard Charge {currencySymbol()}</TableHead>
                 <TableHead>TPA Charge {currencySymbol()}</TableHead>
                 <TableHead>Net Amount {currencySymbol()}</TableHead>
-                {(hasPermission('update', 'charges') || hasPermission('delete', 'charges')) && (
-                  <TableHead>Action</TableHead>
-                )}
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -184,22 +180,14 @@ const CahrgesList = () => {
                   <TableCell>{currencyFormat(charge.net_amount)}</TableCell>
                   <TableCell className="flex space-x-2">
 
-                    {/* EDIT  */}
-                    {hasPermission('update', 'charges') && (
-                      <CustomTooltip message="EDIT">
-                        <Pencil className="w-4 cursor-pointer text-gray-600 dark:text-gray-300" onClick={async () => {
-                          await fetchChargeDetails(charge.id)
-                          setIsChargeFormVisible(true)
-                        }} />
-                      </CustomTooltip>
-                    )}
-
-                    {/* DELETE */}
-                    {hasPermission('delete', 'charges') && (
-                      <CustomTooltip message="DELETE">
-                        <Trash className="w-4 cursor-pointer text-gray-600 dark:text-gray-300" onClick={() => onDelete(charge.id)} />
-                      </CustomTooltip>
-                    )}
+                    <PermissionTableActions
+                      module="charges"
+                      onEdit={async () => {
+                        await fetchChargeDetails(charge.id)
+                        setIsChargeFormVisible(true)
+                      }}
+                      onDelete={() => onDelete(charge.id)}
+                    />
 
                   </TableCell>
                 </TableRow>

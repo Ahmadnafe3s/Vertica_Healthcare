@@ -1,4 +1,4 @@
-export interface RosterDetails {
+export interface RosterDataType {
     id: number;
     staffId: number;
     shiftStartTime: string;
@@ -8,7 +8,7 @@ export interface RosterDetails {
     shift: string;
     note: string;
     staff: {
-        name: string,
+        name: string
         department: string
     }
 }
@@ -16,6 +16,6 @@ export interface RosterDetails {
 
 
 export type Rosters = {
-    data: RosterDetails[],
-    total_pages : number
-} 
+    data: RosterDataType[],
+    total_pages: number
+}

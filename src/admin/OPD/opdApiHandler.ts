@@ -14,10 +14,15 @@ import { Payment, paymentData } from "@/types/opd_section/payment"
 import { prescriptionDetail } from "@/types/opd_section/prescription"
 import { timeline } from "@/types/opd_section/timeline"
 import { VitalType } from "@/types/opd_section/vitals"
+import { OIParams, Params } from "@/types/type"
 import { z } from "zod"
 
 
-export const getOPDs = async (params: { search?: string, page?: number, limit?: number, patientId?: number }): Promise<OPDs> => {
+
+
+
+
+export const getOPDs = async (params: Params): Promise<OPDs> => {
     try {
         const res = await AxiosClient.get(`/api/opd`, { params })
         return res.data
@@ -48,7 +53,7 @@ export const getPrintBillDetails = async (opdId: string) => {
 }
 
 
-export const getTreatmentHistory = async (params: { page?: number, limit?: number, date?: string }, patientId: number): Promise<OPDs> => {
+export const getTreatmentHistory = async (params: Params, patientId: number): Promise<OPDs> => {
     try {
         const res = await AxiosClient.get(`/api/opd/history/${patientId}`, { params })
         return res.data
@@ -60,9 +65,9 @@ export const getTreatmentHistory = async (params: { page?: number, limit?: numbe
 
 // for medication page
 
-export const createMedication = async (opdId: string, formData: z.infer<typeof medicationFormSchema>) => {
+export const createMedication = async (formData: z.infer<typeof medicationFormSchema>, params: (Params & OIParams)) => {
     try {
-        const res = await AxiosClient.post(`/api/medication/${opdId}`, formData)
+        const res = await AxiosClient.post(`/api/medication`, formData, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -71,7 +76,7 @@ export const createMedication = async (opdId: string, formData: z.infer<typeof m
 
 
 
-export const getMedications = async (params: { opdId: string, date?: string, page?: number, limit?: number }): Promise<opdMedications> => {
+export const getMedications = async (params: { opdId?: string, ipdId?: string, page?: number, limit?: number, search?: string }): Promise<opdMedications> => {
 
     try {
         const res = await AxiosClient.get(`/api/medication`, { params })
@@ -119,9 +124,9 @@ export const updateMedication = async (id: number, formData: z.infer<typeof medi
 
 // [For Vital pages]
 
-export const createVital = async (patientId: number, opdId: string, formData: z.infer<typeof vitalFormSchema>) => {
+export const createVital = async (formData: z.infer<typeof vitalFormSchema>, params: OIParams) => {
     try {
-        const res = await AxiosClient.post(`/api/vital/${patientId}/${opdId}`, formData)
+        const res = await AxiosClient.post(`/api/vital`, formData, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -130,9 +135,8 @@ export const createVital = async (patientId: number, opdId: string, formData: z.
 
 
 
-export const getVitals = async (opdId: string): Promise<VitalType[]> => {
+export const getVitals = async (params: OIParams & { search?: string }): Promise<VitalType[]> => {
     try {
-        const params = { opdId }
         const res = await AxiosClient.get(`/api/vital`, { params })
         return res.data
     } catch (error: any) {
@@ -153,29 +157,15 @@ export const deleteVitals = async (id: number) => {
 
 
 
-export const searchVital = async (opdId: string, date: string): Promise<VitalType[]> => {
-    try {
-        const params = { opdId, date }
-        const res = await AxiosClient.get(`/api/vital`, { params })
-        return res.data
-    } catch (error: any) {
-        throw new Error(error.response?.data?.message)
-    }
-}
-
-
-
-
-
 
 
 //  API Handlers for operation section
 
 
-export const createOperation = async (patientId: number, opdId: string, formData: z.infer<typeof operationFormSchema>) => {
+export const createOperation = async (formData: z.infer<typeof operationFormSchema>, params: OIParams) => {
     try {
 
-        const res = await AxiosClient.post(`/api/operation/${patientId}/${opdId}`, formData)
+        const res = await AxiosClient.post(`/api/operation`, formData, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -185,7 +175,7 @@ export const createOperation = async (patientId: number, opdId: string, formData
 
 
 
-export const getOperations = async (params: { opdId: string, page: number, limit?: number, search?: string }): Promise<PaginatedOperations> => {
+export const getOperations = async (params: Params & OIParams): Promise<PaginatedOperations> => {
     try {
         const res = await AxiosClient.get(`/api/operation`, { params })
         return res.data
@@ -233,9 +223,9 @@ export const updateOperation = async (id: string, formData: z.infer<typeof opera
 
 //  API handlers for timeline section
 
-export const createTimeline = async (opdId: string, patientId: number, formData: z.infer<typeof timelineFormSchema>) => {
+export const createTimeline = async (formData: z.infer<typeof timelineFormSchema>, params: OIParams) => {
     try {
-        const res = await AxiosClient.post(`/api/timeline/${patientId}/${opdId}`, formData)
+        const res = await AxiosClient.post(`/api/timeline`, formData, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -244,9 +234,8 @@ export const createTimeline = async (opdId: string, patientId: number, formData:
 
 
 
-export const getTimelines = async (opdId: string): Promise<timeline[]> => {
+export const getTimelines = async (params: OIParams): Promise<timeline[]> => {
     try {
-        const params = { opdId }
         const res = await AxiosClient.get(`/api/timeline`, { params })
         return res.data
     } catch (error: any) {
@@ -275,18 +264,6 @@ export const updateTimeine = async (id: number, formData: z.infer<typeof timelin
         throw new Error(error.response?.data?.message)
     }
 }
-
-
-export const getTimelineDetails = async (id: number): Promise<timeline> => {  // this api willl not return Array of objects but same time of object
-    try {
-        const res = await AxiosClient.get(`/api/timeline/${id}`)
-        return res.data
-    } catch (error: any) {
-        throw new Error(error.response?.data?.message)
-    }
-}
-
-
 
 
 

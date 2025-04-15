@@ -1,25 +1,26 @@
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Pencil, Plus, Trash } from "lucide-react"
-import { useEffect, useState } from "react"
-import toast from "react-hot-toast"
-import CustomTooltip from "@/components/customTooltip"
-import { z } from "zod"
-import LoaderModel from "@/components/loader"
 import AlertModel from "@/components/alertModel"
-import { RadiologyTestNameDetailsType, RadiologyTestNameType } from "@/types/setupTypes/radiology"
-import { useConfirmation } from "@/hooks/useConfirmation"
-import { createRadiologytTest, deleteRadiologyTest, getRadiologyTestDetails, getRadiologyTests, updateRadiologyTest } from "../ApiHandlers"
-import CreateRadioTest from "./createRadioTest"
-import { TestNameFormSchema } from "@/formSchemas/setupSectionSchemas/CreateTestNameSchema"
-import { currencySymbol } from "@/helpers/currencySymbol"
-import { currencyFormat } from "@/lib/utils"
-import { Input } from "@/components/ui/input"
-import { useDebouncedCallback } from "use-debounce"
-import { useQueryState, parseAsInteger } from "nuqs"
 import CustomPagination from "@/components/customPagination"
 import EmptyList from "@/components/emptyList"
+import LoaderModel from "@/components/loader"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+import PermissionTableActions from "@/components/permission-table-actions"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { TestNameFormSchema } from "@/formSchemas/setupSectionSchemas/CreateTestNameSchema"
+import { currencySymbol } from "@/helpers/currencySymbol"
+import { useConfirmation } from "@/hooks/useConfirmation"
+import { currencyFormat } from "@/lib/utils"
+import { RadiologyTestNameDetailsType, RadiologyTestNameType } from "@/types/setupTypes/radiology"
+import { Plus } from "lucide-react"
+import { parseAsInteger, useQueryState } from "nuqs"
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import { useDebouncedCallback } from "use-debounce"
+import { z } from "zod"
+import { createRadiologytTest, deleteRadiologyTest, getRadiologyTestDetails, getRadiologyTests, updateRadiologyTest } from "../ApiHandlers"
+import CreateRadioTest from "./createRadioTest"
 
 
 
@@ -115,9 +116,11 @@ const RadiologyTests = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Radiology Tests</h1>
-        <Button size='sm' onClick={() => setTestNameForm(true)}>
-          <Plus /> Add RadiologyTest
-        </Button>
+        <PermissionProtectedAction action='create' module='setupRadiology'>
+          <Button size='sm' onClick={() => setTestNameForm(true)}>
+            <Plus /> Add RadiologyTest
+          </Button>
+        </PermissionProtectedAction>
       </div>
 
 
@@ -159,27 +162,21 @@ const RadiologyTests = () => {
                   <TableCell>{currencyFormat(test.amount)}</TableCell>
                   <TableCell className='flex space-x-2'>
 
-                    {/* EDIT */}
-
-                    <CustomTooltip message='EDIT'>
-                      <Pencil className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={async () => {
+                    <PermissionTableActions
+                      module='setupRadiology'
+                      onEdit={async () => {
                         await fetchRadioTestDetails(test.id)
                         setTestNameForm(true)
-                      }} />
-                    </CustomTooltip>
-
-                    {/* DELETE  */}
-
-                    <CustomTooltip message='DELETE'>
-                      <Trash className="w-4 cursor-pointer  text-gray-600 dark:text-gray-400" onClick={() => onDelete(test.id)} />
-                    </CustomTooltip>
+                      }}
+                      onDelete={() => onDelete(test.id)}
+                    />
 
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-          
+
           <EmptyList length={tests.data.length} message="No Tests Found" />
 
         </div>
