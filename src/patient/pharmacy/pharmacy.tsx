@@ -8,11 +8,11 @@ import LoaderModel from '@/components/loader'
 import { useQueryState, parseAsInteger } from 'nuqs'
 import CustomPagination from '@/components/customPagination'
 import { useDebouncedCallback } from 'use-debounce'
-import PharmacyBillDetailsModal from '@/admin/pharmacy/pharmacyBill/pharmacyBillDetailsModal'
-import { getPharmacyBillDetails, getPharmacyBills } from '@/admin/pharmacy/pharmacyApiHandler'
-import PrintPharmacyBills from '@/admin/pharmacy/pharmacyBill/printBill/printPharmacyBills'
-import PrintPharmacyBill from '@/admin/pharmacy/pharmacyBill/printBill/printPharmacyBill'
 import { Separator } from '@/components/ui/separator'
+import { getPharmacyBillDetails, getPharmacyBills } from '@/pages/pharmacy/pharmacyApiHandler'
+import PrintPharmacyBills from '@/pages/pharmacy/pharmacyBill/printBill/printPharmacyBills'
+import PrintPharmacyBill from '@/pages/pharmacy/pharmacyBill/printBill/printPharmacyBill'
+import PharmacyBillDetailsModal from '@/pages/pharmacy/pharmacyBill/pharmacyBillDetailsModal'
 
 
 

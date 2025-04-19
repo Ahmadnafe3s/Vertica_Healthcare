@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { opdMedications } from "@/types/opd_section/medication"
 import { useQueryState, parseAsInteger } from "nuqs"
 import CustomPagination from "@/components/customPagination"
-import { getMedications } from "@/admin/OPD/opdApiHandler"
+import { getMedications } from "@/pages/OPD/opdApiHandler"
 import EmptyList from "@/components/emptyList"
 
 

@@ -11,7 +11,7 @@ import { Plus, Trash } from "lucide-react";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import VitalFormModel from "../../../../components/form-modals/vital-form-modal";
-import useVitalHandlers from "@/admin/OPD/details/vital/vital-handlers";
+import useVitalHandlers from "@/pages/OPD/details/vital/vital-handlers";
 
 
 

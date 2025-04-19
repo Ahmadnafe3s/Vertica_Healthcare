@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { currencySymbol } from "@/helpers/currencySymbol";
 import { currencyFormat } from "@/lib/utils";
 import { opdDetails } from "@/types/opd_section/opd";
-import { getOPD_Details } from "@/admin/OPD/opdApiHandler";
+import { getOPD_Details } from "@/pages/OPD/opdApiHandler";
 
 
 const PatinetOpdVisitDetails = () => {

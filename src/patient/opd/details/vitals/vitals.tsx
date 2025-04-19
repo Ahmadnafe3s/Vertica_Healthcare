@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { SetupVital } from "@/types/setupTypes/vital";
 import { getSetupVitals } from "@/admin/setup/vitals/apiHandler";
 import { VitalType } from "@/types/opd_section/vitals";
-import { getVitals } from "@/admin/OPD/opdApiHandler";
+import { getVitals } from "@/pages/OPD/opdApiHandler";
 
 
 const PatientOpdVitals = () => {

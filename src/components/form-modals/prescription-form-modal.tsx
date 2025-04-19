@@ -1,4 +1,3 @@
-import { getMedicinesBYcategory } from "@/admin/pharmacy/pharmacyApiHandler"
 import { getFindingCategories, getFindingNameDetails, getFindingNames } from "@/admin/setup/findings/apiHandler"
 import { getDoseDurations, getDoseIntervals, getMedicineCategories } from "@/admin/setup/pharmacy/apiHandler"
 import Dialog from "@/components/Dialog"
@@ -10,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { createPrescriptionFormSchema, valuesASdefault } from "@/formSchemas/createPrescriptionFormSchema"
+import { getMedicinesBYcategory } from "@/pages/pharmacy/pharmacyApiHandler"
 import { prescriptionDetail } from "@/types/opd_section/prescription"
 import {  medicinesBYcategory } from "@/types/pharmacy/pharmacy"
 import { findingCategory, findingName } from "@/types/setupTypes/finding"

@@ -1,5 +1,5 @@
-import usePrescription from "@/admin/OPD/prescription/prescription-handlers"
-import PrescriptionDetailsModel from "@/admin/OPD/prescription/prescriptionDetailsModel"
+import usePrescription from "@/pages/OPD/prescription/prescription-handlers"
+import PrescriptionDetailsModel from "@/pages/OPD/prescription/prescriptionDetailsModel"
 import AlertModel from "@/components/alertModel"
 import CustomTooltip from "@/components/customTooltip"
 import EmptyList from "@/components/emptyList"

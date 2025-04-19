@@ -1,4 +1,3 @@
-import { fetchDoctors } from '@/admin/appointment/appointmentAPIhandler'
 import { useConfirmation } from '@/hooks/useConfirmation'
 import { ConsultantRegister, PaginatedConsultantRegister } from '@/types/IPD/consutant-register'
 import { Doctors, Params } from '@/types/type'
@@ -8,6 +7,7 @@ import { useParams } from 'react-router-dom'
 import { createConsultantReg, deleteConsultantReg, getConsultantRegs, updateConsultantReg } from '../../api-handlers'
 import { ConsultantRegisterSchema } from './consultant-registers'
 import { z } from 'zod'
+import { fetchDoctors } from '@/pages/appointment/appointmentAPIhandler'
 
 const useConsultantRegister = (params: Params) => {
 

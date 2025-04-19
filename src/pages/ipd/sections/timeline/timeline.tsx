@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator"
 import { Calendar, Clock, Pencil, Plus, SearchX, Trash } from "lucide-react"
 import { useEffect } from "react"
 import TimelineFormModel from "../../../../components/form-modals/timeline-form-modal"
-import useTimelineHandlers from "@/admin/OPD/details/timeline/timeline-handlers"
+import useTimelineHandlers from "@/pages/OPD/details/timeline/timeline-handlers"
 import EmptyList from "@/components/emptyList"
 
 

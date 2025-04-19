@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { useParams } from "react-router-dom"
 import { timeline } from "@/types/opd_section/timeline"
-import { getTimelines } from "@/admin/OPD/opdApiHandler"
+import { getTimelines } from "@/pages/OPD/opdApiHandler"
 
 const PatientOpdTimeline = () => {
 

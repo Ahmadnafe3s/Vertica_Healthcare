@@ -102,7 +102,7 @@ const Navbar = () => {
             {isUserModel && <UserModel onClick={() => setUserModel(false)} onLogout={onLogout}
                 onProfile={() => {
 
-                    session.user?.role !== "patient" ? router(`/admin/profile/staff/${session.user?.id}`)
+                    session.user?.role !== "patient" ? router(`/staff/${session.user?.id}`)
                         :
                         session.user?.role === "patient" ? router(`/patient/profile/${session.user.id}`) : alert('Invalid user')
                     setUserModel(false)

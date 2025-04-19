@@ -11,11 +11,11 @@ import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
 import { medicinesBYcategory } from '@/types/pharmacy/pharmacy'
-import { getMedicinesBYcategory } from '@/admin/pharmacy/pharmacyApiHandler'
 import { medicineCategory } from '@/types/setupTypes/pharmacy'
 import { getMedicineCategories } from '@/admin/setup/pharmacy/apiHandler'
 import Dialog from '@/components/Dialog'
 import { medicationDetail } from '@/types/opd_section/medication'
+import { getMedicinesBYcategory } from '@/pages/pharmacy/pharmacyApiHandler'
 
 
 

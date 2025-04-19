@@ -1,4 +1,4 @@
-import { getPayments } from "@/admin/OPD/opdApiHandler"
+import { getPayments } from "@/pages/OPD/opdApiHandler"
 import CustomPagination from "@/components/customPagination"
 import EmptyList from "@/components/emptyList"
 import { Input } from "@/components/ui/input"

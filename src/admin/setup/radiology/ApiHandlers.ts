@@ -4,6 +4,7 @@ import { RadiologyTestNameDetailsType, RadioParametersType, RadioTestNameParamet
 import { CreateRadioCategorySchema } from "./category/createRadioCategory"
 import { RadioUnitSchema } from "./units/createRadioUnit"
 import { TestNameFormSchema } from "@/formSchemas/setupSectionSchemas/CreateTestNameSchema"
+import { Params } from "@/types/type"
 
 
 // Handlers for Radiology Units
@@ -135,7 +136,7 @@ export const createRadiologytTest = async (formData: z.infer<typeof TestNameForm
 }
 
 
-export const getRadiologyTests = async (params: { page?: number, limit?: number, search?: string }) => {
+export const getRadiologyTests = async (params?: Params) => {
     try {
         const res = await AxiosClient.get(`/api/setupRadiology/testName`, { params })
         return res.data

@@ -32,8 +32,8 @@ const TimelineFormModel = ({ Submit, timelineDetails, isPending, ...props }: Tim
     return (
         <Dialog pageTitle="Timeline" className="sm:w-[400px] mx-auto" {...props}>
             <form onSubmit={handleSubmit(Submit)}>
-                <ScrollArea className='h-[50vh]'>
-                    <div className="grid gap-5 mt-5 px-3 pb-5">
+                <ScrollArea className='h-[40vh]'>
+                    <div className="grid gap-5 mt-2 px-3 pb-5">
 
                         {/* Title */}
 

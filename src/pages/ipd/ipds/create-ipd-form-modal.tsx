@@ -1,4 +1,3 @@
-import {fetchDoctors, fetchPatients} from '@/admin/appointment/appointmentAPIhandler'
 import {getBedGroups} from '@/admin/setup/bed/api-handler'
 import useBedHandlers from '@/admin/setup/bed/bed-name/bed-handlers'
 import {BedGroupType} from '@/admin/setup/bed/group/bed-group-handlers'
@@ -22,6 +21,7 @@ import {Link} from 'react-router-dom'
 import {useDebouncedCallback} from 'use-debounce'
 import {z} from 'zod'
 import {errorHandler} from "@/helpers/error-handler.ts";
+import { fetchDoctors, fetchPatients } from '@/pages/appointment/appointmentAPIhandler'
 
 
 interface CreateIpdModalProps extends HTMLAttributes<HTMLDivElement> {

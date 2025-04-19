@@ -17,8 +17,8 @@ import { Plus } from "lucide-react"
 import { parseAsInteger, useQueryState } from "nuqs"
 import { useEffect } from "react"
 import ChargeFormModel from "../../../../components/form-modals/charge-form-modal"
-import useChargeHandlers from "@/admin/OPD/details/charges/charge-handlers"
-import ChargeDetailsModel from "@/admin/OPD/details/charges/chargeDetailsModel"
+import useChargeHandlers from "@/pages/OPD/details/charges/charge-handlers"
+import ChargeDetailsModel from "@/pages/OPD/details/charges/chargeDetailsModel"
 
 
 

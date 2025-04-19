@@ -9,7 +9,7 @@ import { parseAsInteger, useQueryState } from 'nuqs'
 import CustomPagination from '@/components/customPagination'
 import { OPDs } from '@/types/opd_section/opd'
 import PrintPatientOpds from './print/print'
-import { getOPDs } from '@/admin/OPD/opdApiHandler'
+import { getOPDs } from '@/pages/OPD/opdApiHandler'
 import { Separator } from '@/components/ui/separator'
 
 

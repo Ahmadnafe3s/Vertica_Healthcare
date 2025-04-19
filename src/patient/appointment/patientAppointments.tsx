@@ -13,14 +13,14 @@ import { z } from 'zod'
 import { useDebouncedCallback } from 'use-debounce'
 import CustomPagination from '@/components/customPagination'
 import { useQueryState, parseAsInteger } from 'nuqs'
-import { createAppointment, fetchAppointments, getAppointmentDetails } from '@/admin/appointment/appointmentAPIhandler'
-import AppointmentDetailsModel from '@/admin/appointment/appointmentDetailsModel'
 import { useAppSelector } from '@/hooks'
 import { authSelector } from '@/features/auth/authSlice'
-import AppointmentPDF from '@/admin/appointment/generatePDF/AppointmnetPDF'
 import CreatePatientAppointment from './createPatientAppointment'
-import AppointmentListPDF from '@/admin/appointment/generatePDF/AppointmnetListPDF'
 import { Separator } from '@/components/ui/separator'
+import { createAppointment, fetchAppointments, getAppointmentDetails } from '@/pages/appointment/appointmentAPIhandler'
+import AppointmentListPDF from '@/pages/appointment/generatePDF/AppointmnetListPDF'
+import AppointmentPDF from '@/pages/appointment/generatePDF/AppointmnetPDF'
+import AppointmentDetailsModel from '@/pages/appointment/appointmentDetailsModel'
 
 
 
@@ -60,7 +60,7 @@ const PatientAppointments = () => {
                 search: search!, // if search will have value then data will get accordingly
             })
             setAppointments(data)
-        } catch ({ message }) {
+        } catch ({ message }:any) {
             toast.error(message)
         }
     }
@@ -199,7 +199,7 @@ const PatientAppointments = () => {
                                     </TooltipProvider> */}
 
 
-                                            {/* DELETE 
+                                            {/* DELETE
                                             <CustomTooltip message='DELETE'>
                                                 <Trash className="w-4 cursor-pointer  text-gray-600" onClick={async () => {
                                                     setModel((prev) => ({ ...prev, alert: true }))

@@ -16,7 +16,7 @@ import { parseAsInteger, useQueryState } from "nuqs"
 import { useEffect } from "react"
 import { useDebouncedCallback } from 'use-debounce'
 import PaymentFormModel from "../../../../components/form-modals/payment-form-modal"
-import usePaymentHandlers from "@/admin/OPD/details/payments/payment-handlers"
+import usePaymentHandlers from "@/pages/OPD/details/payments/payment-handlers"
 
 
 

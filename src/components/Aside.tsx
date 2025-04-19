@@ -50,7 +50,7 @@ const Aside = () => {
                         {/* Appointment */}
 
                         <PermissionProtectedAction action='view' module='appointment'>
-                            <li><Link to={{ pathname: `/${Routes}/appointment` }} onClick={onNavigate} className={
+                            <li><Link to={{ pathname: `/appointment` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
@@ -61,13 +61,15 @@ const Aside = () => {
                         {/* OPD */}
 
                         <PermissionProtectedAction action='view' module='opd'>
-                            <li><Link to={{ pathname: `/${Routes}/opd` }} onClick={onNavigate} className={
+                            <li><Link to={{ pathname: `/opd` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
                                 })
                             }><HeartPulse className='h-4 w-4' /> OPD - Out Patient</Link></li>
                         </PermissionProtectedAction>
+
+                        {/* IPD */}
 
                         <PermissionProtectedAction action='view' module='ipd'>
                             <li><Link to={{ pathname: `/ipd` }} onClick={onNavigate} className={
@@ -81,7 +83,7 @@ const Aside = () => {
                         {/* Pharmacy */}
 
                         <PermissionProtectedAction action='view' module='pharmacy_bill'>
-                            <li><Link to={{ pathname: `/${Routes}/pharmacy` }} onClick={onNavigate} className={
+                            <li><Link to={{ pathname: `/pharmacy` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
@@ -91,7 +93,7 @@ const Aside = () => {
 
                         {/* Radiology */}
                         <PermissionProtectedAction action='view' module='radiology_bill'>
-                            <li><Link to={{ pathname: `/${Routes}/radiology` }} onClick={onNavigate} className={
+                            <li><Link to={{ pathname: `/radiology` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
@@ -101,7 +103,7 @@ const Aside = () => {
 
                         {/* Pathology */}
                         <PermissionProtectedAction action='view' module='pathology_bill'>
-                            <li><Link to={{ pathname: `/${Routes}/pathology` }} onClick={onNavigate} className={
+                            <li><Link to={{ pathname: `/pathology` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
@@ -111,7 +113,7 @@ const Aside = () => {
 
                         {/* Human Resource */}
                         <PermissionProtectedAction action='view' module='human_resource'>
-                            <li><Link to={{ pathname: '/admin/humanresource/staff' }} onClick={onNavigate} className={
+                            <li><Link to={{ pathname: '/staff' }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
@@ -121,7 +123,7 @@ const Aside = () => {
 
                         {/* Duty Roster */}
                         <PermissionProtectedAction action='view' module='duty_roster'>
-                            <li><Link to={{ pathname: '/admin/dutyroster/rosterreport' }} onClick={onNavigate} className={
+                            <li><Link to={{ pathname: '/roster_report' }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'

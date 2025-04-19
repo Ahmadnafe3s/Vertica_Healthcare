@@ -15,7 +15,7 @@ import { filterDoctors } from '@/helpers/filterDoctors'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { currencySymbol } from '@/helpers/currencySymbol'
 import Dialog from '@/components/Dialog'
-import { fetchDoctors } from '@/admin/appointment/appointmentAPIhandler'
+import { fetchDoctors } from '@/pages/appointment/appointmentAPIhandler'
 
 
 
@@ -73,7 +73,7 @@ function CreatePatientAppointment({ Submit, isPending, ...props }: CreatePatient
         <Dialog pageTitle='Add Appointment' {...props}>
             <form onSubmit={handleSubmit(Submit)}>
                 {/* <div className='flex  gap-2 px-2.5'>
-                 
+
                     <div>
                         <Controller name='patientId' control={control} render={({ field }) => {
                             return <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(Number(value)) }} defaultValue={'1'}>

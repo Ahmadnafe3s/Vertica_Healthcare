@@ -12,8 +12,8 @@ import { Plus } from 'lucide-react';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useEffect } from 'react';
 import ProtectedTable from '@/components/protected-table';
-import useOperationHandlers from '@/admin/OPD/details/operation/operation-handlers'
-import OperationDetailsModel from '@/admin/OPD/details/operation/operationDetails'
+import useOperationHandlers from '@/pages/OPD/details/operation/operation-handlers'
+import OperationDetailsModel from '@/pages/OPD/details/operation/operationDetails'
 import OperationForm from '@/components/form-modals/operation-form-modal'
 import AlertModel from '@/components/alertModel'
 

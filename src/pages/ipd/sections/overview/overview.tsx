@@ -1,4 +1,3 @@
-import { fetchDoctors } from "@/admin/appointment/appointmentAPIhandler";
 import CardBox from "@/components/card-box.tsx";
 import CustomTooltip from "@/components/customTooltip.tsx";
 import FormModal from "@/components/form-modals/form-modal";
@@ -19,6 +18,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useIpdHandlers from "../../ipds/ipd-handlers";
 import AlertModel from "@/components/alertModel";
+import { fetchDoctors } from "@/pages/appointment/appointmentAPIhandler";
 
 
 

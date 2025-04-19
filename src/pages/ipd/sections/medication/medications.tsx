@@ -14,7 +14,7 @@ import { Plus } from "lucide-react"
 import { parseAsInteger, useQueryState } from "nuqs"
 import { useEffect } from "react"
 import MedicationForm from "@/components/form-modals/medication-form"
-import useMedicationHandlers from "@/admin/OPD/details/medication/medication-handlers"
+import useMedicationHandlers from "@/pages/OPD/details/medication/medication-handlers"
 
 
 
