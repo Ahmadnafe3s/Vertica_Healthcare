@@ -36,7 +36,7 @@ type Patient = {
 export type PathologyBillDeatils = {
     id: string;
     doctor: string;
-    opdId: string;
+    ipdId: string;
     patientId: number;
     date: string;
     previousReportValue: string;
@@ -53,7 +53,7 @@ export type PathologyBillDeatils = {
 type PathologyBillData = {
     id: string;
     doctor: string;
-    opdId: string;
+    ipdId: string;
     patientId: number;
     patient: { name: string };
     date: string;

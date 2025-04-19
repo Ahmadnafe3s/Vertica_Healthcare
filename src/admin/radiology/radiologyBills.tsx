@@ -72,8 +72,6 @@ const RadiologyBills = () => {
       setLoading(prev => ({ ...prev, model: true }))
       const data = await getRadiologyBillDetails(id)
       setRadioBillDetails(data)
-      console.log(data);
-
     } catch ({ message }: any) {
       toast.error(message)
     } finally {
@@ -192,7 +190,7 @@ const RadiologyBills = () => {
                     >{bill.id}
                     </TableCell>
                     <TableCell>{bill.date}</TableCell>
-                    <TableCell>{bill.opdId}</TableCell>
+                    <TableCell>{bill.ipdId}</TableCell>
                     <TableCell>{bill.patient.name}</TableCell>
                     <TableCell>{bill.doctor}</TableCell>
                     <TableCell>{bill.discount} %</TableCell>

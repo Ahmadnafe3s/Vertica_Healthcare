@@ -1,22 +1,22 @@
 import AlertModel from '@/components/alertModel'
 import CustomPagination from '@/components/customPagination'
 import EmptyList from '@/components/emptyList'
+import LoaderModel from '@/components/loader'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
 import ProtectedTable from '@/components/protected-table'
+import TableActions from '@/components/table-actions'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { page_limit } from '@/globalData'
+import { AlignJustify, Plus } from 'lucide-react'
 import { parseAsInteger, useQueryState } from 'nuqs'
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
 import CreateIpdModal from './create-ipd-form-modal'
 import useIpdHandlers from './ipd-handlers'
-import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
-import PermissionProtectedAction from '@/components/permission-protected-actions'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import TableActions from '@/components/table-actions'
-import LoaderModel from '@/components/loader'
 
 
 
@@ -50,6 +50,15 @@ const Ipds = () => {
                         <Button size="sm"
                             onClick={() => setForm(true)}
                         ><Plus />Add IPD</Button>
+                    </PermissionProtectedAction>
+
+                    <PermissionProtectedAction action='view' module='IpdDischarge'>
+                        <Link to={'discharge'} className={buttonVariants({
+                            variant: 'default',
+                            size: 'sm',
+                        })}>
+                            <AlignJustify />IPD Discharges
+                        </Link>
                     </PermissionProtectedAction>
                 </div>
             </div>
@@ -113,7 +122,7 @@ const Ipds = () => {
                                                 show={show}
                                                 canUpdate={canUpdate}
                                                 canDelete={canDelete}
-                                                onEdit={async() => {await fetchIpdInfo(item.id); setForm(true) }}
+                                                onEdit={async () => { await fetchIpdInfo(item.id); setForm(true) }}
                                                 onDelete={() => onDelete(item.id)}
                                             />
                                         </TableRow>

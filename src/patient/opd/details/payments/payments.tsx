@@ -1,18 +1,17 @@
+import { getPayments } from "@/admin/OPD/opdApiHandler"
+import CustomPagination from "@/components/customPagination"
+import EmptyList from "@/components/emptyList"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { currencySymbol } from "@/helpers/currencySymbol"
-import { SearchX } from "lucide-react"
+import { currencyFormat } from "@/lib/utils"
+import { Payment } from "@/types/opd_section/payment"
+import { parseAsInteger, useQueryState } from "nuqs"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { useParams } from "react-router-dom"
-import { currencyFormat } from "@/lib/utils"
 import { useDebouncedCallback } from 'use-debounce'
-import { Payment } from "@/types/opd_section/payment"
-import { useQueryState, parseAsInteger } from "nuqs"
-import CustomPagination from "@/components/customPagination"
-import { getPaymentsList } from "@/admin/OPD/opdApiHandler"
-import EmptyList from "@/components/emptyList"
 
 
 
@@ -35,7 +34,7 @@ const PatientOpdPayments = () => {
     // Fetching list
     const fetchPayments = async () => {
         try {
-            const data = await getPaymentsList({ opdId: opdId!, page, limit: 10, search: search! })
+            const data = await getPayments({ opdId: opdId!, page, limit: 10, search: search! })
             setPayments(data)
         } catch ({ message }: any) {
             toast.error(message)

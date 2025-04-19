@@ -30,7 +30,7 @@ interface PrescriptionFormModelProps extends HTMLAttributes<HTMLDivElement> {
 
 
 
-const CreatePrescriptionFormModel = ({ prescDetails: details, isPending, Submit, ...props }: PrescriptionFormModelProps) => {
+const PrescriptionFormModal = ({ prescDetails: details, isPending, Submit, ...props }: PrescriptionFormModelProps) => {
 
     // form select options state
     const [findingCategories, setFindingCategories] = useState<findingCategory[]>([])
@@ -189,14 +189,12 @@ const CreatePrescriptionFormModel = ({ prescDetails: details, isPending, Submit,
                         {/* Findings Array Section */}
 
                         {findingFields.map((field, index) => (
-                            <section key={field.id} className="sm:col-span-full grid px-2 py-4 border-2 border-dashed border-gray-200 rounded-md gap-2 sm:grid-cols-3">
+                            <section key={field.id} className="sm:col-span-full grid px-2 py-4 border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md gap-2 sm:grid-cols-3">
 
                                 {/* Finding */}
 
                                 <div className="w-full flex flex-col gap-y-2">
                                     <Controller control={control} name={`finding.${index}.findingCategoryId`} render={({ field }) => {
-                                        console.log(field.value);
-
                                         return <>
                                             <Label>Finding Category</Label>
                                             {/* cause value was initialy 0 that was then converted "0" so field was gets true that why place holder was not displaying */}
@@ -294,7 +292,7 @@ const CreatePrescriptionFormModel = ({ prescDetails: details, isPending, Submit,
                         {/* Medicine Array section */}
 
                         {medicineFields.map((field, index) => {
-                            return <section key={field.id} className="sm:col-span-full grid-cols-2 grid px-2 py-4 border-2 border-dashed border-gray-200 rounded-md gap-2 sm:grid-cols-5">
+                            return <section key={field.id} className="sm:col-span-full grid-cols-2 grid px-2 py-4 border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md gap-2 sm:grid-cols-5">
 
                                 {/* Medicine Category */}
 
@@ -444,4 +442,4 @@ const CreatePrescriptionFormModel = ({ prescDetails: details, isPending, Submit,
     )
 }
 
-export default CreatePrescriptionFormModel
+export default PrescriptionFormModal

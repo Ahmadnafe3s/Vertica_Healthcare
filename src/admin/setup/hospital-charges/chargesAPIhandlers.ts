@@ -10,7 +10,6 @@ import { Charge_Type_Interface } from "./chargeType/chargeTypes"
 import { chargeNameFormSchema } from "@/formSchemas/setupSectionSchemas/ChargeNameFormSchema"
 import { chargeNameDetailsType, chargeNamesType } from "@/types/setupTypes/chargeName"
 import AxiosClient from "@/api/apiClient"
-import { ChargeDetails } from "@/types/type"
 
 
 
@@ -156,9 +155,9 @@ export const deleteChargeType = async (id: number) => {
 }
 
 
-type moduleType = 'opd' | 'appointment' | 'radiology' | 'pathology' | 'blood_bank' | 'ambulance'
+export type chargeModuleType = 'opd' | 'ipd' | 'appointment' | 'radiology' | 'pathology' | 'blood_bank' | 'ambulance'
 
-export const getChargeTypes = async (module?: moduleType): Promise<Charge_Type_Interface[]> => {
+export const getChargeTypes = async (module?: chargeModuleType): Promise<Charge_Type_Interface[]> => {
     try {
         const params = { module }
         const res = await AxiosClient.get(`/api/hospitalCharge/type`, { params })
@@ -278,7 +277,7 @@ export const deleteChargeName = async (id: number) => {
 }
 
 
-export const getChargeNameDetails = async (id: number):Promise<chargeNameDetailsType> => {
+export const getChargeNameDetails = async (id: number): Promise<chargeNameDetailsType> => {
     try {
         const res = await AxiosClient.get(`/api/hospitalCharge/name/${id}`)
         return res.data

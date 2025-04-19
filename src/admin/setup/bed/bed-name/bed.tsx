@@ -13,7 +13,7 @@ import { parseAsInteger, useQueryState } from "nuqs";
 import { useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { z } from "zod";
-import CreateBedModal, { FormField } from "../form-modal";
+import CreateBedModal, { FormField } from "../../../../components/form-modals/form-modal";
 import useBedGroupHandlers from "../group/bed-group-handlers";
 import useBedHandlers from "./bed-handlers";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";

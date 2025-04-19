@@ -25,11 +25,11 @@ const IpdOperations = () => {
     // search params
     const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
 
-    const { operations, getOperations, current, setCurrent, getDetails, isPending, form, setForm, handleSubmit, onDelete, confirmationProps } = useOperationHandlers()
+    const { operations, getOperations, current, setCurrent, getDetails, isPending, form, setForm, handleSubmit, onDelete, confirmationProps } = useOperationHandlers({ page, limit: page_limit })
 
 
     useEffect(() => {
-        getOperations({ page, limit: page_limit })
+        getOperations()
     }, [page])
 
 

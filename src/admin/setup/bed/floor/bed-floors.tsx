@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Plus } from 'lucide-react'
 import { useEffect } from 'react'
 import { z } from 'zod'
-import CreateBedModal, { FormField } from '../form-modal'
+import CreateBedModal, { FormField } from '../../../../components/form-modals/form-modal'
 import useFloorHandlers from './floor-handlers'
 
 

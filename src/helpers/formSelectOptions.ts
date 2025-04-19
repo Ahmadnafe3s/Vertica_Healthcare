@@ -84,3 +84,9 @@ export const PaymentOptions = [
 
 
 
+export const dischargeTypes = [
+  { label: "Discharge", value: "Discharge" },
+  { label: "Transfer", value: "Transfer" },
+  { label: "Death", value: "Dead" },
+  { label: "Other", value: "Other" },
+]

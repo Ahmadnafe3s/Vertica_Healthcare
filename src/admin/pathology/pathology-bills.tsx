@@ -171,7 +171,7 @@ const PathologyBills = () => {
                 <TableRow>
                   <TableHead>Bill No.</TableHead>
                   <TableHead>Invoice Date</TableHead>
-                  <TableHead>OPD ID</TableHead>
+                  <TableHead>IPD ID</TableHead>
                   <TableHead>Patient Name</TableHead>
                   <TableHead>Doctor Name</TableHead>
                   <TableHead>Discount%</TableHead>
@@ -193,7 +193,7 @@ const PathologyBills = () => {
                     >{bill.id}
                     </TableCell>
                     <TableCell>{bill.date}</TableCell>
-                    <TableCell>{bill.opdId}</TableCell>
+                    <TableCell>{bill.ipdId}</TableCell>
                     <TableCell>{bill.patient.name}</TableCell>
                     <TableCell>{bill.doctor}</TableCell>
                     <TableCell>{bill.discount} %</TableCell>

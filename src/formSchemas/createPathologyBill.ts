@@ -11,7 +11,7 @@ const TestNames = z.object({
 
 
 export const createPathologyBillSchema = z.object({
-    opdId: z.string().optional(),
+    ipdId: z.string().optional(),
     doctor: z.string().min(1, { message: 'Doctor is required' }),
     patientId: z.number().min(1, { message: 'Patient is required' }).default(0),
     date: z.string().min(1, { message: 'Date is required' }),

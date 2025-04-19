@@ -10,7 +10,7 @@ import { currencySymbol } from "@/helpers/currencySymbol"
 import { PaymentOptions } from "@/helpers/formSelectOptions"
 import { paymentData } from "@/types/opd_section/payment"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader, X } from "lucide-react"
+import { Loader } from "lucide-react"
 import { HTMLAttributes } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { z } from "zod"
@@ -49,7 +49,7 @@ const PaymentFormModel = ({ Submit, isPending, paymentDetails, ...props }: Payme
 
                         <div className="w-full flex flex-col gap-y-2 ">
                             <Label>Amount {currencySymbol()}</Label>
-                            <Input type='number' {...register('amount', { valueAsNumber: true })} defaultValue={0} />
+                            <Input type='number' {...register('amount')} placeholder="Enter Amount" />
                             {errors.amount && <p className='text-sm text-red-500'>{errors.amount.message}</p>}
                         </div>
 

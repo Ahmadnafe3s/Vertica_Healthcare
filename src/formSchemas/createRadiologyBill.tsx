@@ -11,9 +11,9 @@ const TestNames = z.object({
 
 
 export const createRadiologyBillSchema = z.object({
-    opdId: z.string().optional(),
+    ipdId: z.string().optional(),
     doctor: z.string().min(1, { message: 'Doctor is required' }),
-    patientId: z.number().min(1, { message: 'Patient is required' }).default(0),
+    patientId: z.coerce.number().min(1, { message: 'Patient is required' }).default(0),
     date: z.string().min(1, { message: 'Date is required' }),
     previousReportValue: z.string().optional(),
     additionalTax: z.coerce.number().min(0, { message: "Tax cannot be negative" }).optional().default(0),

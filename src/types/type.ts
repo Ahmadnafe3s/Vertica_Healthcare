@@ -52,25 +52,9 @@ export interface Doctors {
 
 
 
-export interface ChargeDetails {
-    id: number,
-    caseId: number,
-    charge_type: string,
-    category: string,
-    name: string,
-    amount: number,
-    tpa: number,
-    date: string,
-    total: number,
-    tax: number,
-    discount: number,
-    net_amount: number,
-}
-
-
 
 // Params
 
 export type Params = { page?: number, limit?: number, search?: string | null }
 
-export type OIParams = { opdId?: string, ipdId?: string }
+export type OIParams = { opdId?: string, ipdId?: string, patientId?: number }

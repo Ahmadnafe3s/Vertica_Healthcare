@@ -60,7 +60,7 @@ const PatientAppointments = () => {
                 search: search!, // if search will have value then data will get accordingly
             })
             setAppointments(data)
-        } catch ({ message }: any) {
+        } catch ({ message }) {
             toast.error(message)
         }
     }
@@ -74,7 +74,7 @@ const PatientAppointments = () => {
             const data = await getAppointmentDetails(id)
             setAppointmentDetails(data)
         } catch ({ message }: any) {
-            toast.error(message)
+            toast.error(message);
         } finally { setModel((rest) => ({ ...rest, loader: false })) }
     }
 

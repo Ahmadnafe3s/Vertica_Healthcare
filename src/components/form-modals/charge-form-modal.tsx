@@ -13,7 +13,7 @@ import { HTMLAttributes, useEffect, useState } from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { z } from "zod"
 import toast from "react-hot-toast"
-import { getChargeCategories, getChargeNameDetails, getChargeNames, getChargeTypes } from "@/admin/setup/hospital-charges/chargesAPIhandlers"
+import { chargeModuleType, getChargeCategories, getChargeNameDetails, getChargeNames, getChargeTypes } from "@/admin/setup/hospital-charges/chargesAPIhandlers"
 import { Charge_Type_Interface } from "@/admin/setup/hospital-charges/chargeType/chargeTypes"
 import { categoryType } from "@/admin/setup/hospital-charges/chargesCategory/categoryList"
 import { chargeNamesType } from "@/types/setupTypes/chargeName"
@@ -25,10 +25,11 @@ interface ChargeFormModelProps extends HTMLAttributes<HTMLDivElement> {
     chargeDetails: ChargeDetailsType;
     isPending: boolean;
     Submit: (formData: z.infer<typeof chargeFormSchema>) => void
+    module: chargeModuleType
 }
 
 
-const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeFormModelProps) => {
+const ChargeFormModel = ({ Submit, module, isPending, chargeDetails, ...props }: ChargeFormModelProps) => {
 
     const [INDEX, SET_INDEX] = useState<number>(0)
 
@@ -41,20 +42,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
     const { register, control, watch, reset, setValue, handleSubmit, formState: { errors } } = useForm<z.infer<typeof chargeFormSchema>>({
         resolver: zodResolver(chargeFormSchema),
-        defaultValues: chargeDetails ? {
-            charge: [{
-                categoryId: String(chargeDetails?.categoryId),
-                chargeTypeId: String(chargeDetails?.chargeTypeId),
-                chargeNameId: String(chargeDetails?.chargeNameId),
-                standard_charge: chargeDetails?.standard_charge,
-                tpa: chargeDetails?.tpa,
-                date: chargeDetails?.date,
-                tax: chargeDetails?.tax,
-                discount: chargeDetails?.discount,
-                total: chargeDetails?.total,
-                net_amount: chargeDetails?.net_amount,
-            }]
-        } : valuesASdefault  // default one Array field if not edit mode
+        defaultValues: chargeDetails ? { charge: [chargeDetails] } : valuesASdefault  // default one Array field if not edit mode
     })
 
 
@@ -65,18 +53,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
 
     const AppendFields = () => {
-        AppendChargeField({
-            chargeTypeId: '',
-            categoryId: '',
-            chargeNameId: '',
-            standard_charge: 0,
-            tpa: 0,
-            date: '',
-            total: 0,
-            tax: 0,
-            discount: 0,
-            net_amount: 0
-        })
+        AppendChargeField(valuesASdefault.charge[0])
     }
 
 
@@ -84,7 +61,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
     const fetchChargeTypes = async () => {
         try {
-            const data = await getChargeTypes('opd')
+            const data = await getChargeTypes(module)
             setTypes(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -172,7 +149,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
                         {fields.map((charge, index) => {
 
-                            return <section key={charge.id} onClick={() => SET_INDEX(index)} className="sm:col-span-full mt-2 p-2 rounded-md grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2  items-center border-2 border-dashed border-gray-200 dark:border-gray-700">
+                            return <section key={charge.id} onClick={() => SET_INDEX(index)} className="sm:col-span-full mt-2 p-2 rounded-md grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2   border-2 border-dashed border-gray-200 dark:border-gray-700">
 
                                 {/* Cahrge Type */}
 
@@ -180,7 +157,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
                                     <Controller control={control} name={`charge.${index}.chargeTypeId`} render={({ field }) => {
                                         return <>
                                             <Label>Charge Type</Label>
-                                            <Select value={field.value || ''} onValueChange={(value) => { handleTypeChange(index, Number(value)); field.onChange(value) }}>
+                                            <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { handleTypeChange(index, Number(value)); field.onChange(value) }}>
                                                 <SelectTrigger >
                                                     <SelectValue placeholder="Select" />
                                                 </SelectTrigger>
@@ -205,7 +182,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
                                         const Categories = categories?.[index] || []; // Get categories specific to the current field index getting from the object key
                                         return <>
                                             <Label>Charge Category</Label>
-                                            <Select value={field.value || ''} onValueChange={(value) => { handleCategoryChange(index, value); field.onChange(value) }}>
+                                            <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { handleCategoryChange(index, value); field.onChange(value) }}>
                                                 <SelectTrigger >
                                                     <SelectValue placeholder="Select" />
                                                 </SelectTrigger>
@@ -229,7 +206,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
                                         const ChargeNames = names?.[index]?.data || []
                                         return <>
                                             <Label>Charge Name</Label>
-                                            <Select value={field.value || ''} onValueChange={(value) => { handleChargeNameChange(index, Number(value)); field.onChange(value) }}>
+                                            <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { handleChargeNameChange(index, Number(value)); field.onChange(value) }}>
                                                 <SelectTrigger >
                                                     <SelectValue placeholder="Select" />
                                                 </SelectTrigger>
@@ -250,7 +227,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
                                 <div className="w-full flex flex-col gap-y-2">
                                     <Label>Standard Charge {currencySymbol()}</Label>
-                                    <Input type='number' {...register(`charge.${index}.standard_charge`, { valueAsNumber: true })} /> {/*assigning values automatically */}
+                                    <Input type='number' {...register(`charge.${index}.standard_charge`)} /> {/*assigning values automatically */}
                                     {errors?.charge?.[index]?.standard_charge && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.standard_charge.message}</p>}
                                 </div>
 
@@ -259,7 +236,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
                                 <div className="w-full flex flex-col gap-y-2">
                                     <Label>TPA Charge {currencySymbol()}</Label>
-                                    <Input type='number' {...register(`charge.${index}.tpa`, { valueAsNumber: true })} />
+                                    <Input type='number' {...register(`charge.${index}.tpa`)} />
                                     {errors?.charge?.[index]?.tpa && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.tpa.message}</p>}
                                 </div>
 
@@ -277,7 +254,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
                                 <div className="w-full flex flex-col gap-y-2">
                                     <Label>Total Amount {currencySymbol()}</Label>
-                                    <Input type='number' {...register(`charge.${index}.total`, { valueAsNumber: true })} disabled />
+                                    <Input type='number' {...register(`charge.${index}.total`)} disabled />
                                     {errors?.charge?.[index]?.total && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.total.message}</p>}
                                 </div>
 
@@ -286,7 +263,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
                                 <div className="w-full flex flex-col gap-y-2">
                                     <Label>Tax %</Label>
-                                    <Input type="number" {...register(`charge.${index}.tax`, { valueAsNumber: true })} disabled />
+                                    <Input type="number" {...register(`charge.${index}.tax`)} disabled />
                                     {errors?.charge?.[index]?.tax && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.tax.message}</p>}
                                 </div>
 
@@ -296,7 +273,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
                                 <div className="w-full flex flex-col gap-y-2">
                                     <Label>Discount %</Label>
-                                    <Input type='number' {...register(`charge.${index}.discount`, { valueAsNumber: true })} />
+                                    <Input type='number' {...register(`charge.${index}.discount`)} />
                                     {errors?.charge?.[index]?.discount && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.discount.message}</p>}
                                 </div>
 
@@ -306,7 +283,7 @@ const ChargeFormModel = ({ Submit, isPending, chargeDetails, ...props }: ChargeF
 
                                 <div className="w-full flex flex-col gap-y-2">
                                     <Label>Net Amount {currencySymbol()}</Label>
-                                    <Input type="number" {...register(`charge.${index}.net_amount`, { valueAsNumber: true })} />
+                                    <Input type="number" {...register(`charge.${index}.net_amount`)} />
                                     {errors?.charge?.[index]?.net_amount && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.net_amount.message}</p>}
                                 </div>
 

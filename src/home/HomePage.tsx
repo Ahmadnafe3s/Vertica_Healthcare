@@ -1,12 +1,10 @@
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { buttonVariants } from '@/components/ui/button'
-import { Star } from 'lucide-react'
-import { Fade } from 'react-awesome-reveal'
 import Lottie from 'lottie-react'
-import animationData from '../assets/animation/hospital.json'
-import { useInView } from 'motion/react'
+import { Star } from 'lucide-react'
 import { useRef } from 'react'
-import Xmarquee from '@/components/marquee'
+import { Fade } from 'react-awesome-reveal'
+import animationData from '../assets/animation/hospital.json'
 
 
 const doctors = [
@@ -21,29 +19,22 @@ const doctors = [
 
 const HomePage = () => {
 
-    const animationRef = useRef(null)
-    const view = useInView(animationRef)
 
 
     return (
-
-
         <div >
-
             <MaxWidthWrapper className="pt-14 md:pt-20 lg:pt-32 pb-20 lg:pb-32 grid lg:grid-cols-4 gap-y-5">
-
                 <div className="lg:col-span-2 flex flex-col justify-center space-y-5" >
-
                     <div className='space-y-5'>
-                        <p className="font-bold text-4xl md:text-5xl lg:text-6xl text-gray-900 dark:text-neutral-100 tracking-tight ">
+                        <p className="font-bold text-pretty text-4xl md:text-5xl lg:text-6xl text-gray-900 dark:text-neutral-100 tracking-tight ">
                             Welcome to Vertica Healthcare
                         </p>
 
-                        <p className="font-semibold text-2xl md:text-3xl lg:text-4xl text-gray-600 dark:text-gray-500 tracking-tight leading-tight">
+                        <p className="font-semibold text-pretty text-2xl md:text-3xl lg:text-4xl text-gray-600 dark:text-gray-500 tracking-tight leading-tight">
                             Efficiency in Care, Excellence in Service
                         </p>
 
-                        <p className="text-gray-800 dark:text-neutral-200 lg:text-lg">
+                        <p className="text-gray-800 text-balance dark:text-neutral-200 lg:text-lg">
                             Here, you can efficiently manage patient records, appointments, medical staff, and hospital operations.
                             Easily access key data, track ongoing treatments, and ensure smooth workflows for enhanced patient care and hospital efficiency.
                         </p>

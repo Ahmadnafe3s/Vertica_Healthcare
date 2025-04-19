@@ -1,0 +1,7 @@
+export const errorHandler = <T>(error: T) => {
+    if (error instanceof Error) {
+        return error.message as string
+    } else {
+        return "An unexpected error occurred"
+    }
+}

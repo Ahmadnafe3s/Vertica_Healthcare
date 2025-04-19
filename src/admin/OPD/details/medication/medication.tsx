@@ -25,7 +25,7 @@ const Medication = () => {
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [search, setSearch] = useQueryState('search')
 
-  const { medications, isPending, form, getMedications, getMedicationDetails, handleSubmit, setForm, onDelete, current, setCurrent, confirmationProps } = useMedicationHandlers()
+  const { medications, isPending, form, getMedications, getMedicationDetails, handleSubmit, setForm, onDelete, current, setCurrent, confirmationProps } = useMedicationHandlers({ page, search, limit: page_limit })
 
 
   const onSearch = (date: string) => {
@@ -34,7 +34,7 @@ const Medication = () => {
   }
 
   useEffect(() => {
-    getMedications({ page, limit: page_limit, search: search! })
+    getMedications()
   }, [page, search])
 
 

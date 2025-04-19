@@ -313,12 +313,12 @@ const CreateRadiologyBill = ({ Submit, isPending, editDetails, ...props }: Creat
             </div>
 
 
-            {/* opdId */}
+            {/* ipdId */}
 
             <div className="w-full flex flex-col gap-y-2">
-              <Label>OPD ID</Label>
-              <Input type='text' {...register('opdId')} />
-              {errors.opdId && <p className='text-sm text-red-500'>{errors.opdId.message}</p>}
+              <Label>IPD ID</Label>
+              <Input type='text' {...register('ipdId')} />
+              {errors.ipdId && <p className='text-sm text-red-500'>{errors.ipdId.message}</p>}
             </div>
 
             {/* Discount */}

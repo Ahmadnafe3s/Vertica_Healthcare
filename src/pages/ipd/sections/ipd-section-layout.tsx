@@ -1,7 +1,7 @@
 import PermissionProtectedAction from "@/components/permission-protected-actions"
 import { buttonVariants } from "@/components/ui/button"
 import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area"
-import { Menu, BriefcaseMedical, PocketKnife, HeartPulse, Clock, SquareStack, ReceiptText, Banknote } from "lucide-react"
+import { Menu, BriefcaseMedical, PocketKnife, HeartPulse, Clock, SquareStack, ReceiptText, Banknote, BookCheck, FlaskConical, ClipboardPlus } from "lucide-react"
 import { Link, Outlet } from "react-router-dom"
 
 
@@ -52,6 +52,30 @@ const IpdSectionsLayout = () => {
                                 variant: 'outline'
                             })}>
                                 <Clock /> Timeline
+                            </Link>
+                        </PermissionProtectedAction>
+
+                        <PermissionProtectedAction action='view' module='ConsultantRegister'>
+                            <Link to={`consultant-register`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <BookCheck /> Consultant Reg
+                            </Link>
+                        </PermissionProtectedAction>
+
+                        <PermissionProtectedAction action='view' module='ConsultantRegister'>
+                            <Link to={`lab`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <FlaskConical /> Lab Investigation
+                            </Link>
+                        </PermissionProtectedAction>
+
+                        <PermissionProtectedAction action='view' module='IpdPrescription'>
+                            <Link to={`prescription`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <ClipboardPlus /> Prescription
                             </Link>
                         </PermissionProtectedAction>
 

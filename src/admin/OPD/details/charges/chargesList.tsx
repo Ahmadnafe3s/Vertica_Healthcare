@@ -4,25 +4,21 @@ import CustomPagination from "@/components/customPagination"
 import EmptyList from "@/components/emptyList"
 import LoaderModel from "@/components/loader"
 import PermissionProtectedAction from "@/components/permission-protected-actions"
-import PermissionTableActions from "@/components/permission-table-actions"
+import ProtectedTable from "@/components/protected-table"
+import TableActions from "@/components/table-actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { chargeFormSchema } from "@/formSchemas/chargeFormSchema"
+import { page_limit } from "@/globalData"
 import { currencySymbol } from "@/helpers/currencySymbol"
-import { useConfirmation } from "@/hooks/useConfirmation"
 import { currencyFormat } from "@/lib/utils"
-import { ChargeDetailsType, ChargeListType } from "@/types/opd_section/charges"
 import { Plus } from "lucide-react"
 import { parseAsInteger, useQueryState } from "nuqs"
-import { useEffect, useState } from "react"
-import toast from "react-hot-toast"
-import { useParams } from "react-router-dom"
-import { z } from "zod"
-import { createCharges, deleteCharge, getChargeDetails, getCharges, updateCharge } from "../../opdApiHandler"
+import { useEffect } from "react"
+import useChargeHandlers from "./charge-handlers"
 import ChargeDetailsModel from "./chargeDetailsModel"
-import ChargeFormModel from "./chargeFormModel"
+import ChargeFormModel from "../../../../components/form-modals/charge-form-modal"
 
 
 
@@ -33,66 +29,8 @@ const CahrgesList = () => {
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [search, setSearch] = useQueryState('search')
 
-  // custom hooks
-  const { confirm, confirmationProps } = useConfirmation()
+  const { charges, getCharges, current, setCurrent, getDetails, isPending, form, setForm, handleSubmit, onDelete, confirmationProps } = useChargeHandlers({ page, search, limit: page_limit })
 
-
-  const { opdId } = useParams()
-  const [isPending, setPending] = useState<boolean>(false)
-
-
-  // Api states
-  //chargeDetails provides data to details MODEL and FORM (ON EDIT MODE)
-  const [chargeDetails, setChargeDetails] = useState<ChargeDetailsType | undefined>(undefined)
-  const [CHARGES, SET_CHARGES] = useState<ChargeListType>({ data: [], total_pages: 1 })
-
-
-  // Models State
-  const [isChargeLoading, setIsChargeLoading] = useState<boolean>(false)
-  const [isChargeDetailsVisible, setIsChargeDetailsVisible] = useState<boolean>(false)
-  const [isChargeFormVisible, setIsChargeFormVisible] = useState<boolean>(false)
-
-
-  //fetching charges list
-
-  const fetchCharges = async () => {
-    try {
-      //on search limit will be 100
-      const data = await getCharges({ opdId: opdId!, page, limit: 10, date: search! }) // opdId is here string
-      SET_CHARGES(data)
-    } catch ({ message }: any) {
-      toast.error(message)
-    }
-  }
-
-
-  // Fetching details for Details model and form on edit mode
-  const fetchChargeDetails = async (id: number) => {
-    try {
-      setIsChargeLoading(true)
-      const data = await getChargeDetails(id)
-      setChargeDetails(data)
-    } catch ({ message }: any) {
-      toast.error(message)
-    } finally {
-      setIsChargeLoading(false)
-    }
-  }
-
-
-
-  const onDelete = async (id: number) => {
-    try {
-      const isConfirm = await confirm()
-      if (!isConfirm) return null
-      const data = await deleteCharge(id)
-      toast.success(data.message)
-      // refetching list
-      fetchCharges()
-    } catch ({ message }: any) {
-      toast.error(message)
-    }
-  }
 
 
   const onSearch = async (date: string) => {
@@ -101,30 +39,8 @@ const CahrgesList = () => {
   }
 
 
-
-  // handling create and update both
-  const handleSubmit = async (formData: z.infer<typeof chargeFormSchema>) => {
-    try {
-      setPending(true)
-      let data;
-      chargeDetails ? (data = await updateCharge(chargeDetails.id, formData), setChargeDetails(undefined))
-        :
-        (data = await createCharges(opdId!, formData))
-
-      toast.success(data.message)
-      fetchCharges()
-      setIsChargeFormVisible(false)
-    } catch ({ message }: any) {
-      toast.error(message)
-    } finally {
-      setPending(false)
-    }
-  }
-
-
-
   useEffect(() => {
-    fetchCharges()
+    getCharges()
   }, [page, search])
 
 
@@ -134,7 +50,7 @@ const CahrgesList = () => {
       <div className="flex justify-between">
         <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Charges</h1>
         <PermissionProtectedAction action='create' module='charges'>
-          <Button size='sm' onClick={() => setIsChargeFormVisible(true)} >
+          <Button size='sm' onClick={() => setForm(true)} >
             <Plus /> Add Charge
           </Button>
         </PermissionProtectedAction>
@@ -151,51 +67,50 @@ const CahrgesList = () => {
 
       <div className="flex flex-col min-h-[58vh] mb-20">
         <div className="flex-1">
-          <Table className="rounded-lg border dark:border-gray-800">
-            <TableHeader className="bg-zinc-100 dark:bg-gray-900">
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Charge Name</TableHead>
-                <TableHead>Charge Type</TableHead>
-                <TableHead>Standard Charge {currencySymbol()}</TableHead>
-                <TableHead>TPA Charge {currencySymbol()}</TableHead>
-                <TableHead>Net Amount {currencySymbol()}</TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {CHARGES?.data.map((charge, i) => {
-                return <TableRow key={i}>
-                  <TableCell>{charge.date}</TableCell>
-                  {/* to view details model */}
-                  <TableCell className="text-blue-500 cursor-pointer hover:text-blue-400 font-semibold" onClick={async () => {
-                    await fetchChargeDetails(charge.id);
-                    setIsChargeDetailsVisible(true)
-                  }} >
-                    {charge.chargeNames.name}
-                  </TableCell>
-                  <TableCell>{charge.chargeType.charge_type}</TableCell>
-                  <TableCell>{currencyFormat(charge.standard_charge)}</TableCell>
-                  <TableCell>{currencyFormat(charge.tpa)}</TableCell>
-                  <TableCell>{currencyFormat(charge.net_amount)}</TableCell>
-                  <TableCell className="flex space-x-2">
+          <ProtectedTable
+            module="charges"
+            renderTable={(show, canUpdate, canDelete) => (
+              <Table className="rounded-lg border dark:border-gray-800">
+                <TableHeader className="bg-zinc-100 dark:bg-gray-900">
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Charge Name</TableHead>
+                    <TableHead>Charge Type</TableHead>
+                    <TableHead>Standard Charge {currencySymbol()}</TableHead>
+                    <TableHead>TPA Charge {currencySymbol()}</TableHead>
+                    <TableHead>Net Amount {currencySymbol()}</TableHead>
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {charges?.data.map((charge, i) => {
+                    return <TableRow key={i}>
+                      <TableCell>{charge.date}</TableCell>
+                      {/* to view details model */}
+                      <TableCell className="text-blue-500 cursor-pointer hover:text-blue-400 font-semibold" onClick={async () => {
+                        await getDetails(charge.id);
+                      }} >
+                        {charge.chargeNames.name}
+                      </TableCell>
+                      <TableCell>{charge.chargeType.charge_type}</TableCell>
+                      <TableCell>{currencyFormat(charge.standard_charge)}</TableCell>
+                      <TableCell>{currencyFormat(charge.tpa)}</TableCell>
+                      <TableCell>{currencyFormat(charge.net_amount)}</TableCell>
+                      <TableActions
+                        show={show}
+                        canUpdate={canUpdate}
+                        canDelete={canDelete}
+                        onDelete={() => onDelete(charge.id)}
+                        onEdit={async () => { await getDetails(charge.id); setForm(true) }}
+                      />
+                    </TableRow>
+                  })}
+                </TableBody>
+              </Table>
+            )}
+          />
 
-                    <PermissionTableActions
-                      module="charges"
-                      onEdit={async () => {
-                        await fetchChargeDetails(charge.id)
-                        setIsChargeFormVisible(true)
-                      }}
-                      onDelete={() => onDelete(charge.id)}
-                    />
-
-                  </TableCell>
-                </TableRow>
-              })}
-            </TableBody>
-          </Table>
-
-          <EmptyList length={CHARGES.data.length} message="No charges found" />
+          <EmptyList length={charges.data.length} message="No charges found" />
 
         </div>
 
@@ -204,7 +119,7 @@ const CahrgesList = () => {
         <div>
           <section>
             <CustomPagination
-              total_pages={CHARGES?.total_pages!}
+              total_pages={charges?.total_pages!}
               currentPage={page}
               previous={(p) => setPage(p)}
               goTo={(p) => setPage(p)}
@@ -217,11 +132,8 @@ const CahrgesList = () => {
 
       {/* MODEL */}
 
-      {isChargeFormVisible && <ChargeFormModel isPending={isPending} chargeDetails={chargeDetails!} Submit={handleSubmit}
-        onClick={() => {
-          setIsChargeFormVisible(false);
-          setChargeDetails(undefined)
-        }}
+      {form && <ChargeFormModel isPending={isPending} chargeDetails={current!} Submit={handleSubmit} module="opd"
+        onClick={() => { setForm(false); setCurrent(null) }}
       />}
 
 
@@ -234,21 +146,13 @@ const CahrgesList = () => {
         />
       )}
 
-
       {/* Details Model */}
-
-      {isChargeDetailsVisible && <ChargeDetailsModel
-        chargeDetails={chargeDetails}
-        onClick={() => {
-          setIsChargeDetailsVisible(false);
-          setChargeDetails(undefined)
-        }}
+      {current && !form && <ChargeDetailsModel chargeDetails={current!}
+        onClick={() => { setCurrent(null) }}
       />}
 
-
       {/* loader */}
-
-      {isChargeLoading && <LoaderModel />}
+      {isPending && <LoaderModel />}
 
     </section>
   )

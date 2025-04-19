@@ -17,7 +17,7 @@ import { Plus } from "lucide-react";
 import { useEffect } from "react";
 import { z } from "zod";
 import useFloorHandlers from "../floor/floor-handlers";
-import CreateBedModal, { FormField } from "../form-modal";
+import CreateBedModal, { FormField } from "../../../../components/form-modals/form-modal";
 import useBedGroupHandlers from "./bed-group-handlers";
 
 export interface FloorType {

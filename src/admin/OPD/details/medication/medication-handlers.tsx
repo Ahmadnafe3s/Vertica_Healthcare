@@ -3,14 +3,15 @@ import { useConfirmation } from "@/hooks/useConfirmation"
 import { medicationDetail, opdMedications } from "@/types/opd_section/medication"
 import { useState } from "react"
 import toast from "react-hot-toast"
-import { Params, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { z } from "zod"
 import { createMedication, deleteMedication, getMedicationDetails, getMedications, updateMedication } from "../../opdApiHandler"
+import { Params } from "@/types/type"
 
 
 
 
-const useMedicationHandlers = () => {
+const useMedicationHandlers = (params?: Params) => {
 
     const { opdId, ipdId } = useParams()
     const { confirm, confirmationProps } = useConfirmation()
@@ -39,7 +40,7 @@ const useMedicationHandlers = () => {
     }
 
 
-    const fetchMedications = async (params?: Params) => {
+    const fetchMedications = async () => {
         try {
             const data = await getMedications({ ...params, opdId, ipdId })
             setMedications(data)

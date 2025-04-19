@@ -1,19 +1,23 @@
-import { useState } from "react"
-import { createIpd, deleteIpd, getIpdInfo, getIpds, updateIpd } from "../api-handlers"
-import { z } from "zod"
-import { CreateIpdSchema } from "@/formSchemas/create-ipd-schema"
+import {useState} from "react"
+import {createIpd, deleteIpd, getIpdInfo, getIpdOverview, getIpds, updateIpd} from "../api-handlers"
+import {z} from "zod"
+import {CreateIpdSchema} from "@/formSchemas/create-ipd-schema"
 import toast from "react-hot-toast"
-import { IpdInfo, PaginatedIpdType } from "@/types/IPD/ipd"
-import { Params } from "@/types/type"
-import { useConfirmation } from "@/hooks/useConfirmation"
+import {IpdInfo, IpdOverviewType, PaginatedIpdType} from "@/types/IPD/ipd"
+import {Params} from "@/types/type"
+import {useConfirmation} from "@/hooks/useConfirmation"
+import {useParams} from "react-router-dom"
+import {errorHandler} from "@/helpers/error-handler.ts";
 
 const useIpdHandlers = () => {
 
-    const { confirm, confirmationProps } = useConfirmation()
+    const {ipdId} = useParams()
+    const {confirm, confirmationProps} = useConfirmation()
     const [form, setForm] = useState(false)
     const [isPending, setPending] = useState(false)
     const [current, setCurrent] = useState<IpdInfo | null>(null)
-    const [ipds, setIpds] = useState<PaginatedIpdType>({ data: [], total_pages: 0 })
+    const [ipds, setIpds] = useState<PaginatedIpdType>({data: [], total_pages: 0})
+    const [overview, setOverview] = useState<IpdOverviewType | null>(null)
 
 
     const handleSubmit = async (formData: z.infer<typeof CreateIpdSchema>) => {
@@ -22,15 +26,15 @@ const useIpdHandlers = () => {
             let data;
             current ? (
                 data = await updateIpd(current.id, formData),
-                setCurrent(null)
+                    setCurrent(null)
             ) : (
                 data = await createIpd(formData)
             );
             toast.success(data.message);
             setForm(false)
-            fetchIpds()
-        } catch ({ message }: any) {
-            toast.error(message)
+            await fetchIpds()
+        } catch (error) {
+            toast.error(errorHandler(error))
         } finally {
             setPending(false)
         }
@@ -41,32 +45,45 @@ const useIpdHandlers = () => {
         try {
             const data = await getIpds(params)
             setIpds(data)
-        } catch ({ message }: any) {
-            toast.error(message)
+        } catch (error) {
+            toast.error(errorHandler(error))
         }
     }
 
 
-    const fetchIpdInfo = async (id: string) => {
+    const fetchIpdInfo = async (ipdId: string) => {
         try {
             setPending(true)
-            const data = await getIpdInfo(id)
+            const data = await getIpdInfo(ipdId)
             setCurrent(data)
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally { setPending(false) }
+        } catch (error) {
+            toast.error(errorHandler(error))
+        } finally {
+            setPending(false)
+        }
     }
 
 
-
     const onDelete = async (id: string) => {
+        // @ts-ignore
         try {
             const isConfirm = await confirm()
             if (!isConfirm) return null
             const data = await deleteIpd(id)
             toast.success(data.message)
-        } catch ({ message }: any) {
-            toast.error(message)
+            await fetchIpds()
+        } catch (error) {
+            toast.error(errorHandler(error))
+        }
+    }
+
+
+    const fetchIpdOverview = async () => {
+        try {
+            const data = await getIpdOverview(ipdId!)
+            setOverview(data)
+        } catch (error) {
+            toast.error(errorHandler(error))
         }
     }
 
@@ -74,6 +91,8 @@ const useIpdHandlers = () => {
     return {
         ipds,
         fetchIpds,
+        overview,
+        getIpdOverview: fetchIpdOverview,
         current,
         setCurrent,
         fetchIpdInfo,

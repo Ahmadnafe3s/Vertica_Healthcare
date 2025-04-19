@@ -2,6 +2,7 @@ type IpdDataType = {
     id: string
     date: string
     patientId: number
+    Prescription: { id: number }
     doctorId: number
     bedGroupId: number
     bedId: number
@@ -27,7 +28,6 @@ export type PaginatedIpdType = {
     data: IpdDataType[],
     total_pages: number
 }
-
 
 
 export type IpdInfo = {
@@ -60,3 +60,178 @@ export type IpdInfo = {
     };
 }
 
+
+type IpdTreamentHisInfo = Array<{
+    id: string
+    date: string
+    symptom_type: string
+    casualty: string,
+    doctor: {
+        name: string
+    },
+    bedGroup: {
+        name: string
+    },
+    bed: {
+        name: string
+    }
+}>
+
+
+export type PaginatedIpdTreatmentHisInfo = {
+    data: IpdTreamentHisInfo,
+    total_pages: number
+}
+
+
+export type IpdRadLabInvestigation = Array<{
+    RadiologyBillItems: Array<{
+        id: number
+        reportDays: number
+        reportDate: string
+        testName: {
+            name: string
+        },
+        RadioSampleCollection: {
+            id: number
+            date: string
+            center: string
+            staff: {
+                name: string
+            }
+        },
+        RadiologyReport: {
+            id: number
+            date: string
+            staff: {
+                name: string
+            }
+        }
+    }>
+}>
+
+
+export type IpdPatLabInvestigation = Array<{
+    PathologyBillItems: Array<{
+        id: number
+        reportDays: number
+        reportDate: string
+        testName: {
+            name: string
+        },
+        PathSampleCollection: {
+            id: number
+            date: string
+            center: string
+            staff: {
+                name: string
+            }
+        },
+        PathologyReport: {
+            id: number
+            date: string
+            staff: {
+                name: string
+            }
+        }
+    }>
+}>
+
+
+
+// Ipd overview
+
+export type IpdOverviewType = {
+    id: string;
+    patientId: number;
+    patient: {
+        name: string;
+        phone: string;
+        age: string;
+        gender: string;
+        blood_group: string;
+        address: string;
+        email: string;
+        image: string | null;
+        guardian_name: string;
+        aadhar: string;
+        alergies: string;
+    };
+    doctorId: number;
+    doctor: {
+        name: string;
+        email: string;
+        image: string | null;
+        gender: string;
+    };
+    Vitals: Array<{
+        vital: {
+            id: number;
+            name: string;
+            from: string;
+            to: string;
+            unit: string;
+        };
+        value: string;
+        date: string;
+    }>;
+    symptom_description: string;
+    Timeline: Array<{
+        id: number;
+        opdId: string | null;
+        ipdId: string;
+        title: string;
+        date: string;
+        description: string;
+        patientId: number | null;
+    }>;
+    medications: Array<{
+        medicine: {
+            name: string;
+        };
+        category: {
+            name: string;
+        };
+        time: string;
+        date: string;
+        dose: string;
+    }>;
+    Operation: Array<{
+        id: string;
+        date: string;
+        ot_technician: string;
+        operationName: {
+            name: string;
+        };
+        operationCategory: {
+            name: string;
+        };
+    }>;
+    Charge: Array<{
+        date: string;
+        chargeNames: {
+            name: string;
+        };
+        standard_charge: number;
+        tpa: number;
+        net_amount: number;
+    }>;
+    Payment: Array<{
+        id: string;
+        date: string;
+        payment_mode: string;
+        amount: number;
+    }>;
+    bed: {
+        name: string;
+        group: {
+            name: string;
+            floor: {
+                name: string;
+            };
+        };
+    },
+    Discharge:{
+            id: number,
+    }
+}

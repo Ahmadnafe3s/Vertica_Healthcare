@@ -10,7 +10,7 @@ import { createOperation, deleteOperation, getOperation_Details, getOperations, 
 
 
 
-const useOperationHandlers = () => {
+const useOperationHandlers = (params: Params) => {
 
     const { opdId, ipdId } = useParams()
     const { confirm, confirmationProps } = useConfirmation()
@@ -41,7 +41,7 @@ const useOperationHandlers = () => {
     }
 
 
-    const fetchOperations = async (params?: Params) => {
+    const fetchOperations = async () => {
         try {
             const data = await getOperations({ ...params, opdId, ipdId })
             setOperations(data)

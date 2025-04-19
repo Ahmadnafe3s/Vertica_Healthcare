@@ -1,19 +1,19 @@
+import CustomPagination from "@/components/customPagination"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { OPDs } from "@/types/opd_section/opd"
+import { parseAsInteger, useQueryState } from "nuqs"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Link, useParams } from "react-router-dom"
-import { OPDs } from "@/types/opd_section/opd"
-import { useQueryState, parseAsInteger } from "nuqs"
-import CustomPagination from "@/components/customPagination"
-import { getOPDs, getTreatmentHistory } from "../../opdApiHandler"
+import { getTreatmentHistory } from "../../opdApiHandler"
 
 
 const TreatmentsList = () => {
 
-  // patient id
-  const { patientId } = useParams()
+  const { opdId } = useParams()
+
 
   // query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
@@ -29,7 +29,9 @@ const TreatmentsList = () => {
 
   const fetchOPDs = async () => {
     try {
-      const data = await getTreatmentHistory({ page, limit: 10, date: search! }, +patientId!)
+      const data = await getTreatmentHistory({ page, limit: 10, search: search!, opdId })
+      console.log(data);
+
       SET_OPD_LIST(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -75,7 +77,7 @@ const TreatmentsList = () => {
                     <Link className="text-blue-500 hover:text-blue-400 font-semibold" to={{ pathname: `/admin/OPD/patient/${opd.patientId}/${opd.id}` }}>{opd.id}</Link>
                   </TableCell>
                   <TableCell>{opd.appointment.appointment_date}</TableCell>
-                  <TableCell>{opd.appointment.doctor.name}</TableCell>
+                  <TableCell>{opd.doctor.name}</TableCell>
                   <TableCell>{opd.appointment.reference}</TableCell>
                   <TableCell>{opd.appointment.symptom_type}</TableCell>
                 </TableRow>

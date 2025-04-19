@@ -1,6 +1,7 @@
 export type prescriptionDetail = {
     id: number,
     opdId: string,
+    ipdId: string,
     header_note: string,
     prescMedicines: {
         medicineId: number,
@@ -36,7 +37,6 @@ export type prescriptionDetail = {
 
     opd: {
         appointment: {
-            appointment_date: string,
             patient: {
                 name: string,
             },
@@ -44,5 +44,32 @@ export type prescriptionDetail = {
                 name: string
             }
         }
+    },
+    ipd: {
+        date: string,
+        patient: {
+            name: string
+        },
+        doctor: {
+            name: string
+        }
     }
+}
+
+
+
+// Prescriptions
+
+export type PrescriptionsType = {
+    id: number,
+    ipdId: string | null,
+    opdId: string | null
+    prescFindings: [
+        {
+            findingName: {
+                name: string
+            },
+            description: string
+        }
+    ]
 }

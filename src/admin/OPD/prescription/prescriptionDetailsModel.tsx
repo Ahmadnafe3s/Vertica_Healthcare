@@ -1,3 +1,4 @@
+import CardBox from "@/components/card-box"
 import Dialog from "@/components/Dialog"
 import PermissionTableActions from "@/components/permission-table-actions"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -11,7 +12,7 @@ import { HTMLAttributes } from "react"
 interface PrescriptionDetailsProps extends HTMLAttributes<HTMLDivElement> {
   prescriptionDetails: prescriptionDetail
   Edit: () => void
-  Delete: () => void
+  Delete: (id: number) => void
 }
 
 
@@ -39,7 +40,7 @@ const PrescriptionDetailsModel = ({ Edit, Delete, prescriptionDetails: details, 
                 <PermissionTableActions
                   module="prescription"
                   onEdit={Edit}
-                  onDelete={Delete}
+                  onDelete={() => Delete(details.id)}
                 />
               </div>
             </div>
@@ -47,23 +48,17 @@ const PrescriptionDetailsModel = ({ Edit, Delete, prescriptionDetails: details, 
 
           {/*G-1 col-2 */}
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md'>
-              <p className='text-gray-700 dark:text-gray-400 text-sm'>OPD ID</p>
-              <p className='font-semibold'>{details?.opdId}</p>
-            </div>
-            <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md'>
-              <p className='text-gray-700 dark:text-gray-400 text-sm'>Appointment Date</p>
-              <p className='font-semibold'>{details?.opd.appointment.appointment_date}</p>
-            </div>
-            <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md'>
-              <p className='text-gray-700 dark:text-gray-400 text-sm'>Patient</p>
-              <p className='font-semibold'>{details?.opd.appointment.patient.name}</p>
-            </div>
-            <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md'>
-              <p className='text-gray-700 dark:text-gray-400 text-sm'>Cunsultant</p>
-              <p className='font-semibold'>{details?.opd.appointment.doctor.name}</p>
-            </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {/* condition for both OPD and IPD */}
+            {details.opdId ? <>
+              <CardBox borderType="dashed" title='OPD ID' value={details?.opdId} />
+              <CardBox borderType="dashed" title="Patient" value={details?.opd.appointment.patient.name} />
+              <CardBox borderType="dashed" title="Cunsultant" value={details?.opd.appointment.doctor.name} />
+            </> : <>
+              <CardBox borderType="dashed" title='IPD ID' value={details?.ipdId} />
+              <CardBox borderType="dashed" title="Patient" value={details?.ipd.patient.name} />
+              <CardBox borderType="dashed" title="Doctor" value={details?.ipd.doctor.name} />
+            </>}
           </div>
         </section>
 
@@ -83,8 +78,8 @@ const PrescriptionDetailsModel = ({ Edit, Delete, prescriptionDetails: details, 
 
           {/* Findings Table */}
 
-          <Table className="rounded-lg border dark:border-gray-800">
-            <TableHeader className="bg-gray-100 dark:bg-gray-900">
+          <Table>
+            <TableHeader>
               <TableRow>
                 <TableHead>Finding Name</TableHead>
                 <TableHead>Finding Category</TableHead>
@@ -105,8 +100,8 @@ const PrescriptionDetailsModel = ({ Edit, Delete, prescriptionDetails: details, 
 
           {/* Medicines Table */}
 
-          <Table className="rounded-lg border dark:border-gray-800">
-            <TableHeader className="bg-gray-100 dark:bg-gray-900">
+          <Table>
+            <TableHeader>
               <TableRow>
                 <TableHead>Medicine Name</TableHead>
                 <TableHead>Medicine Category</TableHead>
