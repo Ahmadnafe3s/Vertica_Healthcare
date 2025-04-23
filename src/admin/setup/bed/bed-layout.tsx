@@ -1,7 +1,7 @@
 import PermissionProtectedAction from "@/components/permission-protected-actions"
 import { buttonVariants } from "@/components/ui/button"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { Bed, ChartBarStacked, Hospital, TicketCheck } from "lucide-react"
+import { Bed, ChartBarStacked, Hospital } from "lucide-react"
 import { Link, Outlet } from "react-router-dom"
 
 
@@ -19,7 +19,7 @@ const SetupBedLayout = () => {
 
                         {/* we provide relative path like this */}
 
-                        <PermissionProtectedAction action='view' module='setupBed'>
+                        <PermissionProtectedAction action='view' module='Setup Bed'>
                             <Link to={` `} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -28,7 +28,7 @@ const SetupBedLayout = () => {
                         </PermissionProtectedAction>
 
 
-                        <PermissionProtectedAction action='view' module='bed_group'>
+                        <PermissionProtectedAction action='view' module='Bed Group'>
                             <Link to={`groups`} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -36,7 +36,7 @@ const SetupBedLayout = () => {
                             </Link>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action='view' module='bed_group'>
+                        <PermissionProtectedAction action='view' module='Bed Floor'>
                             <Link to={`floors`} className={buttonVariants({
                                 variant: 'outline'
                             })}>

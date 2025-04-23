@@ -49,7 +49,7 @@ const IpdCharges = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Charges</h1>
-        <PermissionProtectedAction action='create' module='charges'>
+        <PermissionProtectedAction action='create' module='Charges'>
           <Button size='sm' onClick={() => setForm(true)} >
             <Plus /> Add Charge
           </Button>
@@ -68,7 +68,7 @@ const IpdCharges = () => {
       <div className="flex flex-col min-h-[58vh] mb-20">
         <div className="flex-1">
           <ProtectedTable
-            module="charges"
+            module="Charges"
             renderTable={(show, canUpdate, canDelete) => (
               <Table className="rounded-lg border dark:border-gray-800">
                 <TableHeader className="bg-zinc-100 dark:bg-gray-900">

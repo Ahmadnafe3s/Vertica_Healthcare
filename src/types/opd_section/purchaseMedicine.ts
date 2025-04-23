@@ -5,6 +5,7 @@ interface Purchases {
     amount: number,
     supplier_name: string,
     tax: string,
+    purchase_price: number,
     quantity: number,
     discount: string,
     total_amount: number,

@@ -1,18 +1,19 @@
+import AlertModel from '@/components/alertModel'
+import EmptyList from '@/components/emptyList'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import ProtectedTable from '@/components/protected-table'
+import TableActions from '@/components/table-actions'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { useConfirmation } from '@/hooks/useConfirmation'
+import { medicineGroup } from '@/types/setupTypes/pharmacy'
 import { Plus, } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import MedicineGroupFrom, { MedicineGroupFromSchema } from './medicineGroupFrom'
 import { z } from 'zod'
 import { createMedicineGroup, deleteMedicineGroup, geteMedicineGroups } from '../apiHandler'
-import { medicineGroup } from '@/types/setupTypes/pharmacy'
-import AlertModel from '@/components/alertModel'
-import EmptyList from '@/components/emptyList'
-import { useConfirmation } from '@/hooks/useConfirmation'
-import PermissionProtectedAction from '@/components/permission-protected-actions'
-import PermissionTableActions from '@/components/permission-table-actions'
+import MedicineGroupFrom, { MedicineGroupFromSchema } from './medicineGroupFrom'
 
 
 
@@ -82,7 +83,7 @@ const MedicineGroups = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lgfont-semibold">Groups</h1>
-                <PermissionProtectedAction action='create' module='medicine_group'>
+                <PermissionProtectedAction action='create' module='Medicine Group'>
                     <Button size='sm' onClick={() => { setMedGroupFormVisible(true) }}>
                         <Plus /> Add Group
                     </Button>
@@ -91,39 +92,32 @@ const MedicineGroups = () => {
 
             <Separator />
 
-            {/* <div className="sm:w-48 space-y-1">
-             <p className="text-sm text-gray-700">Search</p>
-             <Input type="text" onChange={(e) => { onSearch(e.target.value) }} placeholder="name , category" />
-         </div> */}
-
-            {/* <Separator /> */}
-
-            <Table className='border rounded-lg dark:border-gray-800'>
-                <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
-                    <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Action</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {medicineGroups.map((group) => (
-                        <TableRow key={group.id}>
-                            <TableCell>{group.id}</TableCell>
-                            <TableCell>{group.name}</TableCell>
-                            <TableCell className='flex'>
-
-                                <PermissionTableActions
-                                    module='medicine_group'
+            <ProtectedTable module='Medicine Group' renderTable={(show, canUpdate, canDelete) => (
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>ID</TableHead>
+                            <TableHead>Name</TableHead>
+                            {show && <TableHead>Action</TableHead>}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {medicineGroups.map((group) => (
+                            <TableRow key={group.id}>
+                                <TableCell>{group.id}</TableCell>
+                                <TableCell>{group.name}</TableCell>
+                                <TableActions
+                                    show={show}
+                                    canUpdate={canUpdate}
+                                    canDelete={canDelete}
                                     onDelete={() => onDelete(group.id)}
                                     exclude={{ edit: true }}
                                 />
-
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            )} />
 
 
             <EmptyList length={medicineGroups.length} />

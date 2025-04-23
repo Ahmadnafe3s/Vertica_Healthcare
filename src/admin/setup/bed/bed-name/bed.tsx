@@ -70,7 +70,7 @@ const SetupBed = () => {
         <section className="flex flex-col pb-16 gap-y-5">
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Beds</h1>
-                <PermissionProtectedAction action="create" module="setupBed">
+                <PermissionProtectedAction action="create" module="Setup Bed">
                     <Button size="sm" onClick={() => { setForm(true); }} > <Plus /> Add Bed </Button>
                 </PermissionProtectedAction>
             </div>
@@ -87,7 +87,7 @@ const SetupBed = () => {
             <div className="flex flex-col gap-y-10 min-h-[60vh]">
                 <div className="flex-1">
                     <ProtectedTable
-                        module="setupBed"
+                        module="Setup Bed"
                         renderTable={(show, canUpdate, canDelete) => (
                             <Table>
                                 <TableHeader>
@@ -108,9 +108,10 @@ const SetupBed = () => {
                                             <TableCell>{item.group.floor.name}</TableCell>
                                             <TableCell>
                                                 <UpdateStatus status={item.status} click={async (v) => {
-                                                    await updateBed(item.id, { status: v })
-                                                    await getBeds({ page: 1, limit: page_limit, search: search })
-                                                    toast.success('Status updated successfully')
+                                                    await updateBed(item.id, { status: v }).then(async () => {
+                                                        toast.success('Status updated successfully')
+                                                        await getBeds({ page: 1, limit: page_limit, search: search })
+                                                    }).catch(({ message }: any) => { toast.error(message) })
                                                 }} />
                                             </TableCell>
                                             <TableActions

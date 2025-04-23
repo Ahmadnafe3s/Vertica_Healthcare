@@ -106,7 +106,7 @@ const ChargeUnitList = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Unit List</h1>
-        <PermissionProtectedAction action='create' module='charge_unit'>
+        <PermissionProtectedAction action='create' module='Charge Unit'>
           <Button size='sm' onClick={() => { setAddUnitFormVisible(true) }}>
             <Plus /> Add Unit
           </Button>
@@ -116,7 +116,7 @@ const ChargeUnitList = () => {
       <Separator />
 
       <ProtectedTable
-        module='charge_unit'
+        module='Charge Unit'
         renderTable={(show, canUpdate, canDelete) => (
           <Table>
             <TableHeader>

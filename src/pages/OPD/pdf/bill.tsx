@@ -1,199 +1,145 @@
-import { pdf, Document, Page, Text, View } from '@react-pdf/renderer';
-import { HTMLAttributes, useEffect, useState } from 'react';
-import styles from '@/pdfStyleSheet/style'
-import { PrintBillDetails } from '@/types/opd_section/opd';
-import { getPrintBillDetails } from '../opdApiHandler';
-import toast from 'react-hot-toast';
-import { currencySymbol } from '@/helpers/currencySymbol';
-import { Table, TD, TH, TR } from '@/components/pdfTable';
-import { currencyFormat } from '@/lib/utils';
-import { Printer } from 'lucide-react';
+import Backdrop from '@/components/backdrop';
 import CustomTooltip from '@/components/customTooltip';
-import { address, hospital_name, hospital_slogan } from '@/globalData';
-
-
-
+import { From, PdfFooter, PdfHeader, To, Totals } from '@/components/pdf';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { PrintBillDetails } from '@/types/opd_section/opd';
+import { Printer } from 'lucide-react';
+import { HTMLAttributes, useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
+import { getPrintBillDetails } from '../opdApiHandler';
+import { currencyFormat } from '@/lib/utils';
+import { currencySymbol } from '@/helpers/currencySymbol';
+import { useReactToPrint } from 'react-to-print';
 
 
 
 export interface BillPDFProps extends HTMLAttributes<HTMLDivElement> {
     bill: PrintBillDetails
+    afterPrint: () => void
 }
 
-// Move BillPDF outside the main component
 
-const BillPDF = ({ bill }: BillPDFProps) => {
 
-    const NetAmount = (charges: typeof bill.charges) => {
-        if (!charges) return 0
-        const net_amount = charges.reduce((sum, charge) => sum + (charge.net_amount || 0), 0)
-        return net_amount
-    }
+
+const Document = ({ bill, afterPrint }: BillPDFProps) => {
+
+    const contentRef = useRef(null)
+
+    const Print = useReactToPrint({
+        contentRef,
+        documentTitle: 'Invoice',
+        onAfterPrint() { afterPrint() },
+    })
+
+    const headers = ['Charge Name', 'Category', `Total ${currencySymbol()}`]
+
+
+    const subtotal = bill.charges.reduce((sum, charge) => sum + charge.total, 0)
+    const total = bill.charges.reduce((sum, charge) => sum + charge.net_amount, 0)
+
+    const taxPrice = bill.charges.reduce((acc, charge) => {
+        return acc + ((charge.tax / 100) * charge.total);
+    }, 0);
+
+    const discountPrice = bill.charges.reduce((acc, charge) => {
+        const taxAbblePrice = ((charge.tax / 100) * charge.total) + charge.total
+        return acc + (charge.discount / 100) * taxAbblePrice;  // discount is applied on taxable price not on net amount
+    }, 0);
+
+    const tax = (taxPrice / subtotal) * 100
+
+    const discount = (discountPrice / ((tax / subtotal) * 100 + subtotal)) * 100 // division is here to get net taxable amount because discount is applied on taxable price not on net amount
+
+
+    useEffect(() => {
+        Print()
+    }, [])
+
 
     return (
-        <Document>
-            <Page size="A4" style={styles.page}>
-                {/* header */}
-                <View style={styles.header}>
-                    <View style={styles.spaceY}>
-                        <Text style={[styles.text.bold, styles.text.xl]}>{hospital_name}</Text>
-                        <Text style={[styles.text.sm, styles.text.lightGray, styles.text.italic]}>{hospital_slogan}</Text>
-                    </View>
-                    <View style={[styles.text.sm, styles.spaceY]}>
-                        <Text>{address.street}</Text>
-                        <Text>{address.city + ', ' + address.district}</Text>
-                        <Text>{address.zip}</Text>
-                    </View>
-                </View>
+        <Backdrop onClick={afterPrint}>
+            <div className="scale-75 lg:scale-100" onClick={(e) => e.stopPropagation()}>
+                <div className="max-w-4xl mx-auto p-6 bg-white flex flex-col gap-y-5 dark:bg-[#1e1e1e] border-b-2 border-dashed dark:border-gray-500" ref={contentRef}>
+                    {/* Header */}
+                    <PdfHeader title="Invoice" id={bill.id} date={new Date().toLocaleDateString()} />
 
-                <View style={[styles.spacing.mt4, styles.flex_direction.row, styles.justifyBetween, styles.spacex16]}>
+                    {/* Company and Client Info */}
+                    <div className="grid grid-cols-2 gap-8">
+                        <From />
+                        <To id={bill.patientId} name={bill.patient.name} address={bill.patient.address} phone={bill.patient.phone} email={bill.patient.email} />
+                    </div>
 
-                    {/* col 1 */}
-                    <View style={[styles.spaceY, styles.flex_1]}>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text >OPD ID</Text>
-                            <Text style={styles.text.lightGray}>{bill?.id}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text >Patient Name</Text>
-                            <Text style={styles.text.lightGray}>{bill?.appointment.patient.name}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text >Age</Text>
-                            <Text style={styles.text.lightGray}>{bill?.appointment.patient.age}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text >Blood Group</Text>
-                            <Text style={styles.text.lightGray}>{bill?.appointment.patient.blood_group}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text >Cunsultant</Text>
-                            <Text style={styles.text.lightGray}>{bill?.appointment.doctor.name}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text >Specialist</Text>
-                            <Text style={styles.text.lightGray}>{bill?.appointment.doctor.specialist}</Text>
-                        </View>
-                    </View>
-
-                    {/* col 2 */}
-                    <View style={[styles.spaceY, styles.flex_1]}>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text >Appointment No</Text>
-                            <Text style={styles.text.lightGray}>{bill?.appointmentId}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text>Appointment Date</Text>
-                            <Text style={styles.text.lightGray}>{bill?.appointment.appointment_date}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text>Priority</Text>
-                            <Text style={styles.text.lightGray}>{bill?.appointment.appointment_priority}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text>Shift</Text>
-                            <Text style={styles.text.lightGray}>{bill?.appointment.shift}</Text>
-                        </View>
-                    </View>
-                </View>
-
-                {/* Table */}
-
-                <View style={styles.spacing.mt4}>
+                    {/* Items Table */}
                     <Table>
-                        {/* Header Row */}
-                        <TR>
-                            <TH>Charge Name</TH>
-                            <TH>Category</TH>
-                            <TH>Std Charge</TH>
-                            <TH>TPA Charge</TH>
-                            <TH>Total {currencySymbol()}</TH>
-                            <TH>Tax%</TH>
-                            <TH>Discount%</TH>
-                            <TH last>All Total {currencySymbol()}</TH>
-                        </TR>
+                        <TableHeader className="bg-white">
+                            <TableRow>
+                                {headers.map((item, i) => (
+                                    <TableHead key={i}>{item}</TableHead>
+                                ))}
+                            </TableRow>
+                        </TableHeader>
 
-                        {/* Data Rows */}
-
-                        {bill?.charges.map((charge, i) => (
-                            <TR key={i}>
-                                <TD>{charge.chargeNames.name}</TD>
-                                <TD>{charge.chargeCategory.category}</TD>
-                                <TD>{currencyFormat(charge.standard_charge)}</TD>
-                                <TD>{currencyFormat(charge.tpa)}</TD>
-                                <TD>{currencyFormat(charge.total)}</TD>
-                                <TD>{charge.tax}%</TD>
-                                <TD>{charge.discount}%</TD>
-                                <TD last>{currencyFormat(charge.net_amount)}</TD>
-                            </TR>
-                        ))}
+                        <TableBody>
+                            {bill.charges.map((charge, _i) => (
+                                <TableRow key={_i}>
+                                    <TableCell className="py-3 text-sm">{charge.chargeNames.name}</TableCell>
+                                    <TableCell className="py-3 text-sm">{charge.chargeCategory.category}</TableCell>
+                                    <TableCell className="py-3 text-sm">{currencyFormat(charge.total)}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
                     </Table>
-                </View>
 
-                <View style={[styles.spacing.mt4, styles.borderedBox, styles.flex_direction.row, styles.justifyBetween]}>
-                    <Text style={styles.text.italic}>Net Amount</Text>
-                    <Text style={styles.text.bold}>{currencyFormat(NetAmount(bill?.charges))}</Text>
-                </View>
+                    {/* Totals */}
 
-            </Page >
-        </Document >
+                    <Totals subtotal={subtotal} discount={discount} tax={tax} total={total} />
+
+                    {/* Footer */}
+
+                    <PdfFooter paymentInfo={'offline'} notes={'Have a nice day'} />
+
+                </div>
+            </div>
+
+        </Backdrop>
     )
 }
 
 
 
-interface OpdBillPDFprops {
+interface Props {
     opdId: string,
     onPending: (e: boolean) => void
 }
 
 
-const OpdBillPDF = ({ opdId, onPending }: OpdBillPDFprops) => {
+const PrintOpdBill = ({ opdId, onPending }: Props) => {
 
-    const [client, setClient] = useState(false);
+    const [current, setCurrent] = useState<PrintBillDetails | null>(null)
 
-    const handleOpenNewTab = async () => {
+    const handleBill = async () => {
         try {
             onPending(true)
             const data = await getPrintBillDetails(opdId)
             if (!data) return toast.error('No data found')
-            const blob = await pdf(<BillPDF bill={data!} />).toBlob();
-            const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');  // open in new tab
-            // Clean up after 1 minute (adjust as needed)
-            setTimeout(() => URL.revokeObjectURL(url), 60000);
+            setCurrent(data)
         } catch ({ message }: any) {
             toast.error(message)
         } finally { onPending(false) }
     };
 
-
-    // Needed to avoid SSR issues with Blob
-    useEffect(() => {
-        setClient(true);
-    }, []);
-
-    if (!client) return null;
-
     return (
         <>
             <CustomTooltip message='Print Bill'>
-                <Printer className='cursor-pointer text-gray-600 dark:text-neutral-300 w-5 h-5 active:scale-95' onClick={handleOpenNewTab} />
+                <Printer className='cursor-pointer text-gray-600 dark:text-neutral-300 w-5 h-5 active:scale-95' onClick={handleBill} />
             </CustomTooltip>
+
+            {current && <Document bill={current!} afterPrint={() => setCurrent(null)} />}
         </>
     );
 };
 
 
 
-export default OpdBillPDF;
+
+export default PrintOpdBill;

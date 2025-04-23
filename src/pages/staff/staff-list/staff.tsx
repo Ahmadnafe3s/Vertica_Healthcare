@@ -61,7 +61,7 @@ const Staff = () => {
           <h1 className='font-semibold tracking-tight'>Staff List</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
-            <PermissionProtectedAction action='create' module='human_resource'>
+            <PermissionProtectedAction action='create' module='Human Resource'>
               <Link to={'create'}
                 className={buttonVariants({ variant: 'default', size: 'sm', className: 'flex gap-x-1' })}>
                 <Plus />Add Staff

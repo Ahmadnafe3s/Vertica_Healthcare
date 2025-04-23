@@ -1,13 +1,13 @@
 import AlertModel from "@/components/alertModel"
 import CustomTooltip from "@/components/customTooltip"
+import EmptyList from "@/components/emptyList"
 import PermissionProtectedAction from "@/components/permission-protected-actions"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Calendar, Clock, Pencil, Plus, SearchX, Trash } from "lucide-react"
+import useTimelineHandlers from "@/pages/OPD/details/timeline/timeline-handlers"
+import { Calendar, Clock, Pencil, Plus, Trash } from "lucide-react"
 import { useEffect } from "react"
 import TimelineFormModel from "../../../../components/form-modals/timeline-form-modal"
-import useTimelineHandlers from "@/pages/OPD/details/timeline/timeline-handlers"
-import EmptyList from "@/components/emptyList"
 
 
 
@@ -29,7 +29,7 @@ const IpdTimelines = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Timeline</h1>
-                <PermissionProtectedAction action='create' module='timeline'>
+                <PermissionProtectedAction action='create' module='Timeline'>
                     <Button size='sm' onClick={() => {
                         setForm(true)
                     }}>
@@ -63,13 +63,13 @@ const IpdTimelines = () => {
                                     <p className="text-lg font-semibold text-gray-800 dark:text-gray-200">{timeline.title}</p>
                                     <div className="flex gap-x-2 opacity-0 group-hover:opacity-100">
 
-                                        <PermissionProtectedAction action='update' module='timeline'>
+                                        <PermissionProtectedAction action='update' module='Timeline'>
                                             <CustomTooltip message="Edit">
                                                 <Pencil className="w-4 h-4 text-gray-500 dark:text-gray-400 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { setCurrent(timeline); setForm(true) }} />
                                             </CustomTooltip>
                                         </PermissionProtectedAction>
 
-                                        <PermissionProtectedAction action='delete' module='timeline'>
+                                        <PermissionProtectedAction action='delete' module='Timeline'>
                                             <CustomTooltip message="Delete">
                                                 <Trash className="w-4 h-4 text-gray-500 dark:text-gray-400 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => onDelete(timeline.id)} />
                                             </CustomTooltip>

@@ -70,92 +70,92 @@ const AdminDashboard = () => {
             <div className='grid lg:grid-cols-4 sm:grid-cols-2 gap-4'>
 
                 {/* opd income */}
-                <PermissionProtectedAction action='opd_income' module='dashboard'>
-                    <RectCard name='OPD Income' path={'../opd'} amount={total?.opdIncome ?? 0}>
+                <PermissionProtectedAction action='Opd Income' module='dashboard'>
+                    <RectCard name='OPD Income' path={'/opd'} amount={total?.opdIncome ?? 0}>
                         <HeartPulse className='h-8 w-8 text-red-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* opds */}
-                <PermissionProtectedAction action='opds' module='dashboard'>
-                    <RectCard name='Total OPDs' path={'../opd'} visits={total?.opds ?? 0}>
+                <PermissionProtectedAction action='Opds' module='dashboard'>
+                    <RectCard name='Total OPDs' path={'/opd'} visits={total?.opds ?? 0}>
                         <Activity className='h-8 w-8 text-amber-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* appmnt income */}
-                <PermissionProtectedAction action='appmnt_income' module='dashboard'>
-                    <RectCard name='Appointment Income' path={'../appointment'} amount={total?.appointmentIncome ?? 0}>
+                <PermissionProtectedAction action='Appmnt Income' module='dashboard'>
+                    <RectCard name='Appointment Income' path={'/appointment'} amount={total?.appointmentIncome ?? 0}>
                         <CalendarClock className='h-8 w-8 text-slate-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* pharmacy income */}
-                <PermissionProtectedAction action='pharmacy_income' module='dashboard'>
-                    <RectCard name='Pharmacy Income' path={'../pharmacy'} amount={total?.pharmacyIncome ?? 0}>
+                <PermissionProtectedAction action='Pharmacy Income' module='dashboard'>
+                    <RectCard name='Pharmacy Income' path={'/pharmacy'} amount={total?.pharmacyIncome ?? 0}>
                         <Pill className='h-8 w-8 text-green-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* pharmacy bills */}
-                <PermissionProtectedAction action='pharmacy_bills' module='dashboard'>
-                    <RectCard name='Pharmacy Bills' path={'../pharmacy'} visits={total?.pharmacyBills ?? 0}>
+                <PermissionProtectedAction action='Pharmacy Bill' module='dashboard'>
+                    <RectCard name='Pharmacy Bills' path={'/pharmacy'} visits={total?.pharmacyBills ?? 0}>
                         <ReceiptText className='h-8 w-8 text-blue-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* medicines */}
-                <PermissionProtectedAction action='medicines' module='dashboard'>
-                    <RectCard name='Total Medicines' path={'../pharmacy/medicines'} visits={total?.medicines ?? 0}>
+                <PermissionProtectedAction action='Medicines' module='dashboard'>
+                    <RectCard name='Total Medicines' path={'/pharmacy/medicines'} visits={total?.medicines ?? 0}>
                         <Package className='h-8 w-8 text-teal-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* pharmacy expenses */}
-                <PermissionProtectedAction action='pharmacy_expenses' module='dashboard'>
-                    <RectCard name='Pharmacy Expenses' path={'../pharmacy'} amount={total?.pharmacyExpenses ?? 0}>
+                <PermissionProtectedAction action='Pharmacy Expenses' module='dashboard'>
+                    <RectCard name='Pharmacy Expenses' path={'/pharmacy'} amount={total?.pharmacyExpenses ?? 0}>
                         <HandCoins className='h-8 w-8 text-yellow-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* medicine purchases */}
-                <PermissionProtectedAction action='medicine_purchases' module='dashboard'>
-                    <RectCard name='Medicine Purchases' path={'../pharmacy/medicines'} visits={total?.purchases ?? 0}>
+                <PermissionProtectedAction action='Medicine Purchases' module='dashboard'>
+                    <RectCard name='Medicine Purchases' path={'/pharmacy/medicines'} visits={total?.purchases ?? 0}>
                         <ShoppingCart className='h-8 w-8 text-violet-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* radiology income */}
-                <PermissionProtectedAction action='radiology_income' module='dashboard'>
-                    <RectCard name='Radiology Income' path={'../radiology'} amount={total?.radiologyIncome ?? 0}>
+                <PermissionProtectedAction action='Radiology Income' module='dashboard'>
+                    <RectCard name='Radiology Income' path={'/radiology'} amount={total?.radiologyIncome ?? 0}>
                         <Radiation className='h-8 w-8 text-yellow-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* radiology bills */}
-                <PermissionProtectedAction action='radiology_bills' module='dashboard'>
-                    <RectCard name='Radiology Bills' path={'../radiology'} visits={total?.radiologyBills ?? 0}>
+                <PermissionProtectedAction action='Radiology Bills' module='dashboard'>
+                    <RectCard name='Radiology Bills' path={'/radiology'} visits={total?.radiologyBills ?? 0}>
                         <ReceiptText className='h-8 w-8 text-rose-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* pathology income */}
-                <PermissionProtectedAction action='pathology_income' module='dashboard'>
-                    <RectCard name='Pathology Income' path={'../pathology'} amount={total?.pathologyIncome ?? 0}>
+                <PermissionProtectedAction action='Pathology Income' module='dashboard'>
+                    <RectCard name='Pathology Income' path={'/pathology'} amount={total?.pathologyIncome ?? 0}>
                         <TestTube2 className='h-8 w-8 text-gray-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* pathology bills */}
-                <PermissionProtectedAction action='pathology_bills' module='dashboard'>
-                    <RectCard name='Pathology Bills' path={'../pathology'} visits={total?.pathologyBills ?? 0}>
+                <PermissionProtectedAction action='Pathology Bills' module='dashboard'>
+                    <RectCard name='Pathology Bills' path={'/pathology'} visits={total?.pathologyBills ?? 0}>
                         <ReceiptText className='h-8 w-8 text-violet-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* expenses */}
-                <PermissionProtectedAction action='expenses' module='dashboard'>
-                    <RectCard name='Expenses' path={'../expenses'} amount={total?.expenses! ?? 0}>
+                <PermissionProtectedAction action='Expenses' module='dashboard'>
+                    <RectCard name='Expenses' path={''} amount={total?.expenses! ?? 0}>
                         <DollarSign className='h-8 w-8 text-pink-500' />
                     </RectCard>
                 </PermissionProtectedAction>
@@ -170,7 +170,7 @@ const AdminDashboard = () => {
 
                 <div className="grid lg:grid-cols-3 gap-3 items-center">
                     {/* Montly Income & expenses Chart */}
-                    <PermissionProtectedAction action='income_expenses' module='dashboard'>
+                    <PermissionProtectedAction action='Income Expenses' module='dashboard'>
                         <div className="w-full">
                             <Card  >
                                 <CardHeader>
@@ -255,7 +255,7 @@ const AdminDashboard = () => {
 
                     {/* pie chart 1 */}
 
-                    <PermissionProtectedAction action='appointments' module='dashboard'>
+                    <PermissionProtectedAction action='Appointments' module='dashboard'>
                         <div >
                             <Card className="flex flex-col mx-auto">
                                 <CardHeader className="items-center pb-0">
@@ -325,7 +325,7 @@ const AdminDashboard = () => {
 
                     {/* numbers of services */}
 
-                    <PermissionProtectedAction action='visitors' module='dashboard'>
+                    <PermissionProtectedAction action='Visitors' module='dashboard'>
                         <div className="lg:col-span-1">
 
                             <Card className="flex flex-col mx-auto">

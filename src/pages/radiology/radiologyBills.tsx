@@ -3,7 +3,8 @@ import CustomPagination from '@/components/customPagination'
 import EmptyList from '@/components/emptyList'
 import LoaderModel from '@/components/loader'
 import PermissionProtectedAction from '@/components/permission-protected-actions'
-import PermissionTableActions from '@/components/permission-table-actions'
+import ProtectedTable from '@/components/protected-table'
+import TableActions from '@/components/table-actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
@@ -132,7 +133,7 @@ const RadiologyBills = () => {
           <h1 className='font-semibold tracking-tight'>Radiology Bill</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
-            <PermissionProtectedAction module='radiology_bill' action='create'>
+            <PermissionProtectedAction module='Radiology Bill' action='create'>
               <Button
                 size={'sm'}
                 onClick={() => setModel(prev => ({ ...prev, radiologyForm: true }))}
@@ -163,54 +164,55 @@ const RadiologyBills = () => {
 
         <div className="flex flex-col pb-16 gap-y-10 min-h-[80vh]">
           <div className="flex-1 space-y-3">
-            <Table className='border rounded-lg my-10 dark:border-gray-800'>
-              <TableHeader className='bg-slate-100 dark:bg-gray-900'>
-                <TableRow>
-                  <TableHead>Bill No.</TableHead>
-                  <TableHead>Invoice Date</TableHead>
-                  <TableHead>OPD ID</TableHead>
-                  <TableHead>Patient Name</TableHead>
-                  <TableHead>Doctor Name</TableHead>
-                  <TableHead>Discount%</TableHead>
-                  <TableHead>Net Amount {currencySymbol()}</TableHead>
-                  <TableHead>Payment Mode</TableHead>
-                  <TableHead>Action</TableHead>
-                </TableRow>
-              </TableHeader>
+            <ProtectedTable module='Radiology Bill' renderTable={(show, canUpdate, canDelete) => (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Bill No.</TableHead>
+                    <TableHead>Invoice Date</TableHead>
+                    <TableHead>OPD ID</TableHead>
+                    <TableHead>Patient Name</TableHead>
+                    <TableHead>Doctor Name</TableHead>
+                    <TableHead>Discount%</TableHead>
+                    <TableHead>Net Amount {currencySymbol()}</TableHead>
+                    <TableHead>Payment Mode</TableHead>
+                   {show && <TableHead>Action</TableHead>}
+                  </TableRow>
+                </TableHeader>
 
-              <TableBody>
-                {radioBills.data.map((bill) => (
-                  <TableRow key={bill.id}>
-                    <TableCell
-                      className='text-blue-500 hover:text-blue-400 cursor-pointer font-medium'
-                      onClick={async () => {
-                        await fetchRadiologyBillDetails(bill.id)
-                        setModel(prev => ({ ...prev, billDetails: true }))
-                      }}
-                    >{bill.id}
-                    </TableCell>
-                    <TableCell>{bill.date}</TableCell>
-                    <TableCell>{bill.ipdId}</TableCell>
-                    <TableCell>{bill.patient.name}</TableCell>
-                    <TableCell>{bill.doctor}</TableCell>
-                    <TableCell>{bill.discount} %</TableCell>
-                    <TableCell>{currencyFormat(bill.net_amount)}</TableCell>
-                    <TableCell>{bill.payment_mode}</TableCell>
-                    <TableCell className='flex space-x-2'>
-                      {/* EDIT , DELETE  */}
-                      <PermissionTableActions
-                        module='radiology_bill'
+                <TableBody>
+                  {radioBills.data.map((bill) => (
+                    <TableRow key={bill.id}>
+                      <TableCell
+                        className='text-blue-500 hover:text-blue-400 cursor-pointer font-medium'
+                        onClick={async () => {
+                          await fetchRadiologyBillDetails(bill.id)
+                          setModel(prev => ({ ...prev, billDetails: true }))
+                        }}
+                      >{bill.id}
+                      </TableCell>
+                      <TableCell>{bill.date}</TableCell>
+                      <TableCell>{bill.ipdId}</TableCell>
+                      <TableCell>{bill.patient.name}</TableCell>
+                      <TableCell>{bill.doctor}</TableCell>
+                      <TableCell>{bill.discount} %</TableCell>
+                      <TableCell>{currencyFormat(bill.net_amount)}</TableCell>
+                      <TableCell>{bill.payment_mode}</TableCell>
+                      <TableActions
+                        show={show}
+                        canUpdate={canUpdate}
+                        canDelete={canDelete}
                         onEdit={async () => {
                           await fetchRadiologyBillDetails(bill.id)
                           setModel(prev => ({ ...prev, radiologyForm: true }))
                         }}
                         onDelete={() => onDelete(bill.id)}
                       />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )} />
 
             <EmptyList length={radioBills.data.length} message='No bills found' />
           </div>

@@ -1,9 +1,10 @@
 import CardBox from '@/components/card-box'
 import CustomTooltip from '@/components/customTooltip'
 import Dialog from '@/components/Dialog'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { DischargeDataType } from '@/types/discharge/discharge'
-import { CalendarDays, Trash, Trash2 } from 'lucide-react'
+import { CalendarDays, Trash2 } from 'lucide-react'
 import { HTMLAttributes } from 'react'
 
 
@@ -13,7 +14,7 @@ interface DischargeInfoModal extends HTMLAttributes<HTMLDivElement> {
 }
 
 
-const DischargeInfoModal = ({ infos, Delete , ...props }: DischargeInfoModal) => {
+const DischargeInfoModal = ({ infos, Delete, ...props }: DischargeInfoModal) => {
 
 
     return (
@@ -38,12 +39,13 @@ const DischargeInfoModal = ({ infos, Delete , ...props }: DischargeInfoModal) =>
                                 <p className='text-sm text-gray-500'>Discharge Date</p>
 
                                 {/* delete discharge */}
-                                <CustomTooltip message='Delete Discharge'>
-                                    <Trash2 className='w-4 h-4 cursor-pointer active:scale-95 text-red-500'
-                                        onClick={() => Delete(infos?.id!)}
-                                    />
-                                </CustomTooltip>
-
+                                <PermissionProtectedAction action='delete' module='Discharge Patient'>
+                                    <CustomTooltip message='Delete Discharge'>
+                                        <Trash2 className='w-4 h-4 cursor-pointer active:scale-95 text-red-500'
+                                            onClick={() => Delete(infos?.id!)}
+                                        />
+                                    </CustomTooltip>
+                                </PermissionProtectedAction>
                             </span>
                         </div>
                     </div>

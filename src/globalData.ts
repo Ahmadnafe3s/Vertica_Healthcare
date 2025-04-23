@@ -5,11 +5,13 @@ export const hospital_slogan = 'Your Health is our priority'
 
 export const address = {
     street: 'New Market purwa',
-    city: 'Tulsipur',
-    district: 'Balrampur',
-    zip: 'U.P, India, 271208'
+    city: 'Tulsipur, UP, 271208 ',
 }
 
+export const hospital_contact = {
+    phone: '+91 9876543210',
+    email: 'info@example.com',
+}
 
 
 export const page_limit = 10

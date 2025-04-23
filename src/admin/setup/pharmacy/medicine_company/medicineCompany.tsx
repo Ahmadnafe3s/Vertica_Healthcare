@@ -1,18 +1,19 @@
+import AlertModel from '@/components/alertModel'
+import EmptyList from '@/components/emptyList'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import ProtectedTable from '@/components/protected-table'
+import TableActions from '@/components/table-actions'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { useConfirmation } from '@/hooks/useConfirmation'
+import { medicineComapny } from '@/types/setupTypes/pharmacy'
 import { Plus, } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
 import { createMedicineCompany, deleteMedicineCompany, getMedicineCompanies } from '../apiHandler'
-import { medicineComapny } from '@/types/setupTypes/pharmacy'
-import AlertModel from '@/components/alertModel'
 import MedicineCompanyForm, { MedicineCompanyFormSchema } from './medicineCompanyForm'
-import EmptyList from '@/components/emptyList'
-import PermissionProtectedAction from '@/components/permission-protected-actions'
-import PermissionTableActions from '@/components/permission-table-actions'
-import { useConfirmation } from '@/hooks/useConfirmation'
 
 
 
@@ -79,7 +80,7 @@ const MedicineCompany = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Comapnies</h1>
-                <PermissionProtectedAction action='create' module='medicine_company'>
+                <PermissionProtectedAction action='create' module='Medicine Company'>
                     <Button size='sm' onClick={() => { setForm(true) }}>
                         <Plus /> Add Company
                     </Button>
@@ -88,39 +89,32 @@ const MedicineCompany = () => {
 
             <Separator />
 
-            {/* <div className="sm:w-48 space-y-1">
-             <p className="text-sm text-gray-700">Search</p>
-             <Input type="text" onChange={(e) => { onSearch(e.target.value) }} placeholder="name , category" />
-         </div> */}
-
-            {/* <Separator /> */}
-
-            <Table className='rounded-lg border dark:border-gray-800'>
-                <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
-                    <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Action</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {medicineCompanies.map((company) => (
-                        <TableRow key={company.id}>
-                            <TableCell>{company.id}</TableCell>
-                            <TableCell>{company.name}</TableCell>
-                            <TableCell className='flex'>
-
-                                <PermissionTableActions
-                                    module='medicine_company'
+            <ProtectedTable module='Medicine Company' renderTable={(show, canUpdate, canDelete) => (
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>ID</TableHead>
+                            <TableHead>Name</TableHead>
+                            {show && <TableHead>Action</TableHead>}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {medicineCompanies.map((company) => (
+                            <TableRow key={company.id}>
+                                <TableCell>{company.id}</TableCell>
+                                <TableCell>{company.name}</TableCell>
+                                <TableActions
+                                    show={show}
+                                    canUpdate={canUpdate}
+                                    canDelete={canDelete}
                                     onDelete={() => onDelete(company.id)}
                                     exclude={{ edit: true }}
                                 />
-
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            )} />
 
 
             <EmptyList length={medicineCompanies.length} />

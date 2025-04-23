@@ -45,7 +45,7 @@ const IpdMedications = () => {
 
         <div className="flex justify-between">
           <h1 className="text-lg text-gray-800 dark:text-white font-semibold">Medication</h1>
-          <PermissionProtectedAction action="create" module="medication">
+          <PermissionProtectedAction action="create" module="Medication">
             <Button size='sm' onClick={() => setForm(true)}>
               <Plus /> Add Medication
             </Button>
@@ -65,7 +65,7 @@ const IpdMedications = () => {
         <section className="flex flex-col gap-y-5 min-h-[60vh]">
           <div className="flex-1">
             <ProtectedTable
-              module="medication"
+              module="Medication"
               renderTable={(show, canUpdate, canDelete) => (
                 <Table className="rounded-lg border dark:border-gray-800">
                   <TableHeader className="bg-zinc-100 dark:bg-gray-900">

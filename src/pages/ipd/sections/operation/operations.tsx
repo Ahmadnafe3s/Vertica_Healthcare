@@ -38,7 +38,7 @@ const IpdOperations = () => {
             <section className="flex flex-col gap-y-5">
                 <div className="flex justify-between">
                     <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Operations</h1>
-                    <PermissionProtectedAction action='create' module='operation'>
+                    <PermissionProtectedAction action='create' module='Operation'>
                         <Button size='sm' onClick={() => setForm(true)}>
                             <Plus /> Add Operation
                         </Button>
@@ -52,7 +52,7 @@ const IpdOperations = () => {
                 <div className="flex flex-col min-h-[70vh] mb-20">
                     <div className='flex-1'>
                         <ProtectedTable
-                            module='operation'
+                            module='Operation'
                             renderTable={(show, canUpdate, canDelete) => (
                                 <Table className="rounded-lg border dark:border-gray-800">
                                     <TableHeader className="bg-zinc-100 dark:bg-gray-900">

@@ -14,7 +14,7 @@ const PharmacyLayout = () => {
 
                         {/* we provide relative path like this */}
 
-                        <PermissionProtectedAction action='view' module='setupPharmacy'>
+                        <PermissionProtectedAction action='view' module='Setup Pharmacy'>
                             <Link to={``} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -22,7 +22,7 @@ const PharmacyLayout = () => {
                             </Link>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action='view' module='dose_interval'>
+                        <PermissionProtectedAction action='view' module='Dose Interval'>
                             <Link to={`interval`} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -30,7 +30,7 @@ const PharmacyLayout = () => {
                             </Link>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action='view' module='dose_duration'>
+                        <PermissionProtectedAction action='view' module='Dose Duration'>
                             <Link to={`duration`} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -39,7 +39,7 @@ const PharmacyLayout = () => {
                         </PermissionProtectedAction>
 
 
-                        <PermissionProtectedAction action='view' module='medicine_unit'>
+                        <PermissionProtectedAction action='view' module='Medicine Unit'>
                             <Link to={`unit`} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -48,7 +48,7 @@ const PharmacyLayout = () => {
                         </PermissionProtectedAction>
 
 
-                        <PermissionProtectedAction action='view' module='medicine_company'>
+                        <PermissionProtectedAction action='view' module='Medicine Company'>
                             <Link to={`company`} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -57,7 +57,7 @@ const PharmacyLayout = () => {
                         </PermissionProtectedAction>
 
 
-                        <PermissionProtectedAction action='view' module='medicine_group'>
+                        <PermissionProtectedAction action='view' module='Medicine Group'>
                             <Link to={`group`} className={buttonVariants({
                                 variant: 'outline'
                             })}>

@@ -1,5 +1,5 @@
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "./ui/dropdown-menu"
-import { MoreHorizontal, Pencil, Trash } from "lucide-react"
+import { MoreHorizontal, Pencil, Printer, Trash } from "lucide-react"
 import { Button } from "./ui/button"
 import { ReactNode } from "react";
 import { TableCell } from "./ui/table";
@@ -7,8 +7,13 @@ import { TableCell } from "./ui/table";
 interface TableActionsProps {
     onEdit?: () => void;
     onDelete?: () => void;
+
     show: boolean;
-    includeAction?: ReactNode
+    includeAction?: ReactNode,
+    incluePrint?: {
+        include: boolean,
+        print: () => void,
+    },
     exclude?: {
         edit?: boolean;
         delete?: boolean;
@@ -17,9 +22,9 @@ interface TableActionsProps {
     canDelete: boolean;
 }
 
-const TableActions = ({ exclude = { edit: false, delete: false }, show, canUpdate, canDelete, onDelete, onEdit, includeAction }: TableActionsProps) => {
+const TableActions = ({ exclude = { edit: false, delete: false }, incluePrint, show, canUpdate, canDelete, onDelete, onEdit, includeAction }: TableActionsProps) => {
 
-    if (!show) return null
+    if (!show && !includeAction && !incluePrint) return null
 
     return (
         <TableCell>
@@ -31,7 +36,7 @@ const TableActions = ({ exclude = { edit: false, delete: false }, show, canUpdat
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end' className='p-0.5 dark:border-gray-800 z-[200]'>
                     {includeAction && (
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => e.stopPropagation()}>
                             <button type='button' className='relative flex items-center w-full space-x-2 h-5 hover:text-gray-600 dark:hover:text-gray-400'>
                                 {includeAction}
                             </button>
@@ -42,6 +47,14 @@ const TableActions = ({ exclude = { edit: false, delete: false }, show, canUpdat
                         <DropdownMenuItem>
                             <button type='button' onClick={onEdit} className='flex items-center w-full space-x-2 h-5 hover:text-gray-600 dark:hover:text-gray-400'>
                                 <Pencil className='w-4' /> <span>Edit</span>
+                            </button>
+                        </DropdownMenuItem>
+                    )}
+
+                    {incluePrint?.include && (
+                        <DropdownMenuItem>
+                            <button type='button' onClick={incluePrint.print} className='flex items-center w-full space-x-2 h-5 hover:text-gray-600 dark:hover:text-gray-400'>
+                                <Printer className='w-4' /> <span>Print</span>
                             </button>
                         </DropdownMenuItem>
                     )}

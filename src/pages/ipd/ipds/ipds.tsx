@@ -5,12 +5,12 @@ import LoaderModel from '@/components/loader'
 import PermissionProtectedAction from '@/components/permission-protected-actions'
 import ProtectedTable from '@/components/protected-table'
 import TableActions from '@/components/table-actions'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { page_limit } from '@/globalData'
-import { AlignJustify, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { parseAsInteger, useQueryState } from 'nuqs'
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
@@ -46,20 +46,12 @@ const Ipds = () => {
             <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between'>
                 <h1 className='font-semibold tracking-tight'>IPD - In patient</h1>
                 <div className='flex gap-x-2 overflow-x-auto'>
-                    <PermissionProtectedAction action='create' module='ipd'>
+                    <PermissionProtectedAction action='create' module='Ipd'>
                         <Button size="sm"
                             onClick={() => setForm(true)}
                         ><Plus />Add IPD</Button>
                     </PermissionProtectedAction>
 
-                    <PermissionProtectedAction action='view' module='IpdDischarge'>
-                        <Link to={'discharge'} className={buttonVariants({
-                            variant: 'default',
-                            size: 'sm',
-                        })}>
-                            <AlignJustify />IPD Discharges
-                        </Link>
-                    </PermissionProtectedAction>
                 </div>
             </div>
 
@@ -86,7 +78,7 @@ const Ipds = () => {
             <section className="flex flex-col mb-16 gap-y-5 min-h-[75vh] mt-4">
                 <div className="flex-1 space-y-5">
                     <ProtectedTable
-                        module='ipd'
+                        module='Ipd'
                         renderTable={(show, canUpdate, canDelete) => (
                             <Table>
                                 <TableHeader>

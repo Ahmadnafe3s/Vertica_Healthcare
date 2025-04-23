@@ -1,10 +1,11 @@
 import CardBox from "@/components/card-box"
+import CustomTooltip from "@/components/customTooltip"
 import Dialog from "@/components/Dialog"
-import PermissionTableActions from "@/components/permission-table-actions"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { prescriptionDetail } from "@/types/opd_section/prescription"
-import { Syringe } from "lucide-react"
+import { Pencil, Syringe, Trash2 } from "lucide-react"
 import { HTMLAttributes } from "react"
 
 
@@ -37,11 +38,19 @@ const PrescriptionDetailsModel = ({ Edit, Delete, prescriptionDetails: details, 
               <div className="flex items-center space-x-2">
                 <p className="text-gray-400">ID : {details.id}</p>
                 {/* Edit and Delete */}
-                <PermissionTableActions
-                  module="prescription"
-                  onEdit={Edit}
-                  onDelete={() => Delete(details.id)}
-                />
+                <PermissionProtectedAction action="update" module="Prescription">
+                  <CustomTooltip message="Edit Prescription">
+                    <Pencil className="w-4 h-4 cursor-pointer text-yellow-500" onClick={Edit} />
+                  </CustomTooltip>
+                </PermissionProtectedAction>
+
+                <PermissionProtectedAction action="delete" module="Prescription">
+                  <CustomTooltip message="Delete Prescription">
+                    <Trash2 className="w-4 h-4 cursor-pointer text-red-500"
+                      onClick={() => Delete(details.id)}
+                    />
+                  </CustomTooltip>
+                </PermissionProtectedAction>
               </div>
             </div>
           </div>

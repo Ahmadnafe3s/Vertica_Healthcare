@@ -12,6 +12,8 @@ import EmptyList from "@/components/emptyList"
 import { useConfirmation } from "@/hooks/useConfirmation"
 import PermissionProtectedAction from "@/components/permission-protected-actions"
 import PermissionTableActions from "@/components/permission-table-actions"
+import ProtectedTable from "@/components/protected-table"
+import TableActions from "@/components/table-actions"
 
 
 
@@ -79,7 +81,7 @@ const MedicineUnits = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Units</h1>
-        <PermissionProtectedAction action='create' module='medicine_unit'>
+        <PermissionProtectedAction action='create' module='Medicine Unit'>
           <Button size='sm' onClick={() => setForm(true)}>
             <Plus /> Add Unit
           </Button>
@@ -88,33 +90,33 @@ const MedicineUnits = () => {
 
       <Separator />
 
-      <Table className='border rounded-lg dark:border-gray-800'>
-        <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {medicineUnits.map((unit) => (
-            <TableRow key={unit.id}>
-              <TableCell>{unit.id}</TableCell>
-              <TableCell>{unit.name}</TableCell>
-              <TableCell className="flex">
-
-                <PermissionTableActions
-                  module="medicine_unit"
+      <ProtectedTable module='Medicine Unit' renderTable={(show, canUpdate, canDelete) => (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Name</TableHead>
+              {show && <TableHead>Action</TableHead>}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {medicineUnits.map((unit) => (
+              <TableRow key={unit.id}>
+                <TableCell>{unit.id}</TableCell>
+                <TableCell>{unit.name}</TableCell>
+                <TableActions
+                  show={show}
+                  canUpdate={canUpdate}
+                  canDelete={canDelete}
                   onDelete={() => onDelete(unit.id)}
                   exclude={{ edit: true }}
                 />
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
 
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-
+      )} />
 
       <EmptyList length={medicineUnits.length} />
 

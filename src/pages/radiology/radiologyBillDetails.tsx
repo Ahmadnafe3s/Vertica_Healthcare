@@ -194,7 +194,7 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                         <TableCell className="flex">
 
                                             {item.RadioSampleCollection?.id || view?.[i]?.collection ?
-                                                <PermissionProtectedAction action='view' module='sample_collection'>
+                                                <PermissionProtectedAction action='view' module='Sample Collection'>
                                                     <CustomTooltip message="View Collector">
                                                         <Eye className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
                                                             onClick={async () => {
@@ -205,7 +205,7 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                                     </CustomTooltip>
                                                 </PermissionProtectedAction>
                                                 :
-                                                <PermissionProtectedAction action='create' module='sample_collection'>
+                                                <PermissionProtectedAction action='create' module='Sample Collection'>
                                                     <CustomTooltip message="Add User">
                                                         <UserRoundPlus className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
                                                             onClick={() => { setCollectionForm(true); itemId.current = item.id }}
@@ -220,7 +220,7 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                         <TableCell>
 
                                             {item.RadiologyReport?.id || view?.[i]?.report ?
-                                                <PermissionProtectedAction action='view' module='radiology_report'>
+                                                <PermissionProtectedAction action='view' module='Radiology Report'>
                                                     <CustomTooltip message="View Collector">
                                                         <Eye className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
                                                             onClick={async () => {
@@ -233,7 +233,7 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
 
                                                 :
 
-                                                <PermissionProtectedAction action='create' module='radiology_report'>
+                                                <PermissionProtectedAction action='create' module='Radiology Report'>
                                                     <CustomTooltip message="Add Report">
                                                         <Plus className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
                                                             // testId for getting testName parameters && itemId for REREFERENCE

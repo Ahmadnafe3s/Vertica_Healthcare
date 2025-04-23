@@ -15,7 +15,7 @@ const SetupRadiologyLayout = () => {
 
             {/* we provide relative path like this */}
 
-            <PermissionProtectedAction action='view' module='setupRadiology'>
+            <PermissionProtectedAction action='view' module='Setup Radiology'>
               <Link to={``} className={buttonVariants({
                 variant: 'outline'
               })}>
@@ -24,7 +24,7 @@ const SetupRadiologyLayout = () => {
             </PermissionProtectedAction>
 
 
-            <PermissionProtectedAction action='view' module='radiology_category'>
+            <PermissionProtectedAction action='view' module='Radiology Category'>
               <Link to={`category`} className={buttonVariants({
                 variant: 'outline'
               })}>
@@ -33,7 +33,7 @@ const SetupRadiologyLayout = () => {
             </PermissionProtectedAction>
 
 
-            <PermissionProtectedAction action='view' module='radiology_parameter'>
+            <PermissionProtectedAction action='view' module='Radiology Parameter'>
               <Link to={`parameter`} className={buttonVariants({
                 variant: 'outline'
               })}>
@@ -41,7 +41,7 @@ const SetupRadiologyLayout = () => {
               </Link>
             </PermissionProtectedAction>
 
-            <PermissionProtectedAction action='view' module='radiology_unit'>
+            <PermissionProtectedAction action='view' module='Radiology Unit'>
               <Link to={`units`} className={buttonVariants({
                 variant: 'outline'
               })}>

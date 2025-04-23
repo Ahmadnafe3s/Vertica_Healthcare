@@ -137,7 +137,7 @@ const RosterReport = () => {
                 <h1 className='font-semibold tracking-tight'>Duty Roster</h1>
 
                 <div className='flex gap-x-2 overflow-x-auto'>
-                    <PermissionProtectedAction action='create' module='duty_roster'>
+                    <PermissionProtectedAction action='create' module='Duty Roster'>
                         <Button size='sm' onClick={() => setRosterFormModel(true)}>
                             <Plus /> Add Roster
                         </Button>
@@ -202,7 +202,7 @@ const RosterReport = () => {
             <div className="flex flex-col pb-16 pt-5 gap-y-10 min-h-[70vh]">
                 <div className="flex-1">
                     <ProtectedTable
-                        module='duty_roster' renderTable={(show, canUpdate, canDelete) => (
+                        module='Duty Roster' renderTable={(show, canUpdate, canDelete) => (
                             <Table>
                                 <TableHeader>
                                     <TableRow>
@@ -223,7 +223,7 @@ const RosterReport = () => {
                                     {rosterList.data.map((item, i) => (
                                         <TableRow key={i}>
                                             <TableCell>
-                                                <Link className='text-blue-500 hover:underline font-semibold' to={`/admin/profile/staff/${item.staffId}`}>{item.staffId}</Link>
+                                                <Link className='text-blue-500 hover:underline font-semibold' to={`/staff/${item.staffId}`}>{item.staffId}</Link>
                                             </TableCell>
                                             <TableCell>{item.staff.name}</TableCell>
                                             <TableCell>{item.shift}</TableCell>

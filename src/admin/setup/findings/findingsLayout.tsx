@@ -14,7 +14,7 @@ const FindingsLayout = () => {
 
                         {/* we provide relative path like this */}
 
-                        <PermissionProtectedAction action='view' module='setupFinding'>
+                        <PermissionProtectedAction action='view' module='Setup Finding'>
                             <Link to={``} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -23,7 +23,7 @@ const FindingsLayout = () => {
                         </PermissionProtectedAction>
 
 
-                        <PermissionProtectedAction action='view' module='finding_category'>
+                        <PermissionProtectedAction action='view' module='Finding Category'>
                             <Link to={`category`} className={buttonVariants({
                                 variant: 'outline'
                             })}>

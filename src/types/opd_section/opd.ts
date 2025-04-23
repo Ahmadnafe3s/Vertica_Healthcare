@@ -75,37 +75,26 @@ export interface opdDetails {
 
 
 export interface PrintBillDetails {
-    id: string,
+    id: string
     patientId: number,
-    appointmentId: string,
-    appointment: {
-        appointment_date: string,
-        appointment_priority: string,
-        shift: string,
-        patient: {
-            name: string,
-            age: string,
-            blood_group: string,
-        },
-        doctor: {
-            name: string,
-            department: string,
-            specialist: string,
-        }
+    patient: {
+        name: string
+        address: string
+        phone: string
+        email: string
     },
-    charges: {
+    charges: Array<{
         chargeCategory: {
             category: string
         },
         chargeNames: {
-            name: string,
-        },
-        total: number,
-        discount: number,
-        tax: number,
-        tpa: number,
-        standard_charge: number,
-        net_amount: number,
-    }[]
+            name: string
+        }
+        total: number
+        discount: number
+        standard_charge: number
+        tax: number
+        tpa: number
+        net_amount: number
+    }>
 }
-

@@ -1,8 +1,11 @@
+import { getRoles } from '@/admin/setup/Authorization/APIHandler'
+import { ROLE } from '@/admin/setup/Authorization/role/role'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createStaffFormSchema } from '@/formSchemas/createStaffFormSchema'
+import { currencySymbol } from '@/helpers/currencySymbol'
 import { bloodGroups, departments, designations, maritalStatus } from '@/helpers/formSelectOptions'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from 'lucide-react'
@@ -11,10 +14,7 @@ import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod'
-import { currencySymbol } from '@/helpers/currencySymbol'
-import { ROLE } from '@/admin/setup/Authorization/role/role'
-import { getRoles } from '@/admin/setup/Authorization/APIHandler'
-import { updateStaff, createStaff, fetchStaffProfile } from '../api-handlers'
+import { createStaff, fetchStaffProfile, updateStaff } from '../api-handlers'
 
 
 
@@ -25,7 +25,6 @@ const CreateStaff = () => {
   const router = useNavigate()
 
   const [isPending, setPending] = useState<boolean>(false)
-  const [editMode, setEditmode] = useState<string | undefined>(id)
 
   // api state
   const [roles, setRole] = useState<ROLE[]>([])
@@ -61,8 +60,6 @@ const CreateStaff = () => {
         role: data.roleId,
         image: undefined
       })
-      console.log(data.roleId);
-
     } catch ({ message }: any) {
       toast.error(message)
     }
@@ -395,11 +392,12 @@ const CreateStaff = () => {
         </div>
 
         <div className="col-span-full flex gap-3 flex-col sm:flex-row">
-          <div className='order-2 sm:order-1'>
-            <Button className='w-full sm:w-auto' variant={'ghost'} onClick={() => { reset(); setEditmode(undefined) }}>Reset</Button>
-          </div>
+          {!id &&
+            (<div className='order-2 sm:order-1'>
+              <Button type='button' className='w-full sm:w-auto' variant={'ghost'} onClick={() => { reset() }}>Reset</Button>
+            </div>)}
           <div className='sm:order-2'>
-            <Button type='submit' className='w-full sm:w-auto'>{editMode ? 'Update' : 'Save'} {isPending && <Loader className='h-4 w-4 animate-spin' />}</Button>
+            <Button type='submit' className='w-full sm:w-auto'>{id ? 'Update' : 'Save'} {isPending && <Loader className='h-4 w-4 animate-spin' />}</Button>
           </div>
         </div>
 

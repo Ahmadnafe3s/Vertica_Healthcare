@@ -3,12 +3,14 @@ import CustomPagination from "@/components/customPagination"
 import EmptyList from "@/components/emptyList"
 import LoaderModel from "@/components/loader"
 import PermissionProtectedAction from "@/components/permission-protected-actions"
-import PermissionTableActions from "@/components/permission-table-actions"
+import ProtectedTable from "@/components/protected-table"
+import TableActions from "@/components/table-actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { TestNameFormSchema } from "@/formSchemas/setupSectionSchemas/CreateTestNameSchema"
+import { page_limit } from "@/globalData"
 import { currencySymbol } from "@/helpers/currencySymbol"
 import { useConfirmation } from "@/hooks/useConfirmation"
 import { currencyFormat } from "@/lib/utils"
@@ -68,7 +70,7 @@ const SetupPathologyTestNames = () => {
 
   const fetchRadiologyTests = async () => {
     try {
-      const data = await getPathologyTests({ page, limit: 10, search: search! })
+      const data = await getPathologyTests({ page, limit: page_limit, search: search! })
       setTests(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -116,7 +118,7 @@ const SetupPathologyTestNames = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Radiology Tests</h1>
-        <PermissionProtectedAction action='create' module='setupPathology'>
+        <PermissionProtectedAction action='create' module='Setup Pathology'>
           <Button size='sm' onClick={() => setTestNameForm(true)}>
             <Plus /> Add PathylogyTest
           </Button>
@@ -135,47 +137,47 @@ const SetupPathologyTestNames = () => {
 
       <div className="flex flex-col pb-16 min-h-[65vh] space-y-10">
         <div className="flex-1">
-          <Table className='border rounded-lg dark:border-gray-800'>
-            <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Short Name</TableHead>
-                <TableHead>Test Type</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Report Days</TableHead>
-                <TableHead>Standard Charge {currencySymbol()}</TableHead>
-                <TableHead>Tax %</TableHead>
-                <TableHead>Amount {currencySymbol()}</TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tests.data.map((test) => (
-                <TableRow key={test.id}>
-                  <TableCell>{test.name}</TableCell>
-                  <TableCell>{test.shortName}</TableCell>
-                  <TableCell>{test.testType}</TableCell>
-                  <TableCell>{test.category.name}</TableCell>
-                  <TableCell>{test.reportDays}</TableCell>
-                  <TableCell>{currencyFormat(test.standardCharge)}</TableCell>
-                  <TableCell>{test.tax}</TableCell>
-                  <TableCell>{currencyFormat(test.amount)}</TableCell>
-                  <TableCell className='flex space-x-2'>
-
-                    <PermissionTableActions
-                      module='setupPathology'
+          <ProtectedTable module='Setup Pathology' renderTable={(show, canUpdate, canDelete) => (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Short Name</TableHead>
+                  <TableHead>Test Type</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Report Days</TableHead>
+                  <TableHead>Standard Charge {currencySymbol()}</TableHead>
+                  <TableHead>Tax %</TableHead>
+                  <TableHead>Amount {currencySymbol()}</TableHead>
+                  {show && <TableHead>Action</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {tests.data.map((test) => (
+                  <TableRow key={test.id}>
+                    <TableCell>{test.name}</TableCell>
+                    <TableCell>{test.shortName}</TableCell>
+                    <TableCell>{test.testType}</TableCell>
+                    <TableCell>{test.category.name}</TableCell>
+                    <TableCell>{test.reportDays}</TableCell>
+                    <TableCell>{currencyFormat(test.standardCharge)}</TableCell>
+                    <TableCell>{test.tax}</TableCell>
+                    <TableCell>{currencyFormat(test.amount)}</TableCell>
+                    <TableActions
+                      show={show}
+                      canUpdate={canUpdate}
+                      canDelete={canDelete}
                       onEdit={async () => {
                         await fetchRadioTestDetails(test.id)
                         setTestNameForm(true)
                       }}
                       onDelete={() => onDelete(test.id)}
                     />
-
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )} />
 
           <EmptyList length={tests.data.length} message="No Tests Found" />
 

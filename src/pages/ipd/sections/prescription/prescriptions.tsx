@@ -34,7 +34,7 @@ const IpdPrescription = () => {
 
                 <div className="flex justify-between">
                     <h1 className="text-lg text-gray-800 dark:text-white font-semibold">Prescription</h1>
-                    <PermissionProtectedAction action="create" module="IpdPrescription">
+                    <PermissionProtectedAction action="create" module="Prescription">
                         {prescriptions.length < 1 &&
                             (<Button size='sm' onClick={() => setForm(true)}>
                                 <Plus /> Add Prescription
@@ -92,7 +92,7 @@ const IpdPrescription = () => {
                             </TableBody>
                         </Table>
 
-                        <EmptyList length={prescriptions.length} message="No medications found" />
+                        <EmptyList length={prescriptions.length} message="No Prescriptions Found" />
                     </div>
                 </section>
             </section>

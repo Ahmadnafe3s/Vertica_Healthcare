@@ -74,7 +74,7 @@ const TreatmentsList = () => {
               {OPD_LIST?.data.map((opd, i) => {
                 return <TableRow key={i}>
                   <TableCell>
-                    <Link className="text-blue-500 hover:text-blue-400 font-semibold" to={{ pathname: `/admin/OPD/patient/${opd.patientId}/${opd.id}` }}>{opd.id}</Link>
+                    <Link className="text-blue-500 hover:text-blue-400 font-semibold" to={{ pathname: `../../${opd.id}` }}>{opd.id}</Link>
                   </TableCell>
                   <TableCell>{opd.appointment.appointment_date}</TableCell>
                   <TableCell>{opd.doctor.name}</TableCell>

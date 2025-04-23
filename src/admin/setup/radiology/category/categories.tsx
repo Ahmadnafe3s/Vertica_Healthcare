@@ -1,7 +1,8 @@
 import AlertModel from "@/components/alertModel"
 import EmptyList from "@/components/emptyList"
 import PermissionProtectedAction from "@/components/permission-protected-actions"
-import PermissionTableActions from "@/components/permission-table-actions"
+import ProtectedTable from "@/components/protected-table"
+import TableActions from "@/components/table-actions"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -83,7 +84,7 @@ const RadioCategories = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Categories</h1>
-                <PermissionProtectedAction action="create" module="radiology_category">
+                <PermissionProtectedAction action="create" module="Radiology Category">
                     <Button size='sm' onClick={() => { setCategoryFrom(true) }}>
                         <Plus /> Add Category
                     </Button>
@@ -92,31 +93,33 @@ const RadioCategories = () => {
 
             <Separator />
 
-            <Table className="border rounded-lg dark:border-gray-800">
-                <TableHeader className="bg-zinc-100 dark:bg-gray-800">
-                    <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Action</TableHead>
-                    </TableRow>
-                </TableHeader>
+            <ProtectedTable module='Radiology Category' renderTable={(show, canUpdate, canDelete) => (
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>ID</TableHead>
+                            <TableHead>Name</TableHead>
+                            {show && <TableHead>Action</TableHead>}
+                        </TableRow>
+                    </TableHeader>
 
-                <TableBody>
-                    {categories.map((category) => {
-                        return <TableRow key={category.id}>
-                            <TableCell>{category.id}</TableCell>
-                            <TableCell>{category.name}</TableCell>
-                            <TableCell className='flex space-x-2'>
-                                <PermissionTableActions
-                                    module="radiology_category"
+                    <TableBody>
+                        {categories.map((category) => {
+                            return <TableRow key={category.id}>
+                                <TableCell>{category.id}</TableCell>
+                                <TableCell>{category.name}</TableCell>
+                                <TableActions
+                                    show={show}
+                                    canUpdate={canUpdate}
+                                    canDelete={canDelete}
                                     onDelete={() => onDelete(category.id)}
                                     exclude={{ edit: true }}
                                 />
-                            </TableCell>
-                        </TableRow>
-                    })}
-                </TableBody>
-            </Table>
+                            </TableRow>
+                        })}
+                    </TableBody>
+                </Table>
+            )} />
 
             <EmptyList length={categories.length} message="No categories found" />
 

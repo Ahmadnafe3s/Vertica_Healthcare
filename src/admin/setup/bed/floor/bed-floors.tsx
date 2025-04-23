@@ -1,12 +1,13 @@
 import AlertModel from '@/components/alertModel'
 import EmptyList from '@/components/emptyList'
 import PermissionProtectedAction from '@/components/permission-protected-actions'
-import PermissionTableActions from '@/components/permission-table-actions'
+import ProtectedTable from '@/components/protected-table'
+import TableActions from '@/components/table-actions'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Plus } from 'lucide-react'
-import { useEffect } from 'react'
+import { Fragment, useEffect } from 'react'
 import { z } from 'zod'
 import CreateBedModal, { FormField } from '../../../../components/form-modals/form-modal'
 import useFloorHandlers from './floor-handlers'
@@ -53,7 +54,7 @@ const SetupBedFloors = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Floors</h1>
-        <PermissionProtectedAction action='create' module='bed_floor'>
+        <PermissionProtectedAction action='create' module='Bed Floor'>
           <Button size='sm' onClick={() => { setForm(true) }}>
             <Plus /> Add Floor
           </Button>
@@ -62,30 +63,34 @@ const SetupBedFloors = () => {
 
       <Separator />
 
-      <Table className="rounded-lg border dark:border-gray-800">
-        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
-          <TableRow>
-            {['Name', 'Description', 'Action'].map((item, index) => (
-              <TableHead key={index}>{item}</TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {floors.map((floor) => {
-            return <TableRow key={floor.id}>
-              <TableCell>{floor.name}</TableCell>
-              <TableCell>{floor.description}</TableCell>
-              <TableCell className='flex space-x-2'>
-                <PermissionTableActions
-                  module='bed_floor'
+      <ProtectedTable module='Bed Floor' renderTable={(show, canUpdate, canDelete) => (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {['Name', 'Description', 'Action'].map((item, index) => (
+                <Fragment key={index}>
+                  {item === 'Action' ? (show && <TableHead>{item}</TableHead>) : <TableHead>{item}</TableHead>}
+                </Fragment>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {floors.map((floor) => {
+              return <TableRow key={floor.id}>
+                <TableCell>{floor.name}</TableCell>
+                <TableCell>{floor.description}</TableCell>
+                <TableActions
+                  show={show}
+                  canUpdate={canUpdate}
+                  canDelete={canDelete}
                   onDelete={() => onDelete(floor.id)}
                   exclude={{ edit: true }}
                 />
-              </TableCell>
-            </TableRow>
-          })}
-        </TableBody>
-      </Table>
+              </TableRow>
+            })}
+          </TableBody>
+        </Table>
+      )} />
 
       {/* Models */}
 

@@ -1,4 +1,4 @@
-interface AppointmentData {
+export interface AppointmentData {
     id: string,
     doctorId: number,
     patientId: number,
@@ -22,7 +22,9 @@ interface AppointmentData {
     patient: {
         name: string,
         phone: string,
-        gender: string
+        gender: string,
+        address: string,
+        email: string,
     }
 }
 

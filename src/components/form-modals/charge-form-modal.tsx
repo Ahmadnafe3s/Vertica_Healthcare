@@ -126,7 +126,7 @@ const ChargeFormModel = ({ Submit, module, isPending, chargeDetails, ...props }:
 
 
     // returning sum of amount and tpa and trigger useEffect (for specific array element (fields))
-    const chargeAmounts = (watch(`charge.${INDEX}.standard_charge`) + watch(`charge.${INDEX}.tpa`));
+    const chargeAmounts = (watch(`charge.${INDEX}.standard_charge`));
 
 
     // This hook i have used to calculate and bind amount to form
@@ -227,7 +227,7 @@ const ChargeFormModel = ({ Submit, module, isPending, chargeDetails, ...props }:
 
                                 <div className="w-full flex flex-col gap-y-2">
                                     <Label>Standard Charge {currencySymbol()}</Label>
-                                    <Input type='number' {...register(`charge.${index}.standard_charge`)} /> {/*assigning values automatically */}
+                                    <Input type='number' {...register(`charge.${index}.standard_charge`)} disabled /> {/*assigning values automatically */}
                                     {errors?.charge?.[index]?.standard_charge && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.standard_charge.message}</p>}
                                 </div>
 
@@ -236,7 +236,7 @@ const ChargeFormModel = ({ Submit, module, isPending, chargeDetails, ...props }:
 
                                 <div className="w-full flex flex-col gap-y-2">
                                     <Label>TPA Charge {currencySymbol()}</Label>
-                                    <Input type='number' {...register(`charge.${index}.tpa`)} />
+                                    <Input type='number' {...register(`charge.${index}.tpa`)} disabled />
                                     {errors?.charge?.[index]?.tpa && <p className='text-sm text-red-500'>{errors?.charge?.[index]?.tpa.message}</p>}
                                 </div>
 

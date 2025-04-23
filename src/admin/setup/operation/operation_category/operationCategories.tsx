@@ -1,18 +1,19 @@
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, } from "lucide-react"
-import { useEffect, useState } from "react"
-import toast from "react-hot-toast"
-import AddOperationCategoryForm, { AddOperationCategoryFormSchema } from "./addOperationCategoryForm"
-import { z } from "zod"
-import { createOperationCategory, deleteOperationCategory, getOperationCategories, getOperationCategoryDetails, updateOperationCategory } from "../operationsAPIhandlers"
-import { operationCategoryType } from "@/types/setupTypes/setupOpeartion"
 import AlertModel from "@/components/alertModel"
 import LoaderModel from "@/components/loader"
 import PermissionProtectedAction from "@/components/permission-protected-actions"
-import PermissionTableActions from "@/components/permission-table-actions"
+import ProtectedTable from "@/components/protected-table"
+import TableActions from "@/components/table-actions"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useConfirmation } from "@/hooks/useConfirmation"
+import { operationCategoryType } from "@/types/setupTypes/setupOpeartion"
+import { Plus, } from "lucide-react"
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import { z } from "zod"
+import { createOperationCategory, deleteOperationCategory, getOperationCategories, getOperationCategoryDetails, updateOperationCategory } from "../operationsAPIhandlers"
+import AddOperationCategoryForm, { AddOperationCategoryFormSchema } from "./addOperationCategoryForm"
 
 const OperationCategories = () => {
 
@@ -101,7 +102,7 @@ const OperationCategories = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Category List</h1>
-        <PermissionProtectedAction action='create' module='operation_category'>
+        <PermissionProtectedAction action='create' module='Operation Category'>
           <Button size='sm' onClick={() => { setAddOpCatFormVisible(true) }}>
             <Plus /> Add Category
           </Button>
@@ -110,41 +111,33 @@ const OperationCategories = () => {
 
       <Separator />
 
-      {/* <div className="sm:w-48 space-y-1">
-               <p className="text-sm text-gray-700">Search</p>
-               <Input type="text" onChange={(e) => { onSearch(e.target.value) }} placeholder="name , category" />
-           </div> */}
-
-      {/* <Separator /> */}
-
-      <Table className="rounded-lg border dark:border-gray-800">
-        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {operationCategories.map((category) => {
-            return <TableRow key={category.id}>
-              <TableCell>{category.name}</TableCell>
-              <TableCell className='flex space-x-2'>
-
-                {/* it has both edit and delete */}
-                <PermissionTableActions
-                  module="operation_category"
+      <ProtectedTable module='Operation Category' renderTable={(show, canUpdate, canDelete) => (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              {show && <TableHead>Action</TableHead>}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {operationCategories.map((category) => {
+              return <TableRow key={category.id}>
+                <TableCell>{category.name}</TableCell>
+                <TableActions
+                  show={show}
+                  canUpdate={canUpdate}
+                  canDelete={canDelete}
                   onEdit={async () => {
                     await fetchOperationCategoryDetails(category.id)
                     setAddOpCatFormVisible(true)
                   }}
                   onDelete={() => onDelete(category.id)}
                 />
-
-              </TableCell>
-            </TableRow>
-          })}
-        </TableBody>
-      </Table>
+              </TableRow>
+            })}
+          </TableBody>
+        </Table>
+      )} />
 
       {/* Model */}
 

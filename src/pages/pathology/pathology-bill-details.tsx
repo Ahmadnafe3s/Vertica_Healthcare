@@ -196,7 +196,7 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                         <TableCell className="flex">
 
                                             {item.PathSampleCollection?.id || view?.[i]?.collection ?
-                                                <PermissionProtectedAction action="view" module="sample_collection">
+                                                <PermissionProtectedAction action="view" module="Sample Collection">
                                                     <CustomTooltip message="View Collector">
                                                         <Eye className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
                                                             onClick={async () => {
@@ -207,7 +207,7 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                                     </CustomTooltip>
                                                 </PermissionProtectedAction>
                                                 :
-                                                <PermissionProtectedAction action="create" module="sample_collection">
+                                                <PermissionProtectedAction action="create" module="Sample Collection">
                                                     <CustomTooltip message="Add User">
                                                         <UserRoundPlus className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
                                                             onClick={() => {
@@ -226,7 +226,7 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                         <TableCell>
                                             {item.PathologyReport?.id || view?.[i]?.report ?
 
-                                                <PermissionProtectedAction action='view' module='pathology_report'>
+                                                <PermissionProtectedAction action='view' module='Pathology Report'>
                                                     <CustomTooltip message="View Collector">
                                                         <Eye className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
                                                             onClick={async () => {
@@ -239,7 +239,7 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
 
                                                 :
 
-                                                <PermissionProtectedAction action='create' module='pathology_report'>
+                                                <PermissionProtectedAction action='create' module='Pathology Report'>
                                                     < CustomTooltip message="Add Report">
                                                         <Plus className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
                                                             // testId for getting testName parameters && itemId for REREFERENCE

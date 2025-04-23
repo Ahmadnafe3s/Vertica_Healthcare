@@ -14,7 +14,7 @@ const ChargesLayout = () => {
 
                         {/* we provide relative path like this */}
 
-                        <PermissionProtectedAction action='view' module='setup_Hospital_Charges'>
+                        <PermissionProtectedAction action='view' module='Setup Hospital Charges'>
                             <Link to={``} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -22,7 +22,7 @@ const ChargesLayout = () => {
                             </Link>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action="view" module="charge_category">
+                        <PermissionProtectedAction action="view" module="Charge Category">
                             <Link to={`category`} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -30,7 +30,7 @@ const ChargesLayout = () => {
                             </Link>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action='view' module='charge_type'>
+                        <PermissionProtectedAction action='view' module='Charge Type'>
                             <Link to={`types`} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -38,7 +38,7 @@ const ChargesLayout = () => {
                             </Link>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action='view' module='charge_tax'>
+                        <PermissionProtectedAction action='view' module='Charge Tax'>
                             <Link to={`tax`} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -46,7 +46,7 @@ const ChargesLayout = () => {
                             </Link>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action='view' module='charge_unit'>
+                        <PermissionProtectedAction action='view' module='Charge Unit'>
                             <Link to={`units`} className={buttonVariants({
                                 variant: 'outline'
                             })}>

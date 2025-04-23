@@ -1,7 +1,8 @@
 import AlertModel from "@/components/alertModel"
 import LoaderModel from "@/components/loader"
 import PermissionProtectedAction from "@/components/permission-protected-actions"
-import PermissionTableActions from "@/components/permission-table-actions"
+import ProtectedTable from "@/components/protected-table"
+import TableActions from "@/components/table-actions"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -94,7 +95,7 @@ const SetupVitals = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Vitals</h1>
-                <PermissionProtectedAction action='create' module='setupVital'>
+                <PermissionProtectedAction action='create' module='Setup Vital'>
                     <Button size='sm' onClick={() => setForm(true)}>
                         <Plus /> Add Vital
                     </Button>
@@ -104,37 +105,37 @@ const SetupVitals = () => {
             <Separator />
 
 
-            <Table className='border rounded-lg dark:border-gray-800'>
-                <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
-                    <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Reference Range</TableHead>
-                        <TableHead>Unit</TableHead>
-                        <TableHead>Action</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {vitals.map((vital) => (
+            <ProtectedTable module='Setup Vital' renderTable={(show, canUpdate, canDelete) => (
+                <Table>
+                    <TableHeader>
                         <TableRow>
-                            <TableCell>{vital.name}</TableCell>
-                            <TableCell>{vital.from} {'- ' + vital.to}</TableCell>
-                            <TableCell>{vital.unit}</TableCell>
-                            <TableCell className='flex space-x-2'>
-
-                                <PermissionTableActions
-                                    module='setupVital'
+                            <TableHead>Name</TableHead>
+                            <TableHead>Reference Range</TableHead>
+                            <TableHead>Unit</TableHead>
+                            {show && <TableHead>Action</TableHead>}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {vitals.map((vital) => (
+                            <TableRow>
+                                <TableCell>{vital.name}</TableCell>
+                                <TableCell>{vital.from} {'- ' + vital.to}</TableCell>
+                                <TableCell>{vital.unit}</TableCell>
+                                <TableActions
+                                    show={show}
+                                    canUpdate={canUpdate}
+                                    canDelete={canDelete}
                                     onDelete={() => onDelete(vital.id)}
                                     onEdit={async () => {
                                         await fetchVitalDetails(vital.id)
                                         setForm(true)
                                     }}
                                 />
-
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            )} />
 
 
             {form && <SetupVitalForm

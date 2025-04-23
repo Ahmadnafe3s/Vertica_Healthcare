@@ -1,6 +1,7 @@
 import AlertModel from '@/components/alertModel'
 import PermissionProtectedAction from '@/components/permission-protected-actions'
-import PermissionTableActions from '@/components/permission-table-actions'
+import ProtectedTable from '@/components/protected-table'
+import TableActions from '@/components/table-actions'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
@@ -21,7 +22,7 @@ export interface Charge_Type_Interface {
   opd: boolean,
   ipd: boolean,
   appointment: boolean,
-  pathylogy: boolean,
+  pathology: boolean,
   radiology: boolean,
   blood_bank: boolean,
   ambulance: boolean,
@@ -104,7 +105,7 @@ const ChargeTypes = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Charge Types</h1>
-        <PermissionProtectedAction action='create' module='charge_type'>
+        <PermissionProtectedAction action='create' module='Charge Type'>
           <Button size='sm' onClick={() => { setChargeTypeFormVisible(true) }}>
             <Plus /> Add Charge Type
           </Button>
@@ -113,42 +114,45 @@ const ChargeTypes = () => {
 
       <Separator />
 
-      <Table className="rounded-lg border dark:border-gray-800">
-        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
-          <TableRow>
-            <TableHead >Charge Types</TableHead>
-            <TableHead >Appointment</TableHead>
-            <TableHead >OPD</TableHead>
-            <TableHead >IPD</TableHead>
-            <TableHead >Pathylogy</TableHead>
-            <TableHead >Radiology</TableHead>
-            <TableHead >Blood Bank</TableHead>
-            <TableHead >Ambulance</TableHead>
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {chargeTypesList.map((type) => {
-            return <TableRow key={type.id}>
-              <TableCell>{type.charge_type}</TableCell>
-              <TableCell><Checkbox checked={type.appointment} onCheckedChange={(value) => { updateModule(type.id, { appointment: value }) }} /></TableCell>
-              <TableCell><Checkbox checked={type.opd} onCheckedChange={(value) => { updateModule(type.id, { opd: value }) }} /></TableCell>
-              <TableCell><Checkbox checked={type.ipd} onCheckedChange={(value) => { updateModule(type.id, { ipd: value }) }} /></TableCell>
-              <TableCell><Checkbox checked={type.pathylogy} onCheckedChange={(value) => { updateModule(type.id, { pathylogy: value }) }} /></TableCell>
-              <TableCell><Checkbox checked={type.radiology} onCheckedChange={(value) => { updateModule(type.id, { radiology: value }) }} /></TableCell>
-              <TableCell><Checkbox checked={type.blood_bank} onCheckedChange={(value) => { updateModule(type.id, { blood_bank: value }) }} /></TableCell>
-              <TableCell><Checkbox checked={type.ambulance} onCheckedChange={(value) => { updateModule(type.id, { ambulance: value }) }} /></TableCell>
-              <TableCell className='flex space-x-2'>
-                <PermissionTableActions
-                  module='charge_type'
+      <ProtectedTable module='Charge Type' renderTable={(show, canUpdate, canDelete) => (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead >Charge Types</TableHead>
+              <TableHead >Appointment</TableHead>
+              <TableHead >OPD</TableHead>
+              <TableHead >IPD</TableHead>
+              <TableHead >Pathylogy</TableHead>
+              <TableHead >Radiology</TableHead>
+              <TableHead >Blood Bank</TableHead>
+              <TableHead >Ambulance</TableHead>
+              {show && <TableHead>Action</TableHead>}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {chargeTypesList.map((type) => {
+              return <TableRow key={type.id}>
+                <TableCell>{type.charge_type}</TableCell>
+                <TableCell><Checkbox checked={type.appointment} onCheckedChange={(value) => { updateModule(type.id, { appointment: value }) }} /></TableCell>
+                <TableCell><Checkbox checked={type.opd} onCheckedChange={(value) => { updateModule(type.id, { opd: value }) }} /></TableCell>
+                <TableCell><Checkbox checked={type.ipd} onCheckedChange={(value) => { updateModule(type.id, { ipd: value }) }} /></TableCell>
+                <TableCell><Checkbox checked={type.pathology} onCheckedChange={(value) => { updateModule(type.id, { pathology: value }) }} /></TableCell>
+                <TableCell><Checkbox checked={type.radiology} onCheckedChange={(value) => { updateModule(type.id, { radiology: value }) }} /></TableCell>
+                <TableCell><Checkbox checked={type.blood_bank} onCheckedChange={(value) => { updateModule(type.id, { blood_bank: value }) }} /></TableCell>
+                <TableCell><Checkbox checked={type.ambulance} onCheckedChange={(value) => { updateModule(type.id, { ambulance: value }) }} /></TableCell>
+                {/* has both edit and delete */}
+                <TableActions
+                  show={show}
+                  canUpdate={canUpdate}
+                  canDelete={canDelete}
                   onDelete={() => onDelete(type.id)}
                   exclude={{ edit: true }}
                 />
-              </TableCell>
-            </TableRow>
-          })}
-        </TableBody>
-      </Table>
+              </TableRow>
+            })}
+          </TableBody>
+        </Table>
+      )} />
 
 
 

@@ -3,15 +3,17 @@ import CustomPagination from '@/components/customPagination'
 import EmptyList from '@/components/emptyList'
 import LoaderModel from '@/components/loader'
 import PermissionProtectedAction from '@/components/permission-protected-actions'
-import PermissionTableActions from '@/components/permission-table-actions'
+import ProtectedTable from '@/components/protected-table'
+import TableActions from '@/components/table-actions'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { appointmentFormSchema } from '@/formSchemas/AppointmentFormSchema'
+import { page_limit } from '@/globalData'
 import { currencySymbol } from '@/helpers/currencySymbol'
 import { useConfirmation } from '@/hooks/useConfirmation'
 import { cn, currencyFormat } from '@/lib/utils'
-import { Appointment, AppointmentDetails } from '@/types/appointment/appointment'
+import { Appointment, AppointmentData, AppointmentDetails } from '@/types/appointment/appointment'
 import { Ban, ListMinus, Plus } from 'lucide-react'
 import { parseAsInteger, useQueryState } from 'nuqs'
 import { useEffect, useState } from 'react'
@@ -19,11 +21,11 @@ import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
 import { z } from 'zod'
+import AddAppointment from './AddAppointment'
 import { createAppointment, deleteAppointment, fetchAppointments, getAppointmentDetails } from './appointmentAPIhandler'
 import AppointmentDetailsModel from './appointmentDetailsModel'
-import AppointmentListPDF from './generatePDF/AppointmnetListPDF'
-import AppointmentPDF from './generatePDF/AppointmnetPDF'
-import AddAppointment from './AddAppointment'
+import AppointmentListPDF from './print/AppointmnetListPDF'
+import PrintAppointment from './print/print-appointment'
 
 
 
@@ -46,14 +48,14 @@ const AdminAppointment = () => {
     // API States
     const [Appointments, setAppointments] = useState<Appointment>({ data: [], total_pages: 0 })
     const [AppointmentDetails, setAppointmentDetails] = useState<AppointmentDetails | undefined>(undefined)
-
+    const [current, setCurrent] = useState<AppointmentData | null>(null)
 
     //fetching appointments list
     const getAppointments = async () => {
         try {
             const data = await fetchAppointments({
                 page,
-                limit: 10,
+                limit: page_limit,
                 search: search! // if search will have value then data will get accordingly
             })
             setAppointments(data)
@@ -127,21 +129,21 @@ const AdminAppointment = () => {
                     <h1 className='font-semibold tracking-tight'>Appointments</h1>
                     <div className='flex gap-x-2 overflow-x-auto'>
 
-                        <PermissionProtectedAction action='create' module='appointment'>
+                        <PermissionProtectedAction action='create' module='Appointment'>
                             <Button type='button' size={'sm'}
                                 onClick={() => { setModel((prev) => ({ ...prev, addAppointmentForm: true })) }} >
                                 <Plus /> Appointment
                             </Button>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action='view' module='appointment'>
+                        <PermissionProtectedAction action='view' module='Appointment'>
                             <Link to={'queue'} className={buttonVariants({
                                 variant: 'default', size: 'sm', className: 'flex gap-x-1'
                             })}>
                                 <ListMinus /> Queue </Link>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action='view' module='appointment'>
+                        <PermissionProtectedAction action='view' module='Appointment'>
                             <Link to={'cancelled'} className={buttonVariants({
                                 variant: 'destructive', size: 'sm', className: 'flex gap-x-1'
                             })}><Ban /> Cancelled </Link>
@@ -165,68 +167,69 @@ const AdminAppointment = () => {
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-y-5 min-h-[75vh] mb-16">
+                <div className="flex flex-col gap-y-5 min-h-[75vh] mb-16 mt-5">
                     <div className="flex-1">
-                        <Table className="border rounded-lg my-10 dark:border-gray-800">
-                            <TableHeader className='bg-slate-100 dark:bg-gray-900'>
-                                <TableRow>
-                                    <TableHead>Appointment No</TableHead>
-                                    <TableHead>Patient Name</TableHead>
-                                    <TableHead>Appointment Date</TableHead>
-                                    <TableHead>Shift</TableHead>
-                                    <TableHead>Phone</TableHead>
-                                    <TableHead>Gender</TableHead>
-                                    <TableHead>Doctor</TableHead>
-                                    <TableHead>Priority</TableHead>
-                                    <TableHead>Alternative Address</TableHead>
-                                    <TableHead>Fees {currencySymbol()}</TableHead>
-                                    <TableHead>Discount%</TableHead>
-                                    <TableHead>Net Amount {currencySymbol()}</TableHead>
-                                    <TableHead>Action</TableHead>
-                                    <TableHead>Status</TableHead>
-                                </TableRow>
-                            </TableHeader>
-
-
-                            <TableBody>
-                                {Appointments.data.map((appointment) => {
-                                    return <TableRow key={appointment.id}>
-                                        <TableCell className="font-semibold cursor-pointer text-blue-500 hover:text-blue-400" onClick={async () => {
-                                            await fetchAppoinmentDetails(appointment.id)
-                                            setModel({ ...model, appointmentDetails: true })
-                                        }}>
-                                            {appointment.id}
-                                        </TableCell>
-                                        <TableCell className='whitespace-nowrap'>{appointment.patient.name}</TableCell>
-                                        <TableCell>{appointment.appointment_date}</TableCell>
-                                        <TableCell>{appointment.shift}</TableCell>
-                                        <TableCell>{appointment.patient.phone}</TableCell>
-                                        <TableCell>{appointment.patient.gender}</TableCell>
-                                        <TableCell>{appointment.doctor.name}</TableCell>
-                                        <TableCell>{appointment.appointment_priority}</TableCell>
-                                        <TableCell>{appointment.alternative_address}</TableCell>
-                                        <TableCell>{currencyFormat(+appointment.fees)}</TableCell>
-                                        <TableCell>{appointment.discount}%</TableCell>
-                                        <TableCell>{currencyFormat(appointment.net_amount)}</TableCell>
-                                        <TableCell >
-                                            <div className='flex items-center space-x-2'>
-
-                                                <PermissionTableActions
-                                                    module='appointment'
-                                                    onDelete={() => onDelete(appointment.id)}
-                                                    exclude={{ edit: true }}
-                                                    include={<AppointmentPDF appointmentId={appointment.id} onPending={(v) => setModel({ ...model, loader: v })} />}
-                                                />
-
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <span className={cn('text-white py-1 px-3 block rounded-md group-hover:hidden', appointment.status === 'Approved' ? 'bg-green-500' : appointment.status === 'Pending' ? 'bg-yellow-500' : 'bg-red-500')}>{appointment.status}</span>
-                                        </TableCell>
+                        <ProtectedTable module='Appointment' renderTable={(show, canUpdate, canDelete) => (
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Appointment No</TableHead>
+                                        <TableHead>Patient Name</TableHead>
+                                        <TableHead>Appointment Date</TableHead>
+                                        <TableHead>Shift</TableHead>
+                                        <TableHead>Phone</TableHead>
+                                        <TableHead>Gender</TableHead>
+                                        <TableHead>Doctor</TableHead>
+                                        <TableHead>Priority</TableHead>
+                                        <TableHead>Alternative Address</TableHead>
+                                        <TableHead>Fees {currencySymbol()}</TableHead>
+                                        <TableHead>Discount%</TableHead>
+                                        <TableHead>Net Amount {currencySymbol()}</TableHead>
+                                        <TableHead>Action</TableHead>
+                                        <TableHead>Status</TableHead>
                                     </TableRow>
-                                })}
-                            </TableBody>
-                        </Table>
+                                </TableHeader>
+
+
+                                <TableBody>
+                                    {Appointments.data.map((appointment) => {
+                                        return <TableRow key={appointment.id}>
+                                            <TableCell className="font-semibold cursor-pointer text-blue-500 hover:text-blue-400" onClick={async () => {
+                                                await fetchAppoinmentDetails(appointment.id)
+                                                setModel({ ...model, appointmentDetails: true })
+                                            }}>
+                                                {appointment.id}
+                                            </TableCell>
+                                            <TableCell className='whitespace-nowrap'>{appointment.patient.name}</TableCell>
+                                            <TableCell>{appointment.appointment_date}</TableCell>
+                                            <TableCell>{appointment.shift}</TableCell>
+                                            <TableCell>{appointment.patient.phone}</TableCell>
+                                            <TableCell>{appointment.patient.gender}</TableCell>
+                                            <TableCell>{appointment.doctor.name}</TableCell>
+                                            <TableCell>{appointment.appointment_priority}</TableCell>
+                                            <TableCell>{appointment.alternative_address}</TableCell>
+                                            <TableCell>{currencyFormat(+appointment.fees)}</TableCell>
+                                            <TableCell>{appointment.discount}%</TableCell>
+                                            <TableCell>{currencyFormat(appointment.net_amount)}</TableCell>
+                                            <TableActions
+                                                show={show}
+                                                canUpdate={canUpdate}
+                                                canDelete={canDelete}
+                                                onDelete={() => onDelete(appointment.id)}
+                                                exclude={{ edit: true }}
+                                                incluePrint={{
+                                                    include: true,
+                                                    print: () => setCurrent(appointment)
+                                                }}
+                                            />
+                                            <TableCell>
+                                                <span className={cn('text-white py-1 px-3 block rounded-md group-hover:hidden', appointment.status === 'Approved' ? 'bg-green-500' : appointment.status === 'Pending' ? 'bg-yellow-500' : 'bg-red-500')}>{appointment.status}</span>
+                                            </TableCell>
+                                        </TableRow>
+                                    })}
+                                </TableBody>
+                            </Table>
+                        )} />
 
                         {/* if no data will be recive */}
                         <EmptyList length={Appointments.data.length} message='No data found' />
@@ -254,15 +257,7 @@ const AdminAppointment = () => {
                 model.addAppointmentForm && <AddAppointment
                     Submit={handleSubmit}
                     isPending={isPending}
-                    onClick={() => {
-                        getAppointments();
-                        setModel((reset) => {
-                            return {
-                                ...reset,
-                                addAppointmentForm: false
-                            }
-                        })
-                    }}
+                    onClick={() => { getAppointments(); setModel({ ...model, addAppointmentForm: false }) }}
                 />
             }
 
@@ -287,6 +282,11 @@ const AdminAppointment = () => {
             {model.loader && (
                 <LoaderModel />
             )}
+
+            {/* Print Appointment */}
+
+            {current && <PrintAppointment Info={current!} afterPrint={() => setCurrent(null)} />}
+
         </>
 
     )

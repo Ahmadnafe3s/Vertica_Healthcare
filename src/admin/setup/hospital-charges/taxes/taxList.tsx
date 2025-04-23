@@ -1,17 +1,18 @@
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, } from "lucide-react"
-import AddTaxformModel, { taxFormSchema } from "./addTaxformModel"
-import toast from "react-hot-toast"
-import { createTax, deleteTax, getTaxDetails, getTaxesList, updateTax } from "../chargesAPIhandlers"
-import { z } from "zod"
-import { useEffect, useState } from "react"
 import AlertModel from "@/components/alertModel"
 import LoaderModel from "@/components/loader"
 import PermissionProtectedAction from "@/components/permission-protected-actions"
-import PermissionTableActions from "@/components/permission-table-actions"
+import ProtectedTable from "@/components/protected-table"
+import TableActions from "@/components/table-actions"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useConfirmation } from "@/hooks/useConfirmation"
+import { Plus, } from "lucide-react"
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import { z } from "zod"
+import { createTax, deleteTax, getTaxDetails, getTaxesList, updateTax } from "../chargesAPIhandlers"
+import AddTaxformModel, { taxFormSchema } from "./addTaxformModel"
 
 export interface TaxType {
   id: number,
@@ -107,7 +108,7 @@ const TaxList = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg  font-semibold">Taxes List</h1>
-        <PermissionProtectedAction action='create' module='charge_tax'>
+        <PermissionProtectedAction action='create' module='Charge Tax'>
           <Button size='sm' onClick={() => setAddTaxFormVisible(true)}>
             <Plus /> Add Tax
           </Button>
@@ -116,37 +117,36 @@ const TaxList = () => {
 
       <Separator />
 
-      <Table className="rounded-lg border dark:border-gray-800">
-        <TableHeader className="bg-zinc-100 dark:bg-gray-800">
-          <TableRow>
-            <TableHead >Name</TableHead>
-            <TableHead >Percentage %</TableHead>
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {taxestList.map((tax) => {
-            return <TableRow key={tax.id}>
-              <TableCell>{tax.name}</TableCell>
-              <TableCell>{tax.percentage}%</TableCell>
-              <TableCell className='flex space-x-2'>
-
-                <PermissionTableActions
-                  module="charge_tax"
+      <ProtectedTable module='Charge Tax' renderTable={(show, canUpdate, canDelete) => (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead >Name</TableHead>
+              <TableHead >Percentage %</TableHead>
+              {show && <TableHead>Action</TableHead>}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {taxestList.map((tax) => {
+              return <TableRow key={tax.id}>
+                <TableCell>{tax.name}</TableCell>
+                <TableCell>{tax.percentage}%</TableCell>
+                {/* has both edit and delete */}
+                <TableActions
+                  show={show}
+                  canUpdate={canUpdate}
+                  canDelete={canDelete}
                   onEdit={async () => {
                     await fetchTaxdetails(tax.id)
                     setAddTaxFormVisible(true)
                   }}
                   onDelete={() => onDelete(tax.id)}
-                  editTooltip="Modify Tax"
-                  deleteTooltip="Delete Tax"
                 />
-
-              </TableCell>
-            </TableRow>
-          })}
-        </TableBody>
-      </Table>
+              </TableRow>
+            })}
+          </TableBody>
+        </Table>
+      )} />
 
 
       {/* Models */}

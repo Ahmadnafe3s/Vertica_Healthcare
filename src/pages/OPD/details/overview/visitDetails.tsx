@@ -23,8 +23,6 @@ const VisitDetails = () => {
         try {
             const data = await getOPD_Details(opdId!)
             set_OPD_DETAILS(data)
-            console.log(data);
-
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -232,7 +230,7 @@ const VisitDetails = () => {
 
                 {/* Medication */}
 
-                <PermissionProtectedAction action="view" module="medication">
+                <PermissionProtectedAction action="view" module="Medication">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Medication</h1>
 
                     <Table className="rounded-lg border dark:border-gray-800 w-full">
@@ -270,7 +268,7 @@ const VisitDetails = () => {
 
                 {/* Operation */}
 
-                <PermissionProtectedAction action="view" module="operation">
+                <PermissionProtectedAction action="view" module="Operation">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Operation</h1>
 
                     <Table className="rounded-lg border dark:border-gray-800">
@@ -305,7 +303,7 @@ const VisitDetails = () => {
 
                 {/* Charges */}
 
-                <PermissionProtectedAction action="view" module="charges">
+                <PermissionProtectedAction action="view" module="Charges">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Charges</h1>
 
                     <Table className="rounded-lg border dark:border-gray-800">
@@ -340,7 +338,7 @@ const VisitDetails = () => {
 
                 {/* Payments */}
 
-                <PermissionProtectedAction action="view" module="payments">
+                <PermissionProtectedAction action="view" module="Payments">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Payments</h1>
 
                     <Table className="rounded-lg border dark:border-gray-800">

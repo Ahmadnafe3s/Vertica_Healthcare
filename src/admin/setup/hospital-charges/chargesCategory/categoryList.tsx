@@ -1,19 +1,19 @@
+import AlertModel from '@/components/alertModel'
+import EmptyList from '@/components/emptyList'
+import LoaderModel from '@/components/loader'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import ProtectedTable from '@/components/protected-table'
+import TableActions from '@/components/table-actions'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Pencil, Plus, Trash } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-import AddChargeCategoryFormModel, { ChargeCategoryFormSchema } from './addChargeCategoryFormModel'
+import { useConfirmation } from '@/hooks/useConfirmation'
+import { Plus } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
 import { createChargeCategory, deleteChargeCategory, getChargeCategories, getChargeCategoryDetails, updateChargeCategory } from '../chargesAPIhandlers'
-import AlertModel from '@/components/alertModel'
-import CustomTooltip from '@/components/customTooltip'
-import LoaderModel from '@/components/loader'
-import EmptyList from '@/components/emptyList'
-import PermissionProtectedAction from '@/components/permission-protected-actions'
-import PermissionTableActions from '@/components/permission-table-actions'
-import { useConfirmation } from '@/hooks/useConfirmation'
+import AddChargeCategoryFormModel, { ChargeCategoryFormSchema } from './addChargeCategoryFormModel'
 
 
 export interface categoryType {
@@ -30,21 +30,13 @@ export interface categoryType {
 
 const CategoryList = () => {
 
-    // credentials
-    const itemID = useRef<number>(0)
-
     // my custom hook
     const { confirm, confirmationProps } = useConfirmation()
-
     // Loaders
     const [isPending, setPending] = useState<boolean>(false)
-
-
     // model states
     const [isCategroyFormVisible, setCategroyFormVisible] = useState<boolean>(false)
-    const [isAlert, setAlert] = useState<boolean>(false)
     const [loaderModel, setLoaderModel] = useState<boolean>(false)
-
     // API States
     const [categoryDetails, setCategoryeDetails] = useState<categoryType | undefined>(undefined)
     const [chargeCategories, setchargeCategories] = useState<categoryType[]>([])
@@ -56,7 +48,8 @@ const CategoryList = () => {
             setPending(true)
             let data;
             if (categoryDetails) {
-                data = await updateChargeCategory(categoryDetails.id, formData)
+                (data = await updateChargeCategory(categoryDetails.id, formData),
+                    setCategoryeDetails(undefined))
             } else {
                 data = await createChargeCategory(formData)
             }
@@ -121,7 +114,7 @@ const CategoryList = () => {
             <div className="flex justify-between">
                 <h1 className="text-lg  font-semibold">Charge Category</h1>
 
-                <PermissionProtectedAction action="create" module="charge_category">
+                <PermissionProtectedAction action="create" module="Charge Category">
                     <Button size='sm' onClick={() => { setCategroyFormVisible(true) }}>
                         <Plus /> Add Categories
                     </Button>
@@ -130,36 +123,37 @@ const CategoryList = () => {
 
             <Separator />
 
-            <Table className="rounded-lg border dark:border-gray-800">
-                <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
-                    <TableRow>
-                        <TableHead >Name</TableHead>
-                        <TableHead >Charge Type</TableHead>
-                        <TableHead >Description</TableHead>
-                        <TableHead >Action</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {chargeCategories.map((category) => {
-                        return <TableRow key={category.id}>
-                            <TableCell>{category.category}</TableCell>
-                            <TableCell>{category.chargeType.charge_type}</TableCell>
-                            <TableCell>{category.description}</TableCell>
-                            <TableCell className='flex space-x-2'>
-                                {/* has actions */}
-                                <PermissionTableActions
-                                    module='charge_category'
+            <ProtectedTable module='Charge Category' renderTable={(show, canUpdate, canDelete) => (
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead >Name</TableHead>
+                            <TableHead >Charge Type</TableHead>
+                            <TableHead >Description</TableHead>
+                            <TableHead >Action</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {chargeCategories.map((category) => {
+                            return <TableRow key={category.id}>
+                                <TableCell>{category.category}</TableCell>
+                                <TableCell>{category.chargeType.charge_type}</TableCell>
+                                <TableCell>{category.description}</TableCell>
+                                <TableActions
+                                    show={show}
+                                    canUpdate={canUpdate}
+                                    canDelete={canDelete}
                                     onEdit={async () => {
                                         await fetchChargeCategoryDetails(category.id);
                                         setCategroyFormVisible(true)
                                     }}
                                     onDelete={() => onDelete(category.id)}
                                 />
-                            </TableCell>
-                        </TableRow>
-                    })}
-                </TableBody>
-            </Table>
+                            </TableRow>
+                        })}
+                    </TableBody>
+                </Table>
+            )} />
 
             <EmptyList length={chargeCategories.length} />
 

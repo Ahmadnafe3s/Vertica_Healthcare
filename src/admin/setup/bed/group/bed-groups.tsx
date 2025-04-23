@@ -2,7 +2,8 @@ import AlertModel from "@/components/alertModel";
 import EmptyList from "@/components/emptyList";
 import LoaderModel from "@/components/loader";
 import PermissionProtectedAction from "@/components/permission-protected-actions";
-import PermissionTableActions from "@/components/permission-table-actions";
+import ProtectedTable from "@/components/protected-table";
+import TableActions from "@/components/table-actions";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -14,10 +15,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus } from "lucide-react";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { z } from "zod";
-import useFloorHandlers from "../floor/floor-handlers";
 import CreateBedModal, { FormField } from "../../../../components/form-modals/form-modal";
+import useFloorHandlers from "../floor/floor-handlers";
 import useBedGroupHandlers from "./bed-group-handlers";
 
 export interface FloorType {
@@ -57,14 +58,9 @@ const SetupBedGroups = () => {
   return (
     <section className="flex flex-col pb-16 gap-y-5">
       <div className="flex justify-between">
-        <h1 className="text-lg font-semibold">Floors</h1>
-        <PermissionProtectedAction action="create" module="bed_floor">
-          <Button
-            size="sm"
-            onClick={() => {
-              setForm(true);
-            }}
-          >
+        <h1 className="text-lg font-semibold">Groups</h1>
+        <PermissionProtectedAction action="create" module="Bed Group">
+          <Button size="sm" onClick={() => { setForm(true) }} >
             <Plus /> Add Group
           </Button>
         </PermissionProtectedAction>
@@ -72,65 +68,73 @@ const SetupBedGroups = () => {
 
       <Separator />
 
-      <Table className="rounded-lg border dark:border-gray-800">
-        <TableHeader className="bg-zinc-100 dark:bg-gray-800">
-          <TableRow>
-            {["Name", "Floor", "Description", "Action"].map((item, index) => (
-              <TableHead key={index}>{item}</TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {bedGroups.map((group) => {
-            return (
-              <TableRow key={group.id}>
-                <TableCell>{group.name}</TableCell>
-                <TableCell>{group.floor.name}</TableCell>
-                <TableCell>{group.description}</TableCell>
-                <TableCell className="flex space-x-2">
-                  <PermissionTableActions
-                    module="bed_group"
+      <ProtectedTable module="Bed Group" renderTable={(show, canUpdate, canDelete) => (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {["Name", "Floor", "Description", "Action"].map((item, index) => (
+                <Fragment key={index}>
+                  {item === "Action" ? (show && <TableHead>{item}</TableHead>) : <TableHead>{item}</TableHead>}
+                </Fragment>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {bedGroups.map((group) => {
+              return (
+                <TableRow key={group.id}>
+                  <TableCell>{group.name}</TableCell>
+                  <TableCell>{group.floor.name}</TableCell>
+                  <TableCell>{group.description}</TableCell>
+                  <TableActions
+                    show={show}
+                    canUpdate={canUpdate}
+                    canDelete={canDelete}
                     onDelete={() => onDelete(group.id)}
                     onEdit={async () => {
                       await getBedGroupDetails(group.id);
                       setForm(true);
                     }}
                   />
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      )} />
 
       {/* Models */}
 
       {<EmptyList length={bedGroups.length} message="No Floors Found" />}
 
       {/* form model */}
-      {form && (
-        <CreateBedModal
-          title="Add Floor"
-          isPending={isPending}
-          Submit={handleSubmit}
-          schema={SetupBedGroupsSchema}
-          fields={Fields}
-          defaultValues={bedGroupDet!}
-          onClick={() => (setForm(false), setBedGroupDet(null))}
-        />
-      )}
+      {
+        form && (
+          <CreateBedModal
+            title="Add Floor"
+            isPending={isPending}
+            Submit={handleSubmit}
+            schema={SetupBedGroupsSchema}
+            fields={Fields}
+            defaultValues={bedGroupDet!}
+            onClick={() => (setForm(false), setBedGroupDet(null))}
+          />
+        )
+      }
 
       {/* Alert model */}
-      {confirmationProps.isOpen && (
-        <AlertModel
-          cancel={() => confirmationProps.onCancel()}
-          continue={() => confirmationProps.onConfirm()}
-        />
-      )}
+      {
+        confirmationProps.isOpen && (
+          <AlertModel
+            cancel={() => confirmationProps.onCancel()}
+            continue={() => confirmationProps.onConfirm()}
+          />
+        )
+      }
 
 
       {loaderModal && <LoaderModel />}
-    </section>
+    </section >
   );
 };
 

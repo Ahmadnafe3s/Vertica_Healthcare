@@ -1,18 +1,19 @@
+import AlertModel from "@/components/alertModel"
+import LoaderModel from "@/components/loader"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+import ProtectedTable from "@/components/protected-table"
+import TableActions from "@/components/table-actions"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useConfirmation } from "@/hooks/useConfirmation"
+import { findingName } from "@/types/setupTypes/finding"
 import { Plus, } from "lucide-react"
 import { useEffect, useState } from "react"
-import { z } from "zod"
-import FindingNameForm, { FindingNameFormSchema } from "./findingNameForm"
-import { createFindingName, deleteFindingName, getFindingNameDetails, getFindingNames, updateFindingName } from "../apiHandler"
 import toast from "react-hot-toast"
-import { findingName } from "@/types/setupTypes/finding"
-import LoaderModel from "@/components/loader"
-import AlertModel from "@/components/alertModel"
-import PermissionProtectedAction from "@/components/permission-protected-actions"
-import PermissionTableActions from "@/components/permission-table-actions"
-import { useConfirmation } from "@/hooks/useConfirmation"
+import { z } from "zod"
+import { createFindingName, deleteFindingName, getFindingNameDetails, getFindingNames, updateFindingName } from "../apiHandler"
+import FindingNameForm, { FindingNameFormSchema } from "./findingNameForm"
 
 const FindingNames = () => {
 
@@ -31,7 +32,7 @@ const FindingNames = () => {
 
 
   // handles both upsert
-  const handleSubmit = async (formData: z.infer<typeof FindingNameFormSchema>) => { // 
+  const handleSubmit = async (formData: z.infer<typeof FindingNameFormSchema>) => { //
     try {
       let data;
       setPending(true)
@@ -98,7 +99,7 @@ const FindingNames = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Findigs</h1>
-        <PermissionProtectedAction action='create' module='setupFinding'>
+        <PermissionProtectedAction action='create' module='Setup Finding'>
           <Button size='sm' onClick={() => { setFindingNameFormVisible(true) }}>
             <Plus /> Add Finding
           </Button>
@@ -107,37 +108,37 @@ const FindingNames = () => {
 
       <Separator />
 
-      <Table className="border rounded-lg dark:border-gray-800">
-        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
-          <TableRow>
-            <TableHead>Finding</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {findingNames.map((name) => {
-            return <TableRow key={name.id}>
-              <TableCell>{name.name}</TableCell>
-              <TableCell>{name.category.name}</TableCell>
-              <TableCell>{name.description}</TableCell>
-              <TableCell className='flex space-x-2'>
-
-                <PermissionTableActions
-                  module='setupFinding'
+      <ProtectedTable module="Setup Finding" renderTable={(show, canUpdate, canDelete) => (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Finding</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Description</TableHead>
+              {show && <TableHead>Action</TableHead>}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {findingNames.map((name) => {
+              return <TableRow key={name.id}>
+                <TableCell>{name.name}</TableCell>
+                <TableCell>{name.category.name}</TableCell>
+                <TableCell>{name.description}</TableCell>
+                <TableActions
+                  show={show}
+                  canUpdate={canUpdate}
+                  canDelete={canDelete}
                   onEdit={async () => {
                     await fetchFindingNameDetails(name.id)
                     setFindingNameFormVisible(true)
                   }}
                   onDelete={() => onDelete(name.id)}
                 />
-
-              </TableCell>
-            </TableRow>
-          })}
-        </TableBody>
-      </Table>
+              </TableRow>
+            })}
+          </TableBody>
+        </Table>
+      )} />
 
 
       {/* Finding name form */}

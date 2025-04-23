@@ -3,12 +3,14 @@ import CustomPagination from '@/components/customPagination'
 import EmptyList from '@/components/emptyList'
 import LoaderModel from '@/components/loader'
 import PermissionProtectedAction from '@/components/permission-protected-actions'
-import PermissionTableActions from '@/components/permission-table-actions'
+import ProtectedTable from '@/components/protected-table'
+import TableActions from '@/components/table-actions'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { createPharmacyBillSchema } from '@/formSchemas/createPharmBillSchema'
+import { page_limit } from '@/globalData'
 import { useConfirmation } from '@/hooks/useConfirmation'
 import { currencyFormat } from '@/lib/utils'
 import { pharmacyBillDetail, pharmacyBills } from '@/types/pharmacy/pharmacy'
@@ -22,7 +24,7 @@ import { z } from 'zod'
 import { createPharmacyBill, deletePharmacyBill, getPharmacyBillDetails, getPharmacyBills } from '../pharmacyApiHandler'
 import CreatePharmacyBill from './createPharmacyBill'
 import PharmacyBillDetailsModal from './pharmacyBillDetailsModal'
-import PrintPharmacyBill from './printBill/printPharmacyBill'
+import PrintPharmacyInvoice from './printBill/print-pharmacy-invoice'
 import PrintPharmacyBills from './printBill/printPharmacyBills'
 
 
@@ -38,25 +40,22 @@ const Bill = () => {
     const [search, setSearch] = useQueryState('search')
 
     //model states
-    const [model, setModel] = useState({ createPharmacyBill: false, billDetails: false })
+    const [form, setForm] = useState(false)
+    const [print, setPrint] = useState(false)
 
     // loading states
-    const [isLodaing, setLoading] = useState<{ inline: boolean, model: boolean }>({
-        inline: false,
-        model: false,
-    })
+    const [isLodaing, setLoading] = useState({ inline: false, model: false, })
 
     // API states
     const [pharmBills, setPharmBills] = useState<pharmacyBills>({ data: [], total_pages: 0 })
-    const [pharmBillDetails, setPharmBillDetails] = useState<pharmacyBillDetail>()
+    const [current, setCurrent] = useState<pharmacyBillDetail | null>(null)
 
 
 
     // list of bills
     const fetchParmacyBills = async () => {
         try {
-            // adjust limit accordingly
-            const data = await getPharmacyBills({ page, limit: 10, search: search! }) // here search only will have value when we will search anything
+            const data = await getPharmacyBills({ page, limit: page_limit, search: search! })
             setPharmBills(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -76,7 +75,7 @@ const Bill = () => {
         try {
             setLoading(prev => ({ ...prev, model: true }))
             const data = await getPharmacyBillDetails(id)
-            setPharmBillDetails(data)
+            setCurrent(data)
         } catch ({ message }: any) {
             toast.error(message)
         } finally {
@@ -91,7 +90,7 @@ const Bill = () => {
             setLoading(pre => ({ ...pre, inline: true }))
             const data = await createPharmacyBill(formData)
             toast.success(data.message)
-            setModel(prev => ({ ...prev, createPharmacyBill: false }))
+            setForm(false)
             fetchParmacyBills()
         } catch ({ message }: any) {
             toast.error(message)
@@ -129,14 +128,14 @@ const Bill = () => {
                     <h1 className='font-semibold tracking-tight'>Pharmacy Bill</h1>
                     <div className='flex gap-x-2 overflow-x-auto'>
 
-                        <PermissionProtectedAction action='create' module='pharmacy_bill'>
+                        <PermissionProtectedAction action='create' module='Pharmacy Bill'>
                             <Button
                                 size={'sm'}
-                                onClick={() => setModel(prev => ({ ...prev, createPharmacyBill: true }))}
+                                onClick={() => setForm(true)}
                             > <Plus /> Generate Bill</Button>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action='view' module='medicines'>
+                        <PermissionProtectedAction action='view' module='Medicines'>
                             < Link to={'medicines'} className={buttonVariants({
                                 variant: 'default',
                                 size: 'sm',
@@ -161,59 +160,68 @@ const Bill = () => {
                     </div>
 
                     <div className='flex gap-x-2'>
-                        <PrintPharmacyBills PharmacyBills={pharmBills['data']} />
+                        <PrintPharmacyBills list={pharmBills['data']} />
                     </div>
                 </div>
 
                 <Separator />
 
 
-                <div className="flex flex-col pb-16 gap-y-10 min-h-[80vh]">
+                <div className="flex flex-col pb-16 gap-y-10 min-h-[80vh] mt-5">
                     <div className="flex-1 space-y-3">
-                        <Table className='border rounded-lg my-10 dark:border-gray-800'>
-                            <TableHeader className='bg-slate-100 dark:bg-gray-900'>
-                                <TableRow>
-                                    <TableHead>Bill No.</TableHead>
-                                    <TableHead>Invoice Date</TableHead>
-                                    <TableHead>OPD ID</TableHead>
-                                    <TableHead>Patient Name</TableHead>
-                                    <TableHead>Doctor Name</TableHead>
-                                    <TableHead>Discount%</TableHead>
-                                    <TableHead>Total</TableHead>
-                                    <TableHead>Action</TableHead>
-                                </TableRow>
-                            </TableHeader>
+                        <ProtectedTable module='Pharmacy Bill' renderTable={(show, canUpdate, canDelete) => (
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Bill No.</TableHead>
+                                        <TableHead>Invoice Date</TableHead>
+                                        <TableHead>OPD ID</TableHead>
+                                        <TableHead>Patient Name</TableHead>
+                                        <TableHead>Doctor Name</TableHead>
+                                        <TableHead>Discount%</TableHead>
+                                        <TableHead>Total</TableHead>
+                                        <TableHead>Action</TableHead>
+                                    </TableRow>
+                                </TableHeader>
 
-                            <TableBody>
-                                {pharmBills.data.map((bill) => (
-                                    <TableRow key={bill.id}>
-                                        <TableCell
-                                            className='text-blue-500 hover:text-blue-400 cursor-pointer font-medium'
-                                            onClick={async () => {
-                                                await fetchPharmacyBillDetails(bill.id)
-                                                setModel(prev => ({ ...prev, billDetails: true }))
-                                            }}
-                                        >{bill.id}
-                                        </TableCell>
-                                        <TableCell>{bill.date}</TableCell>
-                                        <TableCell>{bill.opdId}</TableCell>
-                                        <TableCell>{bill.patient.name}</TableCell>
-                                        <TableCell>{bill.doctor}</TableCell>
-                                        <TableCell>{bill.discount} %</TableCell>
-                                        <TableCell>{currencyFormat(bill.net_amount)}</TableCell>
-                                        <TableCell className='flex space-x-2'>
-                                            {/* Delete and Print */}
-                                            <PermissionTableActions
-                                                module='pharmacy_bill'
+                                <TableBody>
+                                    {pharmBills.data.map((bill) => (
+                                        <TableRow key={bill.id}>
+                                            <TableCell
+                                                className='text-blue-500 hover:text-blue-400 cursor-pointer font-medium'
+                                                onClick={async () => {
+                                                    await fetchPharmacyBillDetails(bill.id)
+                                                }}
+                                            >{bill.id}
+                                            </TableCell>
+                                            <TableCell>{bill.date}</TableCell>
+                                            <TableCell>{bill.opdId}</TableCell>
+                                            <TableCell>{bill.patient.name}</TableCell>
+                                            <TableCell>{bill.doctor}</TableCell>
+                                            <TableCell>{bill.discount} %</TableCell>
+                                            <TableCell>{currencyFormat(bill.net_amount)}</TableCell>
+                                            <TableActions
+                                                show={show}
+                                                canUpdate={canUpdate}
+                                                canDelete={canDelete}
                                                 onDelete={() => onDelete(bill.id)}
                                                 exclude={{ edit: true }}
-                                                include={<PrintPharmacyBill Id={bill.id} onPending={(v) => setLoading({ ...isLodaing, model: v })} />}
+                                                incluePrint={{
+                                                    include: true,
+                                                    print: async () => {
+                                                        await fetchPharmacyBillDetails(bill.id)
+                                                        setPrint(true)
+                                                    }
+                                                }}
                                             />
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
+
+                        />
 
                         <EmptyList length={pharmBills.data.length} message='No bills found' />
                     </div>
@@ -235,37 +243,33 @@ const Bill = () => {
 
             {/* Models */}
 
-            {
-                model.createPharmacyBill && (
-                    < CreatePharmacyBill
-                        Submit={handleSubmit}
-                        isPending={isLodaing.inline}
-                        onClick={() => { setModel(prev => ({ ...prev, createPharmacyBill: false })) }}
-                    />
-                )
-            }
+            {form && (
+                < CreatePharmacyBill
+                    Submit={handleSubmit}
+                    isPending={isLodaing.inline}
+                    onClick={() => { setForm(false) }}
+                />
+            )}
 
-            {
-                model.billDetails && (
-                    <PharmacyBillDetailsModal
-                        details={pharmBillDetails!}
-                        onClick={() => {
-                            setModel(prev => ({ ...prev, billDetails: false }))
-                        }}
-                    />
-                )
-            }
+            {(current && !print) && (
+                <PharmacyBillDetailsModal
+                    details={current!}
+                    onClick={() => setCurrent(null)}
+                />
+            )}
+
 
             {isLodaing.model && <LoaderModel />}
 
-            {
-                confirmationProps.isOpen && (
-                    <AlertModel
-                        continue={() => confirmationProps.onConfirm()}
-                        cancel={() => confirmationProps.onCancel()}
-                    />
-                )
-            }
+            {confirmationProps.isOpen && (
+                <AlertModel
+                    continue={() => confirmationProps.onConfirm()}
+                    cancel={() => confirmationProps.onCancel()}
+                />
+            )}
+
+            {/* To print bill */}
+            {print && <PrintPharmacyInvoice Info={current!} afterPrint={() => { setCurrent(null); setPrint(false) }} />}
         </>
 
     )

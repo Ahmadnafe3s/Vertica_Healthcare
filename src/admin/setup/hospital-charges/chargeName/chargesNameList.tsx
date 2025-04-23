@@ -1,26 +1,27 @@
+import AlertModel from "@/components/alertModel"
+import CustomPagination from "@/components/customPagination"
+import EmptyList from "@/components/emptyList"
+import LoaderModel from "@/components/loader"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+import ProtectedTable from "@/components/protected-table"
+import TableActions from "@/components/table-actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { currencySymbol } from "@/helpers/currencySymbol"
-import { Plus } from "lucide-react"
-import { useDebouncedCallback } from "use-debounce"
-import AddChargesFormModel from "./addChargeNameFormModel"
-import { useEffect, useState } from "react"
-import { z } from "zod"
 import { chargeNameFormSchema } from "@/formSchemas/setupSectionSchemas/ChargeNameFormSchema"
-import toast from "react-hot-toast"
-import { chargeNameDetailsType, chargeNamesType } from "@/types/setupTypes/chargeName"
-import { createChargeName, deleteChargeName, getChargeNameDetails, getChargeNames, updateChargeName } from "../chargesAPIhandlers"
-import { currencyFormat } from "@/lib/utils"
-import AlertModel from "@/components/alertModel"
-import CustomPagination from "@/components/customPagination"
-import LoaderModel from "@/components/loader"
-import { useQueryState, parseAsInteger } from "nuqs"
-import EmptyList from "@/components/emptyList"
+import { currencySymbol } from "@/helpers/currencySymbol"
 import { useConfirmation } from "@/hooks/useConfirmation"
-import PermissionTableActions from "@/components/permission-table-actions"
-import PermissionProtectedAction from "@/components/permission-protected-actions"
+import { currencyFormat } from "@/lib/utils"
+import { chargeNameDetailsType, chargeNamesType } from "@/types/setupTypes/chargeName"
+import { Plus } from "lucide-react"
+import { parseAsInteger, useQueryState } from "nuqs"
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import { useDebouncedCallback } from "use-debounce"
+import { z } from "zod"
+import { createChargeName, deleteChargeName, getChargeNameDetails, getChargeNames, updateChargeName } from "../chargesAPIhandlers"
+import AddChargesFormModel from "./addChargeNameFormModel"
 
 
 
@@ -131,7 +132,7 @@ const ChargesList = () => {
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Charges</h1>
 
-        <PermissionProtectedAction action='create' module='setup_Hospital_Charges'>
+        <PermissionProtectedAction action='create' module='Setup Hospital Charges'>
           <Button size='sm' onClick={() => { setChargeNameFormVisible(true) }}>
             <Plus /> Add Charge
           </Button>
@@ -151,46 +152,45 @@ const ChargesList = () => {
       <div className="flex flex-col min-h-[58vh] gap-y-16">
         {/* child 1 */}
         <div className="flex-1">
-          <Table className="rounded-lg border dark:border-gray-800">
-            <TableHeader className="bg-zinc-100 dark:bg-gray-800">
-              <TableRow >
-                <TableHead>Name</TableHead>
-                <TableHead>Charge Category</TableHead>
-                <TableHead>Charge Type</TableHead>
-                <TableHead>Unit</TableHead>
-                <TableHead>Tax%</TableHead>
-                <TableHead>Standard Charge {currencySymbol()}</TableHead>
-                <TableHead>TPA Charge {currencySymbol()}</TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {chargeNames?.data.map((chargeName) => {
-                return <TableRow key={chargeName.id}>
-                  <TableCell>{chargeName.name}</TableCell>
-                  <TableCell>{chargeName.chargeCategory.category}</TableCell>
-                  <TableCell>{chargeName.chargeCategory.chargeType.charge_type}</TableCell>
-                  <TableCell>{chargeName.unitId}</TableCell>
-                  <TableCell>{chargeName.tax_percentage} %</TableCell>
-                  <TableCell>{currencyFormat(chargeName.standard_charge)}</TableCell>
-                  <TableCell>{currencyFormat(chargeName.tpa)}</TableCell>
-                  <TableCell className='flex space-x-2'>
-
-                    {/* it has both edit and delete */}
-                    <PermissionTableActions
-                      module='setup_Hospital_Charges'
+          <ProtectedTable module='Setup Hospital Charges' renderTable={(show, canUpdate, canDelete) => (
+            <Table>
+              <TableHeader>
+                <TableRow >
+                  <TableHead>Name</TableHead>
+                  <TableHead>Charge Category</TableHead>
+                  <TableHead>Charge Type</TableHead>
+                  <TableHead>Unit</TableHead>
+                  <TableHead>Tax%</TableHead>
+                  <TableHead>Standard Charge {currencySymbol()}</TableHead>
+                  <TableHead>TPA Charge {currencySymbol()}</TableHead>
+                  {show && <TableHead>Action</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {chargeNames?.data.map((chargeName) => {
+                  return <TableRow key={chargeName.id}>
+                    <TableCell>{chargeName.name}</TableCell>
+                    <TableCell>{chargeName.chargeCategory.category}</TableCell>
+                    <TableCell>{chargeName.chargeCategory.chargeType.charge_type}</TableCell>
+                    <TableCell>{chargeName.unitId}</TableCell>
+                    <TableCell>{chargeName.tax_percentage} %</TableCell>
+                    <TableCell>{currencyFormat(chargeName.standard_charge)}</TableCell>
+                    <TableCell>{currencyFormat(chargeName.tpa)}</TableCell>
+                    <TableActions
+                      show={show}
+                      canUpdate={canUpdate}
+                      canDelete={canDelete}
                       onEdit={async () => {
                         await fetchChargeNameDetails(chargeName.id)
                         setChargeNameFormVisible(true)
                       }}
                       onDelete={() => onDelete(chargeName.id)}
                     />
-
-                  </TableCell>
-                </TableRow>
-              })}
-            </TableBody>
-          </Table>
+                  </TableRow>
+                })}
+              </TableBody>
+            </Table>
+          )} />
 
 
           {/* On no data */}

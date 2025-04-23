@@ -1,18 +1,19 @@
+import AlertModel from "@/components/alertModel"
+import LoaderModel from "@/components/loader"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+import ProtectedTable from "@/components/protected-table"
+import TableActions from "@/components/table-actions"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useConfirmation } from "@/hooks/useConfirmation"
+import { findingCategory } from "@/types/setupTypes/finding"
 import { Plus, } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import FindingCategoryForm, { FindingCategoryFormSchema } from "./findingCategoryForm"
-import AlertModel from "@/components/alertModel"
 import { z } from "zod"
 import { createFindingCategory, deleteFindingCategory, getFindingCategories, getFindingCategoryDetails, updateFindingCategory } from "../apiHandler"
-import { findingCategory } from "@/types/setupTypes/finding"
-import LoaderModel from "@/components/loader"
-import PermissionProtectedAction from "@/components/permission-protected-actions"
-import PermissionTableActions from "@/components/permission-table-actions"
-import { useConfirmation } from "@/hooks/useConfirmation"
+import FindingCategoryForm, { FindingCategoryFormSchema } from "./findingCategoryForm"
 
 
 
@@ -100,7 +101,7 @@ const FindindngCategories = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Categories</h1>
-        <PermissionProtectedAction action='create' module='finding_category'>
+        <PermissionProtectedAction action='create' module='Finding Category'>
           <Button size='sm' onClick={() => { setFindingFormVisible(true) }}>
             <Plus /> Add Category
           </Button>
@@ -109,37 +110,36 @@ const FindindngCategories = () => {
 
       <Separator />
 
-      <Table className="border rounded-lg dark:border-gray-800">
-        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
+      <ProtectedTable module="Finding Category" renderTable={(show, canUpdate, canDelete) => (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Name</TableHead>
+              {show && <TableHead>Action</TableHead>}
+            </TableRow>
+          </TableHeader>
 
-        <TableBody>
-          {findings.map((finding) => {
-            return <TableRow key={finding.id}>
-              <TableCell>{finding.id}</TableCell>
-              <TableCell>{finding.name}</TableCell>
-              <TableCell className='flex space-x-2'>
-
-                <PermissionTableActions
-                  module="finding_category"
+          <TableBody>
+            {findings.map((finding) => {
+              return <TableRow key={finding.id}>
+                <TableCell>{finding.id}</TableCell>
+                <TableCell>{finding.name}</TableCell>
+                <TableActions
+                  show={show}
+                  canUpdate={canUpdate}
+                  canDelete={canDelete}
                   onEdit={async () => {
                     await fetchFindingCategoryDetails(finding.id)
                     setFindingFormVisible(true)
                   }}
                   onDelete={() => onDelete(finding.id)}
                 />
-
-              </TableCell>
-
-            </TableRow>
-          })}
-        </TableBody>
-      </Table>
+              </TableRow>
+            })}
+          </TableBody>
+        </Table>
+      )} />
 
 
       {/* Form Model */}

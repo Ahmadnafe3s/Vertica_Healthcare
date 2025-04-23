@@ -186,7 +186,7 @@ const PathologyReportForm = ({ Submit, isPending, editDetails, testNameId, ...pr
 
                 </ScrollArea>
 
-                <PermissionProtectedAction action='create' module='pathology_report'>
+                <PermissionProtectedAction action='create' module='Pathology Report'>
                     <div className="flex mt-5 mb-2 p-3">
                         <Button type='submit' className='flex-1 sm:flex-none'>{editDetails ? 'Update' : 'Save Report'} {isPending && <Loader className='animate-spin' />}</Button>
                     </div>

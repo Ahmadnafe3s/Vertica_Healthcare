@@ -25,7 +25,7 @@ const Timeline = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Timeline</h1>
-                <PermissionProtectedAction action='create' module='timeline'>
+                <PermissionProtectedAction action='create' module='Timeline'>
                     <Button size='sm' onClick={() => {
                         setForm(true)
                     }}>
@@ -59,13 +59,13 @@ const Timeline = () => {
                                     <p className="text-lg font-semibold text-gray-800 dark:text-gray-200">{timeline.title}</p>
                                     <div className="flex gap-x-2 opacity-0 group-hover:opacity-100">
 
-                                        <PermissionProtectedAction action='update' module='timeline'>
+                                        <PermissionProtectedAction action='update' module='Timeline'>
                                             <CustomTooltip message="Edit">
                                                 <Pencil className="w-4 h-4 text-gray-500 dark:text-gray-400 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { setCurrent(timeline); setForm(true) }} />
                                             </CustomTooltip>
                                         </PermissionProtectedAction>
 
-                                        <PermissionProtectedAction action='delete' module='timeline'>
+                                        <PermissionProtectedAction action='delete' module='Timeline'>
                                             <CustomTooltip message="Delete">
                                                 <Trash className="w-4 h-4 text-gray-500 dark:text-gray-400 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => onDelete(timeline.id)} />
                                             </CustomTooltip>

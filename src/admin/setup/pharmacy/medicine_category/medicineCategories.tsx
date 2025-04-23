@@ -13,6 +13,8 @@ import EmptyList from '@/components/emptyList'
 import PermissionProtectedAction from '@/components/permission-protected-actions'
 import PermissionTableActions from '@/components/permission-table-actions'
 import { useConfirmation } from '@/hooks/useConfirmation'
+import ProtectedTable from '@/components/protected-table'
+import TableActions from '@/components/table-actions'
 
 
 
@@ -82,7 +84,7 @@ const MedicineCategories = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Medicine Categories</h1>
-        <PermissionProtectedAction action='create' module='medicine_category'>
+        <PermissionProtectedAction action='create' module='Medicine Category'>
           <Button size='sm' onClick={() => setForm(true)}>
             <Plus /> Add Category
           </Button>
@@ -92,30 +94,32 @@ const MedicineCategories = () => {
       <Separator />
 
 
-      <Table className='border rounded-lg dark:border-gray-800'>
-        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Interval</TableHead>
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {medicneCategories.map((category) => (
-            <TableRow key={category.id}>
-              <TableCell>{category.id}</TableCell>
-              <TableCell>{category.name}</TableCell>
-              <TableCell className='flex'>
-                <PermissionTableActions
-                  module='medicine_category'
+      <ProtectedTable module='Medicine Category' renderTable={(show, canUpdate, canDelete) => (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Interval</TableHead>
+              {show && <TableHead>Action</TableHead>}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {medicneCategories.map((category) => (
+              <TableRow key={category.id}>
+                <TableCell>{category.id}</TableCell>
+                <TableCell>{category.name}</TableCell>
+                <TableActions
+                  show={show}
+                  canUpdate={canUpdate}
+                  canDelete={canDelete}
                   onDelete={() => onDelete(category.id)}
                   exclude={{ edit: true }}
                 />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )} />
 
 
       <EmptyList length={medicneCategories.length} message='No categories found' />

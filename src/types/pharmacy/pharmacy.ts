@@ -141,6 +141,9 @@ export type pharmacyBillDetail = {
     createdAt: string,
     patient: {
         name: string,
+        address: string
+        phone: string,
+        email: string,
     },
     items: billItems[]
 }

@@ -2,7 +2,8 @@ import AlertModel from "@/components/alertModel"
 import EmptyList from "@/components/emptyList"
 import LoaderModel from "@/components/loader"
 import PermissionProtectedAction from "@/components/permission-protected-actions"
-import PermissionTableActions from "@/components/permission-table-actions"
+import ProtectedTable from "@/components/protected-table"
+import TableActions from "@/components/table-actions"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -98,7 +99,7 @@ const SetupRadioParameters = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Radiology Parameters</h1>
-                <PermissionProtectedAction action='create' module='radiology_parameter'>
+                <PermissionProtectedAction action='create' module='Radiology Parameter'>
                     <Button size='sm' onClick={() => setParameterForm(true)}>
                         <Plus /> Add Parameter
                     </Button>
@@ -109,39 +110,39 @@ const SetupRadioParameters = () => {
             <Separator />
 
 
-            <Table className='border rounded-lg dark:border-gray-800'>
-                <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
-                    <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Reference Range</TableHead>
-                        <TableHead>Unit</TableHead>
-                        <TableHead>Note</TableHead>
-                        <TableHead>Action</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {parameters.map((parameter) => (
+            <ProtectedTable module='Radiology Parameter' renderTable={(show, canUpdate, canDelete) => (
+                <Table>
+                    <TableHeader>
                         <TableRow>
-                            <TableCell>{parameter.name}</TableCell>
-                            <TableCell>{parameter.from} {'- ' + parameter.to}</TableCell>
-                            <TableCell>{parameter.unit.name}</TableCell>
-                            <TableCell>{parameter.note}</TableCell>
-                            <TableCell className='flex space-x-2'>
-
-                                <PermissionTableActions
-                                    module="radiology_parameter"
+                            <TableHead>Name</TableHead>
+                            <TableHead>Reference Range</TableHead>
+                            <TableHead>Unit</TableHead>
+                            <TableHead>Note</TableHead>
+                            {show && <TableHead>Action</TableHead>}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {parameters.map((parameter) => (
+                            <TableRow>
+                                <TableCell>{parameter.name}</TableCell>
+                                <TableCell>{parameter.from} {'- ' + parameter.to}</TableCell>
+                                <TableCell>{parameter.unit.name}</TableCell>
+                                <TableCell>{parameter.note}</TableCell>
+                                <TableActions
+                                    show={show}
+                                    canUpdate={canUpdate}
+                                    canDelete={canDelete}
+                                    onDelete={() => onDelete(parameter.id)}
                                     onEdit={async () => {
                                         await fetchParameterDetails(parameter.id)
                                         setParameterForm(true)
                                     }}
-                                    onDelete={() => onDelete(parameter.id)}
                                 />
-
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            )} />
 
 
             <EmptyList length={parameters.length} message="No Parameters Found" />

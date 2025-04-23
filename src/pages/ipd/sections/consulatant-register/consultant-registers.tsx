@@ -63,7 +63,7 @@ const IpdCounsultantRegisters = () => {
     <section className="flex flex-col pb-16 gap-y-5">
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Consultant Registers</h1>
-        <PermissionProtectedAction action="create" module="ConsultantRegister">
+        <PermissionProtectedAction action="create" module="Consultant Reg">
           <Button size="sm" onClick={() => { setForm(true); }} > <Plus /> Add Consultant Register </Button>
         </PermissionProtectedAction>
       </div>
@@ -80,7 +80,7 @@ const IpdCounsultantRegisters = () => {
       <div className="flex flex-col gap-y-10 min-h-[60vh]">
         <div className="flex-1">
           <ProtectedTable
-            module="ConsultantRegister"
+            module="Consultant Reg"
             renderTable={(show, canUpdate, canDelete) => (
               <Table>
                 <TableHeader>

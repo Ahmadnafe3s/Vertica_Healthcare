@@ -75,15 +75,15 @@ const PatientDashboard = () => {
             <div className='grid lg:grid-cols-4 sm:grid-cols-2 gap-4'>
 
                 {/* Total Visits */}
-                <RectCard name='OPD' path={'../opd'} visits={totalCount?.opds}>
+                <RectCard name='OPD' path={'/opd'} visits={totalCount?.opds}>
                     <HeartPulse className='h-8 w-8 text-red-500' />
                 </RectCard>
 
-                <RectCard name='Appointment' path={'../appointment'} visits={totalCount?.appointments} >
+                <RectCard name='Appointment' path={'/appointment'} visits={totalCount?.appointments} >
                     <CalendarClock className='h-8 w-8 text-slate-500' />
                 </RectCard>
 
-                <RectCard name='Pharmacy' path={'../pharmacy'} visits={totalCount?.pharmacies}>
+                <RectCard name='Pharmacy' path={'/pharmacy'} visits={totalCount?.pharmacies}>
                     <Pill className='h-8 w-8 text-green-500' />
                 </RectCard>
 

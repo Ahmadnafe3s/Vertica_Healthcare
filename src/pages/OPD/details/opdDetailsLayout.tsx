@@ -16,7 +16,7 @@ const OpdDetailsLayout = () => {
 
                         {/* we provide relative path like this */}
 
-                        <PermissionProtectedAction action='view' module='opd'>
+                        <PermissionProtectedAction action='view' module='Opd'>
                             <Link to={``} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -24,7 +24,7 @@ const OpdDetailsLayout = () => {
                             </Link>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action='view' module='medication'>
+                        <PermissionProtectedAction action='view' module='Medication'>
                             <Link to={`medication`} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -32,7 +32,7 @@ const OpdDetailsLayout = () => {
                             </Link>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action='view' module='operation'>
+                        <PermissionProtectedAction action='view' module='Operation'>
                             <Link to={`operation`} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -40,7 +40,7 @@ const OpdDetailsLayout = () => {
                             </Link>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action='view' module='vitals'>
+                        <PermissionProtectedAction action='view' module='Vitals'>
                             <Link to={`vital`} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -48,7 +48,7 @@ const OpdDetailsLayout = () => {
                             </Link>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action='view' module='timeline'>
+                        <PermissionProtectedAction action='view' module='Timeline'>
                             <Link to={`timeline`} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -56,14 +56,15 @@ const OpdDetailsLayout = () => {
                             </Link>
                         </PermissionProtectedAction>
 
+                        <PermissionProtectedAction action='view' module='Treatment History'>
+                            <Link to={`treatmenthistory`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <SquareStack /> Treatment History
+                            </Link>
+                        </PermissionProtectedAction>
 
-                        <Link to={`treatmenthistory`} className={buttonVariants({
-                            variant: 'outline'
-                        })}>
-                            <SquareStack /> Treatment History
-                        </Link>
-
-                        <PermissionProtectedAction action='view' module='charges'>
+                        <PermissionProtectedAction action='view' module='Charges'>
                             <Link to={`charges`} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -71,7 +72,7 @@ const OpdDetailsLayout = () => {
                             </Link>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action='view' module='payments'>
+                        <PermissionProtectedAction action='view' module='Payments'>
                             <Link to={`payment`} className={buttonVariants({
                                 variant: 'outline'
                             })}>

@@ -102,7 +102,7 @@ const SampleCollectionForm = ({ isPending, Submit, editDetails, Role, ...props }
                     </div>
                 </ScrollArea>
 
-                <PermissionProtectedAction action='create' module='sample_collection'>
+                <PermissionProtectedAction action='create' module='Sample Collection'>
                     <div className="flex mt-5 mb-2 p-3">
                         <Button type='submit' className='flex-1'>{editDetails ? 'Update' : 'Save Sample Collection'} {isPending && <Loader className='animate-spin' />}</Button>
                     </div>

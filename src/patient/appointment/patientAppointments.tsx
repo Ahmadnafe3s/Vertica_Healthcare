@@ -18,8 +18,8 @@ import { authSelector } from '@/features/auth/authSlice'
 import CreatePatientAppointment from './createPatientAppointment'
 import { Separator } from '@/components/ui/separator'
 import { createAppointment, fetchAppointments, getAppointmentDetails } from '@/pages/appointment/appointmentAPIhandler'
-import AppointmentListPDF from '@/pages/appointment/generatePDF/AppointmnetListPDF'
-import AppointmentPDF from '@/pages/appointment/generatePDF/AppointmnetPDF'
+import AppointmentListPDF from '@/pages/appointment/print/AppointmnetListPDF'
+import AppointmentPDF from '@/pages/appointment/print/AppointmnetPDF'
 import AppointmentDetailsModel from '@/pages/appointment/appointmentDetailsModel'
 
 

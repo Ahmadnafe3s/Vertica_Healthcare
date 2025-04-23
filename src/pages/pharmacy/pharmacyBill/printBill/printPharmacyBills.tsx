@@ -1,82 +1,100 @@
 
+import Backdrop from "@/components/backdrop"
 import CustomTooltip from "@/components/customTooltip"
-import { Table, TD, TH, TR } from "@/components/pdfTable"
-import { currencySymbol } from "@/helpers/currencySymbol"
+import { TableBody, Table, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { currencyFormat } from "@/lib/utils"
-import styles from "@/pdfStyleSheet/style"
 import { pharmacyBills } from "@/types/pharmacy/pharmacy"
-import { Page, Document, View, pdf } from "@react-pdf/renderer"
-import { Printer } from "lucide-react"
-import { useEffect, useState } from "react"
+import { Printer, } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
+import { useReactToPrint } from "react-to-print"
 
 
-interface DocumentsProps {
+interface DocumentProps {
     PharmacyBills: pharmacyBills['data']
+    afterPrint: (b: boolean) => void
 }
 
 
-const Documents = ({ PharmacyBills }: DocumentsProps) => {
+const Document = ({ PharmacyBills, afterPrint }: DocumentProps) => {
+
+    const contentRef = useRef(null)
+
+    const Print = useReactToPrint({
+        contentRef,
+        documentTitle: 'Bills',
+        onAfterPrint() {
+            afterPrint(false)
+        },
+    })
+
+    useEffect(() => {
+        Print()
+    }, [])
+
+
+    const headers = ['Invoice No.', 'Date', 'OPD ID', 'Patient', 'Doctor', 'Discount %', 'Total']
+
+
     return (
-        <Document>
-            <Page size='A4' style={styles.page}>
-                <View>
+        <Backdrop onClick={() => afterPrint(false)}>
+            <div className="scale-50 sm:scale-75 lg:scale-100">
+                <div className="p-6 flex flex-col gap-5 max-w-4xl bg-white dark:bg-[#1e1e1e]" ref={contentRef}>
+                    <h1 className="text-2xl text-center font-bold text-gray-800 dark:text-white">Pharmacy Bills</h1>
                     <Table>
-                        <TR>
-                            <TH>Invoice No.</TH>
-                            <TH>Date</TH>
-                            <TH>OPD ID</TH>
-                            <TH>Patient</TH>
-                            <TH>Doctor</TH>
-                            <TH>Discount %</TH>
-                            <TH last>Toatl {currencySymbol()}</TH>
-                        </TR>
-
-                        {/* body rows */}
-
-                        {PharmacyBills.map((bill) => (
-                            <TR key={bill.id}>
-                                <TD>{bill.id}</TD>
-                                <TD>{bill.date}</TD>
-                                <TD>{bill.opdId}</TD>
-                                <TD>{bill.patient.name}</TD>
-                                <TD>{bill.doctor}</TD>
-                                <TD>{bill.discount}%</TD>
-                                <TD last>{currencyFormat(bill.net_amount)}</TD>
-                            </TR>
-                        ))}
+                        <TableHeader className="bg-white">
+                            <TableRow>
+                                {headers.map((head, i) => (
+                                    <TableHead key={i}>{head}</TableHead>
+                                ))}
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {PharmacyBills.map((bill) => {
+                                return <TableRow key={bill.id}>
+                                    <TableCell className="font-semibold">{bill.id}</TableCell>
+                                    <TableCell className="py-3">{bill.date}</TableCell>
+                                    <TableCell className="py-3">{bill.date}</TableCell>
+                                    <TableCell className="py-3">{bill.opdId}</TableCell>
+                                    <TableCell className="py-3">{bill.patient.name}</TableCell>
+                                    <TableCell className="py-3">{bill.discount}%</TableCell>
+                                    <TableCell className="py-3">{currencyFormat(bill.net_amount)}</TableCell>
+                                </TableRow>
+                            })}
+                        </TableBody>
                     </Table>
-                </View>
-            </Page>
-        </Document>
+                </div>
+            </div>
+        </Backdrop>
     )
 }
 
 
+interface Props {
+    list: pharmacyBills['data']
+}
 
 
-const PrintPharmacyBills = ({ PharmacyBills }: DocumentsProps) => {
 
-    const [client, setClient] = useState(false);
 
-    const handleOpenNewTab = async () => {
-        if (PharmacyBills.length < 1) return toast.error('Empty list')
-        const blob = await pdf(<Documents PharmacyBills={PharmacyBills} />).toBlob()
-        const url = URL.createObjectURL(blob)
-        window.open(url, '_blank')
-        setTimeout(() => URL.revokeObjectURL(url), 60000);
+const PrintPharmacyBills = ({ list }: Props) => {
+
+    const [open, setOpen] = useState(false)
+
+    const handlePrint = () => {
+        if (list.length < 1) return toast.error('Empty list')
+        setOpen(true)
     }
 
-    useEffect(() => {
-        setClient(true)
-    }, [])
-
-    if (!client) return null
 
     return (
-        <CustomTooltip message='Print List'>
-            <Printer className='cursor-pointer text-gray-600 dark:text-gray-300 active:scale-95' onClick={handleOpenNewTab} />
-        </CustomTooltip>
+        <>
+            <CustomTooltip message='Print List'>
+                <Printer className='cursor-pointer text-gray-600 dark:text-gray-300 active:scale-95' onClick={handlePrint} />
+            </CustomTooltip>
+
+            {open && <Document afterPrint={setOpen} PharmacyBills={list} />}
+        </>
     )
 }
 

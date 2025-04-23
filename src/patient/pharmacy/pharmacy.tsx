@@ -11,7 +11,7 @@ import { useDebouncedCallback } from 'use-debounce'
 import { Separator } from '@/components/ui/separator'
 import { getPharmacyBillDetails, getPharmacyBills } from '@/pages/pharmacy/pharmacyApiHandler'
 import PrintPharmacyBills from '@/pages/pharmacy/pharmacyBill/printBill/printPharmacyBills'
-import PrintPharmacyBill from '@/pages/pharmacy/pharmacyBill/printBill/printPharmacyBill'
+import PrintPharmacyBill from '@/pages/pharmacy/pharmacyBill/printBill/print-pharmacy-invoice'
 import PharmacyBillDetailsModal from '@/pages/pharmacy/pharmacyBill/pharmacyBillDetailsModal'
 
 

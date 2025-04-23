@@ -4,26 +4,26 @@ import CustomTooltip from '@/components/customTooltip'
 import EmptyList from '@/components/emptyList'
 import LoaderModel from '@/components/loader'
 import PermissionProtectedAction from '@/components/permission-protected-actions'
-import {Input} from '@/components/ui/input'
-import {Separator} from '@/components/ui/separator'
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table'
-import {OPDs,} from '@/types/opd_section/opd'
-import {ClipboardPlus, MoveUpRight, Syringe} from 'lucide-react'
-import {parseAsInteger, useQueryState} from 'nuqs'
-import {useEffect, useRef, useState} from 'react'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { page_limit } from '@/globalData'
+import CreateIpdFormModal from "@/pages/ipd/ipds/create-ipd-form-modal.tsx"
+import useIpdHandlers from "@/pages/ipd/ipds/ipd-handlers.tsx"
+import { IpdInfo } from "@/types/IPD/ipd.ts"
+import { OPDs, } from '@/types/opd_section/opd'
+import { ClipboardPlus, MoveUpRight, Syringe } from 'lucide-react'
+import { parseAsInteger, useQueryState } from 'nuqs'
+import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import {Link} from 'react-router-dom'
-import {useDebouncedCallback} from 'use-debounce'
-import {getOPDs} from './opdApiHandler'
-import OpdBillPDF from './pdf/bill'
-import OpdsPdf from './pdf/opds'
+import { Link } from 'react-router-dom'
+import { useDebouncedCallback } from 'use-debounce'
 import CreatePrescriptionFormModel from '../../components/form-modals/prescription-form-modal'
+import { getOPDs } from './opdApiHandler'
+import PrintOpdBill from './pdf/bill'
+import OpdsPdf from './pdf/opds'
 import usePrescription from './prescription/prescription-handlers'
 import PrescriptionDetailsModel from './prescription/prescriptionDetailsModel'
-import {page_limit} from '@/globalData'
-import CreateIpdFormModal from "@/pages/ipd/ipds/create-ipd-form-modal.tsx";
-import useIpdHandlers from "@/pages/ipd/ipds/ipd-handlers.tsx";
-import {IpdInfo} from "@/types/IPD/ipd.ts";
 
 
 
@@ -168,7 +168,7 @@ const OPDLIST = () => {
                                     <TableCell>{opd.appointment.appointment_date}</TableCell>
                                     <TableCell>
                                         <Link className='text-blue-500 font-medium whitespace-nowrap'
-                                              to={{pathname: `/admin/profile/staff/${opd?.doctorId}`}}>
+                                              to={{pathname: `/staff/${opd?.doctorId}`}}>
                                             {opd.doctor?.name}
                                         </Link>
                                     </TableCell>
@@ -180,7 +180,7 @@ const OPDLIST = () => {
                                     <TableCell className='flex gap-x-2 items-center print:hidden'>
 
                                         {opd.prescriptions?.id ?
-                                            <PermissionProtectedAction action='view' module='prescription'>
+                                            <PermissionProtectedAction action='view' module='Prescription'>
                                                 <CustomTooltip message='prescription'>
                                                     <Syringe
                                                         className='cursor-pointer text-gray-600 dark:text-neutral-300 w-5 h-5'
@@ -190,7 +190,7 @@ const OPDLIST = () => {
                                                     />
                                                 </CustomTooltip>
                                             </PermissionProtectedAction> :
-                                            <PermissionProtectedAction action='create' module='prescription'>
+                                            <PermissionProtectedAction action='create' module='Prescription'>
                                                 <CustomTooltip message='Add prescription'>
                                                     <ClipboardPlus
                                                         className='cursor-pointer text-gray-600 dark:text-neutral-300 w-5 h-5'
@@ -204,9 +204,9 @@ const OPDLIST = () => {
                                         }
 
                                         {/* prints bill */}
-                                        <OpdBillPDF opdId={opd.id} onPending={setPending}/>
+                                        <PrintOpdBill opdId={opd.id} onPending={setPending}/>
 
-                                        <PermissionProtectedAction action='create' module='MoveToIpd'>
+                                        <PermissionProtectedAction action='create' module='Move To Ipd'>
                                             <CustomTooltip message='Move To IPD'>
                                                 <MoveUpRight
                                                     className='cursor-pointer text-gray-600 dark:text-neutral-300 w-5 h-5'

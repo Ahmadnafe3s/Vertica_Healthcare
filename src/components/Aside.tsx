@@ -49,7 +49,7 @@ const Aside = () => {
 
                         {/* Appointment */}
 
-                        <PermissionProtectedAction action='view' module='appointment'>
+                        <PermissionProtectedAction action='view' module='Appointment'>
                             <li><Link to={{ pathname: `/appointment` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
@@ -60,7 +60,7 @@ const Aside = () => {
 
                         {/* OPD */}
 
-                        <PermissionProtectedAction action='view' module='opd'>
+                        <PermissionProtectedAction action='view' module='Opd'>
                             <li><Link to={{ pathname: `/opd` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
@@ -71,7 +71,7 @@ const Aside = () => {
 
                         {/* IPD */}
 
-                        <PermissionProtectedAction action='view' module='ipd'>
+                        <PermissionProtectedAction action='view' module='Ipd'>
                             <li><Link to={{ pathname: `/ipd` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
@@ -82,7 +82,7 @@ const Aside = () => {
 
                         {/* Pharmacy */}
 
-                        <PermissionProtectedAction action='view' module='pharmacy_bill'>
+                        <PermissionProtectedAction action='view' module='Pharmacy Bill'>
                             <li><Link to={{ pathname: `/pharmacy` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
@@ -92,7 +92,7 @@ const Aside = () => {
                         </PermissionProtectedAction>
 
                         {/* Radiology */}
-                        <PermissionProtectedAction action='view' module='radiology_bill'>
+                        <PermissionProtectedAction action='view' module='Radiology Bill'>
                             <li><Link to={{ pathname: `/radiology` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
@@ -102,7 +102,7 @@ const Aside = () => {
                         </PermissionProtectedAction>
 
                         {/* Pathology */}
-                        <PermissionProtectedAction action='view' module='pathology_bill'>
+                        <PermissionProtectedAction action='view' module='Pathology Bill'>
                             <li><Link to={{ pathname: `/pathology` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
@@ -112,7 +112,7 @@ const Aside = () => {
                         </PermissionProtectedAction>
 
                         {/* Human Resource */}
-                        <PermissionProtectedAction action='view' module='human_resource'>
+                        <PermissionProtectedAction action='view' module='Human Resource'>
                             <li><Link to={{ pathname: '/staff' }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
@@ -122,7 +122,7 @@ const Aside = () => {
                         </PermissionProtectedAction>
 
                         {/* Duty Roster */}
-                        <PermissionProtectedAction action='view' module='duty_roster'>
+                        <PermissionProtectedAction action='view' module='Duty Roster'>
                             <li><Link to={{ pathname: '/roster_report' }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
@@ -139,7 +139,7 @@ const Aside = () => {
                                 <AccordionItem value="item-1" className='border-none'>
 
                                     {/* Setup Trigger */}
-                                    <PermissionProtectedAction action='view' module='setup'>
+                                    <PermissionProtectedAction action='view' module='Setup'>
                                         <AccordionTrigger className={buttonVariants({
                                             variant: 'ghost',
                                             className: 'justify-between items-center'
@@ -161,7 +161,7 @@ const Aside = () => {
 
                                     {/* Hospital Charges */}
 
-                                    <PermissionProtectedAction action='view' module='setup_Hospital_Charges'>
+                                    <PermissionProtectedAction action='view' module='Setup Hospital Charges'>
                                         <AccordionContent className='py-1'>
                                             <div className="pl-5">
                                                 <Link to={{ pathname: '/admin/setup/charges' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
@@ -171,7 +171,7 @@ const Aside = () => {
                                     </PermissionProtectedAction>
 
                                     {/* Setup Operation */}
-                                    <PermissionProtectedAction action='view' module='setupOperation'>
+                                    <PermissionProtectedAction action='view' module='Setup Operation'>
                                         <AccordionContent className='py-1'>
                                             <div className="pl-5">
                                                 <Link to={{ pathname: '/admin/setup/operation' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
@@ -181,7 +181,7 @@ const Aside = () => {
                                     </PermissionProtectedAction>
 
                                     {/* Setup Finding */}
-                                    <PermissionProtectedAction action='view' module='setupFinding'>
+                                    <PermissionProtectedAction action='view' module='Setup Finding'>
                                         <AccordionContent className='py-1'>
                                             <div className="pl-5">
                                                 <Link to={{ pathname: '/admin/setup/finding' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
@@ -191,7 +191,7 @@ const Aside = () => {
                                     </PermissionProtectedAction>
 
                                     {/* Setup Pharmacy */}
-                                    <PermissionProtectedAction action='view' module='setupPharmacy'>
+                                    <PermissionProtectedAction action='view' module='Setup Pharmacy'>
                                         <AccordionContent className='py-1'>
                                             <div className="pl-5">
                                                 <Link to={{ pathname: '/admin/setup/pharmacy' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
@@ -202,7 +202,7 @@ const Aside = () => {
 
 
                                     {/* Setup Vital */}
-                                    <PermissionProtectedAction action='view' module='setupVital'>
+                                    <PermissionProtectedAction action='view' module='Setup Vital'>
                                         <AccordionContent className='py-1'>
                                             <div className="pl-5">
                                                 <Link to={{ pathname: '/admin/setup/vital' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
@@ -223,7 +223,7 @@ const Aside = () => {
 
 
                                     {/* Setup Radiology */}
-                                    <PermissionProtectedAction action='view' module='setupRadiology'>
+                                    <PermissionProtectedAction action='view' module='Setup Radiology'>
                                         <AccordionContent className='py-1'>
                                             <div className="pl-5">
                                                 <Link to={{ pathname: '/admin/setup/radiology' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
@@ -234,7 +234,7 @@ const Aside = () => {
 
 
                                     {/* Setup Pathology */}
-                                    <PermissionProtectedAction action='view' module='setupPathology'>
+                                    <PermissionProtectedAction action='view' module='Setup Pathology'>
                                         <AccordionContent className='py-1'>
                                             <div className="pl-5">
                                                 <Link to={{ pathname: '/admin/setup/pathology' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
@@ -245,7 +245,7 @@ const Aside = () => {
 
 
                                     {/* Setup Patient */}
-                                    <PermissionProtectedAction action='view' module='setupPatient'>
+                                    <PermissionProtectedAction action='view' module='Setup Patient'>
                                         <AccordionContent className='py-1'>
                                             <div className="pl-5">
                                                 <Link to={{ pathname: '/admin/setup/patient' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
@@ -255,7 +255,7 @@ const Aside = () => {
                                     </PermissionProtectedAction>
 
                                     {/* setup bed */}
-                                    <PermissionProtectedAction action='view' module='setupBed'>
+                                    <PermissionProtectedAction action='view' module='Setup Bed'>
                                         <AccordionContent className='py-1'>
                                             <div className="pl-5">
                                                 <Link to={{ pathname: '/admin/setup/bed' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>

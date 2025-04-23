@@ -49,7 +49,7 @@ const PaymentsList = () => {
     <section className="flex flex-col gap-y-5 pb-14">
       <div className="flex justify-between">
         <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Payments</h1>
-        <PermissionProtectedAction action='create' module='payments'>
+        <PermissionProtectedAction action='create' module='Payments'>
           <Button size='sm' onClick={() => setForm(true)}>
             <Plus /> Add Payment
           </Button>
@@ -70,7 +70,7 @@ const PaymentsList = () => {
       <div className="flex flex-col mb-16 gap-y-10 min-h-[58vh]">
         <div className="flex-1">
           <ProtectedTable
-            module="payments"
+            module="Payments"
             renderTable={(show, canUpdate, canDelete) => (
               <Table className="rounded-lg border dark:border-gray-800">
                 <TableHeader className="bg-zinc-100 dark:bg-gray-900">

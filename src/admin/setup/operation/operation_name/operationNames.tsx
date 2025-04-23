@@ -1,18 +1,19 @@
+import AlertModel from '@/components/alertModel'
+import LoaderModel from '@/components/loader'
+import PermissionProtectedAction from '@/components/permission-protected-actions'
+import ProtectedTable from '@/components/protected-table'
+import TableActions from '@/components/table-actions'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { useConfirmation } from '@/hooks/useConfirmation'
+import { operationNameType } from '@/types/setupTypes/setupOpeartion'
 import { Plus, } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import AddOperationNameModel, { AddOperationNameFormSchema } from './addOperationNameModel'
-import { createOperationName, deleteOperationName, getOperationNameDetails, getOperationNames, updateOperationName } from '../operationsAPIhandlers'
 import { z } from 'zod'
-import { operationNameType } from '@/types/setupTypes/setupOpeartion'
-import LoaderModel from '@/components/loader'
-import AlertModel from '@/components/alertModel'
-import PermissionProtectedAction from '@/components/permission-protected-actions'
-import PermissionTableActions from '@/components/permission-table-actions'
-import { useConfirmation } from '@/hooks/useConfirmation'
+import { createOperationName, deleteOperationName, getOperationNameDetails, getOperationNames, updateOperationName } from '../operationsAPIhandlers'
+import AddOperationNameModel, { AddOperationNameFormSchema } from './addOperationNameModel'
 
 const OperationNames = () => {
 
@@ -103,7 +104,7 @@ const OperationNames = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Operations List</h1>
-                <PermissionProtectedAction action='create' module='setupOperation'>
+                <PermissionProtectedAction action='create' module='Setup Operation'>
                     <Button size='sm' onClick={() => { setAddOperNameFormVisible(true) }}>
                         <Plus /> Add Operation
                     </Button>
@@ -122,37 +123,37 @@ const OperationNames = () => {
             <div className="flex flex-col min-h-[70vh] gap-y-16">
                 {/* child 1 */}
                 <div className="flex-1">
-                    <Table className="rounded-lg border dark:border-gray-800">
-                        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
-                            <TableRow>
-                                <TableHead>ID</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Category</TableHead>
-                                <TableHead>Action</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {operationNames.map((name) => {
-                                return <TableRow key={name.id}>
-                                    <TableCell>{name.id}</TableCell>
-                                    <TableCell>{name.name}</TableCell>
-                                    <TableCell>{name.category.name}</TableCell>
-                                    <TableCell className='flex space-x-2'>
-
-                                        <PermissionTableActions
-                                            module='setupOperation'
+                    <ProtectedTable module='Setup Operation' renderTable={(show, canUpdate, canDelete) => (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>ID</TableHead>
+                                    <TableHead>Name</TableHead>
+                                    <TableHead>Category</TableHead>
+                                    {show && <TableHead>Action</TableHead>}
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {operationNames.map((name) => {
+                                    return <TableRow key={name.id}>
+                                        <TableCell>{name.id}</TableCell>
+                                        <TableCell>{name.name}</TableCell>
+                                        <TableCell>{name.category.name}</TableCell>
+                                        <TableActions
+                                            show={show}
+                                            canUpdate={canUpdate}
+                                            canDelete={canDelete}
                                             onEdit={async () => {
                                                 await fetchOperationNameDetails(name.id)
                                                 setAddOperNameFormVisible(true)
                                             }}
                                             onDelete={() => onDelete(name.id)}
                                         />
-
-                                    </TableCell>
-                                </TableRow>
-                            })}
-                        </TableBody>
-                    </Table>
+                                    </TableRow>
+                                })}
+                            </TableBody>
+                        </Table>
+                    )} />
                 </div>
             </div>
 

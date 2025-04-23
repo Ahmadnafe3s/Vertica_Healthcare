@@ -1,8 +1,10 @@
 import AlertModel from '@/components/alertModel'
 import CustomPagination from '@/components/customPagination'
+import EmptyList from '@/components/emptyList'
 import LoaderModel from '@/components/loader'
 import PermissionProtectedAction from '@/components/permission-protected-actions'
-import PermissionTableActions from '@/components/permission-table-actions'
+import ProtectedTable from '@/components/protected-table'
+import TableActions from '@/components/table-actions'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
@@ -10,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { AddMedicinesFormSchema } from '@/formSchemas/addMedicinesFormSchema'
 import { useConfirmation } from '@/hooks/useConfirmation'
 import { medicineDetails, paginatedMedicines } from '@/types/pharmacy/pharmacy'
-import { ListMinus, Plus, SearchX } from 'lucide-react'
+import { ListMinus, Plus } from 'lucide-react'
 import { parseAsInteger, useQueryState } from 'nuqs'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -124,7 +126,7 @@ const Medicines = () => {
           <h1 className='font-semibold tracking-tight'>Medicines</h1>
           <div className='flex gap-x-2 overflow-x-auto'>
 
-            <PermissionProtectedAction action='create' module='medicines'>
+            <PermissionProtectedAction action='create' module='Medicines'>
               <Button className='flex gap-x-1' size={'sm'}
                 onClick={() => setModel(rest => ({ ...rest, MedicineForm: true }))}>
                 <Plus />
@@ -132,7 +134,7 @@ const Medicines = () => {
               </Button>
             </PermissionProtectedAction>
 
-            <PermissionProtectedAction action='view' module='purchase_medicine'>
+            <PermissionProtectedAction action='view' module='Purchase Medicine'>
               <Link to={'../purchase'} className={buttonVariants({
                 variant: 'default',
                 size: 'sm',
@@ -161,57 +163,58 @@ const Medicines = () => {
 
         <Separator />
 
-        <div className="flex flex-col mb-16 gap-y-10 min-h-[75vh]">
+        <div className="flex flex-col mb-16 gap-y-10 min-h-[75vh] mt-5">
           <div className="flex-1">
-            <Table className="rounded-lg border my-10 dark:border-gray-800">
-              <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
-                <TableRow>
-                  <TableHead>Medicine Name</TableHead>
-                  <TableHead>Medicine Company</TableHead>
-                  <TableHead>Medicine Composition</TableHead>
-                  <TableHead>Medicine Categoy</TableHead>
-                  <TableHead>Medicine Group</TableHead>
-                  <TableHead>Avaliable Qty</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
+            <ProtectedTable module='Medicines' renderTable={(show, canUpdate, canDelete) => (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Medicine Name</TableHead>
+                    <TableHead>Medicine Company</TableHead>
+                    <TableHead>Medicine Composition</TableHead>
+                    <TableHead>Medicine Categoy</TableHead>
+                    <TableHead>Medicine Group</TableHead>
+                    <TableHead>Avaliable Qty</TableHead>
+                    {show && <TableHead>Action</TableHead>}
+                  </TableRow>
+                </TableHeader>
 
-              <TableBody>
-                {medicines.data.map((medicine) => {
-                  return <TableRow key={medicine.id} >
-                    <TableCell className='text-blue-500 hover:text-blue-400 cursor-pointer font-semibold'
-                      onClick={async () => {
-                        await fetchMedicineDetails(medicine.id)
-                        setModel(rest => ({ ...rest, medicineDetails: true }))
-                      }}
-                    >
-                      {medicine.name}
-                    </TableCell>
-                    <TableCell>{medicine.company.name}</TableCell>
-                    <TableCell>{medicine.composition}</TableCell>
-                    <TableCell>{medicine.category.name}</TableCell>
-                    <TableCell>{medicine.group.name}</TableCell>
-                    <TableCell>
-                      {medicine.quantity === 0 ? (<span className='text-red-600 animate-pulse'>out of stock</span>) : medicine.quantity}
-                    </TableCell>
-                    <TableCell className='flex gap-2'>
-                      {/* DELETE & EDIT */}
-                      <PermissionTableActions
-                        module='medicines'
+                <TableBody>
+                  {medicines.data.map((medicine) => {
+                    return <TableRow key={medicine.id} >
+                      <TableCell className='text-blue-500 hover:text-blue-400 cursor-pointer font-semibold'
+                        onClick={async () => {
+                          await fetchMedicineDetails(medicine.id)
+                          setModel(rest => ({ ...rest, medicineDetails: true }))
+                        }}
+                      >
+                        {medicine.name}
+                      </TableCell>
+                      <TableCell>{medicine.company.name}</TableCell>
+                      <TableCell>{medicine.composition}</TableCell>
+                      <TableCell>{medicine.category.name}</TableCell>
+                      <TableCell>{medicine.group.name}</TableCell>
+                      <TableCell>
+                        {medicine.quantity === 0 ? (<span className='text-red-600 animate-pulse'>out of stock</span>) : medicine.quantity}
+                      </TableCell>
+                      <TableActions
+                        show={show}
+                        canUpdate={canUpdate}
+                        canDelete={canDelete}
                         onEdit={async () => {
                           await fetchMedicineDetails(medicine.id)
-                          setModel((rest) => ({ ...rest, MedicineForm: true }))
+                          setModel({ ...model, MedicineForm: true })
                         }}
                         onDelete={() => onDelete(medicine.id)}
                       />
-                    </TableCell>
-                  </TableRow>
-                })}
-              </TableBody>
-            </Table>
+                    </TableRow>
+                  })}
+                </TableBody>
+              </Table>
+            )} />
 
             {/* if list is empty */}
-            {medicines.data.length < 1 && <h1 className='text-gray-900 mt-4 sm:mt-1 font-semibold text-lg flex items-center gap-1'>Not found <SearchX className='h-5 w-5' /></h1>}
+            <EmptyList length={medicines.data.length} message='No medicines found' />
           </div>
 
           {/* pagination buttons */}

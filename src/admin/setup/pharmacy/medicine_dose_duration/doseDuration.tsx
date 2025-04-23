@@ -1,17 +1,18 @@
+import AlertModel from "@/components/alertModel"
+import EmptyList from "@/components/emptyList"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
+import ProtectedTable from "@/components/protected-table"
+import TableActions from "@/components/table-actions"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useConfirmation } from "@/hooks/useConfirmation"
 import { doseDuration } from "@/types/setupTypes/pharmacy"
 import { Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import DoseDurationForm from "./doseDurationForm"
 import { createDoseDuration, deleteDoseDuration, getDoseDurations } from "../apiHandler"
-import AlertModel from "@/components/alertModel"
-import EmptyList from "@/components/emptyList"
-import { useConfirmation } from "@/hooks/useConfirmation"
-import PermissionProtectedAction from "@/components/permission-protected-actions"
-import PermissionTableActions from "@/components/permission-table-actions"
+import DoseDurationForm from "./doseDurationForm"
 
 
 
@@ -80,7 +81,7 @@ const DoseDuration = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Dose Durations</h1>
-                <PermissionProtectedAction action='create' module='dose_duration'>
+                <PermissionProtectedAction action='create' module='Dose Duration'>
                     <Button size='sm' onClick={() => setForm(true)}>
                         <Plus /> Add Duration
                     </Button>
@@ -89,32 +90,32 @@ const DoseDuration = () => {
 
             <Separator />
 
-            <Table className="rounded-lg border dark:border-gray-800">
-                <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
-                    <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Action</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {doseDurations.map((doseDuration) => (
-                        <TableRow key={doseDuration.id}>
-                            <TableCell>{doseDuration.id}</TableCell>
-                            <TableCell>{doseDuration.duration}</TableCell>
-                            <TableCell className="flex">
-
-                                <PermissionTableActions
-                                    module="dose_duration"
+            <ProtectedTable module='Dose Duration' renderTable={(show, canUpdate, canDelete) => (
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>ID</TableHead>
+                            <TableHead>Name</TableHead>
+                            {show && <TableHead>Action</TableHead>}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {doseDurations.map((doseDuration) => (
+                            <TableRow key={doseDuration.id}>
+                                <TableCell>{doseDuration.id}</TableCell>
+                                <TableCell>{doseDuration.duration}</TableCell>
+                                <TableActions
+                                    show={show}
+                                    canUpdate={canUpdate}
+                                    canDelete={canDelete}
                                     onDelete={() => onDelete(doseDuration.id)}
                                     exclude={{ edit: true }}
                                 />
-
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            )} />
 
 
             <EmptyList length={doseDurations.length} />

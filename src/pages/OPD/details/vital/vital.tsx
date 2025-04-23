@@ -41,7 +41,7 @@ const Vital = () => {
 
             <div className="flex justify-between">
                 <h1 className="text-lg text-gray-800 dark:text-gray-100 font-semibold">Vitals</h1>
-                <PermissionProtectedAction action='create' module='vitals'>
+                <PermissionProtectedAction action='create' module='Vitals'>
                     <Button size='sm' onClick={() => { setForm(true) }}>
                         <Plus /> Add Vital
                     </Button>
@@ -57,8 +57,8 @@ const Vital = () => {
 
             <Separator />
 
-            <Table className="rounded-lg border dark:border-gray-800">
-                <TableHeader className="bg-zinc-100 dark:bg-gray-900">
+            <Table>
+                <TableHeader>
                     <TableRow>
                         <TableHead>Date</TableHead>
                         <TableHead>Height (1-200 CM)</TableHead>
@@ -87,7 +87,7 @@ const Vital = () => {
                                             {detail ? (
                                                 <div className="flex space-x-1 group">
                                                     <span>{detail.vital.name} {detail.value}</span>
-                                                    <PermissionProtectedAction action='delete' module='vitals'>
+                                                    <PermissionProtectedAction action='delete' module='Vitals'>
                                                         <CustomTooltip message="DELETE">
                                                             <Trash className="w-3 text-gray-700 dark:text-gray-400 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
                                                                 onClick={() => onDelete(detail.id)}

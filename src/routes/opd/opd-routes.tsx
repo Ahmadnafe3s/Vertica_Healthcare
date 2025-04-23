@@ -1,5 +1,7 @@
 import ProtectRoutes from "@/guard/protectRoutes"
 import CahrgesList from "@/pages/OPD/details/charges/chargesList"
+import Medication from "@/pages/OPD/details/medication/medication"
+import OpdDetailsLayout from "@/pages/OPD/details/opdDetailsLayout"
 import OperationList from "@/pages/OPD/details/operation/operationList"
 import VisitDetails from "@/pages/OPD/details/overview/visitDetails"
 import PaymentsList from "@/pages/OPD/details/payments/paymentsList"
@@ -8,8 +10,6 @@ import TreatmentsList from "@/pages/OPD/details/treatmentHistory/treatmentsList"
 import Vital from "@/pages/OPD/details/vital/vital"
 import AdminOPDlayout from "@/pages/OPD/opd-layout"
 import OPDLIST from "@/pages/OPD/opdList"
-import Medication from "@/patient/opd/details/medication/medication"
-import OpdDetailsLayout from "@/patient/opd/details/opdDetailsLayout"
 import { Route } from "react-router-dom"
 
 

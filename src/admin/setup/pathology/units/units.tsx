@@ -1,7 +1,8 @@
 import AlertModel from '@/components/alertModel'
 import EmptyList from '@/components/emptyList'
 import PermissionProtectedAction from '@/components/permission-protected-actions'
-import PermissionTableActions from '@/components/permission-table-actions'
+import ProtectedTable from '@/components/protected-table'
+import TableActions from '@/components/table-actions'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -38,7 +39,7 @@ const PathologyUnit = () => {
   const [unitsList, setUnitsList] = useState<PathologyUnitType[]>([])
 
 
-  // performing upsert 
+  // performing upsert
   const handleSubmit = async (formData: z.infer<typeof PathUnitSchema>) => {
     try {
       setPending(true)
@@ -91,7 +92,7 @@ const PathologyUnit = () => {
 
       <div className="flex justify-between">
         <h1 className="text-lg font-semibold">Unit List</h1>
-        <PermissionProtectedAction action='create' module='pathology_unit'>
+        <PermissionProtectedAction action='create' module='Pathology Unit'>
           <Button size='sm' onClick={() => { setUnitForm(true) }}>
             <Plus /> Add Unit
           </Button>
@@ -100,28 +101,30 @@ const PathologyUnit = () => {
 
       <Separator />
 
-      <Table className="rounded-lg border dark:border-gray-800">
-        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
-          <TableRow>
-            <TableHead className=''>Unit Names</TableHead>
-            <TableHead>Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {unitsList.map((unit) => {
-            return <TableRow key={unit.id}>
-              <TableCell>{unit.name}</TableCell>
-              <TableCell className='flex space-x-2'>
-                <PermissionTableActions
-                  module='pathology_unit'
+      <ProtectedTable module='Pathology Unit' renderTable={(show, canUpdate, canDelete) => (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className=''>Unit Names</TableHead>
+              {show && <TableHead>Action</TableHead>}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {unitsList.map((unit) => {
+              return <TableRow key={unit.id}>
+                <TableCell>{unit.name}</TableCell>
+                <TableActions
+                  show={show}
+                  canUpdate={canUpdate}
+                  canDelete={canDelete}
                   onDelete={() => onDelete(unit.id)}
                   exclude={{ edit: true }}
                 />
-              </TableCell>
-            </TableRow>
-          })}
-        </TableBody>
-      </Table>
+              </TableRow>
+            })}
+          </TableBody>
+        </Table>
+      )} />
 
       {/* Models */}
 

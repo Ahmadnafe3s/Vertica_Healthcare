@@ -14,7 +14,7 @@ const SetupPathologyLayout = () => {
 
             {/* we provide relative path like this */}
 
-            <PermissionProtectedAction action='view' module='setupPathology'>
+            <PermissionProtectedAction action='view' module='Setup Pathology'>
               <Link to={``} className={buttonVariants({
                 variant: 'outline'
               })}>
@@ -22,7 +22,7 @@ const SetupPathologyLayout = () => {
               </Link>
             </PermissionProtectedAction>
 
-            <PermissionProtectedAction action='view' module='pathology_category'>
+            <PermissionProtectedAction action='view' module='Pathology Category'>
               <Link to={`category`} className={buttonVariants({
                 variant: 'outline'
               })}>
@@ -30,7 +30,7 @@ const SetupPathologyLayout = () => {
               </Link>
             </PermissionProtectedAction>
 
-            <PermissionProtectedAction action='view' module='pathology_parameter'>
+            <PermissionProtectedAction action='view' module='Pathology Parameter'>
               <Link to={`parameter`} className={buttonVariants({
                 variant: 'outline'
               })}>
@@ -39,7 +39,7 @@ const SetupPathologyLayout = () => {
             </PermissionProtectedAction>
 
 
-            <PermissionProtectedAction action='view' module='pathology_unit'>
+            <PermissionProtectedAction action='view' module='Pathology Unit'>
               <Link to={`units`} className={buttonVariants({
                 variant: 'outline'
               })}>

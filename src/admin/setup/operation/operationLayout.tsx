@@ -14,7 +14,7 @@ const OperationLayout = () => {
 
                         {/* we provide relative path like this */}
 
-                        <PermissionProtectedAction action='view' module='setupOperation'>
+                        <PermissionProtectedAction action='view' module='Setup Operation'>
                             <Link to={``} className={buttonVariants({
                                 variant: 'outline'
                             })}>
@@ -22,7 +22,7 @@ const OperationLayout = () => {
                             </Link>
                         </PermissionProtectedAction>
 
-                        <PermissionProtectedAction action='view' module='operation_category'>
+                        <PermissionProtectedAction action='view' module='Operation Category'>
                             <Link to={`category`} className={buttonVariants({
                                 variant: 'outline'
                             })}>

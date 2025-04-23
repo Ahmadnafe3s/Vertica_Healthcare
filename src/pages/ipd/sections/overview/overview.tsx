@@ -82,17 +82,21 @@ const IpdOverview = () => {
                     </div>
 
                     {overview?.Discharge?.id ? (
-                        <Button size={'sm'} variant='outline' onClick={() => {
-                            getDischargeInfo(overview?.Discharge?.id)
-                        }}>Discharged</Button>
+                        <PermissionProtectedAction action="view" module="Discharge Patient">
+                            <Button size={'sm'} variant='outline' onClick={() => {
+                                getDischargeInfo(overview?.Discharge?.id)
+                            }}>Discharged</Button>
+                        </PermissionProtectedAction>
                     ) : (
-                        <div className='group-hover:block hidden'>
-                            <CustomTooltip message='Discharge Patient'>
-                                <RotateCcw className='w-5 h-5 cursor-pointer active:scale-95 text-gray-300'
-                                    onClick={() => setForm(true)}
-                                />
-                            </CustomTooltip>
-                        </div>
+                        <PermissionProtectedAction action="create" module="Discharge Patient">
+                            <div className='group-hover:block hidden'>
+                                <CustomTooltip message='Discharge Patient'>
+                                    <RotateCcw className='w-5 h-5 cursor-pointer active:scale-95 text-gray-300'
+                                        onClick={() => setForm(true)}
+                                    />
+                                </CustomTooltip>
+                            </div>
+                        </PermissionProtectedAction>
                     )}
                 </div>
 
@@ -233,11 +237,13 @@ const IpdOverview = () => {
             {/* grid col 2 */
             }
 
+
+
             <div className="flex flex-col gap-2 overflow-x-auto">
 
                 {/* Medication */}
 
-                <PermissionProtectedAction action="view" module="medication">
+                <PermissionProtectedAction action="view" module="Medication">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Medication</h1>
 
                     <Table className="rounded-lg border dark:border-gray-800 w-full">
@@ -275,7 +281,7 @@ const IpdOverview = () => {
 
                 {/* Operation */}
 
-                <PermissionProtectedAction action="view" module="operation">
+                <PermissionProtectedAction action="view" module="Operation">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Operation</h1>
 
                     <Table className="rounded-lg border dark:border-gray-800">
@@ -310,7 +316,7 @@ const IpdOverview = () => {
 
                 {/* Charges */}
 
-                <PermissionProtectedAction action="view" module="charges">
+                <PermissionProtectedAction action="view" module="Charges">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Charges</h1>
 
                     <Table className="rounded-lg border dark:border-gray-800">
@@ -345,7 +351,7 @@ const IpdOverview = () => {
 
                 {/* Payments */}
 
-                <PermissionProtectedAction action="view" module="payments">
+                <PermissionProtectedAction action="view" module="Payments">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Payments</h1>
 
                     <Table className="rounded-lg border dark:border-gray-800">
