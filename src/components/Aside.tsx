@@ -2,7 +2,7 @@ import { SidebarContext } from '@/contexts/sidebar-provider'
 import { authSelector, logout } from '@/features/auth/authSlice'
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import { cn } from '@/lib/utils'
-import { Airplay, BriefcaseMedical, CalendarClock, ChevronRight, HeartPulse, Network, Radiation, Settings, Stethoscope, TestTube, Watch } from 'lucide-react'
+import { Airplay, Ambulance, BriefcaseMedical, CalendarClock, ChevronRight, Droplets, HeartPulse, Network, Radiation, Settings, Stethoscope, TestTube, Watch } from 'lucide-react'
 import { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AlertModel from './alertModel'
@@ -109,6 +109,26 @@ const Aside = () => {
                                     className: 'flex text-sm items-center'
                                 })
                             }><TestTube className='h-4 w-4' />Pathology</Link></li>
+                        </PermissionProtectedAction>
+
+                        {/* Ambulance */}
+                        <PermissionProtectedAction action='view' module='Assign Ambulance'>
+                            <li><Link to={{ pathname: `/ambulance` }} onClick={onNavigate} className={
+                                buttonVariants({
+                                    variant: 'ghost',
+                                    className: 'flex text-sm items-center'
+                                })
+                            }><Ambulance className='h-4 w-4' />Ambulance</Link></li>
+                        </PermissionProtectedAction>
+
+                        {/* Ambulance */}
+                        <PermissionProtectedAction action='view' module='Assign Ambulance'>
+                            <li><Link to={{ pathname: `/ambulance` }} onClick={onNavigate} className={
+                                buttonVariants({
+                                    variant: 'ghost',
+                                    className: 'flex text-sm items-center'
+                                })
+                            }><Droplets className='h-4 w-4' />Blood Bank</Link></li>
                         </PermissionProtectedAction>
 
                         {/* Human Resource */}

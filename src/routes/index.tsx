@@ -1,3 +1,4 @@
+import AmbulanceRoutes from './ambulance/ambulanceRoutes'
 import AppointmentRoutes from './appointment/appointmentRoutes'
 import DutyRosterRoutes from './duty-roster/duty-roster'
 import IpdRoutes from './ipd/ipd-routes'
@@ -20,6 +21,7 @@ const IndexRoutes = () => {
             {RadiologyRoutes()}
             {PathologyRoutes()}
             {PharmacyRoutes()}
+            {AmbulanceRoutes()}
         </>
     )
 }

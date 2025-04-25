@@ -10,6 +10,7 @@ import { Fragment, HTMLAttributes, useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { z, ZodType } from "zod"
 import { ScrollArea } from "../ui/scroll-area"
+import { cn } from "@/lib/utils"
 
 
 
@@ -18,7 +19,8 @@ export interface FormField {
     type: 'text' | 'number' | 'email' | 'password' | 'date' | 'select' | 'textarea'
     label?: string
     placeholder?: string
-    selectOptions?: Array<{ label: string, value: number | string }>
+    change?:(value: string) => void
+    selectOptions?: Array<{ label: string, value: number | string}>
 }
 
 interface FormModalProps<T extends ZodType<any>> extends HTMLAttributes<HTMLDivElement> {
@@ -27,7 +29,9 @@ interface FormModalProps<T extends ZodType<any>> extends HTMLAttributes<HTMLDivE
     isPending: boolean
     schema: T
     fields: FormField[]
-    height?: string
+    height?: string,
+    width?: string,
+    className?: string
     defaultValues?: Partial<z.infer<T>>
 }
 
@@ -38,6 +42,8 @@ const FormModal = <T extends ZodType<any>>({
     schema,
     fields,
     height,
+    width,
+    className,
     defaultValues,
     ...props
 }: FormModalProps<T>) => {
@@ -62,10 +68,10 @@ const FormModal = <T extends ZodType<any>>({
 
 
     return (
-        <Dialog pageTitle={title} className="sm:w-[400px] mx-auto" {...props}>
+        <Dialog pageTitle={title} className={cn('sm:w-[400px] mx-auto', width)} {...props}>
             <form className="flex flex-col gap-4" onSubmit={handleSubmit(Submit)}>
                 <ScrollArea className={height}>
-                    <div className="space-y-2 px-3 mb-10">
+                    <div className={cn('space-y-2 px-3 mb-10', className)}>
                         {fields.map((Formfield) => (
                             <Fragment key={Formfield.name}>
                                 {['select'].includes(Formfield.type) ? (
@@ -73,7 +79,12 @@ const FormModal = <T extends ZodType<any>>({
                                         <Label>{Formfield.label}</Label>
                                         <Controller control={control} name={Formfield.name as any} render={({ field }) => {
 
-                                            return <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                                            return <Select value={field.value || ''} onValueChange={(value) => {
+                                                field.onChange(value);
+                                                if (Formfield.change) {
+                                                    Formfield.change(value);
+                                                }
+                                            }}>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select" />
                                                 </SelectTrigger>

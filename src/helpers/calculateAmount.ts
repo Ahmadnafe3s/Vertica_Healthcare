@@ -4,10 +4,10 @@ export const calculateAmount = (total: number, Tax: number, Discount: number) =>
 
     const DiscountedAmount = total - discount
 
-    const TaxAmount = (Tax / 100) * DiscountedAmount
+    const taxAmount = (Tax / 100) * DiscountedAmount
 
-    const net_amount = DiscountedAmount + TaxAmount;
+    const net_amount = DiscountedAmount + taxAmount;
 
-    return { total, net_amount : Math.round(net_amount) }
+    return { total, net_amount, taxAmount, dicountAmount: discount }
 
 }

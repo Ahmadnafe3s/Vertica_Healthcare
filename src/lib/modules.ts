@@ -1,36 +1,3 @@
-// have to create dynamically
-// export const Module = [
-//     'appointment',
-//     'opd',
-//     'opd prescription',
-//     'opd medication',
-//     'opd operation',
-//     'opd charges',
-//     'opd payments',
-//     'opd vitals',
-//     'opd timeline',
-//     'ipd',
-//     'ipd prescription',
-//     'ipd medication',
-//     'ipd operation',
-//     'ipd charges',
-//     'ipd payments',
-//     'ipd vitals',
-//     'ipd timeline',
-//     'ipd consultant Reg',
-//     'pharmacy_bill',
-//     'medicines',
-//     'purchase_medicine',
-//     'radiology_bill',
-//     'radiology_report',
-//     'pathology_bill',
-//     'pathology_report',
-//     'sample_collection',
-//     'human_resource',
-//     'duty_roster'
-// ];
-
-
 export const Module = [
     { name: 'Appointment', create: true, view: true, update: true, delete: true },
     { name: 'Opd', create: true, view: true, update: false, delete: false },
@@ -56,45 +23,13 @@ export const Module = [
     { name: 'Pathology Report', create: true, view: true, update: true, delete: true },
     { name: 'Sample Collection', create: true, view: true, update: true, delete: true },
     { name: 'Human Resource', create: true, view: true, update: false, delete: false },
-    { name: 'Duty Roster', create: true, view: true, update: true, delete: true }
+    { name: 'Duty Roster', create: true, view: true, update: true, delete: true },
+    { name: 'Ambulance', create: true, view: true, update: true, delete: true },
+    { name: 'Assign Ambulance', create: true, view: true, update: true, delete: true },
 ];
 
 
 
-
-
-// export const setupPermissions = [
-//     { name: 'Setup', create: true, view: true, update: true, delete: true },
-//     'setup_Hospital_Charges',
-//     'charge_unit',
-//     'charge_category',
-//     'charge_type',
-//     'charge_tax',
-//     'setupOperation',
-//     'operation_category',
-//     'setupFinding',
-//     'finding_category',
-//     'setupPharmacy',
-//     'medicine_group',
-//     'medicine_company',
-//     'medicine_unit',
-//     'dose_duration',
-//     'dose_interval',
-//     'medicine_category',
-//     'setupVital',
-//     'setupPatient',
-//     'setupRadiology',
-//     'radiology_category',
-//     'radiology_parameter',
-//     'radiology_unit',
-//     'setupPathology',
-//     'pathology_category',
-//     'pathology_parameter',
-//     'pathology_unit',
-//     'setupBed',
-//     'bed_group',
-//     'bed_floor'
-// ]
 
 
 

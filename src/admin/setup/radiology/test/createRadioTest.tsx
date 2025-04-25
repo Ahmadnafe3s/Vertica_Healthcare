@@ -75,7 +75,7 @@ const CreateRadioTest = ({ editDetails, Submit, isPending, ...props }: AddCharge
 
     const handleChargeCategoryChange = async (chargeCategoryId: number) => {
         try {
-            const data = await getChargeNames({ page: 1, limit: 0, search: String(chargeCategoryId) })
+            const data = await getChargeNames({search: String(chargeCategoryId) })
             setChargeNames(data)
         } catch ({ message }: any) {
             toast.error(message)

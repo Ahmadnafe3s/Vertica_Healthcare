@@ -43,18 +43,18 @@ const TableActions = ({ exclude = { edit: false, delete: false }, incluePrint, s
                         </DropdownMenuItem>
                     )}
 
-                    {(canUpdate && !exclude.edit) && (
-                        <DropdownMenuItem>
-                            <button type='button' onClick={onEdit} className='flex items-center w-full space-x-2 h-5 hover:text-gray-600 dark:hover:text-gray-400'>
-                                <Pencil className='w-4' /> <span>Edit</span>
-                            </button>
-                        </DropdownMenuItem>
-                    )}
-
                     {incluePrint?.include && (
                         <DropdownMenuItem>
                             <button type='button' onClick={incluePrint.print} className='flex items-center w-full space-x-2 h-5 hover:text-gray-600 dark:hover:text-gray-400'>
                                 <Printer className='w-4' /> <span>Print</span>
+                            </button>
+                        </DropdownMenuItem>
+                    )}
+
+                    {(canUpdate && !exclude.edit) && (
+                        <DropdownMenuItem>
+                            <button type='button' onClick={onEdit} className='flex items-center w-full space-x-2 h-5 hover:text-gray-600 dark:hover:text-gray-400'>
+                                <Pencil className='w-4' /> <span>Edit</span>
                             </button>
                         </DropdownMenuItem>
                     )}

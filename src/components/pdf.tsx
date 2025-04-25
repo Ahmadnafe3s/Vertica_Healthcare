@@ -75,13 +75,14 @@ interface TotalsProps {
     subtotal: number,
     discount: number,
     discount_amount?: number,
+    tax_amount?: number,
     tax: number,
     total: number,
 }
 
 
 
-export const Totals = ({ subtotal, discount, discount_amount, tax, total }: TotalsProps) => {
+export const Totals = ({ subtotal, discount, discount_amount, tax, tax_amount, total }: TotalsProps) => {
     return (
         <div className="ml-auto w-[230px]">
             <div className="space-y-2">
@@ -91,7 +92,7 @@ export const Totals = ({ subtotal, discount, discount_amount, tax, total }: Tota
                 </div>
                 <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-300">Tax ({tax.toFixed(2)}%):</span>
-                    <span className="text-gray-900 dark:text-gray-400">{currencyFormat((tax / 100) * subtotal)}</span>
+                    <span className="text-gray-900 dark:text-gray-400">{currencyFormat(tax_amount || (tax / 100) * subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-300">Discount ({discount.toFixed(2)}%):</span>
