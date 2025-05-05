@@ -16,7 +16,7 @@ import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { ScrollArea } from "./ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
-import { getStaffs } from "@/pages/staff/api-handlers"
+import StaffApi from "@/services/staff-api"
 
 
 interface SampleCollectionFormProps extends HTMLAttributes<HTMLDivElement> {
@@ -40,7 +40,7 @@ const SampleCollectionForm = ({ isPending, Submit, editDetails, Role, ...props }
 
     const fetchStaffs = async () => {
         try {
-            const data = await getStaffs({ search: Role }) // getting only staffs
+            const data = await StaffApi.getStaffs({ search: Role }) // getting only staffs
             setStaffs(data)
         } catch ({ message }: any) {
             toast.error(message)

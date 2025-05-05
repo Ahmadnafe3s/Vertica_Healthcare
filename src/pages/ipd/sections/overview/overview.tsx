@@ -1,3 +1,4 @@
+import AlertModel from "@/components/alertModel";
 import CardBox from "@/components/card-box.tsx";
 import CustomTooltip from "@/components/customTooltip.tsx";
 import FormModal from "@/components/form-modals/form-modal";
@@ -12,13 +13,12 @@ import { currencyFormat } from "@/lib/utils";
 import useDischarge from "@/pages/discharge/discharge-handlers";
 import DischargeInfoModal from "@/pages/discharge/discharge-info-modal";
 import { dischargeFormFields } from "@/pages/discharge/form-fields";
-import { Doctors } from "@/types/type";
+import StaffApi from "@/services/staff-api";
+import { staffs } from "@/types/staff/staff";
 import { Calendar, Clock, RotateCcw, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useIpdHandlers from "../../ipds/ipd-handlers";
-import AlertModel from "@/components/alertModel";
-import { fetchDoctors } from "@/pages/appointment/appointmentAPIhandler";
 
 
 
@@ -27,15 +27,15 @@ import { fetchDoctors } from "@/pages/appointment/appointmentAPIhandler";
 const IpdOverview = () => {
 
     const { overview, getIpdOverview } = useIpdHandlers()
-    const [doctor, setDoctor] = useState<Doctors[]>([])
+    const [doctor, setDoctor] = useState<staffs['data']>([])
 
     const { isPending, handleSubmit, form, current, setCurrent, setForm, onDelete, confirmationProps, getDischargeInfo, refresh } = useDischarge({ ipdId: overview?.id })
 
 
     const getDoctor = async () => {
         try {
-            const data = await fetchDoctors()
-            setDoctor(data)
+            const data = await StaffApi.getStaffs({ search: 'doctor' })
+            setDoctor(data.data)
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -91,7 +91,7 @@ const IpdOverview = () => {
                         <PermissionProtectedAction action="create" module="Discharge Patient">
                             <div className='group-hover:block hidden'>
                                 <CustomTooltip message='Discharge Patient'>
-                                    <RotateCcw className='w-5 h-5 cursor-pointer active:scale-95 text-gray-300'
+                                    <RotateCcw className='w-5 h-5 cursor-pointer active:scale-95 text-gray-600'
                                         onClick={() => setForm(true)}
                                     />
                                 </CustomTooltip>
@@ -130,14 +130,14 @@ const IpdOverview = () => {
 
                 {/* Vital section */}
 
-                <h1 className="sm:col-span-full font-semibold text-gray-800 dark:text-neutral-100">Vitals</h1>
+                <h1 className="sm:col-span-full font-semibold text-zinc-800 dark:text-neutral-100">Vitals</h1>
 
                 {/* Can be added Vitals Here */}
 
                 {
                     overview?.Vitals?.map((measure, i) => {
                         return <div key={i}
-                            className='space-y-1 flex justify-between p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                            className='space-y-1 flex justify-between p-2  ring-1 ring-gray-200 dark:ring-zinc-800 rounded-sm'>
                             <div>
                                 <p className='text-gray-700 dark:text-gray-300'>{measure.vital?.name}</p>
                                 <p className='font-semibold'>{measure?.value}</p>
@@ -154,20 +154,21 @@ const IpdOverview = () => {
 
                 {/* Symptoms */}
 
-                <h1 className="sm:col-span-full font-semibold text-gray-800 dark:text-neutral-100">Symptoms</h1>
+                <h1 className="sm:col-span-full font-semibold text-zinc-800 dark:text-neutral-100">Symptoms</h1>
+
                 <p className="text-sm text-gray-500 sm:col-span-full">{overview?.symptom_description}</p>
 
                 <Separator className="sm:col-span-full my-8" />
 
                 {/* Doctors */}
 
-                <h1 className="sm:col-span-full font-semibold text-gray-800 dark:text-neutral-100">Consultant</h1>
+                <h1 className="sm:col-span-full font-semibold text-zinc-800 dark:text-neutral-100">Consultant</h1>
 
                 <div className="sm:col-span-full flex space-x-2 items-center">
                     <div className='w-16 h-16'>
                         <img
                             src={overview?.doctor.image ? overview?.doctor.image! : overview?.doctor.gender === 'male' ? '/user.png' : '/female_user.png'}
-                            alt="staff img" className='object-cover h-full w-full rounded-lg' />
+                            alt="staff img" className='object-cover h-full w-full rounded-full border-2 border-border' />
                     </div>
 
                     <div className=''>
@@ -245,9 +246,8 @@ const IpdOverview = () => {
 
                 <PermissionProtectedAction action="view" module="Medication">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Medication</h1>
-
-                    <Table className="rounded-lg border dark:border-gray-800 w-full">
-                        <TableHeader className="bg-slate-100 dark:bg-slate-900 ">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
                                 <TableHead>Date</TableHead>
                                 <TableHead>Medicine Name</TableHead>
@@ -283,9 +283,8 @@ const IpdOverview = () => {
 
                 <PermissionProtectedAction action="view" module="Operation">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Operation</h1>
-
-                    <Table className="rounded-lg border dark:border-gray-800">
-                        <TableHeader className="bg-slate-100 dark:bg-slate-900 ">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
                                 <TableHead>Reference No</TableHead>
                                 <TableHead>Date</TableHead>
@@ -319,8 +318,8 @@ const IpdOverview = () => {
                 <PermissionProtectedAction action="view" module="Charges">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Charges</h1>
 
-                    <Table className="rounded-lg border dark:border-gray-800">
-                        <TableHeader className="bg-slate-100 dark:bg-slate-900">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
                                 <TableHead>Charge Date</TableHead>
                                 <TableHead>Charge Name</TableHead>
@@ -354,8 +353,8 @@ const IpdOverview = () => {
                 <PermissionProtectedAction action="view" module="Payments">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Payments</h1>
 
-                    <Table className="rounded-lg border dark:border-gray-800">
-                        <TableHeader className="bg-slate-100 dark:bg-slate-900">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
                                 <TableHead>Transaction ID</TableHead>
                                 <TableHead>Date</TableHead>

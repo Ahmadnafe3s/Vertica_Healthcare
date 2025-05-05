@@ -21,11 +21,12 @@ import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
 import { z } from 'zod'
-import { createPharmacyBill, deletePharmacyBill, getPharmacyBillDetails, getPharmacyBills } from '../pharmacyApiHandler'
 import CreatePharmacyBill from './createPharmacyBill'
 import PharmacyBillDetailsModal from './pharmacyBillDetailsModal'
 import PrintPharmacyInvoice from './printBill/print-pharmacy-invoice'
 import PrintPharmacyBills from './printBill/printPharmacyBills'
+import PharmacyApi from '@/services/pharmacy-api'
+import UserImage from '@/components/user-image'
 
 
 
@@ -55,7 +56,7 @@ const Bill = () => {
     // list of bills
     const fetchParmacyBills = async () => {
         try {
-            const data = await getPharmacyBills({ page, limit: page_limit, search: search! })
+            const data = await PharmacyApi.getPharmacyBills({ page, limit: page_limit, search: search! })
             setPharmBills(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -74,7 +75,7 @@ const Bill = () => {
     const fetchPharmacyBillDetails = async (id: string) => {
         try {
             setLoading(prev => ({ ...prev, model: true }))
-            const data = await getPharmacyBillDetails(id)
+            const data = await PharmacyApi.getPharmacyBillById(id)
             setCurrent(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -88,7 +89,7 @@ const Bill = () => {
     const handleSubmit = async (formData: z.infer<typeof createPharmacyBillSchema>) => {
         try {
             setLoading(pre => ({ ...pre, inline: true }))
-            const data = await createPharmacyBill(formData)
+            const data = await PharmacyApi.createPharmacyBill(formData)
             toast.success(data.message)
             setForm(false)
             fetchParmacyBills()
@@ -105,7 +106,7 @@ const Bill = () => {
         try {
             const isConfirm = await confirm()
             if (!isConfirm) return null
-            const data = await deletePharmacyBill(id)
+            const data = await PharmacyApi.deletePharmacyBill(id)
             toast.success(data.message)
             fetchParmacyBills()
         } catch ({ message }: any) {
@@ -196,7 +197,9 @@ const Bill = () => {
                                             </TableCell>
                                             <TableCell>{bill.date}</TableCell>
                                             <TableCell>{bill.opdId}</TableCell>
-                                            <TableCell>{bill.patient.name}</TableCell>
+                                            <TableCell>
+                                                <UserImage url={bill.patient.image} name={bill.patient.name} gender={bill.patient.gender} />
+                                            </TableCell>
                                             <TableCell>{bill.doctor}</TableCell>
                                             <TableCell>{bill.discount} %</TableCell>
                                             <TableCell>{currencyFormat(bill.net_amount)}</TableCell>

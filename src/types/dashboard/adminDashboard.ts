@@ -3,15 +3,14 @@ export type AdminDashTotalCount = {
     appointmentIncome: number,
     pharmacyIncome: number,
     radiologyIncome: number,
-    radiologyBills: number,
     pathologyIncome: number,
-    pathologyBills: number,
     expenses: number,
     opds: number,
-    pharmacyBills: number,
     purchases: number,
     pharmacyExpenses: number,
-    medicines: number
+    medicines: number,
+    ambulanceIncome: number,
+    bloodBankIncome: number
 }
 
 
@@ -23,9 +22,9 @@ export type AdminDash_MM_IncExp = {
 
 
 export type AdminDashVisitors = {
-    "service": string,
-    "visitors": number,
-    "fill": string,
+    service: string,
+    visitors: number,
+    fill: string,
 }
 
 

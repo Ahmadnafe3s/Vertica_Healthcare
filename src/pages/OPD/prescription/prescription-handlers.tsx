@@ -1,11 +1,11 @@
 import { createPrescriptionFormSchema } from "@/formSchemas/createPrescriptionFormSchema";
 import { useConfirmation } from "@/hooks/useConfirmation";
+import PrescriptionApi from "@/services/prescription-api";
 import { prescriptionDetail, PrescriptionsType } from "@/types/opd_section/prescription";
 import { OIParams } from "@/types/type";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { z } from "zod";
-import { createPrescription, deletePrescription, getPrescription, getPrescriptionDetails, updatePrescription } from "../opdApiHandler";
 
 
 
@@ -25,9 +25,9 @@ const usePrescription = (params?: OIParams) => {
             let data;
             setPending(true)
             current ?
-                (data = await updatePrescription(current.id, formData), setCurrent(null))
+                (data = await PrescriptionApi.updatePrescription(current.id, formData), setCurrent(null))
                 :
-                (data = await createPrescription(formData, { opdId: params?.opdId, ipdId: params?.ipdId }))
+                (data = await PrescriptionApi.createPrescription(formData, { opdId: params?.opdId, ipdId: params?.ipdId }))
             toast.success(data.message)
             setForm(false)
             setRefresh(!refresh)
@@ -38,10 +38,10 @@ const usePrescription = (params?: OIParams) => {
 
 
     // fetching prescription details
-    const fetchPrescriptionInfo = async (id: number) => {
+    const getPrescriptionInfo = async (id: number) => {
         try {
             setPending(true)
-            const data = await getPrescriptionDetails(id)
+            const data = await PrescriptionApi.getPrescriptionById(id)
             setCurrent(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -49,9 +49,9 @@ const usePrescription = (params?: OIParams) => {
     }
 
 
-    const fetchPrescriptions = async () => {
+    const getPrescriptions = async () => {
         try {
-            const data = await getPrescription(params!)
+            const data = await PrescriptionApi.getPrescriptions(params!)
             setPrescriptions(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -65,7 +65,7 @@ const usePrescription = (params?: OIParams) => {
         try {
             const isConfirm = await confirm()
             if (!isConfirm) return null
-            const data = await deletePrescription(id)
+            const data = await PrescriptionApi.deletePrescription(id)
             toast.success(data.message)
             setRefresh(!refresh)
         } catch ({ message }: any) {
@@ -76,7 +76,7 @@ const usePrescription = (params?: OIParams) => {
 
     return {
         prescriptions,
-        getPrescriptions: fetchPrescriptions,
+        getPrescriptions,
         handleSubmit,
         setForm,
         form,
@@ -85,7 +85,7 @@ const usePrescription = (params?: OIParams) => {
         isPending,
         setPending,
         onDelete,
-        getPrescriptionInfo: fetchPrescriptionInfo,
+        getPrescriptionInfo,
         confirmationProps,
         refresh
     }

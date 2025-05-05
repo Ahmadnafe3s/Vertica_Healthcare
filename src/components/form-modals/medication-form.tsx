@@ -15,7 +15,7 @@ import { medicineCategory } from '@/types/setupTypes/pharmacy'
 import { getMedicineCategories } from '@/admin/setup/pharmacy/apiHandler'
 import Dialog from '@/components/Dialog'
 import { medicationDetail } from '@/types/opd_section/medication'
-import { getMedicinesBYcategory } from '@/pages/pharmacy/pharmacyApiHandler'
+import PharmacyApi from '@/services/pharmacy-api'
 
 
 
@@ -42,7 +42,7 @@ const MedicationForm = ({ Submit, isPending, medicationDetails, ...props }: Medi
 
     const handleCategoryChange = async (categoryId: number) => {
         try {
-            const data = await getMedicinesBYcategory(categoryId)
+            const data = await PharmacyApi.getMedicinesBYcategory(categoryId)
             setMedicines(data)
         } catch ({ message }: any) {
             toast.error(message)

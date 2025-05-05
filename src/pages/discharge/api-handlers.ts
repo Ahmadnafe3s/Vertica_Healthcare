@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { dischargeFormSchema } from "@/formSchemas/discharge.ts";
-import { OIParams, Params } from "@/types/type";
+import { OIParams } from "@/types/type";
 import AxiosClient from "@/api/apiClient";
 
 

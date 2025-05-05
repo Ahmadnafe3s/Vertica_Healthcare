@@ -2,13 +2,13 @@ import Backdrop from '@/components/backdrop';
 import CustomTooltip from '@/components/customTooltip';
 import { From, PdfFooter, PdfHeader, To, Totals } from '@/components/pdf';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { currencySymbol } from '@/helpers/currencySymbol';
+import { currencyFormat } from '@/lib/utils';
+import OpdApi from '@/services/opd-api';
 import { PrintBillDetails } from '@/types/opd_section/opd';
 import { Printer } from 'lucide-react';
 import { HTMLAttributes, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { getPrintBillDetails } from '../opdApiHandler';
-import { currencyFormat } from '@/lib/utils';
-import { currencySymbol } from '@/helpers/currencySymbol';
 import { useReactToPrint } from 'react-to-print';
 
 
@@ -120,7 +120,7 @@ const PrintOpdBill = ({ opdId, onPending }: Props) => {
     const handleBill = async () => {
         try {
             onPending(true)
-            const data = await getPrintBillDetails(opdId)
+            const data = await OpdApi.getOpdBillInfo(opdId)
             if (!data) return toast.error('No data found')
             setCurrent(data)
         } catch ({ message }: any) {

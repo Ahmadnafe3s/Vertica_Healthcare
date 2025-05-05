@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { operationFormSchema } from "@/formSchemas/addOperationFormSchema"
-import { fetchDoctors } from "@/pages/appointment/appointmentAPIhandler"
+import { OtherApi } from "@/services/other-api"
 import { operationDetailsType } from "@/types/opd_section/operationType"
 import { operationCategoryType, operationNameType } from "@/types/setupTypes/setupOpeartion"
 import { Doctors } from "@/types/type"
@@ -64,7 +64,7 @@ const OperationForm = ({ Submit, isPending, operationDetails: details, ...props 
 
     const fetchDoctorsList = async () => {
         try {
-            const data = await fetchDoctors()
+            const data = await OtherApi.getDoctors()
             setDoctors(data)
         } catch ({ message }: any) {
             toast.error(message)

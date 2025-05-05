@@ -10,14 +10,14 @@ import { LabReportFormSchema } from "@/formSchemas/approvedBYschema"
 import { sampleCollectionSchema } from "@/formSchemas/sampleCollectionSchema"
 import { currencySymbol } from "@/helpers/currencySymbol"
 import { currencyFormat } from "@/lib/utils"
+import PathologyApi from "@/services/pathology-api"
 import { PathologyBillDeatils, PathologySampleCollectionDet, PathTestReport } from "@/types/pathology/pathology"
-import { CalendarDays, Eye, Plus, UserRoundPlus } from "lucide-react"
+import { CalendarDays, Eye, Plus, Printer, UserRoundPlus } from "lucide-react"
 import { HTMLAttributes, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import { createPathologyReport, createPathSampleCollection, getPathologyReportDetails, getPathSampleCollectionDetails, updatePathologyReport, updatePathSampleCollection } from "./api-handlers"
 import PathologyReportForm from "./pathology-report-from"
-import PrintPathologyBill from "./print/print-path-bill"
+import PrintPathologyInvoice from "./print/print-invoice"
 import PrintPathTestReport from "./print/print-path-test-report"
 
 
@@ -40,7 +40,7 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
     const [reportForm, setReportForm] = useState(false)
     const [collectionDetails, setCollectionDetails] = useState<PathologySampleCollectionDet>()
     const [reportDetails, setReportDetails] = useState<PathTestReport>()
-
+    const [print, setPrint] = useState(false)
 
 
     const onCollectionSubmit = async (formData: z.infer<typeof sampleCollectionSchema>) => {
@@ -48,14 +48,16 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
             let data;
             setLoading(prev => ({ ...prev, inline: true }))
             collectionDetails ? (
-                data = await updatePathSampleCollection(collectionDetails?.itemId, formData),
+                data = await PathologyApi.updatePathSampleCollection(collectionDetails?.itemId, formData),
                 setCollectionDetails(undefined)
             )
                 :
-                (data = await createPathSampleCollection(formData, itemId.current))
+                (
+                    data = await PathologyApi.createPathSampleCollection(formData, itemId.current),
+                    setView({ ...view, [index.current]: { collection: true } })
+                )
             toast.success(data.message)
             setCollectionForm(false)
-            setView({ ...view, [index.current]: { collection: true } })
             index.current = 0
         } catch ({ message }: any) {
             toast.error(message)
@@ -70,16 +72,16 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
             let data;
             setLoading(prev => ({ ...prev, inline: true }))
             reportDetails ? (
-                data = await updatePathologyReport(reportDetails.itemId, formData),
+                data = await PathologyApi.updatePathologyReport(reportDetails.itemId, formData),
                 setReportDetails(undefined)
             )
                 :
                 (
-                    data = await createPathologyReport(itemId.current, formData)
+                    data = await PathologyApi.createPathologyReport(itemId.current, formData),
+                    setView({ ...view, [index.current]: { report: true } })
                 )
             toast.success(data.message)
             setReportForm(false)
-            setView({ ...view, [index.current]: { report: true } })
             index.current = 0
         } catch ({ message }: any) {
             toast.error(message)
@@ -92,7 +94,7 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
     const fetchReportDetails = async (itemId: number) => {
         try {
             setLoading(prev => ({ ...prev, model: true }))
-            const data = await getPathologyReportDetails(itemId)
+            const data = await PathologyApi.getPathologyReportById(itemId)
             console.log(data);
 
             setReportDetails(data)
@@ -107,7 +109,7 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
     const fetchCollectionDetails = async (itemId: number) => {
         try {
             setLoading(prev => ({ ...prev, model: true }))
-            const data = await getPathSampleCollectionDetails(itemId)
+            const data = await PathologyApi.getPathSampleCollectionDetails(itemId)
             setCollectionDetails(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -133,7 +135,7 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                 <div className="flex space-x-1 items-center">
                                     <p className='text-sm text-gray-400'>Invoice Date</p>
                                     {/* printing commulative bill */}
-                                    <PrintPathologyBill details={details!} />
+                                    <Printer className='cursor-pointer h-4 w-4 text-gray-600 dark:text-gray-300 active:scale-95' onClick={() => setPrint(true)} />
                                 </div>
                             </div>
                         </div>
@@ -288,6 +290,9 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
 
 
             {loading.model && <LoaderModel />}
+
+            {/* printing invoice */}
+            {print && <PrintPathologyInvoice Info={details!} afterPrint={() => setPrint(false)} />}
 
         </>
     )

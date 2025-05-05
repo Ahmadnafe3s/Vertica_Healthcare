@@ -79,6 +79,8 @@ type AssignedAmbulancesData = {
         address: string;
         phone: string;
         email: string;
+        image: string;
+        gender: string;
     };
     ambulanceId: number;
     ambulance: {

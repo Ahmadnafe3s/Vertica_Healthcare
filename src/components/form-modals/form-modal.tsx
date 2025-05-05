@@ -4,13 +4,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
 import { Fragment, HTMLAttributes, useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { z, ZodType } from "zod"
 import { ScrollArea } from "../ui/scroll-area"
-import { cn } from "@/lib/utils"
 
 
 
@@ -19,8 +19,10 @@ export interface FormField {
     type: 'text' | 'number' | 'email' | 'password' | 'date' | 'select' | 'textarea'
     label?: string
     placeholder?: string
-    change?:(value: string) => void
-    selectOptions?: Array<{ label: string, value: number | string}>
+    change?: (value: string) => void
+    isDisabled?: boolean
+    defaultValue?: string
+    selectOptions?: Array<{ label: string, value: number | string }>
 }
 
 interface FormModalProps<T extends ZodType<any>> extends HTMLAttributes<HTMLDivElement> {
@@ -31,9 +33,10 @@ interface FormModalProps<T extends ZodType<any>> extends HTMLAttributes<HTMLDivE
     fields: FormField[]
     height?: string,
     width?: string,
-    className?: string
+    className?: string,
     defaultValues?: Partial<z.infer<T>>
 }
+
 
 const FormModal = <T extends ZodType<any>>({
     title,
@@ -47,6 +50,7 @@ const FormModal = <T extends ZodType<any>>({
     defaultValues,
     ...props
 }: FormModalProps<T>) => {
+
     const {
         register,
         handleSubmit,
@@ -56,6 +60,8 @@ const FormModal = <T extends ZodType<any>>({
     } = useForm<z.infer<T>>({
         resolver: zodResolver(schema),
     })
+
+
 
 
     // Optional: Reset form when defaultValues change
@@ -123,6 +129,8 @@ const FormModal = <T extends ZodType<any>>({
                                                 type={Formfield.type}
                                                 {...register(Formfield.name as any)}
                                                 placeholder={Formfield.placeholder || `Enter ${Formfield.name}`}
+                                                defaultValue={Formfield.defaultValue}
+                                                disabled={Formfield.isDisabled}
                                             />
                                             {errors[Formfield.name] && (
                                                 <p className='text-sm text-red-500'>

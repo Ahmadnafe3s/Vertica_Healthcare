@@ -1,10 +1,10 @@
-import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import CardBox from '@/components/card-box'
+import Dialog from '@/components/Dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Receipt, X } from 'lucide-react'
-import { HTMLAttributes } from 'react'
 import { currencyFormat } from '@/lib/utils'
 import { medicinePurchaseDetails } from '@/types/opd_section/purchaseMedicine'
-import Dialog from '@/components/Dialog'
+import { Receipt } from 'lucide-react'
+import { HTMLAttributes } from 'react'
 
 
 
@@ -36,105 +36,31 @@ const PurchaseMedicineDetailsModel = ({ purchaseDetails, ...props }: PurchaseMed
 
                     {/* highlights col-span-2*/}
 
-                    <div className='grid sm:grid-cols-4 grid-cols-2 gap-3 lg:col-span-2'>
-
-                        <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md'>
-                            <p className='text-gray-700 dark:text-gray-400'>Purchase No</p>
-                            <p className='font-semibold'>{purchaseDetails?.id}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md'>
-                            <p className='text-gray-700 dark:text-gray-400'>Expiry Date</p>
-                            <p className='font-semibold'>{purchaseDetails?.expiry_date}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md'>
-                            <p className='text-gray-700 dark:text-gray-400'>Supplier Name</p>
-                            <p className='font-semibold'>{purchaseDetails?.supplier_name}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md'>
-                            <p className='text-gray-700 dark:text-gray-400'>Category</p>
-                            <p className='font-semibold'>{purchaseDetails?.category.name}</p>
-                        </div>
-
+                    <div className='grid grid-cols-2 gap-3 lg:col-span-2'>
+                        <CardBox borderType='dashed' title="Purchase No" value={purchaseDetails?.id} />
+                        <CardBox borderType='dashed' title="Supplier Name" value={purchaseDetails?.supplier_name} />
                     </div>
 
 
                     {/* other highlight col-span-full */}
 
                     <div className="col-span-full grid sm:grid-cols-2 lg:grid-cols-3 p-0.5 gap-2">
-
-                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                            <p className='text-gray-700 dark:text-gray-400'>Medicine Name</p>
-                            <p className='font-semibold'>{purchaseDetails?.medicine.name}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                            <p className='text-gray-700 dark:text-gray-400'>Medicine Group</p>
-                            <p className='font-semibold'>{purchaseDetails?.medicine.group.name}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                            <p className='text-gray-700 dark:text-gray-400'>Batch No.</p>
-                            <p className='font-semibold'>{purchaseDetails?.batch_no}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                            <p className='text-gray-700 dark:text-gray-400'>MRP</p>
-                            <p className='font-semibold'>{currencyFormat(Number(purchaseDetails?.MRP))}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                            <p className='text-gray-700 dark:text-gray-400'>Sale Price</p>
-                            <p className='font-semibold'>{currencyFormat(Number(purchaseDetails?.sale_price))}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                            <p className='text-gray-700 dark:text-gray-400'>Packing Quantity</p>
-                            <p className='font-semibold'>{purchaseDetails?.packing_quantity}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                            <p className='text-gray-700 dark:text-gray-400'>Quantity</p>
-                            <p className='font-semibold'>{purchaseDetails?.quantity}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                            <p className='text-gray-700 dark:text-gray-400'>Purchase Price</p>
-                            <p className='font-semibold'>{currencyFormat(Number(purchaseDetails?.purchase_price))}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                            <p className='text-gray-700 dark:text-gray-400'>Amount</p>
-                            <p className='font-semibold'>{currencyFormat(Number(purchaseDetails?.amount))}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                            <p className='text-gray-700 dark:text-gray-400'>Tax</p>
-                            <p className='font-semibold'>{purchaseDetails?.tax}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                            <p className='text-gray-700 dark:text-gray-400'>Discount</p>
-                            <p className='font-semibold'>{purchaseDetails?.discount}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                            <p className='text-gray-700 dark:text-gray-400'>Net Amount</p>
-                            <p className='font-semibold'>{currencyFormat(Number(purchaseDetails?.total_amount))}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                            <p className='text-gray-700 dark:text-gray-400'>Payment Mode</p>
-                            <p className='font-semibold'>{purchaseDetails?.payment_mode}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                            <p className='text-gray-700 dark:text-gray-400'>Note</p>
-                            <p className='font-semibold'>{purchaseDetails?.note}</p>
-                        </div>
-
+                        <CardBox borderType='solid' title="Medicine Name" value={purchaseDetails?.medicine.name} />
+                        <CardBox borderType='solid' title="Category" value={purchaseDetails?.category.name} />
+                        <CardBox borderType='solid' title="Expiry Date" value={purchaseDetails?.expiry_date} />
+                        <CardBox borderType='solid' title="Medicine Group" value={purchaseDetails?.medicine.group.name} />
+                        <CardBox borderType='solid' title="Batch No." value={purchaseDetails?.batch_no} />
+                        <CardBox borderType='solid' title="MRP" value={currencyFormat(Number(purchaseDetails?.MRP))} />
+                        <CardBox borderType='solid' title="Sale Price" value={currencyFormat(Number(purchaseDetails?.sale_price))} />
+                        <CardBox borderType='solid' title="Packing Quantity" value={purchaseDetails?.packing_quantity} />
+                        <CardBox borderType='solid' title="Quantity" value={purchaseDetails?.quantity} />
+                        <CardBox borderType='solid' title="Purchase Price" value={currencyFormat(Number(purchaseDetails?.purchase_price))} />
+                        <CardBox borderType='solid' title="Amount" value={currencyFormat(Number(purchaseDetails?.amount))} />
+                        <CardBox borderType='solid' title="Tax" value={purchaseDetails?.tax} />
+                        <CardBox borderType='solid' title="Discount" value={purchaseDetails?.discount} />
+                        <CardBox borderType='solid' title="Net Amount" value={currencyFormat(Number(purchaseDetails?.total_amount))} />
+                        <CardBox borderType='solid' title="Payment Mode" value={purchaseDetails?.payment_mode} />
+                        <CardBox borderType='solid' title="Note" value={purchaseDetails?.note} />
                     </div>
 
                 </div>

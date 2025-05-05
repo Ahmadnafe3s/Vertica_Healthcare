@@ -4,20 +4,14 @@ export interface AppointmentData {
     patientId: number,
     shift: string,
     appointment_date: string,
-    appointment_priority: string,
-    symptom_type: string,
-    symptom_description: string,
-    payment_mode: string,
     status: string,
-    alternative_address: string,
-    reference: string,
-    previous_medical_issue: string,
-    message: string,
     fees: number,
     discount: number,
     net_amount: number,
     doctor: {
         name: string
+        gender: string
+        image: string
     },
     patient: {
         name: string,
@@ -25,6 +19,7 @@ export interface AppointmentData {
         gender: string,
         address: string,
         email: string,
+        image: string
     }
 }
 

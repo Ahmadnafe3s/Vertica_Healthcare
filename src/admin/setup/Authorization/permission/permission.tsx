@@ -94,8 +94,8 @@ const Permission = () => {
                 </div>
 
 
-                <Table className="rounded-lg border dark:border-gray-800">
-                    <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
+                <Table>
+                    <TableHeader>
                         <TableRow>
                             <TableHead >Module</TableHead>
                             <TableHead >View</TableHead>
@@ -136,8 +136,8 @@ const Permission = () => {
 
                     <h1 className="font-medium mb-4">Dashboard Permission</h1>
 
-                    <Table className="rounded-lg border dark:border-gray-800 pb-3">
-                        <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
+                    <Table>
+                        <TableHeader>
                             <TableRow>
                                 <TableHead >Module</TableHead>
                                 {dashboardPermissions.map((action, i) => (
@@ -169,8 +169,8 @@ const Permission = () => {
 
                     <h1 className="font-medium mb-4">Setup Permission</h1>
 
-                    <Table className="rounded-lg border dark:border-gray-800 pb-3">
-                        <TableHeader className='bg-zinc-100 dark:bg-gray-900'>
+                    <Table>
+                        <TableHeader>
                             <TableRow>
                                 <TableHead >Module</TableHead>
                                 <TableHead >View</TableHead>

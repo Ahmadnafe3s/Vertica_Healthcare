@@ -30,6 +30,7 @@ export const createStaffFormSchema = z.object({
             return +fees > 0;
         }, { message: 'Fees must be a positive number.' }),
 
+    salary : z.coerce.number().optional().default(0),
 
     name: z.string()
         .min(1, { message: "Name is required" }),

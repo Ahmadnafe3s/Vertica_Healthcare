@@ -13,6 +13,7 @@ import { page_limit } from '@/globalData'
 import { currencySymbol } from '@/helpers/currencySymbol'
 import { useConfirmation } from '@/hooks/useConfirmation'
 import { cn, currencyFormat } from '@/lib/utils'
+import { AppointmentApi } from '@/services/appointment-api'
 import { Appointment, AppointmentData, AppointmentDetails } from '@/types/appointment/appointment'
 import { Ban, ListMinus, Plus } from 'lucide-react'
 import { parseAsInteger, useQueryState } from 'nuqs'
@@ -22,10 +23,10 @@ import { Link } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
 import { z } from 'zod'
 import AddAppointment from './AddAppointment'
-import { createAppointment, deleteAppointment, fetchAppointments, getAppointmentDetails } from './appointmentAPIhandler'
 import AppointmentDetailsModel from './appointmentDetailsModel'
 import AppointmentListPDF from './print/AppointmnetListPDF'
 import PrintAppointment from './print/print-appointment'
+import UserImage from '@/components/user-image'
 
 
 
@@ -53,10 +54,10 @@ const AdminAppointment = () => {
     //fetching appointments list
     const getAppointments = async () => {
         try {
-            const data = await fetchAppointments({
+            const data = await AppointmentApi.getAppointments({
                 page,
                 limit: page_limit,
-                search: search! // if search will have value then data will get accordingly
+                search: search!
             })
             setAppointments(data)
         } catch ({ message }: any) {
@@ -70,7 +71,7 @@ const AdminAppointment = () => {
     const fetchAppoinmentDetails = async (id: string) => {
         try {
             setModel((rest) => ({ ...rest, loader: true }))
-            const data = await getAppointmentDetails(id)
+            const data = await AppointmentApi.getAppointmentById(id)
             setAppointmentDetails(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -89,7 +90,7 @@ const AdminAppointment = () => {
         try {
             const isConfirm = await confirm()
             if (!isConfirm) return null
-            const data = await deleteAppointment(id)
+            const data = await AppointmentApi.deleteAppointment(id)
             toast.success(data.message)
             getAppointments()
         } catch ({ message }: any) {
@@ -102,7 +103,7 @@ const AdminAppointment = () => {
     const handleSubmit = async (formData: z.infer<typeof appointmentFormSchema>) => {
         try {
             setPending(true)
-            const data = await createAppointment(formData)
+            const data = await AppointmentApi.createAppointment(formData)
             toast.success(data.message)
             getAppointments()
             setModel((rest) => ({ ...rest, addAppointmentForm: false }))
@@ -180,8 +181,6 @@ const AdminAppointment = () => {
                                         <TableHead>Phone</TableHead>
                                         <TableHead>Gender</TableHead>
                                         <TableHead>Doctor</TableHead>
-                                        <TableHead>Priority</TableHead>
-                                        <TableHead>Alternative Address</TableHead>
                                         <TableHead>Fees {currencySymbol()}</TableHead>
                                         <TableHead>Discount%</TableHead>
                                         <TableHead>Net Amount {currencySymbol()}</TableHead>
@@ -200,14 +199,16 @@ const AdminAppointment = () => {
                                             }}>
                                                 {appointment.id}
                                             </TableCell>
-                                            <TableCell className='whitespace-nowrap'>{appointment.patient.name}</TableCell>
+                                            <TableCell>
+                                                <UserImage url={appointment.patient.image} name={appointment.patient.name} gender={appointment.patient.gender} />
+                                            </TableCell>
                                             <TableCell>{appointment.appointment_date}</TableCell>
                                             <TableCell>{appointment.shift}</TableCell>
                                             <TableCell>{appointment.patient.phone}</TableCell>
                                             <TableCell>{appointment.patient.gender}</TableCell>
-                                            <TableCell>{appointment.doctor.name}</TableCell>
-                                            <TableCell>{appointment.appointment_priority}</TableCell>
-                                            <TableCell>{appointment.alternative_address}</TableCell>
+                                            <TableCell>
+                                                <UserImage url={appointment.doctor.image} name={appointment.doctor.name} gender={appointment.doctor.gender} />
+                                            </TableCell>
                                             <TableCell>{currencyFormat(+appointment.fees)}</TableCell>
                                             <TableCell>{appointment.discount}%</TableCell>
                                             <TableCell>{currencyFormat(appointment.net_amount)}</TableCell>

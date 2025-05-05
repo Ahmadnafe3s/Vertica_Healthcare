@@ -1,9 +1,9 @@
 import { useConfirmation } from "@/hooks/useConfirmation"
+import AmbulanceApi from "@/services/ambulance-api"
 import { AssignedAmbulanceInfo, PaginatedAssignedAmbulances } from "@/types/ambulance/ambulance"
 import { Params } from "@/types/type"
 import { useState } from "react"
 import toast from "react-hot-toast"
-import { createAssignAmbulance, deleteAssignedAmbulance, getAssignedAmbulanceInfo, getAssignedAmbulances, updateAssignedAmbulance } from "../api-handlers"
 
 const useAssignAmbulance = (params: Params) => {
 
@@ -18,10 +18,10 @@ const useAssignAmbulance = (params: Params) => {
     try {
       let data; setPending(true)
       current ? (
-        data = await updateAssignedAmbulance(formData, current.id),
+        data = await AmbulanceApi.updateAssignedAmbulance(formData, current.id),
         setCurrent(null)
-      ) : (data = await createAssignAmbulance(formData))
-      fetchAssignedAmbulances()
+      ) : (data = await AmbulanceApi.createAssignAmbulance(formData))
+      getAssignedAmbulances()
       toast.success(data.message)
       setForm(false)
     } catch ({ message }: any) {
@@ -30,9 +30,9 @@ const useAssignAmbulance = (params: Params) => {
   }
 
 
-  const fetchAssignedAmbulances = async () => {
+  const getAssignedAmbulances = async () => {
     try {
-      const data = await getAssignedAmbulances(params)
+      const data = await AmbulanceApi.getAssignedAmbulances(params)
       setAssigned(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -43,19 +43,19 @@ const useAssignAmbulance = (params: Params) => {
     try {
       const isConfirm = await confirm()
       if (!isConfirm) return null
-      const data = await deleteAssignedAmbulance(id)
+      const data = await AmbulanceApi.deleteAssignedAmbulance(id)
       toast.success(data.message)
-      fetchAssignedAmbulances()
+      getAssignedAmbulances()
     } catch ({ message }: any) {
       toast.error(message)
     }
   }
 
 
-  const fetchAssignedAmulanceInfo = async (id: string) => {
+  const getAssignedAmbulanceInfo = async (id: string) => {
     try {
       setPending(true)
-      const data = await getAssignedAmbulanceInfo(id)
+      const data = await AmbulanceApi.getAssignedAmbulanceInfo(id)
       setCurrent(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -65,7 +65,7 @@ const useAssignAmbulance = (params: Params) => {
 
   return {
     assigned,
-    getAssignedAmbulances: fetchAssignedAmbulances,
+    getAssignedAmbulances,
     isPending,
     form,
     setForm,
@@ -73,7 +73,7 @@ const useAssignAmbulance = (params: Params) => {
     onDelete,
     current,
     setCurrent,
-    getAssignedAmbulanceInfo: fetchAssignedAmulanceInfo,
+    getAssignedAmbulanceInfo,
     confirmationProps
   }
 }

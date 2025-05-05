@@ -1,11 +1,13 @@
-import { useConfirmation } from "@/hooks/useConfirmation"
-import { useState } from "react"
-import { useParams } from "react-router-dom"
-import { createTimeline, deleteTimeline, getTimelines, updateTimeine } from "../../opdApiHandler"
-import { timeline } from "@/types/opd_section/timeline"
-import { z } from "zod"
 import { timelineFormSchema } from "@/formSchemas/timelineFormSchema"
+import { useConfirmation } from "@/hooks/useConfirmation"
+import TimelineApi from "@/services/timeline-api"
+import { timeline } from "@/types/opd_section/timeline"
+import { useState } from "react"
 import toast from "react-hot-toast"
+import { useParams } from "react-router-dom"
+import { z } from "zod"
+
+
 
 
 const useTimelineHandlers = () => {
@@ -24,12 +26,12 @@ const useTimelineHandlers = () => {
       let data;
 
       current ? (
-        data = await updateTimeine(current.id, formData), setCurrent(null))
+        data = await TimelineApi.updateTimeine(current.id, formData), setCurrent(null))
         :
-        (data = await createTimeline(formData, { opdId, ipdId }))
+        (data = await TimelineApi.createTimeline(formData, { opdId, ipdId }))
 
       toast.success(data.message)
-      fetchTimelines()
+      getTimelines()
       setForm(false)
     } catch ({ message }: any) {
       toast.error(message)
@@ -37,9 +39,9 @@ const useTimelineHandlers = () => {
   }
 
 
-  const fetchTimelines = async () => {
+  const getTimelines = async () => {
     try {
-      const data = await getTimelines({ opdId, ipdId })
+      const data = await TimelineApi.getTimelines({ opdId, ipdId })
       setTimelines(data)
       console.log({ opdId, data })
 
@@ -53,9 +55,9 @@ const useTimelineHandlers = () => {
     try {
       const isConfirm = await confirm()
       if (!isConfirm) return null
-      const data = await deleteTimeline(id)  // timeline id
+      const data = await TimelineApi.deleteTimeline(id)  // timeline id
       toast.success(data.message)
-      fetchTimelines()
+      getTimelines()
     } catch ({ message }: any) {
       toast.error(message)
     }
@@ -64,7 +66,7 @@ const useTimelineHandlers = () => {
 
   return {
     timelines,
-    getTimelines: fetchTimelines,
+    getTimelines,
     current,
     setCurrent,
     isPending,

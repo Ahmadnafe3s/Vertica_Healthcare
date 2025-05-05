@@ -66,38 +66,40 @@ export type medicinesBYcategory = {
 
 
 export type medicineBatch = {
-    "id": number,
-    "purchaseId": string,
-    "purchaseMedicine": {
-        "batch_no": string,
+    id: number,
+    purchaseId: string,
+    purchaseMedicine: {
+        batch_no: string,
     }
 }
 
 
 export type medicineBatchDetails = {
-    "id": number,
-    "medicineId": number,
-    "purchaseId": string,
-    "quantity": number,
-    "expiryDate": string,
-    "purchaseMedicine": {
-        "tax": string,
-        "expiry_date": string,
-        "sale_price": string,
+    id: number,
+    medicineId: number,
+    purchaseId: string,
+    quantity: number,
+    expiryDate: string,
+    purchaseMedicine: {
+        tax: string,
+        expiry_date: string,
+        sale_price: string,
     }
 }
 
 
 type pharmacyBillData = {
-    "id": string,
-    "opdId": string,
-    "patientId": number,
-    "doctor": string,
-    "date": string,
-    "discount": number,
-    "net_amount": number,
-    "patient": {
-        "name": string,
+    id: string,
+    opdId: string,
+    patientId: number,
+    doctor: string,
+    date: string,
+    discount: number,
+    net_amount: number,
+    patient: {
+        name: string,
+        gender: string,
+        image: string,
     }
 }
 

@@ -1,12 +1,14 @@
 import { chargeFormSchema } from "@/formSchemas/chargeFormSchema"
 import { useConfirmation } from "@/hooks/useConfirmation"
+import ChargeApi from "@/services/charges-api"
 import { ChargeDetailsType, ChargeListType } from "@/types/opd_section/charges"
 import { Params } from "@/types/type"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { useParams } from "react-router-dom"
 import { z } from "zod"
-import { createCharges, deleteCharge, getChargeDetails, getCharges, updateCharge } from "../../opdApiHandler"
+
+
 
 const useChargeHandlers = (params: Params) => {
 
@@ -23,12 +25,12 @@ const useChargeHandlers = (params: Params) => {
         try {
             setPending(true)
             let data;
-            current ? (data = await updateCharge(current.id, formData), setCurrent(null))
+            current ? (data = await ChargeApi.updateCharge(current.id, formData), setCurrent(null))
                 :
-                (data = await createCharges(formData, { opdId, ipdId }))
+                (data = await ChargeApi.createCharges(formData, { opdId, ipdId }))
 
             toast.success(data.message)
-            fetchCharges()
+            getCharges()
             setForm(false)
         } catch ({ message }: any) {
             toast.error(message)
@@ -39,9 +41,9 @@ const useChargeHandlers = (params: Params) => {
 
 
 
-    const fetchCharges = async () => {
+    const getCharges = async () => {
         try {
-            const data = await getCharges({ ...params, opdId, ipdId })
+            const data = await ChargeApi.getCharges({ ...params, opdId, ipdId })
             setCharges(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -50,10 +52,10 @@ const useChargeHandlers = (params: Params) => {
 
 
     // Fetching details for Details model and form on edit mode
-    const fetchChargeDetails = async (id: number) => {
+    const getDetails = async (id: number) => {
         try {
             setPending(true)
-            const data = await getChargeDetails(id)
+            const data = await ChargeApi.getChargeById(id)
             setCurrent(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -66,10 +68,9 @@ const useChargeHandlers = (params: Params) => {
         try {
             const isConfirm = await confirm()
             if (!isConfirm) return null
-            const data = await deleteCharge(id)
+            const data = await ChargeApi.deleteCharge(id)
             toast.success(data.message)
-            // refetching list
-            fetchCharges()
+            getCharges()
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -78,10 +79,10 @@ const useChargeHandlers = (params: Params) => {
 
     return {
         charges,
-        getCharges: fetchCharges,
+        getCharges,
         current,
         setCurrent,
-        getDetails: fetchChargeDetails,
+        getDetails,
         isPending,
         form,
         setForm,

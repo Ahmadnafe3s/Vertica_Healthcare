@@ -35,7 +35,7 @@ const Role = () => {
     const [roleDts, setRoleDts] = useState<ROLE>()
 
 
-    // performing upsert 
+    // performing upsert
     const handleSubmit = async (formData: z.infer<typeof roleFormSchema>) => {
         try {
             let data;
@@ -113,8 +113,8 @@ const Role = () => {
 
             <Separator />
 
-            <Table className="rounded-lg border dark:border-gray-800">
-                <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
+            <Table>
+                <TableHeader>
                     <TableRow>
                         <TableHead >ID</TableHead>
                         <TableHead className=''>Role</TableHead>

@@ -12,8 +12,8 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
-import { getStaffs } from '../api-handlers'
 import { page_limit } from '@/globalData'
+import StaffApi from '@/services/staff-api'
 
 
 
@@ -39,7 +39,7 @@ const Staff = () => {
   // fetching staffs list
   const fetchStaffs = async () => {
     try {
-      const data = await getStaffs({ page, limit: page_limit, search: search! })
+      const data = await StaffApi.getStaffs({ page, limit: page_limit, search: search! })
       setStaffs(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -97,10 +97,10 @@ const Staff = () => {
               {/* staff card */}
               {staffList?.data.map((staff, i) => (
                 <div className="mx-auto w-full h-28" key={i}>
-                  <Link to={`${staff.id}`} className='flex items-center gap-x-3 p-2.5 active:scale-95 rounded-lg ring-1 transition-all ring-gray-200 dark:ring-gray-700 hover:shadow-lg dark:hover:shadow-gray-800 '>
+                  <Link to={`${staff.id}`} className='flex items-center gap-x-3 p-2.5 active:scale-95 rounded-lg ring-1 transition-all ring-gray-200 dark:ring-zinc-800 hover:shadow-lg dark:hover:shadow-zinc-800 '>
 
                     <div className='w-24 h-24'>
-                      <img src={staff.image ? staff.image : staff.gender === 'male' ? '/user.png' : '/female_user.png'} alt="staff img" className='object-cover h-full w-full rounded-lg' />
+                      <img src={staff.image ? staff.image : staff.gender === 'male' ? '/user.png' : '/female_user.png'} alt="staff img" className='object-cover h-full w-full rounded-full border-2 border-border' />
                     </div>
 
                     <span>

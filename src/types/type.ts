@@ -11,6 +11,7 @@ export interface StaffProfile {
     department: string;
     specialist: string;
     fees: string;
+    salary: number;
     father_name: string;
     mother_name: string;
     gender: string;

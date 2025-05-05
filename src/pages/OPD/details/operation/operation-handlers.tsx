@@ -1,12 +1,12 @@
 import { operationFormSchema } from "@/formSchemas/addOperationFormSchema"
 import { useConfirmation } from "@/hooks/useConfirmation"
+import OperationApi from "@/services/operation-api"
 import { operationDetailsType, PaginatedOperations } from "@/types/opd_section/operationType"
 import { Params } from "@/types/type"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { useParams } from "react-router-dom"
 import { z } from "zod"
-import { createOperation, deleteOperation, getOperation_Details, getOperations, updateOperation } from "../../opdApiHandler"
 
 
 
@@ -26,12 +26,12 @@ const useOperationHandlers = (params: Params) => {
             setPending(true)
             let data;
             current ? (
-                data = await updateOperation(current.id, formData),
+                data = await OperationApi.updateOperation(current.id, formData),
                 setCurrent(undefined)
-            ) : (data = await createOperation(formData, { opdId, ipdId }))
+            ) : (data = await OperationApi.createOperation(formData, { opdId, ipdId }))
 
             toast.success(data.message)
-            fetchOperations() // refetching list
+            getOperations() // refetching list
             setForm(false)
         } catch ({ message }: any) {
             toast.error(message)
@@ -41,9 +41,9 @@ const useOperationHandlers = (params: Params) => {
     }
 
 
-    const fetchOperations = async () => {
+    const getOperations = async () => {
         try {
-            const data = await getOperations({ ...params, opdId, ipdId })
+            const data = await OperationApi.getOperations({ ...params, opdId, ipdId })
             setOperations(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -55,18 +55,18 @@ const useOperationHandlers = (params: Params) => {
         try {
             const isConfirm = await confirm()
             if (!isConfirm) return null
-            const data = await deleteOperation(id)
+            const data = await OperationApi.deleteOperation(id)
             toast.success(data.message)
-            fetchOperations()
+            getOperations()
         } catch ({ message }: any) {
             toast.error(message)
         }
     }
 
-    const fetchOperationDetails = async (id: string) => {
+    const getDetails = async (id: string) => {
         try {
             setPending(true)
-            const data = await getOperation_Details(id)
+            const data = await OperationApi.getOperationById(id)
             setCurrent(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -76,10 +76,10 @@ const useOperationHandlers = (params: Params) => {
 
     return {
         operations,
-        getOperations: fetchOperations,
+        getOperations,
         current,
         setCurrent,
-        getDetails: fetchOperationDetails,
+        getDetails,
         isPending,
         form,
         setForm,

@@ -10,20 +10,21 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { page_limit } from '@/globalData'
 import CreateIpdFormModal from "@/pages/ipd/ipds/create-ipd-form-modal.tsx"
 import useIpdHandlers from "@/pages/ipd/ipds/ipd-handlers.tsx"
+import OpdApi from '@/services/opd-api'
 import { IpdInfo } from "@/types/IPD/ipd.ts"
 import { OPDs, } from '@/types/opd_section/opd'
-import { ClipboardPlus, MoveUpRight, Syringe } from 'lucide-react'
+import { ClipboardPlus, MoveUpRight, Syringe, User } from 'lucide-react'
 import { parseAsInteger, useQueryState } from 'nuqs'
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
 import CreatePrescriptionFormModel from '../../components/form-modals/prescription-form-modal'
-import { getOPDs } from './opdApiHandler'
 import PrintOpdBill from './pdf/bill'
 import OpdsPdf from './pdf/opds'
 import usePrescription from './prescription/prescription-handlers'
 import PrescriptionDetailsModel from './prescription/prescriptionDetailsModel'
+import UserImage from '@/components/user-image'
 
 
 
@@ -43,7 +44,7 @@ const OPDLIST = () => {
     } | null>(null)
 
     // API states
-    const [OPD_list, setOPD_list] = useState<OPDs>({data: [], total_pages: 0})
+    const [OPD_list, setOPD_list] = useState<OPDs>({ data: [], total_pages: 0 })
 
     const {
         current,
@@ -57,7 +58,7 @@ const OPDLIST = () => {
         handleSubmit,
         confirmationProps,
         refresh
-    } = usePrescription({opdId: opdId.current})
+    } = usePrescription({ opdId: opdId.current })
 
     const {
         isPending: isPendingIpd,
@@ -68,9 +69,9 @@ const OPDLIST = () => {
 
 
     // fetching opd Details
-    const fetchOPDs = async () => {
+    const getOpds = async () => {
         try {
-            const data = await getOPDs({search: search!, page, limit: page_limit})
+            const data = await OpdApi.getOPDs({ search: search!, page, limit: page_limit })
             setOPD_list(data)
         } catch (error) {
             if (error instanceof Error) {
@@ -91,13 +92,10 @@ const OPDLIST = () => {
 
 
     useEffect(() => {
-        fetchOPDs()
+        getOpds()
     }, [page, search, refresh])
 
 
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
     return (
 
         <div className='my-2 flex flex-col'>
@@ -115,7 +113,7 @@ const OPDLIST = () => {
                 </div>
             </div>
 
-            <Separator/>
+            <Separator />
 
             {/* search bar */}
 
@@ -124,23 +122,23 @@ const OPDLIST = () => {
                 <div className='flex gap-x-2'>
                     <Input type='text' height='10px' placeholder='opdId , patient , doctor' onChange={(e) => {
                         onSerach(e.target.value)
-                    }} defaultValue={search!}/>
+                    }} defaultValue={search!} />
                     {/* use debounce to prevent api call */}
                 </div>
 
                 <div className='flex gap-x-2'>
                     {/* will print all list */}
-                    <OpdsPdf opds={OPD_list['data']}/>
+                    <OpdsPdf opds={OPD_list['data']} />
                 </div>
             </div>
 
-            <Separator/>
+            <Separator />
 
             {/* pagination */}
-            <section className="flex flex-col mb-16 gap-y-5 min-h-[75vh]">
+            <section className="flex flex-col mb-16 gap-y-5 min-h-[75vh] mt-5">
                 <div className="flex-1 space-y-5">
-                    <Table className="border rounded-lg my-10 dark:border-gray-800">
-                        <TableHeader className='bg-gray-100 dark:bg-gray-900'>
+                    <Table>
+                        <TableHeader>
                             <TableRow>
                                 <TableHead>OPD No.</TableHead>
                                 <TableHead>Patient Name</TableHead>
@@ -160,19 +158,17 @@ const OPDLIST = () => {
                                 return <TableRow key={i}>
                                     <TableCell>
                                         <Link to={`${opd.id}`}
-                                              className="font-medium text-blue-500 hover:text-blue-400 cursor-pointer">
+                                            className="font-medium text-blue-500 hover:text-blue-400 cursor-pointer">
                                             {opd?.id}
                                         </Link>
                                     </TableCell>
-                                    <TableCell className='whitespace-nowrap'>{opd.patient?.name}</TableCell>
+                                    <TableCell className='whitespace-nowrap'>
+                                        <UserImage url={opd.patient.image} name={opd.patient.name} gender={opd.patient.gender} />
+                                    </TableCell>
                                     <TableCell>{opd.appointment.appointment_date}</TableCell>
                                     <TableCell>
-                                        <Link className='text-blue-500 font-medium whitespace-nowrap'
-                                              to={{pathname: `/staff/${opd?.doctorId}`}}>
-                                            {opd.doctor?.name}
-                                        </Link>
+                                        <UserImage url={opd.doctor.image} name={opd.doctor.name} gender={opd.doctor.gender} />
                                     </TableCell>
-
                                     <TableCell>{opd.appointment.reference}</TableCell>
                                     <TableCell>{opd.appointment.symptom_type}</TableCell>
                                     <TableCell>{opd.appointment.previous_medical_issue}</TableCell>
@@ -204,7 +200,7 @@ const OPDLIST = () => {
                                         }
 
                                         {/* prints bill */}
-                                        <PrintOpdBill opdId={opd.id} onPending={setPending}/>
+                                        <PrintOpdBill opdId={opd.id} onPending={setPending} />
 
                                         <PermissionProtectedAction action='create' module='Move To Ipd'>
                                             <CustomTooltip message='Move To IPD'>
@@ -232,7 +228,7 @@ const OPDLIST = () => {
                     </Table>
                     {/* error on emply list */}
 
-                    <EmptyList length={OPD_list.data.length} message='No opd found'/>
+                    <EmptyList length={OPD_list.data.length} message='No opd found' />
                 </div>
 
 
@@ -264,7 +260,7 @@ const OPDLIST = () => {
 
             {/* Loader Model */}
 
-            {isPending && (<LoaderModel/>)}
+            {isPending && (<LoaderModel />)}
 
 
             {/* prescription detais */}

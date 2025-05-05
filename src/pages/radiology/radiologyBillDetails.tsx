@@ -10,13 +10,13 @@ import { LabReportFormSchema } from "@/formSchemas/approvedBYschema"
 import { sampleCollectionSchema } from "@/formSchemas/sampleCollectionSchema"
 import { currencySymbol } from "@/helpers/currencySymbol"
 import { currencyFormat } from "@/lib/utils"
+import RadiologyApi from "@/services/radiology-api"
 import { RadiologyBillDeatils, RadiologySampleCollectionDet, RadioTestReport } from "@/types/radiology/radiology"
-import { CalendarDays, Eye, Plus, UserRoundPlus } from "lucide-react"
+import { CalendarDays, Eye, Plus, Printer, UserRoundPlus } from "lucide-react"
 import { HTMLAttributes, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import { createRadiologyReport, createRadioSampleCollection, getRadiologyReportDetails, getRadioSampleCollectionDetails, updateRadiologyReport, updateRadioSampleCollection } from "./APIHandlers"
-import PrintRadiologyBill from "./print/print-radio-bill"
+import PrintRadiologyInvoice from "./print/print-invoice"
 import PrintRadioTestReport from "./print/print-radio-test-report"
 import RadiologyReportForm from "./radiology-report-form"
 
@@ -40,7 +40,7 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
     const [reportForm, setReportForm] = useState(false)
     const [collectionDetails, setCollectionDetails] = useState<RadiologySampleCollectionDet>()
     const [reportDetails, setReportDetails] = useState<RadioTestReport>()
-
+    const [print, setPrint] = useState(false)
 
 
     const onCollectionSubmit = async (formData: z.infer<typeof sampleCollectionSchema>) => {
@@ -48,11 +48,11 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
             let data;
             setLoading(prev => ({ ...prev, inline: true }))
             collectionDetails ? (
-                data = await updateRadioSampleCollection(collectionDetails?.itemId, formData),
+                data = await RadiologyApi.updateRadioSampleCollection(collectionDetails?.itemId, formData),
                 setCollectionDetails(undefined)
             )
                 :
-                (data = await createRadioSampleCollection(formData, itemId.current))
+                (data = await RadiologyApi.createRadioSampleCollection(formData, itemId.current))
             toast.success(data.message)
             setCollectionForm(false)
             setView({ ...view, [index.current]: { collection: true } })
@@ -70,12 +70,12 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
             let data;
             setLoading(prev => ({ ...prev, inline: true }))
             reportDetails ? (
-                data = await updateRadiologyReport(reportDetails.itemId, formData),
+                data = await RadiologyApi.updateRadiologyReport(reportDetails.itemId, formData),
                 setReportDetails(undefined)
             )
                 :
                 (
-                    data = await createRadiologyReport(itemId.current, formData)
+                    data = await RadiologyApi.createRadiologyReport(itemId.current, formData)
                 )
             toast.success(data.message)
             setReportForm(false)
@@ -92,7 +92,7 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
     const fetchReportDetails = async (itemId: number) => {
         try {
             setLoading(prev => ({ ...prev, model: true }))
-            const data = await getRadiologyReportDetails(itemId)
+            const data = await RadiologyApi.getRadiologyReportById(itemId)
             setReportDetails(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -105,7 +105,7 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
     const fetchCollectionDetails = async (itemId: number) => {
         try {
             setLoading(prev => ({ ...prev, model: true }))
-            const data = await getRadioSampleCollectionDetails(itemId)
+            const data = await RadiologyApi.getRadioSampleCollectionDetails(itemId)
             setCollectionDetails(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -131,7 +131,7 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                 <div className="flex space-x-1 items-center">
                                     <p className='text-sm text-gray-400'>Invoice Date</p>
                                     {/* printing commulative bill */}
-                                    <PrintRadiologyBill details={details!} />
+                                    <Printer className='cursor-pointer h-4 w-4 text-gray-600 dark:text-gray-300 active:scale-95' onClick={() => setPrint(true)} />
                                 </div>
                             </div>
                         </div>
@@ -245,7 +245,9 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                         </TableCell>
                                         <TableCell>{item.tax} %</TableCell>
                                         <TableCell>{currencyFormat(item.amount)}</TableCell>
-                                        <TableCell><PrintRadioTestReport details={details!} itemId={item.id} onPending={(v) => setLoading({ ...loading, model: v })} /></TableCell>
+                                        <TableCell>
+                                            <PrintRadioTestReport details={details!} itemId={item.id} onPending={(v) => setLoading({ ...loading, model: v })} />
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -281,6 +283,9 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
 
 
             {loading.model && <LoaderModel />}
+
+            {/* printing invoice */}
+            {print && <PrintRadiologyInvoice Info={details!} afterPrint={() => setPrint(false)} />}
 
         </>
     )

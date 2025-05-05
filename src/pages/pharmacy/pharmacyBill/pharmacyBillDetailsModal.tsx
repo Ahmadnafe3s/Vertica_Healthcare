@@ -1,3 +1,4 @@
+import CardBox from "@/components/card-box"
 import Dialog from "@/components/Dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -29,44 +30,16 @@ const PharmacyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) =
           </div>
 
           <div className="sm:col-span-2 grid grid-cols-2 gap-2">
-
-            <div className='space-y-1  p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:dark:border-gray-700 rounded-md'>
-              <p className='text-gray-700 dark:text-gray-400 text-sm'>Invoice No</p>
-              <p className='font-semibold'>{details?.id}</p>
-            </div>
-
-            <div className='space-y-1  p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:dark:border-gray-700 rounded-md'>
-              <p className='text-gray-700 dark:text-gray-400 text-sm'>Patient Name</p>
-              <p className='font-semibold'>{details?.patient.name}</p>
-            </div>
-
+            <CardBox borderType='dashed' title="Invoice No" value={details?.id} />
+            <CardBox borderType='dashed' title="Patient Name" value={details?.patient.name} />
           </div>
 
-          <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-            <p className='text-gray-700 dark:text-gray-400'>OPD ID</p>
-            <p className='text-sm'>{details?.opdId}</p>
-          </div>
+          <CardBox borderType='solid' title="OPD ID" value={details?.opdId} />
+          <CardBox borderType='solid' title="Doctor" value={details?.doctor} />
+          <CardBox borderType='solid' title="Discount %" value={details?.discount} />
+          <CardBox borderType='solid' title="Net Amount" value={currencyFormat(Number(details?.net_amount))} />
+          <CardBox borderType='solid' title="Note" value={details?.note} />
 
-          <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-            <p className='text-gray-700 dark:text-gray-400'>Doctor</p>
-            <p className='text-sm'>{details?.doctor}</p>
-          </div>
-
-          <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-            <p className='text-gray-700 dark:text-gray-400'>Discount %</p>
-            <p className='text-sm'>{details?.discount} %</p>
-          </div>
-
-          <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-            <p className='text-gray-700 dark:text-gray-400'>Net Amount {currencySymbol()}</p>
-            <p className='text-sm'>{currencyFormat(Number(details?.net_amount))}</p>
-          </div>
-
-
-          <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-            <p className='text-gray-700 dark:text-gray-400'>Note</p>
-            <p className='text-sm'>{details?.note}</p>
-          </div>
         </div>
 
         {/* second grid */}
@@ -74,8 +47,8 @@ const PharmacyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) =
         <div className="grid pb-10 pt-5 px-2.5 font-medium">
           <h1 className="text-lg text-gray-800 dark:text-gray-100">Medicines</h1>
 
-          <Table className="mt-2 border rounded-lg dark:border-gray-800">
-            <TableHeader className="bg-gray-100 dark:bg-gray-900">
+          <Table>
+            <TableHeader>
               <TableRow>
                 <TableHead>Medicine Name</TableHead>
                 <TableHead>Category</TableHead>

@@ -12,13 +12,13 @@ const CardBox = ({ borderType, className, title, value }: CardBoxProps) => {
     return (
         <>
             {borderType === 'solid' ? (
-                <div className={cn('space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700', className)}>
+                <div className={cn('space-y-1 p-2  ring-1 ring-zinc-200 dark:ring-border', className)}>
                     <p className='text-gray-700 dark:text-gray-400'>{title}</p>
                     <p className='font-semibold'>{value}</p>
                 </div>
             )
                 :
-                <div className={cn('space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md', className)}>
+                <div className={cn('space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-zinc-800 rounded-md', className)}>
                     <p className='text-gray-700 dark:text-gray-400'>{title}</p >
                     <p className='font-semibold'>{value}</p>
                 </div >

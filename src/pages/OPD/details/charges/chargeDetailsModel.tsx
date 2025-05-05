@@ -1,6 +1,6 @@
+import CardBox from "@/components/card-box"
 import Dialog from "@/components/Dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { currencySymbol } from "@/helpers/currencySymbol"
 import { currencyFormat } from "@/lib/utils"
 import { ChargeDetailsType } from "@/types/opd_section/charges"
 import { CalendarDays } from "lucide-react"
@@ -29,59 +29,22 @@ const ChargeDetailsModel = ({ chargeDetails, ...props }: ChargeDetailsModelProps
                         </div>
                     </div>
 
+                    {/* Dashed */}
                     <div className="sm:col-span-2 grid grid-cols-2 gap-2">
-
-                        <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md'>
-                            <p className='text-gray-700 dark:text-gray-400 text-sm'>Reference No.</p>
-                            <p className='font-semibold'>{chargeDetails?.id}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md'>
-                            <p className='text-gray-700 dark:text-gray-400 text-sm'>Charge Name</p>
-                            <p className='font-semibold'>{chargeDetails?.chargeNames.name}</p>
-                        </div>
-
+                        <CardBox borderType='dashed' title="Reference No." value={chargeDetails?.id} />
+                        <CardBox borderType='dashed' title="Charge Name" value={chargeDetails?.chargeNames.name} />
                     </div>
 
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>Charge Type</p>
-                        <p className='text-sm'>{chargeDetails?.chargeType.charge_type}</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>Charge Category</p>
-                        <p className='text-sm'>{chargeDetails?.chargeCategory.category}</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>Standard Amount {currencySymbol()}</p>
-                        <p className='text-sm'>{currencyFormat(Number(chargeDetails?.standard_charge))}</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>TPA Charge {currencySymbol()} </p>
-                        <p className='text-sm'>{currencyFormat(Number(chargeDetails?.tpa))}</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>Total {currencySymbol()}</p>
-                        <p className='text-sm'>{currencyFormat(Number(chargeDetails?.total))}</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>Tax %</p>
-                        <p className='text-sm'>{chargeDetails?.tax} %</p>
-                    </div>
-
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>Discount</p>
-                        <p className='text-sm'>{chargeDetails?.discount} %</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>Net Amount {currencySymbol()}</p>
-                        <p className='text-sm'>{currencyFormat(Number(chargeDetails?.net_amount))}</p>
+                    {/* Solid */}
+                    <div className="col-span-full grid sm:grid-cols-3 gap-3 mt-3">
+                        <CardBox borderType='solid' title="Charge Type" value={chargeDetails?.chargeType.charge_type} />
+                        <CardBox borderType='solid' title="Charge Category" value={chargeDetails?.chargeCategory.category} />
+                        <CardBox borderType='solid' title="Standard Amount" value={currencyFormat(Number(chargeDetails?.standard_charge))} />
+                        <CardBox borderType='solid' title="TPA Charge" value={currencyFormat(Number(chargeDetails?.tpa))} />
+                        <CardBox borderType='solid' title="Total" value={currencyFormat(Number(chargeDetails?.total))} />
+                        <CardBox borderType='solid' title="Tax %" value={`${chargeDetails?.tax} %`} />
+                        <CardBox borderType='solid' title="Discount" value={`${chargeDetails?.discount} %`} />
+                        <CardBox borderType='solid' title="Net Amount" value={currencyFormat(Number(chargeDetails?.net_amount))} />
                     </div>
                 </div>
             </ScrollArea>

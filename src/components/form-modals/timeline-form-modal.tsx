@@ -1,17 +1,16 @@
-import MaxWidthWrapper from "@/components/MaxWidthWrapper";
+import Dialog from "@/components/Dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
 import { timelineFormSchema } from "@/formSchemas/timelineFormSchema";
+import { timeline } from "@/types/opd_section/timeline";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader, X } from "lucide-react";
+import { Loader } from "lucide-react";
 import { HTMLAttributes } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Textarea } from "@/components/ui/textarea";
-import { timeline } from "@/types/opd_section/timeline";
-import Dialog from "@/components/Dialog";
 
 
 interface TimelineFormModelProps extends HTMLAttributes<HTMLDivElement> {

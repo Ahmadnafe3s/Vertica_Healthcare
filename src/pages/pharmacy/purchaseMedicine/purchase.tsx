@@ -13,6 +13,7 @@ import { page_limit } from '@/globalData'
 import { currencySymbol } from '@/helpers/currencySymbol'
 import { useConfirmation } from '@/hooks/useConfirmation'
 import { currencyFormat } from '@/lib/utils'
+import PharmacyApi from '@/services/pharmacy-api'
 import { medicinePurchaseDetails, medicinePurchases } from '@/types/opd_section/purchaseMedicine'
 import { Plus, SearchX } from 'lucide-react'
 import { parseAsInteger, useQueryState } from 'nuqs'
@@ -20,11 +21,10 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useDebouncedCallback } from 'use-debounce'
 import { z } from 'zod'
-import { createPurchase, deletePurchaseMedicine, getPurchaseDetails, getPurchaseList } from '../pharmacyApiHandler'
 import PrintMedicinePurchases from './printPurchase/print-list'
+import PrintMedicinePurchase from './printPurchase/print-purchase'
 import PurchaseMedicineForm from './purchaseMedicine'
 import PurchaseMedicineDetailsModel from './purchaseMedicineDetailsModel'
-import PrintMedicinePurchase from './printPurchase/print-purchase'
 
 
 
@@ -52,7 +52,7 @@ const Purchase = () => {
   // performing only insert
   const handleSubmit = async (formData: z.infer<typeof PurchaseMedicineFormSchema>) => {
     try {
-      const data = await createPurchase(formData)
+      const data = await PharmacyApi.createPurchase(formData)
       toast.success(data.message)
       fetchPurchases()
       setForm(false)
@@ -72,7 +72,7 @@ const Purchase = () => {
 
   const fetchPurchases = async () => {
     try {
-      const data = await getPurchaseList({
+      const data = await PharmacyApi.getPurchases({
         page,
         limit: page_limit,
         search: search! // dont have to use string object otherwise null will become string
@@ -89,7 +89,7 @@ const Purchase = () => {
     try {
       const isConfirm = await confirm()
       if (!isConfirm) return null
-      const data = await deletePurchaseMedicine(id)
+      const data = await PharmacyApi.deletePurchaseMedicine(id)
       toast.success(data.message)
       fetchPurchases()
     } catch ({ message }: any) {
@@ -101,7 +101,7 @@ const Purchase = () => {
   const fetchPurchaseDetails = async (id: string) => {
     try {
       setLoading(rest => ({ ...rest, model: true }))
-      const data = await getPurchaseDetails(id)
+      const data = await PharmacyApi.getMedicinePurchaseById(id)
       setCurrent(data)
     } catch ({ message }: any) {
       toast.success(message)

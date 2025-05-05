@@ -10,7 +10,9 @@ import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { AddMedicinesFormSchema } from '@/formSchemas/addMedicinesFormSchema'
+import { page_limit } from '@/globalData'
 import { useConfirmation } from '@/hooks/useConfirmation'
+import PharmacyApi from '@/services/pharmacy-api'
 import { medicineDetails, paginatedMedicines } from '@/types/pharmacy/pharmacy'
 import { ListMinus, Plus } from 'lucide-react'
 import { parseAsInteger, useQueryState } from 'nuqs'
@@ -19,7 +21,6 @@ import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
 import { z } from 'zod'
-import { createMedicine, deleteMedicine, getMedicinedetails, getMedicineList, updateMedicine } from '../pharmacyApiHandler'
 import AddMedicineFormModel from './createMedicineForm'
 import MedicineDetailsModel from './medicineDetailsModel'
 
@@ -53,9 +54,9 @@ const Medicines = () => {
       setLoading(rest => ({ ...rest, inline: true }))
       // conditionally check is we have details
       medicineDetails ?
-        (data = await updateMedicine(medicineDetails.id, formData), setMedicineDetails(undefined))
+        (data = await PharmacyApi.updateMedicine(medicineDetails.id, formData), setMedicineDetails(undefined))
         :
-        (data = await createMedicine(formData))
+        (data = await PharmacyApi.createMedicine(formData))
       setModel(rest => ({ ...rest, MedicineForm: false }))
       toast.success(data.message)
       fetchMedicineList()
@@ -70,7 +71,7 @@ const Medicines = () => {
 
   const fetchMedicineList = async () => {
     try {
-      const data = await getMedicineList({ page, limit: 10, search: search! })
+      const data = await PharmacyApi.getMedicines({ page, limit: page_limit, search: search! })
       setMedicines(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -89,7 +90,7 @@ const Medicines = () => {
     try {
       const isConfirm = await confirm()
       if (!isConfirm) return null
-      const data = await deleteMedicine(id)
+      const data = await PharmacyApi.deleteMedicine(id)
       toast.success(data.message)
       fetchMedicineList();   // after deleting refetch data
     } catch ({ message }: any) {
@@ -101,7 +102,7 @@ const Medicines = () => {
   const fetchMedicineDetails = async (id: number) => {
     try {
       setLoading(rest => ({ ...rest, model: true }))
-      const data = await getMedicinedetails(id)
+      const data = await PharmacyApi.getMedicineById(id)
       setMedicineDetails(data)
     } catch ({ message }: any) {
       toast.error(message)

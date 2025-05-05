@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
-import { Calendar, Clock, UserRound } from "lucide-react";
+import CardBox from "@/components/card-box";
+import PermissionProtectedAction from "@/components/permission-protected-actions";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { currencySymbol } from "@/helpers/currencySymbol";
 import { currencyFormat } from "@/lib/utils";
+import OpdApi from "@/services/opd-api";
 import { opdDetails } from "@/types/opd_section/opd";
-import PermissionProtectedAction from "@/components/permission-protected-actions";
-import { getOPD_Details } from "../../opdApiHandler";
+import { Calendar, Clock, UserRound } from "lucide-react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
 
 
 
@@ -16,13 +17,13 @@ import { getOPD_Details } from "../../opdApiHandler";
 const VisitDetails = () => {
 
     const { opdId } = useParams()
-    const [OPD_DETAILS, set_OPD_DETAILS] = useState<opdDetails>()
+    const [current, setCurrent] = useState<opdDetails>()
 
 
-    const fetchOpdDetails = async () => {
+    const getOpdById = async () => {
         try {
-            const data = await getOPD_Details(opdId!)
-            set_OPD_DETAILS(data)
+            const data = await OpdApi.getOpdById(opdId!)
+            setCurrent(data)
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -30,7 +31,7 @@ const VisitDetails = () => {
 
 
     useEffect(() => {
-        fetchOpdDetails()
+        getOpdById()
     }, [])
 
 
@@ -48,9 +49,9 @@ const VisitDetails = () => {
 
                 <div className="sm:col-span-2 flex space-x-2 items-center mb-3">
 
-                    {OPD_DETAILS?.appointment?.patient?.image ?
+                    {current?.appointment?.patient?.image ?
                         (<div className='w-20 h-20'>
-                            <img src={OPD_DETAILS.appointment.patient.image!} alt="staff img" className='object-cover h-full w-full rounded-full' />
+                            <img src={current.appointment.patient.image!} alt="staff img" className='object-cover h-full w-full rounded-full' />
                         </div>)
                         :
                         (<div className='p-3 bg-red-500 rounded-full'>
@@ -59,63 +60,27 @@ const VisitDetails = () => {
                     }
 
                     <div className=''>
-                        <p className='font-semibold text-lg text-gray-900 dark:text-white'>{OPD_DETAILS?.appointment?.patient.name}</p>
-                        <p className='text-sm text-gray-500'>ID : {OPD_DETAILS?.appointment?.patient.id}</p>
+                        <p className='font-semibold text-lg text-gray-900 dark:text-white'>{current?.appointment?.patient.name}</p>
+                        <p className='text-sm text-gray-500'>ID : {current?.appointment?.patient.id}</p>
                     </div>
                 </div>
 
 
                 {/* patient Details */}
 
-                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                    <p className='text-gray-700 dark:text-neutral-300'>Gender</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.gender}</p>
-                </div>
-
-                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                    <p className='text-gray-700 dark:text-neutral-300'>Guardian Name</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.guardian_name}</p>
-                </div>
-
-                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                    <p className='text-gray-700 dark:text-neutral-300'>Age</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.age}</p>
-                </div>
-
-                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                    <p className='text-gray-700 dark:text-neutral-300'>Blood Group</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.blood_group}</p>
-                </div>
-
-                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                    <p className='text-gray-700 dark:text-neutral-300'>Aadhar</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.aadhar}</p>
-                </div>
-
-                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                    <p className='text-gray-700 dark:text-neutral-300'>Phone</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.phone}</p>
-                </div>
-
-                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                    <p className='text-gray-700 dark:text-neutral-300'>Address</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.address}</p>
-                </div>
-
-                <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                    <p className='text-gray-700 dark:text-neutral-300'>Alergies</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.appointment?.patient.alergies}</p>
-                </div>
+                <CardBox borderType="solid" title="Gender" value={current?.appointment?.patient.gender} />
+                <CardBox borderType="solid" title="Guardian Name" value={current?.appointment?.patient.guardian_name} />
+                <CardBox borderType="solid" title="Age" value={current?.appointment?.patient.age} />
+                <CardBox borderType="solid" title="Blood Group" value={current?.appointment?.patient.blood_group} />
+                <CardBox borderType="solid" title="Aadhar" value={current?.appointment?.patient.aadhar} />
+                <CardBox borderType="solid" title="Phone" value={current?.appointment?.patient.phone} />
+                <CardBox borderType="solid" title="Address" value={current?.appointment?.patient.address} />
+                <CardBox borderType="solid" title="Alergies" value={current?.appointment?.patient.alergies} />
 
                 <Separator className="sm:col-span-full my-8" />
 
-
                 {/* Case Details */}
-
-                <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                    <p className='text-gray-700 dark:text-neutral-300'>OPD No.</p>
-                    <p className='font-semibold'>{OPD_DETAILS?.id}</p>
-                </div>
+                <CardBox borderType="solid" title="OPD No." value={current?.id} />
 
                 <Separator className="sm:col-span-full my-8" />
 
@@ -126,8 +91,8 @@ const VisitDetails = () => {
 
                 {/* Can be add Vitals Here */}
 
-                {OPD_DETAILS?.Vitals?.map((measure, i) => {
-                    return <div key={i} className='space-y-1 flex justify-between p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
+                {current?.Vitals?.map((measure, i) => {
+                    return <div key={i} className='space-y-1 flex justify-between p-2  ring-1 ring-zinc-200 dark:ring-border rounded-sm'>
                         <div>
                             <p className='text-gray-700 dark:text-gray-300'>{measure.vital?.name}</p>
                             <p className='font-semibold'>{measure?.value}</p>
@@ -145,7 +110,7 @@ const VisitDetails = () => {
                 {/* Symptoms */}
 
                 <h1 className="sm:col-span-full font-semibold text-gray-800 dark:text-neutral-100">Symptoms</h1>
-                <p className="text-sm text-gray-500 sm:col-span-full">{OPD_DETAILS?.appointment?.symptom_description}</p>
+                <p className="text-sm text-gray-500 sm:col-span-full">{current?.appointment?.symptom_description}</p>
 
                 <Separator className="sm:col-span-full my-8" />
 
@@ -155,12 +120,12 @@ const VisitDetails = () => {
 
                 <div className="sm:col-span-full flex space-x-2 items-center">
                     <div className='w-16 h-16'>
-                        <img src={OPD_DETAILS?.appointment?.doctor.image ? OPD_DETAILS?.appointment?.doctor.image : OPD_DETAILS?.appointment?.doctor.gender === 'male' ? '/user.png' : '/female_user.png'} alt="staff img" className='object-cover h-full w-full rounded-lg' />
+                        <img src={current?.appointment?.doctor.image ? current?.appointment?.doctor.image : current?.appointment?.doctor.gender === 'male' ? '/user.png' : '/female_user.png'} alt="staff img" className='object-cover h-full w-full rounded-full border-2 border-border' />
                     </div>
 
                     <div className=''>
-                        <p className='font-semibold text-lg text-gray-900 dark:text-white'>{OPD_DETAILS?.appointment?.doctor.name}</p>
-                        <p className='text-sm text-gray-500'>ID : {OPD_DETAILS?.appointment?.doctor.id}</p>
+                        <p className='font-semibold text-lg text-gray-900 dark:text-white'>{current?.appointment?.doctor.name}</p>
+                        <p className='text-sm text-gray-500'>ID : {current?.appointment?.doctor.id}</p>
                     </div>
 
                 </div>
@@ -172,10 +137,10 @@ const VisitDetails = () => {
 
                 <h1 className="sm:col-span-full font-semibold mb-2 text-gray-800 dark:text-neutral-100">Timeline</h1>
 
-                {OPD_DETAILS?.timelines?.length! > 0 ? (<ul className="sm:col-span-full relative before:absolute space-y-5 before:w-1 w-64 sm:w-[400px] mx-auto gap-3 before:h-full before:bg-gray-300 before:top-0 before:block">
+                {current?.timelines?.length! > 0 ? (<ul className="sm:col-span-full relative before:absolute space-y-5 before:w-1 w-64 sm:w-[400px] mx-auto gap-3 before:h-full before:bg-gray-300 before:top-0 before:block">
 
 
-                    {OPD_DETAILS?.timelines?.map((timeline, i) => {
+                    {current?.timelines?.map((timeline, i) => {
                         return <li className="space-y-4" key={i}>
 
                             {/* Time section */}
@@ -233,8 +198,8 @@ const VisitDetails = () => {
                 <PermissionProtectedAction action="view" module="Medication">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Medication</h1>
 
-                    <Table className="rounded-lg border dark:border-gray-800 w-full">
-                        <TableHeader className="bg-slate-100 dark:bg-slate-900 ">
+                    <Table>
+                        <TableHeader >
                             <TableRow>
                                 <TableHead>Date</TableHead>
                                 <TableHead>Medicine Name</TableHead>
@@ -246,7 +211,7 @@ const VisitDetails = () => {
                         </TableHeader>
 
                         <TableBody>
-                            {OPD_DETAILS?.medications?.map((medication, i) => (
+                            {current?.medications?.map((medication, i) => (
                                 <TableRow key={i}>
                                     <TableCell className="text-gray-800 dark:text-neutral-100 whitespace-nowrap">{medication.date}</TableCell>
                                     <TableCell>{medication?.medicine.name}</TableCell>
@@ -260,7 +225,7 @@ const VisitDetails = () => {
                     </Table>
 
 
-                    {OPD_DETAILS?.medications?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
+                    {current?.medications?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
 
                     <Separator className="sm:col-span-full my-8" />
 
@@ -271,8 +236,8 @@ const VisitDetails = () => {
                 <PermissionProtectedAction action="view" module="Operation">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Operation</h1>
 
-                    <Table className="rounded-lg border dark:border-gray-800">
-                        <TableHeader className="bg-slate-100 dark:bg-slate-900 ">
+                    <Table>
+                        <TableHeader >
                             <TableRow>
                                 <TableHead>Reference No</TableHead>
                                 <TableHead>Date</TableHead>
@@ -283,9 +248,9 @@ const VisitDetails = () => {
                         </TableHeader>
 
                         <TableBody>
-                            {OPD_DETAILS?.Operations?.map((operation, i) => {
+                            {current?.Operations?.map((operation, i) => {
                                 return <TableRow key={i}>
-                                    <TableCell className="text-gray-700">{operation.id}</TableCell>
+                                    <TableCell className="text-gray-700 dark:text-neutral-300">{operation.id}</TableCell>
                                     <TableCell className="text-sm">{operation.date}</TableCell>
                                     <TableCell>{operation.operationName.name}</TableCell>
                                     <TableCell>{operation.operationCategory.name}</TableCell>
@@ -295,7 +260,7 @@ const VisitDetails = () => {
                         </TableBody>
                     </Table>
 
-                    {OPD_DETAILS?.Operations?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
+                    {current?.Operations?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
 
                     <Separator className="sm:col-span-full my-8" />
                 </PermissionProtectedAction>
@@ -306,8 +271,8 @@ const VisitDetails = () => {
                 <PermissionProtectedAction action="view" module="Charges">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Charges</h1>
 
-                    <Table className="rounded-lg border dark:border-gray-800">
-                        <TableHeader className="bg-slate-100 dark:bg-slate-900">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
                                 <TableHead>Charge Date</TableHead>
                                 <TableHead>Charge Name</TableHead>
@@ -318,7 +283,7 @@ const VisitDetails = () => {
                         </TableHeader>
 
                         <TableBody>
-                            {OPD_DETAILS?.charges?.map((charge, i) => {
+                            {current?.charges?.map((charge, i) => {
                                 return <TableRow key={i}>
                                     <TableCell className="whitespace-nowrap">{charge.date}</TableCell>
                                     <TableCell>{charge.chargeNames.name}</TableCell>
@@ -330,7 +295,7 @@ const VisitDetails = () => {
                         </TableBody>
                     </Table>
 
-                    {OPD_DETAILS?.charges?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
+                    {current?.charges?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
 
                     <Separator className="sm:col-span-full my-8" />
                 </PermissionProtectedAction>
@@ -341,8 +306,8 @@ const VisitDetails = () => {
                 <PermissionProtectedAction action="view" module="Payments">
                     <h1 className="font-semibold text-gray-800 dark:text-neutral-100 mb-2">Payments</h1>
 
-                    <Table className="rounded-lg border dark:border-gray-800">
-                        <TableHeader className="bg-slate-100 dark:bg-slate-900">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
                                 <TableHead>Transaction ID</TableHead>
                                 <TableHead>Date</TableHead>
@@ -351,7 +316,7 @@ const VisitDetails = () => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {OPD_DETAILS?.Payments?.map((payment) => {
+                            {current?.Payments?.map((payment) => {
                                 return <TableRow key={payment.id}>
                                     <TableCell className="font-semibold">{payment.id}</TableCell>
                                     <TableCell className="whitespace-nowrap">{payment.date}</TableCell>
@@ -362,7 +327,7 @@ const VisitDetails = () => {
                         </TableBody>
                     </Table>
 
-                    {OPD_DETAILS?.Payments?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
+                    {current?.Payments?.length! < 1 && <p className="text-sm text-gray-600">No data found</p>}
                 </PermissionProtectedAction>
             </div>
         </section>

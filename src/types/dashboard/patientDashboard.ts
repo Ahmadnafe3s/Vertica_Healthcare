@@ -1,9 +1,13 @@
-import { number } from "zod"
 
 export type PatientDashTotalCount = {
     appointments: number,
     opds: number,
     pharmacies: number,
+    radiology: number
+    pathology: number
+    issueBlood: number,
+    issueBloodComponent: number,
+    ambulance: number
 }
 
 

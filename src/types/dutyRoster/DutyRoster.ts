@@ -10,6 +10,8 @@ export interface RosterDataType {
     staff: {
         name: string
         department: string
+        image: string
+        gender: string
     }
 }
 

@@ -26,8 +26,12 @@ export const Module = [
     { name: 'Duty Roster', create: true, view: true, update: true, delete: true },
     { name: 'Ambulance', create: true, view: true, update: true, delete: true },
     { name: 'Assign Ambulance', create: true, view: true, update: true, delete: true },
+    { name: 'Issue Blood', create: true, view: true, update: true, delete: true },
+    { name: 'Issue Blood Component', create: true, view: true, update: false, delete: true },
+    { name: 'Blood Donors', create: true, view: true, update: true, delete: true },
+    { name: 'Blood Donation', create: true, view: true, update: true, delete: true },
+    { name: 'Blood Component', create: true, view: true, update: false, delete: true },
 ];
-
 
 
 
@@ -79,15 +83,14 @@ export const setupPermissions = [
 
 export const dashboardPermissions = [
     'Opd Income',
+    'Pharmacy Income',
+    'Radiology Income',
+    'Pathology Income',
+    'Ambulance Income',
+    'Blood Bank Income',
     'Opds',
     'Appointments',
     'Appmnt Income',
-    'Pharmacy Income',
-    'Radiology Income',
-    'Radiology Bills',
-    'Pathology Income',
-    'Pathology Bills',
-    'Pharmacy Bill',
     'Medicines',
     'Income Expenses',
     'Medicine Purchases',

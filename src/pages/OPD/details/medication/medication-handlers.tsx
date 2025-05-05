@@ -1,12 +1,12 @@
 import { medicationFormSchema } from "@/formSchemas/medicationFormSchema"
 import { useConfirmation } from "@/hooks/useConfirmation"
+import medicationApi from "@/services/medication-api"
 import { medicationDetail, opdMedications } from "@/types/opd_section/medication"
+import { Params } from "@/types/type"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { useParams } from "react-router-dom"
 import { z } from "zod"
-import { createMedication, deleteMedication, getMedicationDetails, getMedications, updateMedication } from "../../opdApiHandler"
-import { Params } from "@/types/type"
 
 
 
@@ -27,22 +27,22 @@ const useMedicationHandlers = (params?: Params) => {
             let data;
             setPending(true)
             current ?
-                (data = await updateMedication(current.id, formData), setCurrent(undefined))
+                (data = await medicationApi.updateMedication(current.id, formData), setCurrent(undefined))
                 :
-                (data = await createMedication(formData, { opdId, ipdId }))
+                (data = await medicationApi.createMedication(formData, { opdId, ipdId }))
 
             toast.success(data.message)
             setForm(false)
-            fetchMedications()
+            getMedications()
         } catch ({ message }: any) {
             toast.error(message)
         } finally { setPending(false) }
     }
 
 
-    const fetchMedications = async () => {
+    const getMedications = async () => {
         try {
-            const data = await getMedications({ ...params, opdId, ipdId })
+            const data = await medicationApi.getMedications({ ...params, opdId, ipdId })
             setMedications(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -50,34 +50,36 @@ const useMedicationHandlers = (params?: Params) => {
     }
 
 
-    const fetchMedicationDetails = async (id: number) => {
+    const getMedicationDetails = async (id: number) => {
         try {
             setPending(true)
-            const data = await getMedicationDetails(id)
+            const data = await medicationApi.getMedicationById(id)
             setCurrent(data)
         } catch ({ message }: any) {
             toast.error(message)
         } finally { setPending(false) }
     }
 
+
     const onDelete = async (id: number) => {
         try {
             const isConfirm = await confirm()
             if (!isConfirm) return null
-            const data = await deleteMedication(id)
+            const data = await medicationApi.deleteMedication(id)
             toast.success(data.message)
-            fetchMedications()
+            getMedications()
         } catch ({ message }: any) {
             toast.error(message)
         }
     }
 
+
     return {
         medications,
-        getMedications: fetchMedications,
+        getMedications,
         current,
         setCurrent,
-        getMedicationDetails: fetchMedicationDetails,
+        getMedicationDetails,
         isPending,
         form,
         setForm,

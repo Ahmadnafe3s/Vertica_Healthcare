@@ -2,12 +2,13 @@ import CustomPagination from "@/components/customPagination"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { page_limit } from "@/globalData"
+import OpdApi from "@/services/opd-api"
 import { OPDs } from "@/types/opd_section/opd"
 import { parseAsInteger, useQueryState } from "nuqs"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Link, useParams } from "react-router-dom"
-import { getTreatmentHistory } from "../../opdApiHandler"
 
 
 const TreatmentsList = () => {
@@ -19,7 +20,7 @@ const TreatmentsList = () => {
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [search, setSearch] = useQueryState('search')
 
-  const [OPD_LIST, SET_OPD_LIST] = useState<OPDs>({ data: [], total_pages: 0 })
+  const [opds, setOpds] = useState<OPDs>({ data: [], total_pages: 0 })
 
 
   async function onSearch(date: string) {
@@ -27,12 +28,10 @@ const TreatmentsList = () => {
     setPage(1)
   }
 
-  const fetchOPDs = async () => {
+  const getOpds = async () => {
     try {
-      const data = await getTreatmentHistory({ page, limit: 10, search: search!, opdId })
-      console.log(data);
-
-      SET_OPD_LIST(data)
+      const data = await OpdApi.getTreatmentHistory({ page, limit: page_limit, search: search!, opdId })
+      setOpds(data)
     } catch ({ message }: any) {
       toast.error(message)
     }
@@ -40,7 +39,7 @@ const TreatmentsList = () => {
 
 
   useEffect(() => {
-    fetchOPDs()
+    getOpds()
   }, [page, search])
 
 
@@ -60,8 +59,8 @@ const TreatmentsList = () => {
 
       <div className="flex flex-col space-y-5 min-h-[60vh]">
         <div className="flex-1">
-          <Table className="rounded-lg border dark:border-gray-800">
-            <TableHeader className="bg-zinc-100 dark:bg-gray-900">
+          <Table>
+            <TableHeader>
               <TableRow>
                 <TableHead>OPD ID</TableHead>
                 <TableHead>Appointment Date</TableHead>
@@ -71,7 +70,7 @@ const TreatmentsList = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {OPD_LIST?.data.map((opd, i) => {
+              {opds?.data.map((opd, i) => {
                 return <TableRow key={i}>
                   <TableCell>
                     <Link className="text-blue-500 hover:text-blue-400 font-semibold" to={{ pathname: `../../${opd.id}` }}>{opd.id}</Link>
@@ -87,12 +86,12 @@ const TreatmentsList = () => {
 
           {/* if error */}
 
-          {OPD_LIST?.data.length < 1 && <p className="mt-4 text-gray-500">No data found</p>}
+          {opds?.data.length < 1 && <p className="mt-4 text-gray-500">No data found</p>}
         </div>
 
         <CustomPagination
           currentPage={page}
-          total_pages={OPD_LIST.total_pages}
+          total_pages={opds.total_pages}
           previous={(p) => setPage(p)}
           goTo={(p) => setPage(p)}
           next={(p) => setPage(p)}

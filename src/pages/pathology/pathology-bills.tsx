@@ -9,10 +9,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import UserImage from '@/components/user-image'
 import { createRadiologyBillSchema } from '@/formSchemas/createRadiologyBill'
+import { page_limit } from '@/globalData'
 import { currencySymbol } from '@/helpers/currencySymbol'
 import { useConfirmation } from '@/hooks/useConfirmation'
 import { currencyFormat } from '@/lib/utils'
+import PathologyApi from '@/services/pathology-api'
 import { PaginatedPathologyBills, PathologyBillDeatils } from '@/types/pathology/pathology'
 import { Plus } from 'lucide-react'
 import { parseAsInteger, useQueryState } from 'nuqs'
@@ -20,7 +23,6 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useDebouncedCallback } from 'use-debounce'
 import { z } from 'zod'
-import { createPathologyBill, deletePathologyBill, getPathologyBillDetails, getPathologyBills, updatePathologyBill } from './api-handlers'
 import CreatePathologyBill from './create-pathology-bill'
 import PathologyBillDetailsModal from './pathology-bill-details'
 
@@ -52,7 +54,7 @@ const PathologyBills = () => {
   const fetchRadiologyBills = async () => {
     try {
       // adjust limit accordingly
-      const data = await getPathologyBills({ page, limit: 10, search: search! }) // here search only will have value when we will search anything
+      const data = await PathologyApi.getPathologyBills({ page, limit: page_limit, search: search! }) // here search only will have value when we will search anything
       setBills(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -71,7 +73,7 @@ const PathologyBills = () => {
   const fetchRadiologyBillDetails = async (id: string) => {
     try {
       setLoading(prev => ({ ...prev, model: true }))
-      const data = await getPathologyBillDetails(id)
+      const data = await PathologyApi.getPathologyBillById(id)
       setPathBillDetails(data)
       console.log(data);
 
@@ -89,12 +91,12 @@ const PathologyBills = () => {
       let data;
       setLoading(pre => ({ ...pre, inline: true }))
       pathBillDetails ? (
-        data = await updatePathologyBill(pathBillDetails.id, formData),
+        data = await PathologyApi.updatePathologyBill(pathBillDetails.id, formData),
         setPathBillDetails(undefined)
       )
         :
         (
-          data = await createPathologyBill(formData)
+          data = await PathologyApi.createPathologyBill(formData)
         )
       toast.success(data.message)
       fetchRadiologyBills()
@@ -112,7 +114,7 @@ const PathologyBills = () => {
     try {
       const isConfirm = await confirm()
       if (!isConfirm) return null
-      const data = await deletePathologyBill(id)
+      const data = await PathologyApi.deletePathologyBill(id)
       toast.success(data.message)
       fetchRadiologyBills()
     } catch ({ message }: any) {
@@ -165,7 +167,7 @@ const PathologyBills = () => {
         <Separator />
 
 
-        <div className="flex flex-col pb-16 gap-y-10 min-h-[80vh]">
+        <div className="flex flex-col pb-16 gap-y-10 min-h-[80vh] mt-5">
           <div className="flex-1 space-y-3">
             <ProtectedTable module='Pathology Bill' renderTable={(show, canUpdate, canDelete) => (
               <Table>
@@ -196,7 +198,9 @@ const PathologyBills = () => {
                       </TableCell>
                       <TableCell>{bill.date}</TableCell>
                       <TableCell>{bill.ipdId}</TableCell>
-                      <TableCell>{bill.patient.name}</TableCell>
+                      <TableCell>
+                        <UserImage url={bill.patient.image} name={bill.patient.name} gender={bill.patient.gender} />
+                      </TableCell>
                       <TableCell>{bill.doctor}</TableCell>
                       <TableCell>{bill.discount} %</TableCell>
                       <TableCell>{currencyFormat(bill.net_amount)}</TableCell>

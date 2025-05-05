@@ -6,6 +6,9 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import UserImage from '@/components/user-image'
+import { page_limit } from '@/globalData'
+import { AppointmentApi } from '@/services/appointment-api'
 import { Appointment } from '@/types/appointment/appointment'
 import { Loader } from 'lucide-react'
 import { parseAsInteger, useQueryState } from 'nuqs'
@@ -13,7 +16,10 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
-import { fetchAppointments, updateStatus } from './appointmentAPIhandler'
+
+
+
+
 
 const QueueAppointment = () => {
 
@@ -32,7 +38,7 @@ const QueueAppointment = () => {
         try {
 
             setPending(true)
-            const data = await updateStatus(id, status)
+            const data = await AppointmentApi.updateStatus(id, status)
             toast.success(data.message)
             return router('..')
 
@@ -53,7 +59,7 @@ const QueueAppointment = () => {
     useEffect(() => {
         try {
             (async function () {
-                const data = await fetchAppointments({ page, limit: 10, status: 'pending', search: search! })
+                const data = await AppointmentApi.getAppointments({ page, limit: page_limit, status: 'pending', search: search! })
                 setAppointments(data)
             })() //IIFE
 
@@ -63,8 +69,7 @@ const QueueAppointment = () => {
     }, [page, search])
 
     return (
-        <section className='bg-slate-50 dark:bg-gray-950'>
-
+        <>
             <div className='flex flex-col py-3 gap-y-3'>
                 <h1 className='text-xl text-gray-900 dark:text-white font-semibold'>Queue Appointments</h1>
                 <Separator />
@@ -89,8 +94,6 @@ const QueueAppointment = () => {
                                     <TableHead>Gender</TableHead>
                                     <TableHead>Doctor</TableHead>
                                     <TableHead>Source</TableHead>
-                                    <TableHead>Priority</TableHead>
-                                    <TableHead>Alternative Address</TableHead>
                                     <TableHead>Status</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -100,15 +103,17 @@ const QueueAppointment = () => {
                                 {appointments.data.map((appointment, index) => {
                                     return <TableRow key={index}>
                                         <TableCell className="font-medium">{appointment.id}</TableCell>
-                                        <TableCell >{appointment.patient.name}</TableCell>
+                                        <TableCell >
+                                            <UserImage url={appointment.patient.image} name={appointment.patient.name} gender={appointment.patient.gender} />
+                                        </TableCell>
                                         <TableCell>{appointment.appointment_date}</TableCell>
                                         <TableCell>{appointment.shift}</TableCell>
                                         <TableCell>{appointment.patient.phone}</TableCell>
                                         <TableCell>{appointment.patient.gender}</TableCell>
-                                        <TableCell>{appointment.doctor.name}</TableCell>
+                                        <TableCell>
+                                            <UserImage url={appointment.doctor.image} name={appointment.doctor.name} gender={appointment.doctor.gender} />
+                                        </TableCell>
                                         <TableCell>Online</TableCell>
-                                        <TableCell>{appointment.appointment_priority}</TableCell>
-                                        <TableCell>{appointment.alternative_address}</TableCell>
                                         <TableCell>
                                             {canUpdate ? (
                                                 <Select onValueChange={(value) => { onUpdateStatus(appointment.id, value) }}>
@@ -150,7 +155,7 @@ const QueueAppointment = () => {
                     />
                 </section>
             </div>
-        </section>
+        </>
     )
 }
 

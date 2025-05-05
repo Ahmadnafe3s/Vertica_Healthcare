@@ -1,8 +1,9 @@
 import AxiosClient from "@/api/apiClient"
-import { AdminDash_MM_IncExp, AdminDashAppmtReport, AdminDashIncExp, AdminDashVisitors } from "@/types/dashboard/adminDashboard"
+
+import { AdminDash_MM_IncExp, AdminDashAppmtReport, AdminDashTotalCount, AdminDashVisitors } from "@/types/dashboard/adminDashboard"
 
 
-export const getAdminDashIncExp = async (): Promise<AdminDashIncExp> => {
+export const getAdminDashIncExp = async (): Promise<AdminDashTotalCount> => {
     try {
         const res = await AxiosClient.get(`/api/dashboard/admin`)
         return res.data

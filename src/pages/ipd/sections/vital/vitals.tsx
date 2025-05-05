@@ -58,8 +58,8 @@ const IpdVitals = () => {
 
             <Separator />
 
-            <Table className="rounded-lg border dark:border-gray-800">
-                <TableHeader className="bg-zinc-100 dark:bg-gray-900">
+            <Table>
+                <TableHeader>
                     <TableRow>
                         <TableHead>Date</TableHead>
                         <TableHead>Height (1-200 CM)</TableHead>

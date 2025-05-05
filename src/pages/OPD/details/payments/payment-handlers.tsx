@@ -1,12 +1,14 @@
 import { paymentFormSchema } from "@/formSchemas/paymentFormSchema"
 import { useConfirmation } from "@/hooks/useConfirmation"
+import PaymentApi from "@/services/payment-api"
 import { Payment, paymentData } from "@/types/opd_section/payment"
 import { Params } from "@/types/type"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { useParams } from "react-router-dom"
 import { z } from "zod"
-import { createPayment, deletePayment, getPayments, updatePayment } from "../../opdApiHandler"
+
+
 
 const usePaymentHandlers = (params: Params) => {
 
@@ -24,9 +26,9 @@ const usePaymentHandlers = (params: Params) => {
             setPending(true)
             let data;
             current ?
-                (data = await updatePayment(current.id, formData), setCurrent(null))
+                (data = await PaymentApi.updatePayment(current.id, formData), setCurrent(null))
                 :
-                (data = await createPayment(formData, { opdId, ipdId }))
+                (data = await PaymentApi.createPayment(formData, { opdId, ipdId }))
             toast.success(data.message)
             fetchPaymets()
             setForm(false)
@@ -39,7 +41,7 @@ const usePaymentHandlers = (params: Params) => {
     // Fetching list
     const fetchPaymets = async () => {
         try {
-            const data = await getPayments({ ...params, opdId, ipdId })
+            const data = await PaymentApi.getPayments({ ...params, opdId, ipdId })
             setPayments(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -52,7 +54,7 @@ const usePaymentHandlers = (params: Params) => {
         try {
             const isConfirm = await confirm()
             if (!isConfirm) return null
-            const data = await deletePayment(id)
+            const data = await PaymentApi.deletePayment(id)
             toast.success(data.message)
             fetchPaymets()
         } catch ({ message }: any) {

@@ -1,30 +1,29 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { Toaster } from "react-hot-toast";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import SignIn from "./Auth/signin";
 import Navbar from "./components/Navbar";
-import AsideLayout from "./Layouts/AsideLayout";
-import HomePage from "./home/HomePage";
-import RegisterPatient from "./Auth/registerPatient";
-import { Toaster } from "react-hot-toast";
-import { useAppDispatch } from "./hooks";
-import { useContext, useEffect } from "react";
-import { checkSession } from "./features/auth/authSlice";
+import { PermissionContext } from "./contexts/permission-provider";
 import Not_found from "./error/not_found";
 import Unauthorized from "./error/unauthorized";
-import PatientRoutes from "./routes/PatientRoutes";
+import { checkSession } from "./features/auth/authSlice";
+import HomePage from "./home/HomePage";
+import { useAppDispatch } from "./hooks";
+import AsideLayout from "./Layouts/AsideLayout";
+import IndexRoutes from "./routes";
+import AdminRoutes from "./routes/AdminRoutes";
+import SetupAuthzRoutes from "./routes/AdminSetup/authzRoutes";
+import SetupBedRoutes from "./routes/AdminSetup/bed-routes";
+import SetupEventRoutes from "./routes/AdminSetup/EventRoutes";
+import SetupFindingRoutes from "./routes/AdminSetup/FindingRoutes";
 import HospitalChargesRoutes from "./routes/AdminSetup/HospitalChargesRoutes";
 import SetupOperationRoutes from "./routes/AdminSetup/OperationRoutes";
-import SetupFindingRoutes from "./routes/AdminSetup/FindingRoutes";
-import SetupPharmacyRoutes from "./routes/AdminSetup/PharmacyRoutes";
-import SetupVitalRoutes from "./routes/AdminSetup/vitalRoutes";
-import SetupEventRoutes from "./routes/AdminSetup/EventRoutes";
-import AdminRoutes from "./routes/AdminRoutes";
-import SetupPatientRoutes from "./routes/AdminSetup/patientRoutes";
-import SetupAuthzRoutes from "./routes/AdminSetup/authzRoutes";
-import SetupRadiologyRoutes from "./routes/AdminSetup/radiologyRoutes";
 import SetupPathologyRoutes from "./routes/AdminSetup/pathology";
-import { PermissionContext } from "./contexts/permission-provider";
-import SetupBedRoutes from "./routes/AdminSetup/bed-routes";
-import IndexRoutes from "./routes";
+import SetupPatientRoutes from "./routes/AdminSetup/patientRoutes";
+import SetupPharmacyRoutes from "./routes/AdminSetup/PharmacyRoutes";
+import SetupRadiologyRoutes from "./routes/AdminSetup/radiologyRoutes";
+import SetupVitalRoutes from "./routes/AdminSetup/vitalRoutes";
+import PatientRoutes from "./routes/PatientRoutes";
 
 
 
@@ -41,7 +40,7 @@ function App() {
 
 
   return (
-    <div className="dark:bg-dark dark:text-white">
+    <div className="dark:bg-background dark:text-white">
       <Router>
         <Toaster toastOptions={{ duration: 2000 }} />
         <Navbar />
@@ -50,7 +49,6 @@ function App() {
 
           <Route path="/" element={<HomePage />} />
           <Route path="signin" element={<SignIn />} />
-          <Route path="registerPatient" element={<RegisterPatient />} />
 
 
           {/* routes with aside */}

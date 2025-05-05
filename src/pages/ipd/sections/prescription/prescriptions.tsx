@@ -48,8 +48,8 @@ const IpdPrescription = () => {
                 {/* pagination */}
                 <section className="flex flex-col gap-y-5 min-h-[60vh]">
                     <div className="flex-1">
-                        <Table className="rounded-lg border dark:border-gray-800">
-                            <TableHeader className="bg-zinc-100 dark:bg-gray-900">
+                        <Table>
+                            <TableHeader>
                                 <TableRow>
                                     <TableHead>Pres ID</TableHead>
                                     <TableHead>Finding Name</TableHead>
@@ -79,7 +79,7 @@ const IpdPrescription = () => {
 
                                             <TableCell>
                                                 <CustomTooltip message="View Prescription">
-                                                    <Syringe className="h-5 w-5 cursor-pointer text-gray-300 dark:text-gray-400"
+                                                    <Syringe className="h-5 w-5 cursor-pointer text-gray-600 dark:text-gray-400"
                                                         onClick={async () => {
                                                             await getPrescriptionInfo(pres.id)
                                                         }}

@@ -9,12 +9,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import UserImage from '@/components/user-image'
 import { page_limit } from '@/globalData'
 import { Plus } from 'lucide-react'
 import { parseAsInteger, useQueryState } from 'nuqs'
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
+import PrintIpdInvoice from '../invoice/print-invoice'
 import CreateIpdModal from './create-ipd-form-modal'
 import useIpdHandlers from './ipd-handlers'
 
@@ -26,7 +28,7 @@ const Ipds = () => {
     const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
     const [search, setSearch] = useQueryState('search')
 
-    const { ipds, isPending, form, fetchIpds, fetchIpdInfo, handleSubmit, setForm, onDelete, current, setCurrent, confirmationProps } = useIpdHandlers()
+    const { ipds, isPending, invoice, setInvoice, form, fetchIpds, fetchIpdInfo, handleSubmit, setForm, onDelete, current, setCurrent, confirmationProps, getIpdInvoice } = useIpdHandlers()
 
     const onSerach = useDebouncedCallback(async (value: string) => {
         value ? setSearch(value) : setSearch(null)
@@ -103,9 +105,13 @@ const Ipds = () => {
                                                 <Link className='text-blue-500 font-semibold hover:underline' to={`/ipd/${item.id}`}>{item.id}</Link>
                                             </TableCell>
                                             <TableCell>{item.date}</TableCell>
-                                            <TableCell>{item.patient.name}</TableCell>
+                                            <TableCell>
+                                                <UserImage url={item.patient.image} name={item.patient.name} gender={item.patient.gender} />
+                                            </TableCell>
                                             <TableCell>{item.patient.phone}</TableCell>
-                                            <TableCell>{item.doctor.name}</TableCell>
+                                            <TableCell>
+                                                <UserImage url={item.doctor.image} name={item.doctor.name} gender={item.doctor.gender} />
+                                            </TableCell>
                                             <TableCell>{item.bedGroup.name}</TableCell>
                                             <TableCell>{item.bed.name}</TableCell>
                                             <TableCell>{item.symptom_type}</TableCell>
@@ -116,6 +122,12 @@ const Ipds = () => {
                                                 canDelete={canDelete}
                                                 onEdit={async () => { await fetchIpdInfo(item.id); setForm(true) }}
                                                 onDelete={() => onDelete(item.id)}
+                                                incluePrint={{
+                                                    include: true,
+                                                    print() {
+                                                        getIpdInvoice(item.id)
+                                                    },
+                                                }}
                                             />
                                         </TableRow>
                                     ))}
@@ -165,6 +177,8 @@ const Ipds = () => {
             )}
 
             {isPending && <LoaderModel />}
+
+            {invoice && <PrintIpdInvoice afterPrint={() => setInvoice(null)} info={invoice} />}
 
         </div >
     )

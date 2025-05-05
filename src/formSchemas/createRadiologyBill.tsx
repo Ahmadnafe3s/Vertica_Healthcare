@@ -18,7 +18,7 @@ export const createRadiologyBillSchema = z.object({
     previousReportValue: z.string().optional(),
     additionalTax: z.coerce.number().min(0, { message: "Tax cannot be negative" }).optional().default(0),
     discount: z.coerce.number().min(0, { message: "Discount cannot be negative" }).optional().default(0),
-    net_amount: z.coerce.number().int().min(1, { message: 'Net amount is required' }).default(0),
+    net_amount: z.coerce.number().min(1, { message: 'Net amount is required' }).default(0),
     payment_mode: z.string().min(1, { message: 'Payment mode is required' }).default(''),
     note: z.string().optional(),
 

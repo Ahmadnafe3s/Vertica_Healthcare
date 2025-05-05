@@ -34,7 +34,7 @@ const Aside = () => {
 
     return (
         <>
-            <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all sm:border-r border-dashed border-zinc-200 dark:border-gray-800 h-[calc(100vh-56px-35px)] top-14', { 'border-r w-52 p-2.5': isSidebarOpen })}>
+            <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all sm:border-r border-dashed border-zinc-200 dark:border-zinc-800 h-[calc(100vh-56px-35px)] top-14', { 'border-r w-52 p-2.5': isSidebarOpen })}>
 
                 <ScrollArea className='h-full '>
 
@@ -121,9 +121,9 @@ const Aside = () => {
                             }><Ambulance className='h-4 w-4' />Ambulance</Link></li>
                         </PermissionProtectedAction>
 
-                        {/* Ambulance */}
-                        <PermissionProtectedAction action='view' module='Assign Ambulance'>
-                            <li><Link to={{ pathname: `/ambulance` }} onClick={onNavigate} className={
+                        {/* Blood Bank */}
+                        <PermissionProtectedAction action='view' module='Issue Blood'>
+                            <li><Link to={{ pathname: `/blood-bank/issue-blood` }} onClick={onNavigate} className={
                                 buttonVariants({
                                     variant: 'ghost',
                                     className: 'flex text-sm items-center'
@@ -290,7 +290,7 @@ const Aside = () => {
 
 
                     </ul>
-                    <div className="h-14 bg-gradient-to-t from-white dark:from-gray-950 z-30 w-full absolute bottom-0" />
+                    <div className="h-14 bg-gradient-to-t from-white dark:from-background z-30 w-full absolute bottom-0" />
                 </ScrollArea>
 
                 {/* logout button */}

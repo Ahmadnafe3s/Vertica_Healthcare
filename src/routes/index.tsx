@@ -1,5 +1,6 @@
 import AmbulanceRoutes from './ambulance/ambulanceRoutes'
 import AppointmentRoutes from './appointment/appointmentRoutes'
+import BloodBankRoutes from './blood-bank/blood-bank'
 import DutyRosterRoutes from './duty-roster/duty-roster'
 import IpdRoutes from './ipd/ipd-routes'
 import OpdRoutes from './opd/opd-routes'
@@ -22,6 +23,7 @@ const IndexRoutes = () => {
             {PathologyRoutes()}
             {PharmacyRoutes()}
             {AmbulanceRoutes()}
+            {BloodBankRoutes()}
         </>
     )
 }

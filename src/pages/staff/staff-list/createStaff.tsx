@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { createStaffFormSchema } from '@/formSchemas/createStaffFormSchema'
 import { currencySymbol } from '@/helpers/currencySymbol'
 import { bloodGroups, departments, designations, maritalStatus } from '@/helpers/formSelectOptions'
+import StaffApi from '@/services/staff-api'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -14,7 +15,6 @@ import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod'
-import { createStaff, fetchStaffProfile, updateStaff } from '../api-handlers'
 
 
 
@@ -38,10 +38,10 @@ const CreateStaff = () => {
     try {
       let data; setPending(true)
       id ?
-        (data = await updateStaff(Number(id), formData),
+        (data = await StaffApi.updateStaff(Number(id), formData),
           router(`..`))
         :
-        (data = await createStaff(formData),
+        (data = await StaffApi.createStaff(formData),
           router(`/staff`))
       toast.success(data.message)
     } catch ({ message }: any) {
@@ -54,7 +54,7 @@ const CreateStaff = () => {
 
   const fetchProfileDetails = async () => {
     try {
-      const data = await fetchStaffProfile(Number(id))
+      const data = await StaffApi.getStaffById(Number(id))
       reset({
         ...data,
         role: data.roleId,
@@ -118,7 +118,7 @@ const CreateStaff = () => {
                 </SelectTrigger>
 
                 <SelectContent className='z-[200]'>
-                  {roles?.map((role, index) => {
+                  {roles?.filter(R => R.name !== 'patient').map((role, index) => {
                     return <SelectItem key={index} value={String(role.id)}>{role.name}</SelectItem>
                   })}
                 </SelectContent>
@@ -180,6 +180,13 @@ const CreateStaff = () => {
           <Label>Fees {currencySymbol()}</Label>
           <Input type='number' {...register('fees')} />
           {errors.fees && <p className='text-sm text-red-500'>{errors.fees.message}</p>}
+        </div>
+
+        {/* Salary */}
+        <div className="w-full flex flex-col gap-y-2">
+          <Label>Salary {currencySymbol()}</Label>
+          <Input type='number' {...register('salary')} />
+          {errors.salary && <p className='text-sm text-red-500'>{errors.salary.message}</p>}
         </div>
 
         {/*father name */}
@@ -304,21 +311,6 @@ const CreateStaff = () => {
           {errors.email && <p className='text-sm text-red-500'>{errors.email.message}</p>}
         </div>
 
-        {/* Image */}
-
-        <div className="w-full flex flex-col gap-y-2">
-          <Controller control={control} name='image' render={({ field }) => {
-            return <>
-              <Label>Image</Label>
-              <Input type='file'
-                accept='image/*'
-                onChange={(e) => { field.onChange(e.target.files?.[0]) }}
-              />
-            </>
-          }} />
-          {errors.image && <p className='text-sm text-red-500'>{errors.image.message}</p>}
-        </div>
-
         {/* Current Address */}
 
         <div className="w-full flex flex-col gap-y-2 sm:col-span-2">
@@ -333,6 +325,21 @@ const CreateStaff = () => {
           <Label>Permanent Address</Label>
           <Input type='text' {...register('permanent_address')} />
           {errors.permanent_address && <p className='text-sm text-red-500'>{errors.permanent_address.message}</p>}
+        </div>
+
+        {/* Image */}
+
+        <div className="w-full flex flex-col gap-y-2">
+          <Controller control={control} name='image' render={({ field }) => {
+            return <>
+              <Label>Image</Label>
+              <Input type='file'
+                accept='image/*'
+                onChange={(e) => { field.onChange(e.target.files?.[0]) }}
+              />
+            </>
+          }} />
+          {errors.image && <p className='text-sm text-red-500'>{errors.image.message}</p>}
         </div>
 
         {/* Qualification */}
@@ -359,14 +366,6 @@ const CreateStaff = () => {
           {errors.work_experience && <p className='text-sm text-red-500'>{errors.work_experience.message}</p>}
         </div>
 
-        {/* Note */}
-
-        <div className="w-full flex flex-col gap-y-2 ">
-          <Label>Note</Label>
-          <Input type='text' {...register('note')} />
-          {errors.note && <p className='text-sm text-red-500'>{errors.note.message}</p>}
-        </div>
-
         {/* Pan Number */}
 
         <div className="w-full flex flex-col gap-y-2 ">
@@ -385,10 +384,18 @@ const CreateStaff = () => {
 
         {/* local Identification Number */}
 
-        <div className="w-full flex flex-col gap-y-2 lg:col-span-2">
+        <div className="w-full flex flex-col gap-y-2">
           <Label>Local Identification Number</Label>
           <Input type='text' {...register('local_identification_number')} />
           {errors.local_identification_number && <p className='text-sm text-red-500'>{errors.local_identification_number.message}</p>}
+        </div>
+
+        {/* Note */}
+
+        <div className="w-full flex flex-col gap-y-2 ">
+          <Label>Note</Label>
+          <Input type='text' {...register('note')} />
+          {errors.note && <p className='text-sm text-red-500'>{errors.note.message}</p>}
         </div>
 
         <div className="col-span-full flex gap-3 flex-col sm:flex-row">
@@ -397,7 +404,7 @@ const CreateStaff = () => {
               <Button type='button' className='w-full sm:w-auto' variant={'ghost'} onClick={() => { reset() }}>Reset</Button>
             </div>)}
           <div className='sm:order-2'>
-            <Button type='submit' className='w-full sm:w-auto'>{id ? 'Update' : 'Save'} {isPending && <Loader className='h-4 w-4 animate-spin' />}</Button>
+            <Button type='submit' className='w-full sm:w-auto'>{id ? 'Update' : 'Save Information'} {isPending && <Loader className='h-4 w-4 animate-spin' />}</Button>
           </div>
         </div>
 

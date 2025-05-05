@@ -90,3 +90,30 @@ export const dischargeTypes = [
   { label: "Death", value: "Dead" },
   { label: "Other", value: "Other" },
 ]
+
+
+
+export const bloodComponents = [
+  { label: "Plasma", value: "Plasma" },
+  { label: "Serum", value: "Serum" },
+  { label: "Red Blood Cells (RBCs)", value: "Red Blood Cells (RBCs)" },
+  { label: "White Blood Cells (WBCs)", value: "White Blood Cells (WBCs)" },
+  { label: "Platelets", value: "Platelets" },
+  { label: "Cryoprecipitate", value: "Cryoprecipitate" },
+  { label: "Albumin", value: "Albumin" },
+  { label: "Immunoglobulins (Antibodies)", value: "Immunoglobulins (Antibodies)" },
+  { label: "Clotting Factors", value: "Clotting Factors" },
+  { label: "Fibrinogen", value: "Fibrinogen" },
+  { label: "Antithrombin III", value: "Antithrombin III" },
+  { label: "Neutrophils", value: "Neutrophils" },
+  { label: "Lymphocytes", value: "Lymphocytes" },
+  { label: "Monocytes", value: "Monocytes" },
+  { label: "Eosinophils", value: "Eosinophils" },
+  { label: "Basophils", value: "Basophils" },
+  { label: "Cell-Free DNA (cfDNA)", value: "Cell-Free DNA (cfDNA)" },
+  { label: "Circulating Tumor Cells (CTCs)", value: "Circulating Tumor Cells (CTCs)" },
+  { label: "Extracellular Vesicles / Exosomes", value: "Extracellular Vesicles / Exosomes" },
+  { label: "Hormones", value: "Hormones" },
+  { label: "Cytokines", value: "Cytokines" },
+  { label: "Electrolytes & Metabolites", value: "Electrolytes & Metabolites" }
+];

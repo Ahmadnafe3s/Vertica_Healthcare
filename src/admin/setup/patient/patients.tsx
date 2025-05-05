@@ -75,8 +75,8 @@ const Patients = () => {
             <div className="flex flex-col min-h-[70vh] gap-y-16">
                 {/* child 1 */}
                 <div className="flex-1">
-                    <Table className="rounded-lg border dark:border-gray-800">
-                        <TableHeader className='bg-zinc-100 dark:bg-gray-800'>
+                    <Table>
+                        <TableHeader>
                             <TableRow >
                                 <TableHead>Name</TableHead>
                                 <TableHead>Guardian</TableHead>

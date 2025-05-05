@@ -11,18 +11,16 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { AssignRosterSchema } from '@/formSchemas/assignRosterFormSchema'
-import { useConfirmation } from '@/hooks/useConfirmation'
-import { RosterDataType, Rosters } from '@/types/dutyRoster/DutyRoster'
+import { page_limit } from '@/globalData'
+import useDutyRoster from './handlers'
 import { Plus } from 'lucide-react'
 import { parseAsInteger, useQueryState } from 'nuqs'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useDebouncedCallback } from 'use-debounce'
-import { z } from 'zod'
-import { createRoster, deleteRoster, getRosters, updateRoster } from './apihandlers'
-import AssignRosterFormModel from './formModel/AssignRosterFormModel'
 import { Link } from 'react-router-dom'
+import { useDebouncedCallback } from 'use-debounce'
+import AssignRosterForm from './formModel/form'
+import UserImage from '@/components/user-image'
 
 
 
@@ -31,64 +29,17 @@ import { Link } from 'react-router-dom'
 
 const RosterReport = () => {
 
-    // custom hooks
-    const { confirm, confirmationProps } = useConfirmation()
-
 
     // Query params
     const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
     const [credential, setCredential] = useQueryState('credential')
     const [date, setDate] = useQueryState('date')
     const [period, setPeriod] = useState({ startDate: '', endDate: '' })
-
-    // laoding States
-    const [loading, setLoading] = useState({ inlineLoader: false, modelLoader: false })
-
-    // model states
-    const [rosterFormModel, setRosterFormModel] = useState(false)
-
-
     const [searchBy, setSearchBy] = useState<'date' | 'period' | 'credentials'>('credentials')
 
-    // API states
-    const [rosterList, setRosterList] = useState<Rosters>({ data: [], total_pages: 0 })
-    const [current, setCurrent] = useState<RosterDataType | null>(null)
 
+    const { rosters, getRosters, current, setCurrent, form, setForm, handleSubmit, onDelete, confirmationProps, isPending } = useDutyRoster({ page, limit: page_limit, date: date!, period, credentials: credential! })
 
-    // Performing both upsert
-    const handleSubmit = async (formData: z.infer<typeof AssignRosterSchema>) => {
-        try {
-            let data;
-            setLoading({ ...loading, inlineLoader: true })
-            current ? (
-                data = await updateRoster(formData, current.id),
-                setCurrent(null)
-            ) :
-                (data = await createRoster(formData))
-            toast.success(data.message)
-            fetchRosters()
-            setRosterFormModel(false)
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally { setLoading({ ...loading, inlineLoader: false }) }
-    }
-
-
-    // Getting rosters list
-    const fetchRosters = async () => {
-        try {
-            const data = await getRosters({
-                page,
-                limit: 10,
-                credentials: credential!,
-                date: date!,
-                period
-            })
-            setRosterList(data)
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }
 
 
     // search functionality
@@ -108,24 +59,12 @@ const RosterReport = () => {
     }, 400)
 
 
-    // for deleting rosters
 
-    const onDelete = async (id: number) => {
-        try {
-            const isConfirm = await confirm()
-            if (!isConfirm) return null
-            const data = await deleteRoster(id)
-            toast.success(data.message)
-            fetchRosters()
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }
 
 
 
     useEffect(() => {
-        fetchRosters()
+        getRosters()
     }, [page, period, date, credential])
 
 
@@ -138,7 +77,7 @@ const RosterReport = () => {
 
                 <div className='flex gap-x-2 overflow-x-auto'>
                     <PermissionProtectedAction action='create' module='Duty Roster'>
-                        <Button size='sm' onClick={() => setRosterFormModel(true)}>
+                        <Button size='sm' onClick={() => setForm(true)}>
                             <Plus /> Add Roster
                         </Button>
                     </PermissionProtectedAction>
@@ -220,12 +159,14 @@ const RosterReport = () => {
                                 </TableHeader>
 
                                 <TableBody>
-                                    {rosterList.data.map((item, i) => (
+                                    {rosters.data.map((item, i) => (
                                         <TableRow key={i}>
                                             <TableCell>
                                                 <Link className='text-blue-500 hover:underline font-semibold' to={`/staff/${item.staffId}`}>{item.staffId}</Link>
                                             </TableCell>
-                                            <TableCell>{item.staff.name}</TableCell>
+                                            <TableCell>
+                                                <UserImage url={item.staff.image} name={item.staff.name} gender={item.staff.gender} />
+                                            </TableCell>
                                             <TableCell>{item.shift}</TableCell>
                                             <TableCell>{item.staff.department}</TableCell>
                                             <TableCell>{item.shiftStartTime}</TableCell>
@@ -237,7 +178,7 @@ const RosterReport = () => {
                                                 show={show}
                                                 canUpdate={canUpdate}
                                                 canDelete={canDelete}
-                                                onEdit={() => { setCurrent(item); setRosterFormModel(true) }}
+                                                onEdit={() => { setCurrent(item); setForm(true) }}
                                                 onDelete={() => onDelete(item.id)}
                                             />
                                         </TableRow>
@@ -248,17 +189,17 @@ const RosterReport = () => {
                     />
 
                     {/* error on emply list */}
-                    <EmptyList length={rosterList.data.length} message="No Roster Found" />
+                    <EmptyList length={rosters.data.length} message="No Roster Found" />
                 </div>
 
                 {/* pagination */}
                 <section>
                     <CustomPagination
-                        total_pages={rosterList?.total_pages}
-                        currentPage={+page}
-                        previous={(p) => setPage(p)}
-                        goTo={(p) => setPage(p)}
-                        next={(p) => setPage(p)}
+                        total_pages={rosters?.total_pages}
+                        currentPage={page}
+                        previous={setPage}
+                        goTo={setPage}
+                        next={setPage}
                     />
                 </section>
             </div>
@@ -268,12 +209,12 @@ const RosterReport = () => {
             {/* roster form model */}
 
             {
-                rosterFormModel && <AssignRosterFormModel
+                (form) && <AssignRosterForm
                     Submit={handleSubmit}
                     rosterDetails={current!}
-                    isPending={loading.inlineLoader}
+                    isPending={isPending}
                     onClick={() => {
-                        setRosterFormModel(false)
+                        setForm(false)
                         setCurrent(null)
                     }}
                 />
@@ -289,7 +230,7 @@ const RosterReport = () => {
                 />
             }
 
-            {loading.modelLoader && <LoaderModel />}
+            {isPending && <LoaderModel />}
 
 
         </div >

@@ -1,10 +1,10 @@
-import { HTMLAttributes } from 'react'
+import CardBox from '@/components/card-box'
+import Dialog from '@/components/Dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { CalendarDays, Cross, PersonStanding } from 'lucide-react'
 import { cn, currencyFormat } from '@/lib/utils'
 import { AppointmentDetails } from '@/types/appointment/appointment'
-import Dialog from '@/components/Dialog'
-import { currencySymbol } from '@/helpers/currencySymbol'
+import { CalendarDays, Cross, PersonStanding } from 'lucide-react'
+import { HTMLAttributes } from 'react'
 
 
 interface AppointmentDetailsModelProps extends HTMLAttributes<HTMLDivElement> {
@@ -39,84 +39,29 @@ const AppointmentDetailsModel = ({ appointmentDetails, ...props }: AppointmentDe
                         </div>
 
                         <div className="sm:col-span-2 grid grid-cols-2 gap-2">
-
-                            <div className='space-y-1 dark:border-gray-700 p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                                <p className='text-gray-700 dark:text-neutral-300 text-sm'>Appointment No.</p>
-                                <p className='font-semibold'>{appointmentDetails?.id}</p>
-                            </div>
-
-                            <div className='space-y-1 dark:border-gray-700 p-2 border-2 border-spacing-2 border-dashed border-gray-200 rounded-md'>
-                                <p className='text-gray-700  dark:text-neutral-300'>Status</p>
-                                <p className={cn('text-white rounded-md bg-green-600 w-fit px-2 font-semibold',
+                            <CardBox borderType='dashed' title="Appointment No." value={appointmentDetails?.id} />
+                            <CardBox borderType='dashed' title="Status" value={
+                                <span className={cn('text-white rounded-md bg-green-600 w-fit px-2 py-0.5 font-semibold',
                                     { 'bg-red-500': appointmentDetails?.status === 'Cancelled', 'bg-yellow-500': appointmentDetails?.status === 'Pending' })}>
                                     {appointmentDetails?.status}
-                                </p>
-                            </div>
-
+                                </span> as any
+                            } />
                         </div>
 
 
                         <div className="col-span-full grid sm:grid-cols-3 gap-2">
-                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Shift</p>
-                                <p className='text-sm'>{appointmentDetails?.shift}</p>
-                            </div>
-
-                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Priority</p>
-                                <p className='text-sm'>{appointmentDetails?.appointment_priority}</p>
-                            </div>
-
-                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Symptom Type</p>
-                                <p className='text-sm'>{appointmentDetails?.symptom_type}</p>
-                            </div>
-
-                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Description</p>
-                                <p className='text-sm'>{appointmentDetails?.symptom_description}</p>
-                            </div>
-
-                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Reference</p>
-                                <p className='text-sm'>{appointmentDetails?.reference}</p>
-                            </div>
-
-                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Previous Issue</p>
-                                <p className='text-sm'>{appointmentDetails?.previous_medical_issue}</p>
-                            </div>
-
-                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Payment Mode</p>
-                                <p className='text-sm'>{appointmentDetails?.payment_mode}</p>
-                            </div>
-
-                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Alternative Address</p>
-                                <p className='text-sm'>{appointmentDetails?.alternative_address}</p>
-                            </div>
-
-                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Message</p>
-                                <p className='text-sm'>{appointmentDetails?.message}</p>
-                            </div>
-
-                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Fees</p>
-                                <p className='text-sm'>{currencyFormat(Number(appointmentDetails?.fees))}</p>
-                            </div>
-
-                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Discount</p>
-                                <p className='text-sm'>{appointmentDetails?.discount}%</p>
-                            </div>
-
-                            <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Net Amount {currencySymbol()}</p>
-                                <p className='text-sm'>{currencyFormat(appointmentDetails?.net_amount)}</p>
-                            </div>
-
+                            <CardBox borderType='solid' title="Shift" value={appointmentDetails?.shift} />
+                            <CardBox borderType='solid' title="Priority" value={appointmentDetails?.appointment_priority} />
+                            <CardBox borderType='solid' title="Symptom Type" value={appointmentDetails?.symptom_type} />
+                            <CardBox borderType='solid' title="Description" value={appointmentDetails?.symptom_description} />
+                            <CardBox borderType='solid' title="Reference" value={appointmentDetails?.reference} />
+                            <CardBox borderType='solid' title="Previous Issue" value={appointmentDetails?.previous_medical_issue} />
+                            <CardBox borderType='solid' title="Payment Mode" value={appointmentDetails?.payment_mode} />
+                            <CardBox borderType='solid' title="Alternative Address" value={appointmentDetails?.alternative_address} />
+                            <CardBox borderType='solid' title="Message" value={appointmentDetails?.message} />
+                            <CardBox borderType='solid' title="Fees" value={currencyFormat(Number(appointmentDetails?.fees))} />
+                            <CardBox borderType='solid' title="Discount" value={appointmentDetails?.discount} />
+                            <CardBox borderType='solid' title="Net Amount" value={currencyFormat(appointmentDetails?.net_amount)} />
                         </div>
 
                     </div>
@@ -140,40 +85,13 @@ const AppointmentDetailsModel = ({ appointmentDetails, ...props }: AppointmentDe
                             </div>
                         </div>
 
-                        <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-800'>
-                            <p className='text-gray-700 dark:text-neutral-400'>Patient ID</p>
-                            <p className='text-sm'>{appointmentDetails?.patientId}</p>
-                        </div>
-
-                        <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-800'>
-                            <p className='text-gray-700 dark:text-neutral-400'>Age</p>
-                            <p className='text-sm'>{appointmentDetails?.patient.age}</p>
-                        </div>
-
-                        <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-800'>
-                            <p className='text-gray-700 dark:text-neutral-400'>Email</p>
-                            <p className='text-sm'>{appointmentDetails?.patient.email}</p>
-                        </div>
-
-                        <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-800'>
-                            <p className='text-gray-700 dark:text-neutral-400'>Phone</p>
-                            <p className='text-sm'>{appointmentDetails?.patient.phone}</p>
-                        </div>
-
-                        <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-800'>
-                            <p className='text-gray-700 dark:text-neutral-400'>Gender</p>
-                            <p className='text-sm'>{appointmentDetails?.patient.gender}</p>
-                        </div>
-
-                        <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-800'>
-                            <p className='text-gray-700 dark:text-neutral-400'>Blood Group</p>
-                            <p className='text-sm'>{appointmentDetails?.patient.blood_group}</p>
-                        </div>
-
-                        <div className='space-y-1  p-2  ring-1 ring-gray-200 dark:ring-gray-800'>
-                            <p className='text-gray-700 dark:text-neutral-400'>Address</p>
-                            <p className='text-sm'>{appointmentDetails?.patient.address}</p>
-                        </div>
+                        <CardBox borderType='solid' title="Patient ID" value={appointmentDetails?.patientId} />
+                        <CardBox borderType='solid' title="Age" value={appointmentDetails?.patient.age} />
+                        <CardBox borderType='solid' title="Email" value={appointmentDetails?.patient.email} />
+                        <CardBox borderType='solid' title="Phone" value={appointmentDetails?.patient.phone} />
+                        <CardBox borderType='solid' title="Gender" value={appointmentDetails?.patient.gender} />
+                        <CardBox borderType='solid' title="Blood Group" value={appointmentDetails?.patient.blood_group} />
+                        <CardBox borderType='solid' title="Address" value={appointmentDetails?.patient.address} />
 
                     </div>
 
@@ -196,32 +114,11 @@ const AppointmentDetailsModel = ({ appointmentDetails, ...props }: AppointmentDe
                                 </div>
                             </div>
 
-                            <div className='space-y-1 dark:ring-gray-800 p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Doctor ID</p>
-                                <p className='text-sm'>{appointmentDetails?.doctorId}</p>
-                            </div>
-
-                            <div className='space-y-1 dark:ring-gray-800 p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Department</p>
-                                <p className='text-sm'>{appointmentDetails?.doctor.department}</p>
-                            </div>
-
-                            <div className='space-y-1 dark:ring-gray-800 p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700 dark:text-neutral-300'>specialist</p>
-                                <p className='text-sm'>{appointmentDetails?.doctor.specialist}</p>
-                            </div>
-
-                            <div className='space-y-1 dark:ring-gray-800 p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Gender</p>
-                                <p className='text-sm'>{appointmentDetails?.doctor.gender}</p>
-                            </div>
-
-                            <div className='space-y-1 dark:ring-gray-800 p-2  ring-1 ring-gray-200'>
-                                <p className='text-gray-700 dark:text-neutral-300'>Phone</p>
-                                <p className='text-sm'>{appointmentDetails?.doctor.phone}</p>
-                            </div>
-
-
+                            <CardBox borderType='solid' title="Doctor ID" value={appointmentDetails?.doctorId} />
+                            <CardBox borderType='solid' title="Department" value={appointmentDetails?.doctor.department} />
+                            <CardBox borderType='solid' title="specialist" value={appointmentDetails?.doctor.specialist} />
+                            <CardBox borderType='solid' title="Gender" value={appointmentDetails?.doctor.gender} />
+                            <CardBox borderType='solid' title="Phone" value={appointmentDetails?.doctor.phone} />
                         </div>
                     </div>
                 </div>

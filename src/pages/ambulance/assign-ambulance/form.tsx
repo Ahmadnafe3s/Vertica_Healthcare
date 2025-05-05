@@ -9,9 +9,11 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { assignAmbulanceSchema } from '@/formSchemas/ambulance'
+import { calculateAmount } from '@/helpers/calculateAmount'
 import { currencySymbol } from '@/helpers/currencySymbol'
 import { PaymentOptions } from '@/helpers/formSelectOptions'
-import { fetchPatients } from '@/pages/appointment/appointmentAPIhandler'
+import { OtherApi } from '@/services/other-api'
+import { AssignedAmbulanceInfo } from '@/types/ambulance/ambulance'
 import { chargeNamesType } from '@/types/setupTypes/chargeName'
 import { Patients } from '@/types/type'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -23,8 +25,6 @@ import { Link } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
 import { z } from 'zod'
 import useAmbulances from '../ambulances/handlers'
-import { calculateAmount } from '@/helpers/calculateAmount'
-import { AssignedAmbulanceInfo } from '@/types/ambulance/ambulance'
 
 
 
@@ -51,7 +51,7 @@ function AssignAmbulanceForm({ Submit, isPending, editDetails, ...props }: Assig
 
     const onSearch = useDebouncedCallback(async (value: string) => {
         try {
-            const data = await fetchPatients(value)
+            const data = await OtherApi.getPatients(value)
             setPatients(data)
         } catch ({ message }: any) { toast.error(message) }
     }, 400)

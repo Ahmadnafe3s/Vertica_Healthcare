@@ -24,7 +24,7 @@ const AlertModel = ({ isPending, cancel, continue: continueAction }: alertModelP
           exit={{ scale: 0 }}
           onClick={(e)=>e.stopPropagation()}
         >
-          <div className="flex flex-col gap-2 rounded-md ring-1 p-2.5 ring-gray-200 shadow-lg w-[300px] bg-white dark:bg-dark dark:ring-gray-700">
+          <div className="flex flex-col gap-2 rounded-md ring-1 p-2.5 ring-gray-200 shadow-lg w-[300px] bg-white dark:bg-background dark:ring-border">
             <div className="flex justify-center mt-3">
               <div className="h-16 w-16 bg-red-500 flex items-center rounded-full">
                 <BadgeAlert className="h-12 w-12 text-white mx-auto" />

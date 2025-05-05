@@ -17,7 +17,7 @@ import { Textarea } from '../../components/ui/textarea'
 import { getPathTestNameParameters } from '../../admin/setup/pathology/api-handler'
 import { PathTestReport } from '@/types/pathology/pathology'
 import PermissionProtectedAction from '@/components/permission-protected-actions'
-import { getStaffs } from '@/pages/staff/api-handlers'
+import StaffApi from '@/services/staff-api'
 
 
 
@@ -48,7 +48,7 @@ const PathologyReportForm = ({ Submit, isPending, editDetails, testNameId, ...pr
 
     const fetchStaffs = async () => {
         try {
-            const data = await getStaffs({ search: 'pathologist' }) // getting only staffs
+            const data = await StaffApi.getStaffs({ search: 'pathologist' }) // getting only staffs
             setStaffs(data)
         } catch ({ message }: any) {
             toast.error(message)

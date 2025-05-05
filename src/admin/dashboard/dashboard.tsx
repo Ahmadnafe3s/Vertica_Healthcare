@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AdminDash_MM_IncExp, AdminDashAppmtReport, AdminDashTotalCount, AdminDashVisitors } from '@/types/dashboard/adminDashboard'
-import { Activity, CalendarClock, DollarSign, HandCoins, HeartPulse, Package, Pill, Radiation, ReceiptText, ShoppingCart, TestTube2 } from 'lucide-react'
+import { Activity, Ambulance, CalendarClock, DollarSign, Droplets, HandCoins, HeartPulse, Package, Pill, Radiation, ShoppingCart, TestTube2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Area, AreaChart, CartesianGrid, Label, Pie, PieChart, XAxis } from 'recharts'
@@ -97,13 +97,6 @@ const AdminDashboard = () => {
                     </RectCard>
                 </PermissionProtectedAction>
 
-                {/* pharmacy bills */}
-                <PermissionProtectedAction action='Pharmacy Bill' module='dashboard'>
-                    <RectCard name='Pharmacy Bills' path={'/pharmacy'} visits={total?.pharmacyBills ?? 0}>
-                        <ReceiptText className='h-8 w-8 text-blue-500' />
-                    </RectCard>
-                </PermissionProtectedAction>
-
                 {/* medicines */}
                 <PermissionProtectedAction action='Medicines' module='dashboard'>
                     <RectCard name='Total Medicines' path={'/pharmacy/medicines'} visits={total?.medicines ?? 0}>
@@ -132,12 +125,6 @@ const AdminDashboard = () => {
                     </RectCard>
                 </PermissionProtectedAction>
 
-                {/* radiology bills */}
-                <PermissionProtectedAction action='Radiology Bills' module='dashboard'>
-                    <RectCard name='Radiology Bills' path={'/radiology'} visits={total?.radiologyBills ?? 0}>
-                        <ReceiptText className='h-8 w-8 text-rose-500' />
-                    </RectCard>
-                </PermissionProtectedAction>
 
                 {/* pathology income */}
                 <PermissionProtectedAction action='Pathology Income' module='dashboard'>
@@ -146,10 +133,18 @@ const AdminDashboard = () => {
                     </RectCard>
                 </PermissionProtectedAction>
 
-                {/* pathology bills */}
-                <PermissionProtectedAction action='Pathology Bills' module='dashboard'>
-                    <RectCard name='Pathology Bills' path={'/pathology'} visits={total?.pathologyBills ?? 0}>
-                        <ReceiptText className='h-8 w-8 text-violet-500' />
+
+                {/* Amnulance Imcome */}
+                <PermissionProtectedAction action='Ambulance Income' module='dashboard'>
+                    <RectCard name='Ambulance Income' path={'/ambulance'} amount={total?.ambulanceIncome ?? 0}>
+                        <Ambulance className='h-8 w-8 text-orange-500' />
+                    </RectCard>
+                </PermissionProtectedAction>
+
+                {/* Blood Income */}
+                <PermissionProtectedAction action='Blood Bank Income' module='dashboard'>
+                    <RectCard name='Blood Bank Income' path={'/blood-bank/issue-blood'} amount={total?.bloodBankIncome ?? 0}>
+                        <Droplets className='h-8 w-8 text-red-600' />
                     </RectCard>
                 </PermissionProtectedAction>
 
@@ -209,9 +204,7 @@ const AdminDashboard = () => {
                                         >
                                             <CartesianGrid
                                                 vertical
-                                                stroke="#e0e0e0" // Change color of grid lines
                                                 strokeDasharray="5 5" // Optional: Customize dash pattern
-
                                             />
                                             <XAxis
                                                 dataKey="month"
@@ -327,23 +320,19 @@ const AdminDashboard = () => {
 
                     <PermissionProtectedAction action='Visitors' module='dashboard'>
                         <div className="lg:col-span-1">
-
-                            <Card className="flex flex-col mx-auto">
+                            <Card className="flex flex-col">
                                 <CardHeader className="items-center pb-0">
-                                    <CardTitle>Visitors Chart</CardTitle>
+                                    <CardTitle>Visitors</CardTitle>
                                     <CardDescription>January - Dec {new Date().getFullYear()}</CardDescription>
                                 </CardHeader>
                                 <CardContent className="flex-1 pb-0">
                                     <ChartContainer
                                         config={chartConfig}
-                                        className="mx-auto aspect-square max-h-[250px]"
+                                        className="mx-auto aspect-square max-h-[250px] pb-0 [&_.recharts-pie-label-text]:fill-foreground"
                                     >
                                         <PieChart>
-                                            <ChartTooltip
-                                                cursor={false}
-                                                content={<ChartTooltipContent hideLabel />}
-                                            />
-                                            <Pie data={visitors} dataKey="visitors" nameKey="service" />
+                                            <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                                            <Pie data={visitors} dataKey="visitors" label nameKey="browser" />
                                         </PieChart>
                                     </ChartContainer>
                                 </CardContent>

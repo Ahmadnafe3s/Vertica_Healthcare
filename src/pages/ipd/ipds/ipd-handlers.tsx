@@ -1,23 +1,27 @@
-import {useState} from "react"
-import {createIpd, deleteIpd, getIpdInfo, getIpdOverview, getIpds, updateIpd} from "../api-handlers"
-import {z} from "zod"
-import {CreateIpdSchema} from "@/formSchemas/create-ipd-schema"
+import { CreateIpdSchema } from "@/formSchemas/create-ipd-schema"
+import { errorHandler } from "@/helpers/error-handler.ts"
+import { useConfirmation } from "@/hooks/useConfirmation"
+import IpdApi from "@/services/ipd-api"
+import { IpdInfo, IpdInvoice, IpdOverviewType, PaginatedIpdType } from "@/types/IPD/ipd"
+import { Params } from "@/types/type"
+import { useState } from "react"
 import toast from "react-hot-toast"
-import {IpdInfo, IpdOverviewType, PaginatedIpdType} from "@/types/IPD/ipd"
-import {Params} from "@/types/type"
-import {useConfirmation} from "@/hooks/useConfirmation"
-import {useParams} from "react-router-dom"
-import {errorHandler} from "@/helpers/error-handler.ts";
+import { useParams } from "react-router-dom"
+import { z } from "zod"
+
+
+
 
 const useIpdHandlers = () => {
 
-    const {ipdId} = useParams()
-    const {confirm, confirmationProps} = useConfirmation()
+    const { ipdId } = useParams()
+    const { confirm, confirmationProps } = useConfirmation()
     const [form, setForm] = useState(false)
     const [isPending, setPending] = useState(false)
     const [current, setCurrent] = useState<IpdInfo | null>(null)
-    const [ipds, setIpds] = useState<PaginatedIpdType>({data: [], total_pages: 0})
+    const [ipds, setIpds] = useState<PaginatedIpdType>({ data: [], total_pages: 0 })
     const [overview, setOverview] = useState<IpdOverviewType | null>(null)
+    const [invoice, setInvoice] = useState<IpdInvoice | null>(null)
 
 
     const handleSubmit = async (formData: z.infer<typeof CreateIpdSchema>) => {
@@ -25,10 +29,10 @@ const useIpdHandlers = () => {
             setPending(true)
             let data;
             current ? (
-                data = await updateIpd(current.id, formData),
-                    setCurrent(null)
+                data = await IpdApi.updateIpd(current.id, formData),
+                setCurrent(null)
             ) : (
-                data = await createIpd(formData)
+                data = await IpdApi.createIpd(formData)
             );
             toast.success(data.message);
             setForm(false)
@@ -43,7 +47,7 @@ const useIpdHandlers = () => {
 
     const fetchIpds = async (params?: Params) => {
         try {
-            const data = await getIpds(params)
+            const data = await IpdApi.getIpds(params)
             setIpds(data)
         } catch (error) {
             toast.error(errorHandler(error))
@@ -54,7 +58,7 @@ const useIpdHandlers = () => {
     const fetchIpdInfo = async (ipdId: string) => {
         try {
             setPending(true)
-            const data = await getIpdInfo(ipdId)
+            const data = await IpdApi.getIpdInfo(ipdId)
             setCurrent(data)
         } catch (error) {
             toast.error(errorHandler(error))
@@ -69,7 +73,7 @@ const useIpdHandlers = () => {
         try {
             const isConfirm = await confirm()
             if (!isConfirm) return null
-            const data = await deleteIpd(id)
+            const data = await IpdApi.deleteIpd(id)
             toast.success(data.message)
             await fetchIpds()
         } catch (error) {
@@ -78,10 +82,20 @@ const useIpdHandlers = () => {
     }
 
 
-    const fetchIpdOverview = async () => {
+    const getIpdOverview = async () => {
         try {
-            const data = await getIpdOverview(ipdId!)
+            const data = await IpdApi.getIpdOverview(ipdId!)
             setOverview(data)
+        } catch (error) {
+            toast.error(errorHandler(error))
+        }
+    }
+
+
+    const getIpdInvoice = async (ipdId: string) => {
+        try {
+            const data = await IpdApi.getIpdBillByIpdId(ipdId!)
+            setInvoice(data)
         } catch (error) {
             toast.error(errorHandler(error))
         }
@@ -92,16 +106,22 @@ const useIpdHandlers = () => {
         ipds,
         fetchIpds,
         overview,
-        getIpdOverview: fetchIpdOverview,
+        getIpdOverview,
         current,
         setCurrent,
         fetchIpdInfo,
         isPending,
+        setPending,
         form,
         setForm,
         handleSubmit,
         onDelete,
-        confirmationProps
+        confirmationProps,
+
+        // invoice
+        invoice,
+        setInvoice,
+        getIpdInvoice
     }
 }
 

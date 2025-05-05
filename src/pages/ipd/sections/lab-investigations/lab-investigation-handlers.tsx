@@ -1,8 +1,8 @@
+import IpdApi from '@/services/ipd-api'
 import { IpdPatLabInvestigation, IpdRadLabInvestigation } from '@/types/IPD/ipd'
 import React from 'react'
 import toast from 'react-hot-toast'
 import { useParams } from 'react-router-dom'
-import { getIpdPatInvestigation, getIpdRadInvestigation } from '../../api-handlers'
 
 
 
@@ -16,9 +16,9 @@ const useLabInvestigation = (search?: string) => {
 
 
 
-    const fetchRadInvestigations = async () => {
+    const getRadiologies = async () => {
         try {
-            const data = await getIpdRadInvestigation(ipdId!, {search})
+            const data = await IpdApi.getIpdRadInvestigation(ipdId!, { search })
             setRadiologies(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -26,9 +26,9 @@ const useLabInvestigation = (search?: string) => {
     }
 
 
-    const fetchPatInvestigations = async () => {
+    const getPathologies = async () => {
         try {
-            const data = await getIpdPatInvestigation(ipdId!, {search})
+            const data = await IpdApi.getIpdPatInvestigation(ipdId!, { search })
             setPathologies(data)
             console.log(data);
         } catch ({ message }: any) {
@@ -40,8 +40,8 @@ const useLabInvestigation = (search?: string) => {
     return {
         radiologies,
         pathologies,
-        getRadiologies: fetchRadInvestigations,
-        getPathologies: fetchPatInvestigations
+        getRadiologies,
+        getPathologies
     }
 }
 

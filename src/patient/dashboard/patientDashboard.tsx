@@ -1,17 +1,17 @@
+import { chartConfig, singleLineAreaChartConfig } from "@/chartConfig/chartConfig"
 import RectCard from "@/components/rectCard"
-import { PatientDashTotalCount, StatusCount, YearlyAppointments, Expenses } from "@/types/dashboard/patientDashboard"
-import { CalendarClock, HandCoins, HeartPulse, Pill } from "lucide-react"
-import { useEffect, useState } from "react"
-import toast from "react-hot-toast"
-import { getApppointmentStatusCount, getPatientDashTotalCount, getPatientTotalExpenses, getYearlyApppointmentsReport } from "./ApiHandlers"
-import { useAppSelector } from "@/hooks"
-import { authSelector } from "@/features/auth/authSlice"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { chartConfig, singleLineAreaChartConfig } from "@/chartConfig/chartConfig"
-import { Area, AreaChart, CartesianGrid, Label, Pie, PieChart, XAxis } from "recharts"
-import { lineCharDefaultData } from "./defaultChartdata"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { authSelector } from "@/features/auth/authSlice"
+import { useAppSelector } from "@/hooks"
+import { Expenses, PatientDashTotalCount, StatusCount, YearlyAppointments } from "@/types/dashboard/patientDashboard"
+import { Ambulance, CalendarClock, Component, Droplets, HandCoins, HeartPulse, Pill, Radiation, TestTube } from "lucide-react"
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import { Area, AreaChart, CartesianGrid, Label, Pie, PieChart, XAxis } from "recharts"
+import { getApppointmentStatusCount, getPatientDashTotalCount, getPatientTotalExpenses, getYearlyApppointmentsReport } from "./ApiHandlers"
+import { lineCharDefaultData } from "./defaultChartdata"
 
 
 
@@ -87,6 +87,26 @@ const PatientDashboard = () => {
                     <Pill className='h-8 w-8 text-green-500' />
                 </RectCard>
 
+                <RectCard name='Radiology' path={'/radiology'} visits={totalCount?.radiology}>
+                    <Radiation className='h-8 w-8 text-yellow-500' />
+                </RectCard>
+
+                <RectCard name='Pathology' path={'/pathology'} visits={totalCount?.pathology}>
+                    <TestTube className='h-8 w-8 text-orange-500' />
+                </RectCard>
+
+                <RectCard name='Blood' path={'/blood-bank/issue-blood'} visits={totalCount?.issueBlood}>
+                    <Droplets className='h-8 w-8 text-red-600' />
+                </RectCard>
+
+                <RectCard name='Blood Component' path={'/blood-bank/components/issue-components'} visits={totalCount?.issueBloodComponent}>
+                    <Component className='h-8 w-8 text-teal-600' />
+                </RectCard>
+
+                <RectCard name='Ambulance' path={'/ambulance'} visits={totalCount?.ambulance}>
+                    <Ambulance className='h-8 w-8 text-violet-600' />
+                </RectCard>
+
                 <RectCard name='Expenses' path={''} amount={exp?.expenses}>
                     <HandCoins className='h-8 w-8 text-rose-500' />
                 </RectCard>
@@ -136,9 +156,7 @@ const PatientDashboard = () => {
                             >
                                 <CartesianGrid
                                     vertical
-                                    stroke="#e0e0e0" // Change color of grid lines
                                     strokeDasharray="5 5" // Optional: Customize dash pattern
-
                                 />
                                 <XAxis
                                     dataKey="month"

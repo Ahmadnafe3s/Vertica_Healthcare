@@ -17,7 +17,7 @@ import toast from 'react-hot-toast'
 import { z } from 'zod'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table'
 import { Textarea } from '../../components/ui/textarea'
-import { getStaffs } from '@/pages/staff/api-handlers'
+import StaffApi from '@/services/staff-api'
 
 
 
@@ -48,7 +48,7 @@ const RadiologyReportForm = ({ Submit, isPending, editDetails, testNameId, ...pr
 
     const fetchStaffs = async () => {
         try {
-            const data = await getStaffs({ search: 'radiologist' }) // getting only staffs
+            const data = await StaffApi.getStaffs({ search: 'radiologist' }) // getting only staffs
             setStaffs(data)
         } catch ({ message }: any) {
             toast.error(message)

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { createPrescriptionFormSchema, valuesASdefault } from "@/formSchemas/createPrescriptionFormSchema"
-import { getMedicinesBYcategory } from "@/pages/pharmacy/pharmacyApiHandler"
+import PharmacyApi from "@/services/pharmacy-api"
 import { prescriptionDetail } from "@/types/opd_section/prescription"
 import {  medicinesBYcategory } from "@/types/pharmacy/pharmacy"
 import { findingCategory, findingName } from "@/types/setupTypes/finding"
@@ -20,6 +20,7 @@ import { HTMLAttributes, useEffect, useState } from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
+
 
 
 interface PrescriptionFormModelProps extends HTMLAttributes<HTMLDivElement> {
@@ -80,7 +81,7 @@ const PrescriptionFormModal = ({ prescDetails: details, isPending, Submit, ...pr
     // handling category change
     const handleMedCategoryChange = async (categroyId: number, index: number,) => {
         try {
-            const data = await getMedicinesBYcategory(categroyId)
+            const data = await PharmacyApi.getMedicinesBYcategory(categroyId)
             setMedicineNames(rest => ({ ...rest, [index]: data }))
         } catch ({ message }: any) {
             toast.error(message)

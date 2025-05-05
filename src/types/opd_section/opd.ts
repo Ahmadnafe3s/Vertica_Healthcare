@@ -22,10 +22,13 @@ interface opdData {  // it will be Array of objects
     patient: {
         name: string,
         gender: string
+        image: string
     },
     doctor: {
         name: string
         specialist: string
+        gender: string,
+        image: string
     },
     prescriptions: {
         id: number

@@ -14,6 +14,8 @@ import { useContext, useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector } from "@/hooks"
 import { authSelector, setUser } from "@/features/auth/authSlice"
 import { PermissionContext } from "@/contexts/permission-provider"
+import usePatient from "@/patient/profile/handlers"
+import RegisterPatient from "@/patient/register/patient-signup"
 
 
 
@@ -28,6 +30,10 @@ const SignIn = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof signInformSchema>>({
     resolver: zodResolver(signInformSchema)
   })
+
+
+  const { handlePatient, isPending: isPatientPending, form, setForm } = usePatient()
+
 
   const onSignin = async (formData: z.infer<typeof signInformSchema>) => {
 
@@ -68,10 +74,10 @@ const SignIn = () => {
 
 
   return (
-    <div className="bg-zinc-50 dark:bg-dark">
+    <div className="bg-zinc-50 dark:bg-background">
       <MaxWidthWrapper className="min-h-[calc(100vh-56px-1px)] flex flex-col justify-center items-center">
         <div className="sm:w-[500px] w-full">
-          <form className=" p-4 w-full flex flex-col gap-y-4 bg-white dark:bg-dark dark:ring-gray-700 ring-1 ring-gray-200 rounded-lg" onSubmit={handleSubmit(onSignin)}>
+          <form className=" p-4 w-full flex flex-col gap-y-4  dark:ring-border ring-1 ring-gray-200 rounded-lg" onSubmit={handleSubmit(onSignin)}>
 
             <div className="text-center my-4">
               <h1 className="text-gray-900 dark:text-neutral-100 font-bold text-2xl tracking-tight">Vertica Healthcare</h1>
@@ -100,11 +106,26 @@ const SignIn = () => {
 
           <div className="flex text-sm my-1 justify-center items-center">
             <p className="text-gray-500">Not a existing patient?</p>
-            <Link to={{ pathname: '/registerPatient' }} className={buttonVariants({ variant: 'link' })}>Rgister Patient</Link>
+            <Link to={''} className={buttonVariants({ variant: 'link' })} onClick={() => { setForm(true) }}>
+              Rgister Patient
+            </Link>
           </div>
 
         </div>
       </MaxWidthWrapper>
+
+
+      {/* patient form */}
+
+      {form && (
+        <RegisterPatient
+          isPending={isPatientPending}
+          Submit={(v) => { handlePatient(v) }}
+          onClick={() => { setForm(false) }}
+        />
+      )}
+
+
     </div>
   )
 }

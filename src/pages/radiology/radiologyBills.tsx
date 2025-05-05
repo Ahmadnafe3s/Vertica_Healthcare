@@ -20,9 +20,11 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useDebouncedCallback } from 'use-debounce'
 import { z } from 'zod'
-import { createRadiologyBill, deleteRadiologyBill, getRadiologyBillDetails, getRadiologyBills, updateRadiologyBill } from './APIHandlers'
 import CreateRadiologyBill from './createRadiologyBill'
 import RadiologyBillDetailsModal from './radiologyBillDetails'
+import { page_limit } from '@/globalData'
+import RadiologyApi from '@/services/radiology-api'
+import UserImage from '@/components/user-image'
 
 
 
@@ -52,7 +54,7 @@ const RadiologyBills = () => {
   const fetchRadiologyBills = async () => {
     try {
       // adjust limit accordingly
-      const data = await getRadiologyBills({ page, limit: 10, search: search! }) // here search only will have value when we will search anything
+      const data = await RadiologyApi.getRadiologyBills({ page, limit: page_limit, search: search! }) // here search only will have value when we will search anything
       setRadioBills(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -71,7 +73,7 @@ const RadiologyBills = () => {
   const fetchRadiologyBillDetails = async (id: string) => {
     try {
       setLoading(prev => ({ ...prev, model: true }))
-      const data = await getRadiologyBillDetails(id)
+      const data = await RadiologyApi.getRadiologyBillById(id)
       setRadioBillDetails(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -87,12 +89,12 @@ const RadiologyBills = () => {
       let data;
       setLoading(pre => ({ ...pre, inline: true }))
       radioBillDeatails ? (
-        data = await updateRadiologyBill(radioBillDeatails.id, formData),
+        data = await RadiologyApi.updateRadiologyBill(radioBillDeatails.id, formData),
         setRadioBillDetails(undefined)
       )
         :
         (
-          data = await createRadiologyBill(formData)
+          data = await RadiologyApi.createRadiologyBill(formData)
         )
       toast.success(data.message)
       fetchRadiologyBills()
@@ -110,7 +112,7 @@ const RadiologyBills = () => {
     try {
       const isConfirm = await confirm()
       if (!isConfirm) return null
-      const data = await deleteRadiologyBill(id)
+      const data = await RadiologyApi.deleteRadiologyBill(id)
       toast.success(data.message)
       fetchRadiologyBills()
     } catch ({ message }: any) {
@@ -162,7 +164,7 @@ const RadiologyBills = () => {
         <Separator />
 
 
-        <div className="flex flex-col pb-16 gap-y-10 min-h-[80vh]">
+        <div className="flex flex-col pb-16 gap-y-10 min-h-[80vh] mt-5">
           <div className="flex-1 space-y-3">
             <ProtectedTable module='Radiology Bill' renderTable={(show, canUpdate, canDelete) => (
               <Table>
@@ -170,13 +172,13 @@ const RadiologyBills = () => {
                   <TableRow>
                     <TableHead>Bill No.</TableHead>
                     <TableHead>Invoice Date</TableHead>
-                    <TableHead>OPD ID</TableHead>
+                    <TableHead>IPD ID</TableHead>
                     <TableHead>Patient Name</TableHead>
                     <TableHead>Doctor Name</TableHead>
                     <TableHead>Discount%</TableHead>
                     <TableHead>Net Amount {currencySymbol()}</TableHead>
                     <TableHead>Payment Mode</TableHead>
-                   {show && <TableHead>Action</TableHead>}
+                    {show && <TableHead>Action</TableHead>}
                   </TableRow>
                 </TableHeader>
 
@@ -193,7 +195,9 @@ const RadiologyBills = () => {
                       </TableCell>
                       <TableCell>{bill.date}</TableCell>
                       <TableCell>{bill.ipdId}</TableCell>
-                      <TableCell>{bill.patient.name}</TableCell>
+                      <TableCell>
+                        <UserImage url={bill.patient.image} name={bill.patient.name} gender={bill.patient.gender} />
+                      </TableCell>
                       <TableCell>{bill.doctor}</TableCell>
                       <TableCell>{bill.discount} %</TableCell>
                       <TableCell>{currencyFormat(bill.net_amount)}</TableCell>
@@ -252,7 +256,8 @@ const RadiologyBills = () => {
         <RadiologyBillDetailsModal
           details={radioBillDeatails!}
           onClick={() => {
-            setModel(prev => ({ ...prev, billDetails: false }))
+            setModel(prev => ({ ...prev, billDetails: false })),
+              setRadioBillDetails(undefined)
           }}
         />
       )}

@@ -11,9 +11,13 @@ type IpdDataType = {
     patient: {
         name: string
         phone: string
+        gender: string
+        image: string
     },
     doctor: {
         name: string
+        gender: string
+        image: string
     },
     bedGroup: {
         name: string
@@ -231,7 +235,34 @@ export type IpdOverviewType = {
             };
         };
     },
-    Discharge:{
-            id: number,
+    Discharge: {
+        id: number,
     }
+}
+
+
+
+export type IpdInvoice = {
+    id: string
+    patientId: number,
+    patient: {
+        name: string
+        address: string
+        phone: string
+        email: string
+    },
+    Charge: Array<{
+        chargeCategory: {
+            category: string
+        },
+        chargeNames: {
+            name: string
+        }
+        total: number
+        discount: number
+        standard_charge: number
+        tax: number
+        tpa: number
+        net_amount: number
+    }>
 }

@@ -20,6 +20,7 @@ import AssignAmbulanceForm from "./form"
 import useAssignAmbulance from "./handlers"
 import AssAmbModal from "./info-modal"
 import PrintAmbulanceInvoice from "./print/print-bill"
+import UserImage from "@/components/user-image"
 
 
 
@@ -96,7 +97,6 @@ const AssignedAmbulances = () => {
                                         <TableHead>Driver Contact</TableHead>
                                         <TableHead>Patient</TableHead>
                                         <TableHead>Patient Contact</TableHead>
-                                        <TableHead>Charge Name</TableHead>
                                         <TableHead>Standard Charge/PKM {currencySymbol()}</TableHead>
                                         <TableHead>KM</TableHead>
                                         <TableHead>Total</TableHead>
@@ -120,9 +120,10 @@ const AssignedAmbulances = () => {
                                             <TableCell>{ass.ambulance.model}</TableCell>
                                             <TableCell>{ass.ambulance.driverName}</TableCell>
                                             <TableCell>{ass.ambulance.driverContact}</TableCell>
-                                            <TableCell>{ass.patient.name}</TableCell>
+                                            <TableCell>
+                                                <UserImage url={ass.patient.image} name={ass.patient.name} gender={ass.patient.gender} />
+                                            </TableCell>
                                             <TableCell>{ass.patient.phone}</TableCell>
-                                            <TableCell>{ass.chargeName.name}</TableCell>
                                             <TableCell>{currencyFormat(+ass.standard_charge)}</TableCell>
                                             <TableCell>{ass.kilometers}</TableCell>
                                             <TableCell>{currencyFormat(+ass.total)}</TableCell>

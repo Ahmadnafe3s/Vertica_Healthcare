@@ -36,7 +36,7 @@ const IpdCounsultantRegisters = () => {
   const formFields: FormField[] = [
     { name: "applied_date", type: "date", label: "Applied Date" },
     { name: "consultant_date", type: "date", label: "Consultant Date" },
-    { name: "doctorId", type: "select", label: "Doctor", selectOptions: doctors.map((doctor) => ({ value: doctor.staff.id, label: doctor.staff.name })) },
+    { name: "doctorId", type: "select", label: "Doctor", selectOptions: doctors.map((doctor) => ({ value: doctor.id, label: doctor.name })) },
     { name: "instructions", type: "textarea", label: "Instructions" },
   ]
 

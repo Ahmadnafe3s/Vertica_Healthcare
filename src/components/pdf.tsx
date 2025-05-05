@@ -16,7 +16,6 @@ export const PdfHeader = ({ id, title, date }: headerProps) => {
             </div>
             <div className="text-right">
                 <p className="text-gray-600 dark:text-gray-300">Date: {date}</p>
-                <p className="text-gray-600 dark:text-gray-300">Due Date: {date}</p>
             </div>
         </div>
     )

@@ -1,8 +1,9 @@
 import { HTMLAttributes } from 'react'
-import { CalendarDays} from 'lucide-react'
+import { CalendarDays } from 'lucide-react'
 import Dialog from '@/components/Dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { operationDetailsType } from '@/types/opd_section/operationType'
+import CardBox from '@/components/card-box'
 
 
 
@@ -28,75 +29,25 @@ const OperationDetailsModel = ({ operationDetails, ...props }: OperationDetailsM
                         </div>
                     </div>
 
+
+                    {/* Dashed */}
                     <div className="sm:col-span-2 grid grid-cols-2 gap-2">
-
-                        <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md'>
-                            <p className='text-gray-700 dark:text-gray-400 text-sm'>Reference No.</p>
-                            <p className='font-semibold'>{operationDetails?.id}</p>
-                        </div>
-
-                        <div className='space-y-1 p-2 border-2 border-spacing-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md'>
-                            <p className='text-gray-700 dark:text-gray-400 text-sm'>Operation Name</p>
-                            <p className='font-semibold'>{operationDetails?.operationName.name}</p>
-                        </div>
-
+                        <CardBox borderType='dashed' title="Reference No." value={operationDetails?.id} />
+                        <CardBox borderType='dashed' title="Operation Name" value={operationDetails?.operationName.name} />
                     </div>
 
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>{operationDetails?.ipdId ? 'IPD ID' : 'OPD ID'}</p>
-                        <p className='text-sm'>{operationDetails?.ipdId ? operationDetails?.ipdId : operationDetails?.opdId}</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>Category</p>
-                        <p className='text-sm'>{operationDetails?.operationCategory.name}</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>Consultant</p>
-                        <p className='text-sm'>{operationDetails?.doctor.name}</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>Consultant Assistant 1</p>
-                        <p className='text-sm'>{operationDetails?.assistant_1}</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>Consultant Assistant 2</p>
-                        <p className='text-sm'>{operationDetails?.assistant_2}</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>Anesthetist</p>
-                        <p className='text-sm'>{operationDetails?.anesthetist}</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>Anesthesia Type</p>
-                        <p className='text-sm'>{operationDetails?.anesthesia_type}</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>OT Technician</p>
-                        <p className='text-sm'>{operationDetails?.ot_technician}</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>OT Assistant</p>
-                        <p className='text-sm'>{operationDetails?.ot_assistant}</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>Note</p>
-                        <p className='text-sm'>{operationDetails?.note}</p>
-                    </div>
-
-                    <div className='space-y-1 p-2  ring-1 ring-gray-200 dark:ring-gray-700 rounded-sm'>
-                        <p className='text-gray-700 dark:text-gray-400'>Result</p>
-                        <p className='text-sm'>{operationDetails?.result}</p>
-                    </div>
-
+                    {/* solid */}
+                    <CardBox borderType='solid' title="IPD ID" value={operationDetails?.ipdId ? operationDetails?.ipdId : operationDetails?.opdId} />
+                    <CardBox borderType='solid' title="Category" value={operationDetails?.operationCategory.name} />
+                    <CardBox borderType='solid' title="Consultant" value={operationDetails?.doctor.name} />
+                    <CardBox borderType='solid' title="Consultant Assistant 1" value={operationDetails?.assistant_1} />
+                    <CardBox borderType='solid' title="Consultant Assistant 2" value={operationDetails?.assistant_2} />
+                    <CardBox borderType='solid' title="Anesthetist" value={operationDetails?.anesthetist} />
+                    <CardBox borderType='solid' title="Anesthesia Type" value={operationDetails?.anesthesia_type} />
+                    <CardBox borderType='solid' title="OT Technician" value={operationDetails?.ot_technician} />
+                    <CardBox borderType='solid' title="OT Assistant" value={operationDetails?.ot_assistant} />
+                    <CardBox borderType='solid' title="Note" value={operationDetails?.note} />
+                    <CardBox borderType='solid' title="Result" value={operationDetails?.result} />
                 </div>
             </ScrollArea>
         </Dialog>

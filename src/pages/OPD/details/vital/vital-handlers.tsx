@@ -1,13 +1,17 @@
 import { getSetupVitals } from '@/admin/setup/vitals/apiHandler'
 import { vitalFormSchema } from '@/formSchemas/vitalFormSchema'
 import { useConfirmation } from '@/hooks/useConfirmation'
+import VitalApi from '@/services/vital-api'
 import { VitalType } from '@/types/opd_section/vitals'
 import { SetupVital } from '@/types/setupTypes/vital'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
-import { createVital, deleteVitals, getVitals } from '../../opdApiHandler'
+
+
+
+
 
 const useVitalHandlers = () => {
 
@@ -23,10 +27,10 @@ const useVitalHandlers = () => {
     const handleSubmit = async (formData: z.infer<typeof vitalFormSchema>) => {
         try {
             setPending(true)
-            const data = await createVital(formData, { opdId, ipdId })
+            const data = await VitalApi.createVital(formData, { opdId, ipdId })
             toast.success(data.message)
             setForm(false)
-            fetchVitals()
+            getVitals()
         } catch ({ message }: any) {
             toast.error(message)
         } finally {
@@ -34,9 +38,9 @@ const useVitalHandlers = () => {
         }
     }
 
-    const fetchVitals = async (search?: string) => {
+    const getVitals = async (search?: string) => {
         try {
-            const data = await getVitals({ opdId, ipdId, search })
+            const data = await VitalApi.getVitals({ opdId, ipdId, search })
             setVitals(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -48,9 +52,9 @@ const useVitalHandlers = () => {
         try {
             const isConfirm = await confirm()
             if (!isConfirm) return null
-            const data = await deleteVitals(id)
+            const data = await VitalApi.deleteVitals(id)
             toast.success(data.message)
-            fetchVitals()
+            getVitals()
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -70,7 +74,7 @@ const useVitalHandlers = () => {
     return {
         vitals,
         setupVitals,
-        getVitals: fetchVitals,
+        getVitals,
         getSetupVitals: fetchSetupVitals,
         isPending,
         form,

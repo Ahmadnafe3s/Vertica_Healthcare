@@ -17,27 +17,50 @@ export const chartConfig = {
   visitors: {
     label: "Visitors",
   },
+
   chrome: {
-    label: "Chrome",
+    label: "Appointment",
     color: "hsl(var(--chart-1))",
   },
   safari: {
-    label: "Safari",
+    label: "Pharmacy",
     color: "hsl(var(--chart-2))",
   },
   firefox: {
-    label: "Firefox",
+    label: "Radiology",
     color: "hsl(var(--chart-3))",
   },
   edge: {
-    label: "Edge",
+    label: "Pathology",
     color: "hsl(var(--chart-4))",
   },
   other: {
     label: "Other",
     color: "hsl(var(--chart-5))",
   },
-} satisfies ChartConfig
+
+  opera: {
+    label: "Blood Bank",
+    color: "hsl(var(--chart-6))",
+  },
+  brave: {
+    label: "Ambulance",
+    color: "hsl(var(--chart-7))",
+  },
+  arc: {
+    label: "ICU",
+    color: "hsl(var(--chart-8))",
+  },
+  vivaldi: {
+    label: "Surgery",
+    color: "hsl(var(--chart-9))",
+  },
+  netscape: {
+    label: "Emergency",
+    color: "hsl(var(--chart-10))",
+  },
+} satisfies ChartConfig;
+
 
 
 

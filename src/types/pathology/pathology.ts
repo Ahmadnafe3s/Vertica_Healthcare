@@ -30,6 +30,9 @@ type Patient = {
     age: string;
     gender: string;
     blood_group: string;
+    address: string,
+    email: string,
+    phone: string
 };
 
 
@@ -55,7 +58,7 @@ type PathologyBillData = {
     doctor: string;
     ipdId: string;
     patientId: number;
-    patient: { name: string };
+    patient: { name: string, gender: string, image: string };
     date: string;
     additionalTax: number;
     discount: number;

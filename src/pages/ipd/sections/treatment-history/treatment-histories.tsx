@@ -7,8 +7,8 @@ import { parseAsInteger, useQueryState } from "nuqs"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Link, useParams } from "react-router-dom"
-import { getIpdTreatmentHistory } from "../../api-handlers"
 import EmptyList from "@/components/emptyList"
+import IpdApi from "@/services/ipd-api"
 
 
 const IpdTreatmentHistories = () => {
@@ -30,7 +30,7 @@ const IpdTreatmentHistories = () => {
 
     const fetchIpds = async () => {
         try {
-            const data = await getIpdTreatmentHistory({ page, limit: 10, search: search!, ipdId })
+            const data = await IpdApi.getIpdTreatmentHistory({ page, limit: 10, search: search!, ipdId })
             setIpds(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -59,8 +59,8 @@ const IpdTreatmentHistories = () => {
 
             <div className="flex flex-col space-y-5 min-h-[60vh]">
                 <div className="flex-1">
-                    <Table className="rounded-lg border dark:border-gray-800">
-                        <TableHeader className="bg-zinc-100 dark:bg-gray-900">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
                                 <TableHead>OPD ID</TableHead>
                                 <TableHead>Admission Date</TableHead>

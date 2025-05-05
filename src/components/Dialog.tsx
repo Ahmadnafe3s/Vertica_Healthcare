@@ -24,13 +24,13 @@ const Dialog = ({ children, pageTitle, className, ...props }: DialogProps) => {
                 >
                     {/* // prevents modal to click backdrop */}
                     <div className={cn('px-3 mx-auto max-w-screen-lg', className)} onClick={(e) => e.stopPropagation()}>
-                        <div className={cn('rounded-lg pb-2 bg-white dark:bg-dark border dark:border-gray-800')}>
+                        <div className={cn('rounded-lg pb-2 bg-white dark:bg-background border dark:border-zinc-800')}>
 
                             {/* hearder */}
 
-                            <div className='flex justify-between items-center p-3 border-b border-gray-200 dark:border-gray-800'>
+                            <div className='flex justify-between items-center p-3 border-b border-zinc-200 dark:border-zinc-800'>
 
-                                <h1 className=' text-sm sm:text-lg font-semibold text-gray-800 dark:text-neutral-300 py-1 px-4 rounded-xl'>{pageTitle}</h1>
+                                <h1 className=' text-sm sm:text-lg font-semibold text-zinc-800 dark:text-neutral-300 py-1 px-4 rounded-xl'>{pageTitle}</h1>
 
                                 <div className='flex gap-x-4'>
                                     <div {...props}>

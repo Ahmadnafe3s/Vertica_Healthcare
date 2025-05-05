@@ -67,8 +67,8 @@ const Medication = () => {
             <ProtectedTable
               module="Medication"
               renderTable={(show, canUpdate, canDelete) => (
-                <Table className="rounded-lg border dark:border-gray-800">
-                  <TableHeader className="bg-zinc-100 dark:bg-gray-900">
+                <Table>
+                  <TableHeader>
                     <TableRow>
                       <TableHead>Date</TableHead>
                       <TableHead>Medicine Name</TableHead>

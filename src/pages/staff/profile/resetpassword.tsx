@@ -9,7 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { Loader } from 'lucide-react'
 import { useState } from 'react'
-import { resetPassword } from '../api-handlers'
+import StaffApi from '@/services/staff-api'
 
 
 
@@ -28,7 +28,7 @@ const ResetPassword = () => {
         try {
             setPending(true)
             const { password } = formData
-            const data = await resetPassword(Number(id), password)
+            const data = await StaffApi.resetPassword(Number(id), password)
             toast.success(data.message)
             router(`..`)
         } catch ({ message }: any) {

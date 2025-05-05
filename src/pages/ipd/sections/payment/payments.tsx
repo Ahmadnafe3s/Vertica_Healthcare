@@ -72,8 +72,8 @@ const IpdPayments = () => {
           <ProtectedTable
             module="Payments"
             renderTable={(show, canUpdate, canDelete) => (
-              <Table className="rounded-lg border dark:border-gray-800">
-                <TableHeader className="bg-zinc-100 dark:bg-gray-900">
+              <Table>
+                <TableHeader>
                   <TableRow>
                     <TableHead>Transaction ID</TableHead>
                     <TableHead>Date</TableHead>

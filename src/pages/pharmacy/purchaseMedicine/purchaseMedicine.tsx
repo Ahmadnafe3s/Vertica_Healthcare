@@ -1,22 +1,22 @@
+import { getMedicineCategories } from '@/admin/setup/pharmacy/apiHandler'
+import Dialog from '@/components/Dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { PurchaseMedicineFormSchema } from '@/formSchemas/purchaseMedicineFormSchema'
 import { calculateAmount } from '@/helpers/calculateAmount'
+import { currencySymbol } from '@/helpers/currencySymbol'
+import PharmacyApi from '@/services/pharmacy-api'
+import { medicinesBYcategory } from '@/types/pharmacy/pharmacy'
+import { medicineCategory } from '@/types/setupTypes/pharmacy'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { HTMLAttributes, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { getMedicinesBYcategory } from '../pharmacyApiHandler'
-import { Textarea } from '@/components/ui/textarea'
-import { currencySymbol } from '@/helpers/currencySymbol'
-import {  medicinesBYcategory } from '@/types/pharmacy/pharmacy'
-import { medicineCategory } from '@/types/setupTypes/pharmacy'
-import { getMedicineCategories } from '@/admin/setup/pharmacy/apiHandler'
-import Dialog from '@/components/Dialog'
-import { ScrollArea } from '@/components/ui/scroll-area'
 
 
 interface PurchaseMedicineFormProps extends HTMLAttributes<HTMLDivElement> {
@@ -51,7 +51,7 @@ const PurchaseMedicineForm = ({ Submit, isPending, purchaseDetails, ...props }: 
 
     const handleCategoryChange = async (categoryId: number) => {
         try {
-            const data = await getMedicinesBYcategory(categoryId)
+            const data = await PharmacyApi.getMedicinesBYcategory(categoryId)
             setMedicines(data)
         } catch ({ message }: any) {
             toast.error(message)

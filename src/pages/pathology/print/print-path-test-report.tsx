@@ -1,13 +1,14 @@
-import { pdf, Document, Page, Text, View } from '@react-pdf/renderer';
-import { useEffect, useState } from 'react';
-import styles from '@/pdfStyleSheet/style'
-import toast from 'react-hot-toast';
-import { Table, TD, TH, TR } from '@/components/pdfTable';
-import { Printer } from 'lucide-react';
+import Backdrop from '@/components/backdrop';
 import CustomTooltip from '@/components/customTooltip';
-import { address, hospital_name, hospital_slogan } from '@/globalData';
+import { PdfHeader, To } from '@/components/pdf';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import PathologyApi from '@/services/pathology-api';
 import { PathologyBillDeatils, PathologySampleCollectionDet, PathTestReport } from '@/types/pathology/pathology';
-import { getPathologyReportDetails, getPathSampleCollectionDetails } from '../api-handlers';
+import { RadiologySampleCollectionDet, RadioTestReport } from '@/types/radiology/radiology';
+import { Printer } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
+import { useReactToPrint } from 'react-to-print';
 
 
 
@@ -15,151 +16,77 @@ interface DocumentProps {
     details: PathologyBillDeatils,
     report: PathTestReport,
     collection: PathologySampleCollectionDet
+    afterPrint: () => void
 }
 
 
 // Move BillPDF outside the main component
 
-const Documents = ({ details, report, collection }: DocumentProps) => {
+const Documents = ({ details, report, collection, afterPrint }: DocumentProps) => {
 
+    const contentRef = useRef(null);
+    const Print = useReactToPrint({
+        contentRef,
+        documentTitle: 'Pathology Report',
+        onAfterPrint() {
+            afterPrint()
+        },
+    })
 
+    const headers = ['Parameter Name', 'Report Value', 'Range']
+
+    useEffect(() => {
+        Print()
+    }, [])
 
     return (
-        <Document>
-            <Page size="A4" style={styles.page}>
-                {/* header */}
-                <View style={styles.header}>
-                    <View style={styles.spaceY}>
-                        <Text style={[styles.text.bold, styles.text.xl]}>{hospital_name}</Text>
-                        <Text style={[styles.text.sm, styles.text.lightGray, styles.text.italic]}>{hospital_slogan}</Text>
-                    </View>
-                    <View style={[styles.text.sm, styles.spaceY]}>
-                        <Text>{address.street}</Text>
-                        <Text>{address.city + ', ' + address.district}</Text>
-                        <Text>{address.zip}</Text>
-                    </View>
-                </View>
+        <Backdrop onClick={afterPrint}>
+            <div className="scale-90 lg:scale-100 font-normal" onClick={(e) => e.stopPropagation()}>
+                <div className="flex flex-col p-6 max-w-4xl mx-auto bg-white dark:bg-background" ref={contentRef}>
 
+                    <PdfHeader title="Pathology" id={details.id} date={report.date} />
 
-                {/* Report Details */}
+                    <div className="grid grid-cols-2 gap-10 mb-8">
+                        <div className='text-gray-600 dark:text-gray-300 text-sm'>
+                            <p className='font-semibold mb-2 text-gray-800 dark:text-white'>Report Info:</p>
+                            <p>{collection.center}</p>
+                            <p>{`Collection date: ${collection.date}`}</p>
+                            <p>{`Report date: ${report.date}`}</p>
+                            <p>{`Collected by: ${collection.staff.name}`}</p>
+                            <p>{`Approved by: ${report.staff.name}`}</p>
+                        </div>
+                        <To id={details.patientId} name={details.patient.name} address={details.patient.address} phone={details.patient.phone} email={details.patient.email} />
+                    </div>
 
-                <View style={[styles.spacing.mt4, styles.flex_direction.row, styles.justifyBetween, styles.spacex16]}>
+                    <div className="text-gray-600 dark:text-gray-300 text-sm mb-3 text-center">
+                        <h1 className='text-xl font-bold'>{report.item.testName.name}</h1>
+                    </div>
 
-                    {/* col 1 */}
-                    <View style={[styles.spaceY, styles.flex_1]}>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text >Invoice No</Text>
-                            <Text style={styles.text.lightGray}>{details?.id}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text >Invoice Date</Text>
-                            <Text style={styles.text.lightGray}>{details?.date}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text >Patient Name</Text>
-                            <Text style={styles.text.lightGray}>{details.patient.name}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text >Gender</Text>
-                            <Text style={styles.text.lightGray}>{details.patient.gender}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text >Blood Group</Text>
-                            <Text style={styles.text.lightGray}>{details.patient.blood_group}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text >Age</Text>
-                            <Text style={styles.text.lightGray}>{details.patient.age}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text >Note</Text>
-                            <Text style={styles.text.lightGray}>{details?.note}</Text>
-                        </View>
-                    </View>
-
-                    {/* col 2 */}
-                    <View style={[styles.spaceY, styles.flex_1]}>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text >OPD No</Text>
-                            <Text style={styles.text.lightGray}>{details?.opdId || 'NA'}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text>Doctor</Text>
-                            <Text style={styles.text.lightGray}>{details?.doctor}</Text>
-                        </View>
-
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text>Collected By</Text>
-                            <Text style={styles.text.lightGray}>{collection.staff?.name}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text>Collected Date</Text>
-                            <Text style={styles.text.lightGray}>{collection?.date}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text>Center</Text>
-                            <Text style={styles.text.lightGray}>{collection?.center}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text>Approved By</Text>
-                            <Text style={styles.text.lightGray}>{report?.staff?.name}</Text>
-                        </View>
-
-                        <View style={[styles.flex_direction.row, styles.justifyBetween]}>
-                            <Text>Expected Date</Text>
-                            <Text style={styles.text.lightGray}>{report?.date}</Text>
-                        </View>
-                    </View>
-                </View>
-
-                {/* Test name */}
-
-                <View style={[styles.background, styles.spacing.mt4, styles.textCenter, styles.text.bold, styles.text.base]} >
-                    <Text>{report?.item?.testName?.name}</Text>
-                </View>
-
-                {/* Table */}
-
-                <View style={styles.spacing.mt4}>
+                    {/* Table */}
                     <Table>
-                        {/* Header Row */}
-                        <TR>
-                            <TH>Parameter Name</TH>
-                            <TH>Report Value</TH>
-                            <TH last>Reference Range</TH>
-                        </TR>
-
-                        {/* Data Rows */}
-
-                        {report?.reportValues.map((item, i) => (
-                            <TR key={i}>
-                                <TD>
-                                    <Text style={styles.text.semibold}>{item.parameter.name}</Text>
-                                    {'\n'}
-                                    <Text style={styles.text.sm}>{item.parameter.note}</Text>
-                                </TD>
-                                <TD>{item.reportValue + ' ' + item.parameter.unit.name}</TD>
-                                <TD last>{item.parameter.from + ' - ' + item.parameter.to}</TD>
-                            </TR>
-                        ))}
+                        <TableHeader>
+                            <TableRow>
+                                {headers.map((item, i) => (
+                                    <TableHead key={i}>{item}</TableHead>
+                                ))}
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {report.reportValues.map((item, i) => (
+                                <TableRow key={i}>
+                                    <TableCell className='flex flex-col max-w-[300px]'>
+                                        <p className='font-bold'>{item.parameter.name}</p>
+                                        <p className='text-sm'>{item.parameter.note}</p>
+                                    </TableCell>
+                                    <TableCell>{`${item.reportValue} ${item.parameter.unit.name}`}</TableCell>
+                                    <TableCell>{item.parameter.from + ' - ' + item.parameter.to}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
                     </Table>
-                </View>
-
-            </Page >
-        </Document >
+                </div>
+            </div>
+        </Backdrop>
     )
 }
 
@@ -174,46 +101,37 @@ interface PrintPathTestReportProps {
 
 const PrintPathTestReport = ({ details, itemId, onPending }: PrintPathTestReportProps) => {
 
-    const [client, setClient] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [collection, setCollection] = useState<RadiologySampleCollectionDet>()
+    const [report, setReport] = useState<RadioTestReport>()
 
-    const handleOpenNewTab = async () => {
+
+    const handlePrint = async () => {
         try {
-
             onPending(true)
-
             const [report, collectionData] = await Promise.all([
-                getPathologyReportDetails(itemId),
-                getPathSampleCollectionDetails(itemId)
+                PathologyApi.getPathologyReportById(itemId),
+                PathologyApi.getPathSampleCollectionDetails(itemId)
             ])
-
             if (!details || !report || !collectionData) return toast.error('No data found')
-
-            const blob = await pdf(<Documents details={details!} report={report!} collection={collectionData!} />).toBlob();
-            const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');
-
-            setTimeout(() => URL.revokeObjectURL(url), 60000);
-
+            setCollection(collectionData)
+            setReport(report)
+            setOpen(true)
         } catch ({ message }: any) {
             toast.error(message)
         } finally { onPending(false) }
     };
 
 
-    // Needed to avoid SSR issues with Blob
-    useEffect(() => {
-        setClient(true);
-    }, []);
-
-
-    if (!client) return null;
-
 
     return (
         <>
             <CustomTooltip message='Print Report'>
-                <Printer className='cursor-pointer text-gray-600 dark:text-gray-300 w-4 active:scale-95' onClick={handleOpenNewTab} />
+                <Printer className='cursor-pointer text-gray-600 dark:text-gray-300 w-4 active:scale-95' onClick={handlePrint} />
             </CustomTooltip>
+
+
+            {open && <Documents details={details!} report={report!} collection={collection!} afterPrint={() => setOpen(false)} />}
         </>
     );
 };

@@ -1,11 +1,11 @@
 import { createAmbulanceSchema } from '@/formSchemas/ambulance'
 import { useConfirmation } from '@/hooks/useConfirmation'
+import AmbulanceApi from '@/services/ambulance-api'
 import { PagintedAmbulance } from '@/types/ambulance/ambulance'
 import { Params } from '@/types/type'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { createAmbulance, deleteAmbulance, getAmbulances, updateAmbulance } from '../api-handlers'
 
 
 
@@ -18,17 +18,18 @@ const useAmbulances = (params: Params) => {
   const [isPending, setPending] = useState(false)
 
 
+
   const handleSubmit = async (formData: z.infer<typeof createAmbulanceSchema>) => {
     try {
       let data; setPending(true)
       current ? (
-        data = await updateAmbulance(formData, current.id),
+        data = await AmbulanceApi.updateAmbulance(formData, current.id),
         setCurrent(null)
       ) : (
-        data = await createAmbulance(formData)
+        data = await AmbulanceApi.createAmbulance(formData)
       )
       setForm(false)
-      fetchAmbulances()
+      getAmbulances()
       setPending(false)
       toast.success(data.message)
     } catch ({ message }: any) {
@@ -41,18 +42,18 @@ const useAmbulances = (params: Params) => {
     try {
       const isConfirm = await confirm()
       if (!isConfirm) return null
-      const data = await deleteAmbulance(id)
+      const data = await AmbulanceApi.deleteAmbulance(id)
       toast.success(data.message)
-      fetchAmbulances()
+      getAmbulances()
     } catch ({ message }: any) {
       toast.error(message)
     }
   }
 
 
-  const fetchAmbulances = async () => {
+  const getAmbulances = async () => {
     try {
-      const data = await getAmbulances(params)
+      const data = await AmbulanceApi.getAmbulances(params)
       setAmbulances(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -62,7 +63,7 @@ const useAmbulances = (params: Params) => {
 
   return {
     ambulances,
-    getAmbulances: fetchAmbulances,
+    getAmbulances,
     isPending,
     form,
     handleSubmit,

@@ -45,8 +45,8 @@ const IpdLabInvestigations = () => {
             {/* pagination */}
             <section className="flex flex-col gap-y-5 min-h-[60vh]">
                 <div className="flex-1">
-                    <Table className="rounded-lg border dark:border-gray-800">
-                        <TableHeader className="bg-zinc-100 dark:bg-gray-900">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
                                 <TableHead>Test Name</TableHead>
                                 <TableHead>Lab</TableHead>
