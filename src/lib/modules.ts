@@ -1,5 +1,6 @@
 export const Module = [
     { name: 'Appointment', create: true, view: true, update: true, delete: true },
+    { name: 'Appointment Status', create: false, view: false, update: true, delete: false },
     { name: 'Opd', create: true, view: true, update: false, delete: false },
     { name: 'Ipd', create: true, view: true, update: true, delete: true },
     { name: 'Prescription', create: true, view: true, update: true, delete: true },

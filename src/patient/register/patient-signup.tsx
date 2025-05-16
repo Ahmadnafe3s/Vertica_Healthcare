@@ -1,11 +1,13 @@
 import Dialog from '@/components/Dialog'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import ImageInput from '@/components/ui/image-input'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { patientRegistrationSchema, patientUpdateSchema } from '@/formSchemas/patientRegisterFormSchema'
 import { bloodGroups, maritalStatus } from '@/helpers/formSelectOptions'
+import { genUrl } from '@/helpers/url-genrator'
 import { PatientDetails } from '@/types/patient/patient'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from 'lucide-react'
@@ -164,13 +166,10 @@ const RegisterPatient = ({ editDetails, isPending, Submit, ...props }: Props) =>
                                 return <FormItem className="flex flex-col gap-3">
                                     <FormLabel>Image</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            type="file"
-                                            accept='image/*'
-                                            onChange={(e) => {
-                                                field.onChange(e.target.files?.[0])  // overwriting
-                                            }}
-                                        />
+                                       <ImageInput
+                                        selected={field.value ? genUrl(field.value) : ''}
+                                        onChange={(e)=>{field.onChange(e.target.files?.[0])}}
+                                       />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -265,7 +264,8 @@ const RegisterPatient = ({ editDetails, isPending, Submit, ...props }: Props) =>
                         </div>
                         <div>
                             <Button type='submit' size={'sm'} className='w-full' disabled={isPending}>
-                                {isPending ? <Loader className='animate-spin' /> : 'Save Patient'}
+                                {editDetails ? 'Update' : 'Register'}
+                                {isPending && <Loader className='animate-spin' />}
                             </Button>
                         </div>
 

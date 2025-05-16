@@ -15,10 +15,14 @@ type RadiologyBillItem = {
     tax: number;
     amount: number;
     RadioSampleCollection: {
-        id: number
-        staff: { name: string }
+        id: number,
+        itemId: number,
+        staffId: number,
         date: string
         center: string
+        staff: {
+            name: string
+        }
     },
     RadiologyReport: {
         id: number
@@ -56,7 +60,7 @@ export type RadiologyBillDeatils = {
 type RadiologyBillData = {
     id: string;
     doctor: string;
-    ipdId: string;
+    moduleId: string;
     patientId: number;
     patient: { name: string, gender: string, image: string };
     date: string;

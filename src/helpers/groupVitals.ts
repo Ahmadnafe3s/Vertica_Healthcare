@@ -1,7 +1,7 @@
 import { VitalType } from "@/types/opd_section/vitals";
 
 
-const groupedBYdate = (arr: VitalType[] ): { date: string; measure: VitalType[] }[] => {
+const groupedBYdate = (arr: VitalType[]): { date: string; measure: VitalType[] }[] => {
 
     const groupedArray: { date: string; measure: VitalType[] }[] = [];
 
@@ -9,14 +9,11 @@ const groupedBYdate = (arr: VitalType[] ): { date: string; measure: VitalType[] 
 
         const { date } = elem;
 
-
         const existingGroup = groupedArray.find(group => group.date === date);
 
         if (existingGroup) {
-
             existingGroup.measure.push(elem);
         } else {
-
             groupedArray.push({ date, measure: [elem] });
         }
     }

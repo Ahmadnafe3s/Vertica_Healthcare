@@ -9,16 +9,15 @@ import { useParams } from 'react-router-dom'
 
 const useLabInvestigation = (search?: string) => {
 
-    const { ipdId } = useParams()
+    const { ipdId, opdId } = useParams()
 
     const [radiologies, setRadiologies] = React.useState<IpdRadLabInvestigation>([{ RadiologyBillItems: [] }])
     const [pathologies, setPathologies] = React.useState<IpdPatLabInvestigation>([{ PathologyBillItems: [] }])
 
 
-
     const getRadiologies = async () => {
         try {
-            const data = await IpdApi.getIpdRadInvestigation(ipdId!, { search })
+            const data = await IpdApi.getIpdRadInvestigation((ipdId! || opdId!), { search })
             setRadiologies(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -28,7 +27,7 @@ const useLabInvestigation = (search?: string) => {
 
     const getPathologies = async () => {
         try {
-            const data = await IpdApi.getIpdPatInvestigation(ipdId!, { search })
+            const data = await IpdApi.getIpdPatInvestigation((ipdId! || opdId!), { search }) // ipdId or opdId
             setPathologies(data)
             console.log(data);
         } catch ({ message }: any) {

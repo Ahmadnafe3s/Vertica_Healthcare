@@ -9,58 +9,32 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { createRadiologyBillSchema } from '@/formSchemas/createRadiologyBill'
+import UserImage from '@/components/user-image'
+import { page_limit } from '@/globalData'
 import { currencySymbol } from '@/helpers/currencySymbol'
-import { useConfirmation } from '@/hooks/useConfirmation'
 import { currencyFormat } from '@/lib/utils'
-import { PaginatedRadiologyBills, RadiologyBillDeatils } from '@/types/radiology/radiology'
 import { Plus } from 'lucide-react'
 import { parseAsInteger, useQueryState } from 'nuqs'
 import { useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
 import { useDebouncedCallback } from 'use-debounce'
-import { z } from 'zod'
 import CreateRadiologyBill from './createRadiologyBill'
+import useRadiology from './handler'
 import RadiologyBillDetailsModal from './radiologyBillDetails'
-import { page_limit } from '@/globalData'
-import RadiologyApi from '@/services/radiology-api'
-import UserImage from '@/components/user-image'
 
 
 
 
 const RadiologyBills = () => {
 
-  // custom hooks
-  const { confirm, confirmationProps } = useConfirmation()
+
 
   // query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [search, setSearch] = useQueryState('search')
-
-  //model states
-  const [model, setModel] = useState({ radiologyForm: false, billDetails: false })
-
-  // loading states
-  const [isLodaing, setLoading] = useState({ inline: false, model: false, })
-
-  // API states
-  const [radioBills, setRadioBills] = useState<PaginatedRadiologyBills>({ data: [], total_pages: 0 })
-  const [radioBillDeatails, setRadioBillDetails] = useState<RadiologyBillDeatils>()
+  const [ID, setID] = useState('')
 
 
-
-  // list of bills
-  const fetchRadiologyBills = async () => {
-    try {
-      // adjust limit accordingly
-      const data = await RadiologyApi.getRadiologyBills({ page, limit: page_limit, search: search! }) // here search only will have value when we will search anything
-      setRadioBills(data)
-    } catch ({ message }: any) {
-      toast.error(message)
-    }
-  }
-
+  const { getRadiologyBills, getRadiologyBillById, current, setCurrent, onDelete, radioBills, form, setForm, handleSubmit, confirmationProps, isLodaing } = useRadiology({ page, search, limit: page_limit })
 
 
   const onSearch = useDebouncedCallback((value: string) => {
@@ -69,60 +43,8 @@ const RadiologyBills = () => {
   }, 400)
 
 
-  // bill deatils
-  const fetchRadiologyBillDetails = async (id: string) => {
-    try {
-      setLoading(prev => ({ ...prev, model: true }))
-      const data = await RadiologyApi.getRadiologyBillById(id)
-      setRadioBillDetails(data)
-    } catch ({ message }: any) {
-      toast.error(message)
-    } finally {
-      setLoading(prev => ({ ...prev, model: false }))
-    }
-  }
-
-
-  // handling form data
-  const handleSubmit = async (formData: z.infer<typeof createRadiologyBillSchema>) => {
-    try {
-      let data;
-      setLoading(pre => ({ ...pre, inline: true }))
-      radioBillDeatails ? (
-        data = await RadiologyApi.updateRadiologyBill(radioBillDeatails.id, formData),
-        setRadioBillDetails(undefined)
-      )
-        :
-        (
-          data = await RadiologyApi.createRadiologyBill(formData)
-        )
-      toast.success(data.message)
-      fetchRadiologyBills()
-      setModel(prev => ({ ...prev, radiologyForm: false }))
-    } catch ({ message }: any) {
-      toast.error(message)
-    } finally {
-      setLoading(pre => ({ ...pre, inline: false }))
-    }
-  }
-
-
-  // deleting a particular bill
-  const onDelete = async (id: string) => {
-    try {
-      const isConfirm = await confirm()
-      if (!isConfirm) return null
-      const data = await RadiologyApi.deleteRadiologyBill(id)
-      toast.success(data.message)
-      fetchRadiologyBills()
-    } catch ({ message }: any) {
-      toast.error(message)
-    }
-  }
-
-
   useEffect(() => {
-    fetchRadiologyBills()
+    getRadiologyBills()
   }, [page, search])
 
 
@@ -138,7 +60,7 @@ const RadiologyBills = () => {
             <PermissionProtectedAction module='Radiology Bill' action='create'>
               <Button
                 size={'sm'}
-                onClick={() => setModel(prev => ({ ...prev, radiologyForm: true }))}
+                onClick={() => setForm(true)}
               > <Plus /> Generate Bill</Button>
             </PermissionProtectedAction>
 
@@ -172,7 +94,7 @@ const RadiologyBills = () => {
                   <TableRow>
                     <TableHead>Bill No.</TableHead>
                     <TableHead>Invoice Date</TableHead>
-                    <TableHead>IPD ID</TableHead>
+                    <TableHead>IPD/OPD</TableHead>
                     <TableHead>Patient Name</TableHead>
                     <TableHead>Doctor Name</TableHead>
                     <TableHead>Discount%</TableHead>
@@ -187,14 +109,11 @@ const RadiologyBills = () => {
                     <TableRow key={bill.id}>
                       <TableCell
                         className='text-blue-500 hover:text-blue-400 cursor-pointer font-medium'
-                        onClick={async () => {
-                          await fetchRadiologyBillDetails(bill.id)
-                          setModel(prev => ({ ...prev, billDetails: true }))
-                        }}
+                        onClick={() => { setID(bill.id) }}
                       >{bill.id}
                       </TableCell>
                       <TableCell>{bill.date}</TableCell>
-                      <TableCell>{bill.ipdId}</TableCell>
+                      <TableCell>{bill.moduleId}</TableCell>
                       <TableCell>
                         <UserImage url={bill.patient.image} name={bill.patient.name} gender={bill.patient.gender} />
                       </TableCell>
@@ -207,8 +126,8 @@ const RadiologyBills = () => {
                         canUpdate={canUpdate}
                         canDelete={canDelete}
                         onEdit={async () => {
-                          await fetchRadiologyBillDetails(bill.id)
-                          setModel(prev => ({ ...prev, radiologyForm: true }))
+                          await getRadiologyBillById(bill.id)
+                          setForm(true)
                         }}
                         onDelete={() => onDelete(bill.id)}
                       />
@@ -239,30 +158,25 @@ const RadiologyBills = () => {
       {/* Models */}
 
       {
-        model.radiologyForm && (
+        form && (
           < CreateRadiologyBill
             Submit={handleSubmit}
-            isPending={isLodaing.inline}
-            editDetails={radioBillDeatails!}
-            onClick={() => { setModel(prev => ({ ...prev, radiologyForm: false })); setRadioBillDetails(undefined) }}
+            isPending={isLodaing}
+            editDetails={current!}
+            onClick={() => { setForm(false); setCurrent(undefined) }}
           />
         )
       }
 
 
-      {/*  */}
-
-      {model.billDetails && (
+      {ID && (
         <RadiologyBillDetailsModal
-          details={radioBillDeatails!}
-          onClick={() => {
-            setModel(prev => ({ ...prev, billDetails: false })),
-              setRadioBillDetails(undefined)
-          }}
+          ID={ID}
+          onClick={() => { setID('') }}
         />
       )}
 
-      {isLodaing.model && <LoaderModel />}
+      {isLodaing && <LoaderModel />}
 
       {
         confirmationProps.isOpen && (

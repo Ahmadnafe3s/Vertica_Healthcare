@@ -1,10 +1,16 @@
+import { getRoles } from '@/admin/setup/Authorization/APIHandler'
+import { ROLE } from '@/admin/setup/Authorization/role/role'
 import CustomPagination from '@/components/customPagination'
 import EmptyList from '@/components/emptyList'
 import PermissionProtectedAction from '@/components/permission-protected-actions'
 import { buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import UserImage from '@/components/user-image'
+import { page_limit } from '@/globalData'
+import StaffApi from '@/services/staff-api'
 import { staffs } from '@/types/staff/staff'
 import { Plus } from 'lucide-react'
 import { parseAsInteger, useQueryState } from 'nuqs'
@@ -12,8 +18,6 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
-import { page_limit } from '@/globalData'
-import StaffApi from '@/services/staff-api'
 
 
 
@@ -23,16 +27,27 @@ const Staff = () => {
   // query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [search, setSearch] = useQueryState('search')
+  const [roles, setRoles] = useState<ROLE[]>([])
 
 
   // API state
   const [staffList, setStaffs] = useState<staffs>({ data: [], total_pages: 0 })
 
 
+  const fetchRoles = async () => {
+    try {
+      const data = await getRoles()
+      setRoles(data)
+    } catch ({ message }: any) {
+      toast.error(message)
+    }
+  }
+
+
   // setting values to queryParams for seacrh
   const onSearch = useDebouncedCallback(async (value: any) => {
     value ? setSearch(value) : setSearch(null)
-    setPage(1) //static (whether value or not)
+    setPage(1)
   }, 400)
 
 
@@ -49,7 +64,12 @@ const Staff = () => {
 
   useEffect(() => {
     fetchStaffs()
+    fetchRoles()
   }, [page, search])
+
+  useEffect(() => {
+    fetchRoles()
+  }, [])
 
 
   return (
@@ -82,7 +102,24 @@ const Staff = () => {
           <Label>Search by keyword</Label>
 
           <div className='flex items-center gap-2 w-72 sm:w-96'>
-            <Input onChange={(e) => { onSearch(e.target.value) }} placeholder='id , role , name , specialization' defaultValue={search!} />
+
+            <Input onChange={(e) => onSearch(e.target.value)} placeholder='Search' />
+
+            <Select defaultValue={search!} onValueChange={(value) => { onSearch(value) }}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
+              <SelectContent>
+                {roles?.filter(R => R.name !== 'patient').map((role, index) => {
+                  return <SelectItem key={index} value={role.name}>{`${role.name} (${role._count})`}</SelectItem>
+                })}
+
+                <SelectSeparator />
+                <SelectItem value={null as any}>
+                  All ({roles?.reduce((acc, role) => acc + role._count, 0)})
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
         </div>
@@ -97,12 +134,11 @@ const Staff = () => {
               {/* staff card */}
               {staffList?.data.map((staff, i) => (
                 <div className="mx-auto w-full h-28" key={i}>
-                  <Link to={`${staff.id}`} className='flex items-center gap-x-3 p-2.5 active:scale-95 rounded-lg ring-1 transition-all ring-gray-200 dark:ring-zinc-800 hover:shadow-lg dark:hover:shadow-zinc-800 '>
-
-                    <div className='w-24 h-24'>
-                      <img src={staff.image ? staff.image : staff.gender === 'male' ? '/user.png' : '/female_user.png'} alt="staff img" className='object-cover h-full w-full rounded-full border-2 border-border' />
-                    </div>
-
+                  <Link to={`${staff.id}`} className='flex items-center p-2.5 active:scale-95 rounded-lg ring-1 transition-all ring-gray-200 dark:ring-zinc-800 hover:shadow-lg dark:hover:shadow-zinc-800 '>
+                    <UserImage url={staff.image!} gender={staff.gender!}
+                      width='w-fit'
+                      imageClass='w-24 h-24'
+                    />
                     <span>
                       <p className='font-semibold'>{staff.name}</p>
                       <p className='text-sm'>{staff.id}</p>

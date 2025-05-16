@@ -8,7 +8,7 @@ const PatientApi = {
 
     createPatient: async <T extends ZodType<any>>(formData: z.infer<T>) => {
         try {
-            const res = await AxiosClient.post('/api/patient', formData)
+            const res = await AxiosClient.post('/api/patient', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
             return res.data
         } catch (error: any) {
             const err = error.response?.data?.message || 'Network Error'
@@ -18,7 +18,7 @@ const PatientApi = {
 
     updatePatient: async <T extends ZodType<any>>(patinetId: number, formData: z.infer<T>) => {
         try {
-            const res = await AxiosClient.put(`/api/patient/${patinetId}`, formData)
+            const res = await AxiosClient.put(`/api/patient/${patinetId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
             return res.data
         } catch (error: any) {
             const err = error.response?.data?.message || 'Network Error'

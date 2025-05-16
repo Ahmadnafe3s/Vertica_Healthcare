@@ -6,6 +6,8 @@ interface User {
     email: string;
     name: string;
     role: string;
+    image: string;
+    gender: string;
 }
 
 interface state {

@@ -1,6 +1,7 @@
 import { getRadiologyTestDetails, getRadiologyTests } from "@/admin/setup/radiology/ApiHandlers"
 import CustomTooltip from "@/components/customTooltip"
 import Dialog from "@/components/Dialog"
+import RequiredLabel from "@/components/required-label"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -189,7 +190,7 @@ const CreateRadiologyBill = ({ Submit, isPending, editDetails, ...props }: Creat
                   <div className="w-full flex flex-col gap-y-2">
                     <Controller control={control} name={`tests.${index}.testNameId`} render={({ field }) => {
                       return <>
-                        <Label>Test Name</Label>
+                        <RequiredLabel label="Test Name" />
                         <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { handleTestNameChange(Number(value), index); field.onChange(Number(value)) }}>
                           <SelectTrigger >
                             <SelectValue placeholder="Select" />
@@ -210,7 +211,7 @@ const CreateRadiologyBill = ({ Submit, isPending, editDetails, ...props }: Creat
                   {/* Report Days */}
 
                   <div className="w-full flex flex-col gap-y-2">
-                    <Label>Report Days</Label>
+                    <RequiredLabel label="Report Days" />
                     <Input type='number' {...register(`tests.${index}.reportDays`)} disabled />
                     {errors.tests?.[index]?.reportDays && <p className='text-sm text-red-500'>{errors.tests?.[index].reportDays?.message}</p>}
                   </div>
@@ -218,7 +219,7 @@ const CreateRadiologyBill = ({ Submit, isPending, editDetails, ...props }: Creat
                   {/* Report Date */}
 
                   <div className="w-full flex flex-col gap-y-2">
-                    <Label>Report Date</Label>
+                    <RequiredLabel label="Report Date" />
                     <Input type='date' {...register(`tests.${index}.reportDate`)} />
                     {errors.tests?.[index]?.reportDate && <p className='text-sm text-red-500'>{errors.tests?.[index].reportDate?.message}</p>}
                   </div>
@@ -227,7 +228,7 @@ const CreateRadiologyBill = ({ Submit, isPending, editDetails, ...props }: Creat
                   {/* Tax */}
 
                   <div className="w-full flex flex-col gap-y-2">
-                    <Label>Tax %</Label>
+                    <RequiredLabel label="Tax %" />
                     <Input type='number' {...register(`tests.${index}.tax`, { valueAsNumber: true })} defaultValue={0} disabled />
                     {errors.tests?.[index]?.tax && <p className='text-sm text-red-500'>{errors.tests?.[index].tax?.message}</p>}
                   </div>
@@ -235,7 +236,7 @@ const CreateRadiologyBill = ({ Submit, isPending, editDetails, ...props }: Creat
                   {/* Amount */}
 
                   <div className="w-full flex flex-col gap-y-2">
-                    <Label>Amount {currencySymbol()}</Label>
+                    <RequiredLabel label={`Amount ${currencySymbol()}`} />
                     <Input type="number" {...register(`tests.${index}.amount`, { valueAsNumber: true })} defaultValue={0} disabled />
                     {errors.tests?.[index]?.amount && <p className='text-sm text-red-500'>{errors.tests?.[index].amount?.message}</p>}
                   </div>
@@ -272,7 +273,7 @@ const CreateRadiologyBill = ({ Submit, isPending, editDetails, ...props }: Creat
               {/* Date */}
 
               <div className="w-full flex flex-col gap-y-2">
-                <Label>Billing Date</Label>
+                <RequiredLabel label="Billing Date" />
                 <Input type="date" {...register('date')} />
                 {errors.date && <p className='text-sm text-red-500'>{errors.date.message}</p>}
               </div>
@@ -306,18 +307,18 @@ const CreateRadiologyBill = ({ Submit, isPending, editDetails, ...props }: Creat
               {/* Doctor */}
 
               <div className="w-full flex flex-col gap-y-2">
-                <Label>Doctor</Label>
+                <RequiredLabel label="Doctor" />
                 <Input type='text' {...register('doctor')} />
                 {errors.doctor && <p className='text-sm text-red-500'>{errors.doctor.message}</p>}
               </div>
 
 
-              {/* ipdId */}
+              {/* Module */}
 
               <div className="w-full flex flex-col gap-y-2">
-                <Label>IPD ID</Label>
-                <Input type='text' {...register('ipdId')} />
-                {errors.ipdId && <p className='text-sm text-red-500'>{errors.ipdId.message}</p>}
+                <Label>IPD/OPD</Label>
+                <Input type='text' {...register('moduleId')} />
+                {errors.moduleId && <p className='text-sm text-red-500'>{errors.moduleId.message}</p>}
               </div>
 
               {/* Discount */}
@@ -338,7 +339,7 @@ const CreateRadiologyBill = ({ Submit, isPending, editDetails, ...props }: Creat
 
               {/* Net Amount */}
               <div className="w-full flex flex-col gap-y-2">
-                <Label>Net Amount {currencySymbol()}</Label>
+                <RequiredLabel label={`Net Amount ${currencySymbol()}`} />
                 <Input type='number' {...register('net_amount')} defaultValue={0} disabled />
                 {errors.net_amount && <p className='text-sm text-red-500'>{errors.net_amount.message}</p>}
               </div>
@@ -349,7 +350,7 @@ const CreateRadiologyBill = ({ Submit, isPending, editDetails, ...props }: Creat
               <div className="w-full flex flex-col gap-y-2">
                 <Controller control={control} name='payment_mode' render={({ field }) => {
                   return <>
-                    <Label>Payment mode</Label>
+                    <RequiredLabel label="Payment mode" />
                     <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
                       <SelectTrigger >
                         <SelectValue placeholder="Select" />

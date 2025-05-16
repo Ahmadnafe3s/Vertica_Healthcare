@@ -1,3 +1,4 @@
+import AlertModel from "@/components/alertModel"
 import CardBox from "@/components/card-box"
 import CustomTooltip from "@/components/customTooltip"
 import Dialog from "@/components/Dialog"
@@ -6,115 +7,42 @@ import PermissionProtectedAction from "@/components/permission-protected-actions
 import SampleCollectionForm from "@/components/sample-collection-form"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { LabReportFormSchema } from "@/formSchemas/approvedBYschema"
-import { sampleCollectionSchema } from "@/formSchemas/sampleCollectionSchema"
 import { currencySymbol } from "@/helpers/currencySymbol"
 import { currencyFormat } from "@/lib/utils"
-import RadiologyApi from "@/services/radiology-api"
-import { RadiologyBillDeatils, RadiologySampleCollectionDet, RadioTestReport } from "@/types/radiology/radiology"
 import { CalendarDays, Eye, Plus, Printer, UserRoundPlus } from "lucide-react"
-import { HTMLAttributes, useRef, useState } from "react"
-import toast from "react-hot-toast"
-import { z } from "zod"
+import { HTMLAttributes, useEffect, useRef, useState } from "react"
+import useRadiology from "./handler"
 import PrintRadiologyInvoice from "./print/print-invoice"
 import PrintRadioTestReport from "./print/print-radio-test-report"
 import RadiologyReportForm from "./radiology-report-form"
+import RadioReportInfo from "./report-info"
+import RadioSampleCollectionInfo from "./sample-collection-info"
 
 
 
-interface PharmacyDetailsProps extends HTMLAttributes<HTMLDivElement> {
-    details: RadiologyBillDeatils
+interface Props extends HTMLAttributes<HTMLDivElement> {
+    ID: string
 }
 
 
-const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) => {
+const RadiologyBillDetailsModal = ({ ID, ...props }: Props) => {
 
     const itemId = useRef(0)
     const testId = useRef(0)
-    const index = useRef(0) // for updating the view of collection and report icons
 
-    const [view, setView] = useState<{ [key: number]: { collection?: boolean, report?: boolean } }>()
 
     const [loading, setLoading] = useState({ inline: false, model: false })
-    const [collectionForm, setCollectionForm] = useState(false)
-    const [reportForm, setReportForm] = useState(false)
-    const [collectionDetails, setCollectionDetails] = useState<RadiologySampleCollectionDet>()
-    const [reportDetails, setReportDetails] = useState<RadioTestReport>()
+    const [isCollectionOpen, setCollectionOpen] = useState(false)
+    const [isReportOpen, setReportOpen] = useState(false)
+
     const [print, setPrint] = useState(false)
 
-
-    const onCollectionSubmit = async (formData: z.infer<typeof sampleCollectionSchema>) => {
-        try {
-            let data;
-            setLoading(prev => ({ ...prev, inline: true }))
-            collectionDetails ? (
-                data = await RadiologyApi.updateRadioSampleCollection(collectionDetails?.itemId, formData),
-                setCollectionDetails(undefined)
-            )
-                :
-                (data = await RadiologyApi.createRadioSampleCollection(formData, itemId.current))
-            toast.success(data.message)
-            setCollectionForm(false)
-            setView({ ...view, [index.current]: { collection: true } })
-            index.current = 0
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally {
-            setLoading(prev => ({ ...prev, inline: false }))
-        }
-    }
+    const { current, getRadiologyBillById, collectionForm, setCollectionForm, onCollectionSubmit, onDeleteCollection, collectionDetails, setCollectionDetails, isLodaing, reportForm, setReportForm, onReportSubmit, reportDetails, setReportDetails, onDeleteReport, isRefresh, confirmationProps } = useRadiology()
 
 
-    const onReportSubmit = async (formData: z.infer<typeof LabReportFormSchema>) => {
-        try {
-            let data;
-            setLoading(prev => ({ ...prev, inline: true }))
-            reportDetails ? (
-                data = await RadiologyApi.updateRadiologyReport(reportDetails.itemId, formData),
-                setReportDetails(undefined)
-            )
-                :
-                (
-                    data = await RadiologyApi.createRadiologyReport(itemId.current, formData)
-                )
-            toast.success(data.message)
-            setReportForm(false)
-            setView({ ...view, [index.current]: { report: true } })
-            index.current = 0
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally {
-            setLoading(prev => ({ ...prev, inline: false }))
-        }
-    }
-
-
-    const fetchReportDetails = async (itemId: number) => {
-        try {
-            setLoading(prev => ({ ...prev, model: true }))
-            const data = await RadiologyApi.getRadiologyReportById(itemId)
-            setReportDetails(data)
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally {
-            setLoading(prev => ({ ...prev, model: false }))
-        }
-    }
-
-
-    const fetchCollectionDetails = async (itemId: number) => {
-        try {
-            setLoading(prev => ({ ...prev, model: true }))
-            const data = await RadiologyApi.getRadioSampleCollectionDetails(itemId)
-            setCollectionDetails(data)
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally {
-            setLoading(prev => ({ ...prev, model: false }))
-        }
-    }
-
-
+    useEffect(() => {
+        getRadiologyBillById(ID)
+    }, [ID, isRefresh])
 
     return (
         <>
@@ -127,7 +55,7 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                 <CalendarDays className='w-10 h-10 text-white' />
                             </div>
                             <div className=''>
-                                <p className='font-semibold text-lg text-gray-900 dark:text-gray-100'>{details?.date}</p>
+                                <p className='font-semibold text-lg text-gray-900 dark:text-gray-100'>{current?.date}</p>
                                 <div className="flex space-x-1 items-center">
                                     <p className='text-sm text-gray-400'>Invoice Date</p>
                                     {/* printing commulative bill */}
@@ -139,35 +67,35 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                         {/* dashed cards */}
 
                         <div className="sm:col-span-2 grid grid-cols-2 gap-2">
-                            <CardBox borderType='dashed' title="Invoice No" value={details?.id} />
-                            <CardBox borderType='dashed' title="Patient Name" value={details?.patient.name} />
+                            <CardBox borderType='dashed' title="Invoice No" value={current?.id} />
+                            <CardBox borderType='dashed' title="Patient Name" value={current?.patient.name} />
                         </div>
 
                         {/* solid cards */}
 
-                        <CardBox borderType='solid' title="Invoice No" value={details?.id} />
+                        <CardBox borderType='solid' title="Invoice No" value={current?.id} />
 
-                        <CardBox borderType='solid' title="Patient ID" value={details?.patientId ?? 'N/A'} />
+                        <CardBox borderType='solid' title="Patient ID" value={current?.patientId ?? 'N/A'} />
 
-                        <CardBox borderType='solid' title="Doctor Name" value={details?.doctor ?? 'N/A'} />
+                        <CardBox borderType='solid' title="Doctor Name" value={current?.doctor ?? 'N/A'} />
 
-                        <CardBox borderType='solid' title="OPD ID" value={details?.previousReportValue ?? 'N/A'} />
+                        <CardBox borderType='solid' title="Previous Value" value={current?.previousReportValue ?? 'N/A'} />
 
-                        <CardBox borderType='solid' title="Discount %" value={details?.discount ?? 'N/A'} />
+                        <CardBox borderType='solid' title="Discount %" value={current?.discount ?? 'N/A'} />
 
-                        <CardBox borderType='solid' title="Tax %" value={details?.additionalTax ?? 'N/A'} />
+                        <CardBox borderType='solid' title="Tax %" value={current?.additionalTax ?? 'N/A'} />
 
-                        <CardBox borderType='solid' title={`Net Amount ${currencySymbol()}`} value={currencyFormat(details?.net_amount) ?? 'N/A'} />
+                        <CardBox borderType='solid' title={`Net Amount ${currencySymbol()}`} value={currencyFormat(current?.net_amount!) ?? 'N/A'} />
 
-                        <CardBox borderType='solid' title="Payment Mode" value={details?.payment_mode ?? 'N/A'} />
+                        <CardBox borderType='solid' title="Payment Mode" value={current?.payment_mode ?? 'N/A'} />
 
-                        <CardBox borderType='solid' title="Note" value={details?.note ?? 'N/A'} />
+                        <CardBox borderType='solid' title="Note" value={current?.note ?? 'N/A'} />
 
                     </div>
 
                     {/* second grid */}
 
-                    <div className="grid pb-10 pt-5 px-2.5 font-medium">
+                    <div className="grid pb-10 pt-5 px-2.5">
                         <h1 className="text-lg text-gray-800 dark:text-gray-100">Medicines</h1>
 
                         <Table className="mt-2">
@@ -185,7 +113,7 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                             </TableHeader>
 
                             <TableBody>
-                                {details?.RadiologyBillItems.map((item, i) => (
+                                {current?.RadiologyBillItems.map((item, i) => (
                                     <TableRow key={i}>
                                         <TableCell>{item.testName.name}</TableCell>
                                         <TableCell>{item.reportDays}</TableCell>
@@ -193,23 +121,28 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                         {/* Collector */}
                                         <TableCell className="flex">
 
-                                            {item.RadioSampleCollection?.id || view?.[i]?.collection ?
+                                            {item.RadioSampleCollection?.id ?
                                                 <PermissionProtectedAction action='view' module='Sample Collection'>
                                                     <CustomTooltip message="View Collector">
-                                                        <Eye className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
-                                                            onClick={async () => {
-                                                                await fetchCollectionDetails(item.id)
-                                                                setCollectionForm(true)
-                                                            }}
-                                                        />
+                                                        <div className="relative p-2 bg-pink-100 rounded-full dark:bg-pink-500/10">
+                                                            <Eye className="w-4 h-4 text-pink-500" />
+                                                            <span
+                                                                className="absolute inset-0 cursor-pointer"
+                                                                onClick={() => { itemId.current = item.id, setCollectionOpen(true) }}
+                                                            />
+                                                        </div>
                                                     </CustomTooltip>
                                                 </PermissionProtectedAction>
                                                 :
                                                 <PermissionProtectedAction action='create' module='Sample Collection'>
                                                     <CustomTooltip message="Add User">
-                                                        <UserRoundPlus className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
-                                                            onClick={() => { setCollectionForm(true); itemId.current = item.id }}
-                                                        />
+                                                        <div className="relative p-2 bg-green-100 w-fit rounded-full dark:bg-green-500/10">
+                                                            <UserRoundPlus className="w-4 h-4 text-green-500" />
+                                                            <span
+                                                                className="absolute inset-0 cursor-pointer"
+                                                                onClick={() => { setCollectionForm(true); itemId.current = item.id }}
+                                                            />
+                                                        </div>
                                                     </CustomTooltip>
                                                 </PermissionProtectedAction>
 
@@ -219,15 +152,16 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                         {/* Approved By or Report */}
                                         <TableCell>
 
-                                            {item.RadiologyReport?.id || view?.[i]?.report ?
+                                            {item.RadiologyReport?.id ?
                                                 <PermissionProtectedAction action='view' module='Radiology Report'>
                                                     <CustomTooltip message="View Collector">
-                                                        <Eye className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
-                                                            onClick={async () => {
-                                                                await fetchReportDetails(item.id)
-                                                                setReportForm(true)
-                                                            }}
-                                                        />
+                                                        <div className="relative p-2 bg-pink-100 w-fit rounded-full dark:bg-pink-500/10">
+                                                            <Eye className="w-4 h-4 text-pink-500" />
+                                                            <span
+                                                                className="absolute inset-0 cursor-pointer"
+                                                                onClick={() => { itemId.current = item.id, setReportOpen(true) }}
+                                                            />
+                                                        </div>
                                                     </CustomTooltip>
                                                 </PermissionProtectedAction>
 
@@ -235,10 +169,13 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
 
                                                 <PermissionProtectedAction action='create' module='Radiology Report'>
                                                     <CustomTooltip message="Add Report">
-                                                        <Plus className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
-                                                            // testId for getting testName parameters && itemId for REREFERENCE
-                                                            onClick={() => { setReportForm(true); testId.current = item.testNameId, itemId.current = item.id }}
-                                                        />
+                                                        <div className="relative p-2 bg-green-100 w-fit rounded-full dark:bg-green-500/10">
+                                                            <Plus className="w-4 h-4 text-green-500" />
+                                                            <span
+                                                                className="absolute inset-0 cursor-pointer"
+                                                                onClick={() => { setReportForm(true); testId.current = item.testNameId, itemId.current = item.id }}
+                                                            />
+                                                        </div>
                                                     </CustomTooltip>
                                                 </PermissionProtectedAction>
                                             }
@@ -246,7 +183,7 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                         <TableCell>{item.tax} %</TableCell>
                                         <TableCell>{currencyFormat(item.amount)}</TableCell>
                                         <TableCell>
-                                            <PrintRadioTestReport details={details!} itemId={item.id} onPending={(v) => setLoading({ ...loading, model: v })} />
+                                            <PrintRadioTestReport details={current!} itemId={item.id} onPending={(v) => setLoading({ ...loading, model: v })} />
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -265,7 +202,7 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                     editDetails={collectionDetails!}
                     isPending={loading.inline}
                     Role="radiologist"
-                    Submit={onCollectionSubmit}
+                    Submit={(formData) => onCollectionSubmit(formData, itemId.current)}
                     onClick={() => { setCollectionForm(false); setCollectionDetails(undefined) }}
                 />
             )}
@@ -276,16 +213,37 @@ const RadiologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                     editDetails={reportDetails!}
                     testNameId={testId.current}
                     isPending={loading.inline}
-                    Submit={onReportSubmit}
+                    Submit={(formData) => onReportSubmit(formData, itemId.current)}
                     onClick={() => { setReportForm(false); setReportDetails(undefined) }}
                 />
             )}
 
+            {/* Collection Info */}
+            <RadioSampleCollectionInfo
+                isOpen={isCollectionOpen}
+                ID={itemId.current}
+                onClose={setCollectionOpen}
+                onDelete={onDeleteCollection}
+            />
 
-            {loading.model && <LoaderModel />}
+            {/* Report Info */}
+            <RadioReportInfo
+                isOpen={isReportOpen}
+                ID={itemId.current}
+                onClose={setReportOpen}
+                onDelete={onDeleteReport}
+            />
+
+            {isLodaing && <LoaderModel />}
 
             {/* printing invoice */}
-            {print && <PrintRadiologyInvoice Info={details!} afterPrint={() => setPrint(false)} />}
+            {print && <PrintRadiologyInvoice Info={current!} afterPrint={() => setPrint(false)} />}
+
+            {/* Deleting outside beacuse refresh state */}
+            {confirmationProps.isOpen && <AlertModel
+                continue={() => confirmationProps.onConfirm()}
+                cancel={() => confirmationProps.onCancel()}
+            />}
 
         </>
     )

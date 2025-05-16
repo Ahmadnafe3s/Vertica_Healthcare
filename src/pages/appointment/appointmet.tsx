@@ -22,8 +22,8 @@ import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
 import { z } from 'zod'
-import AddAppointment from './AddAppointment'
-import AppointmentDetailsModel from './appointmentDetailsModel'
+import AddAppointment from './create-appointment'
+import AppointmentDetailsModel from './appointment-info'
 import AppointmentListPDF from './print/AppointmnetListPDF'
 import PrintAppointment from './print/print-appointment'
 import UserImage from '@/components/user-image'
@@ -44,7 +44,8 @@ const AdminAppointment = () => {
     const [isPending, setPending] = useState<boolean>(false)
 
     // Model States
-    const [model, setModel] = useState({ appointmentDetails: false, addAppointmentForm: false, loader: false })
+    const [form, setForm] = useState(false)
+
 
     // API States
     const [Appointments, setAppointments] = useState<Appointment>({ data: [], total_pages: 0 })
@@ -68,14 +69,14 @@ const AdminAppointment = () => {
 
     // fetching appointment details
 
-    const fetchAppoinmentDetails = async (id: string) => {
+    const getAppointmentById = async (id: string) => {
         try {
-            setModel((rest) => ({ ...rest, loader: true }))
+            setPending(true)
             const data = await AppointmentApi.getAppointmentById(id)
             setAppointmentDetails(data)
         } catch ({ message }: any) {
             toast.error(message)
-        } finally { setModel((rest) => ({ ...rest, loader: false })) }
+        } finally { setPending(false) }
     }
 
 
@@ -102,11 +103,15 @@ const AdminAppointment = () => {
     // performing only insert
     const handleSubmit = async (formData: z.infer<typeof appointmentFormSchema>) => {
         try {
-            setPending(true)
-            const data = await AppointmentApi.createAppointment(formData)
+            let data; setPending(true)
+            AppointmentDetails ? (
+                data = await AppointmentApi.updateAppointment(AppointmentDetails.id, formData),
+                setAppointmentDetails(undefined)
+            )
+                : (data = await AppointmentApi.createAppointment(formData))
             toast.success(data.message)
             getAppointments()
-            setModel((rest) => ({ ...rest, addAppointmentForm: false }))
+            setForm(false)
         } catch ({ message }: any) {
             toast.error(message)
         } finally {
@@ -132,7 +137,7 @@ const AdminAppointment = () => {
 
                         <PermissionProtectedAction action='create' module='Appointment'>
                             <Button type='button' size={'sm'}
-                                onClick={() => { setModel((prev) => ({ ...prev, addAppointmentForm: true })) }} >
+                                onClick={() => { setForm(true) }} >
                                 <Plus /> Appointment
                             </Button>
                         </PermissionProtectedAction>
@@ -194,8 +199,7 @@ const AdminAppointment = () => {
                                     {Appointments.data.map((appointment) => {
                                         return <TableRow key={appointment.id}>
                                             <TableCell className="font-semibold cursor-pointer text-blue-500 hover:text-blue-400" onClick={async () => {
-                                                await fetchAppoinmentDetails(appointment.id)
-                                                setModel({ ...model, appointmentDetails: true })
+                                                await getAppointmentById(appointment.id)
                                             }}>
                                                 {appointment.id}
                                             </TableCell>
@@ -217,7 +221,10 @@ const AdminAppointment = () => {
                                                 canUpdate={canUpdate}
                                                 canDelete={canDelete}
                                                 onDelete={() => onDelete(appointment.id)}
-                                                exclude={{ edit: true }}
+                                                onEdit={async () => {
+                                                    await getAppointmentById(appointment.id),
+                                                        setForm(true)
+                                                }}
                                                 incluePrint={{
                                                     include: true,
                                                     print: () => setCurrent(appointment)
@@ -255,20 +262,20 @@ const AdminAppointment = () => {
             {/* appointment form model */}
 
             {
-                model.addAppointmentForm && <AddAppointment
+                form && <AddAppointment
                     Submit={handleSubmit}
                     isPending={isPending}
-                    onClick={() => { getAppointments(); setModel({ ...model, addAppointmentForm: false }) }}
+                    defaultValues={AppointmentDetails!}
+                    onClick={() => { setForm(false), setAppointmentDetails(undefined) }}
                 />
             }
 
 
-
             {/* Appointment details model */}
 
-            {model.appointmentDetails && <AppointmentDetailsModel
+            {(AppointmentDetails && !form) && <AppointmentDetailsModel
                 appointmentDetails={AppointmentDetails!}
-                onClick={() => setModel({ ...model, appointmentDetails: false })}
+                onClick={() => setAppointmentDetails(undefined)}
             />}
 
 
@@ -278,14 +285,10 @@ const AdminAppointment = () => {
                 continue={() => confirmationProps.onConfirm()}
             />}
 
-
             {/* Loader model */}
-            {model.loader && (
-                <LoaderModel />
-            )}
+            {isPending && (<LoaderModel />)}
 
             {/* Print Appointment */}
-
             {current && <PrintAppointment Info={current!} afterPrint={() => setCurrent(null)} />}
 
         </>

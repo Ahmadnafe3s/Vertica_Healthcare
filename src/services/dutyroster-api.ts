@@ -57,7 +57,18 @@ const DutyRosterApi = {
             const err = error.response?.data?.message || "Error in deleting roster"
             throw new Error(err)
         }
-    }
+    },
+
+    // fetching doctors according to appointment date coming from roster model
+    async getDoctors(params: { appointmentDate: string, specialistId: number }) {
+        try {
+            const res = await AxiosClient.get(`/api/roster/doctors`, { params })
+            return res.data
+        } catch (error: any) {
+            const err = error.response?.data?.message || "Error in fetching doctors"
+            throw new Error(err)
+        }
+    },
 }
 
 

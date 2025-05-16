@@ -1,3 +1,5 @@
+import { VitalType } from "../opd_section/vitals"
+
 type IpdDataType = {
     id: string
     date: string
@@ -98,18 +100,9 @@ export type IpdRadLabInvestigation = Array<{
         },
         RadioSampleCollection: {
             id: number
-            date: string
-            center: string
-            staff: {
-                name: string
-            }
         },
         RadiologyReport: {
             id: number
-            date: string
-            staff: {
-                name: string
-            }
         }
     }>
 }>
@@ -168,17 +161,7 @@ export type IpdOverviewType = {
         image: string | null;
         gender: string;
     };
-    Vitals: Array<{
-        vital: {
-            id: number;
-            name: string;
-            from: string;
-            to: string;
-            unit: string;
-        };
-        value: string;
-        date: string;
-    }>;
+    Vitals: VitalType[];
     symptom_description: string;
     Timeline: Array<{
         id: number;

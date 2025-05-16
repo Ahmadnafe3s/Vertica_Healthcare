@@ -40,23 +40,23 @@ const IpdTimelines = () => {
 
             <Separator />
 
-            {timelines.length > 0 ? (<ul className="relative before:absolute space-y-5 before:w-1 w-64 sm:w-[400px] lg:w-[550px] mx-auto gap-3 before:h-full before:bg-gray-300 before:top-0 before:block">
+            {timelines.length > 0 ? (<ul className="relative before:absolute space-y-5 before:w-1 w-64 sm:w-[400px] lg:w-[550px] mx-auto gap-3 before:h-full before:bg-yellow-700 before:top-0 before:block">
 
 
                 {timelines.map((timeline, i) => {
                     return <li className="space-y-4" key={i}>
 
                         {/* Time section */}
-                        <span className="relative  text-sm my-2 -top-1 bg-slate-500 -left-[10%] sm:-left-[8%] text-white py-1 px-3 rounded-md">{timeline.date}</span>
+                        <span className="relative  text-sm my-2 -top-1 bg-yellow-500 -left-[10%] sm:-left-[8%] text-yellow-900 py-1 px-3 rounded-md">{timeline.date}</span>
 
                         <div className="relative flex items-center space-x-3 -ml-3 z-10">
 
                             {/* Calendor section */}
-                            <div className="p-1.5 bg-slate-500 rounded-full ">
-                                <span ><Calendar className="w-4 h-4 text-white" /></span>
+                            <div className="p-1.5 bg-yellow-500 rounded-full ">
+                                <span ><Calendar className="w-4 h-4 text-yellow-900" /></span>
                             </div>
 
-                            <div className="space-y-2 flex-1 border-2 border-dashed border-gray-200 dark:border-gray-500 p-2 rounded-lg">
+                            <div className="space-y-2 flex-1 border-2 border-dashed border-yellow-500 dark:border-yellow-700 p-2 rounded-lg">
 
                                 {/* Title section */}
                                 <div className=" flex justify-between items-center cursor-pointer group transition-all">
@@ -77,7 +77,8 @@ const IpdTimelines = () => {
                                     </div>
                                 </div>
 
-                                <Separator />
+                                <Separator className="bg-yellow-500/50 dark:bg-yellow-500/20" />
+
                                 {/* Description */}
                                 <p className="text-sm text-gray-700 dark:text-gray-400">{timeline.description}</p>
 
@@ -91,8 +92,8 @@ const IpdTimelines = () => {
                 {/* Static Secttion */}
 
                 <li className="relative flex items-center space-x-2 -ml-3 z-10">
-                    <div className="p-1.5 bg-slate-400 rounded-full">
-                        <Clock className="w-4 h-4 text-white" />
+                    <div className="p-1.5 bg-yellow-500 rounded-full">
+                        <Clock className="w-4 h-4 text-yellow-900" />
                     </div>
                 </li>
             </ul>

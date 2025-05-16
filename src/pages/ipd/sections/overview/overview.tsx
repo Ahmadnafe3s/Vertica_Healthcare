@@ -19,6 +19,8 @@ import { Calendar, Clock, RotateCcw, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useIpdHandlers from "../../ipds/ipd-handlers";
+import UserImage from "@/components/user-image";
+import groupedBYdate from "@/helpers/groupVitals";
 
 
 
@@ -63,21 +65,16 @@ const IpdOverview = () => {
                 {/* patient name / image */}
 
                 <div className="flex items-center justify-between gap-2 sm:col-span-2 mb-4 group">
-                    <div className="sm:col-span-2 flex space-x-2 items-center">
-                        {overview?.patient.image ?
-                            (<div className='w-20 h-20'>
-                                <img src={overview?.patient.image!} alt="staff img"
-                                    className='object-cover h-full w-full rounded-full' />
-                            </div>)
-                            :
-                            (<div className='p-3 bg-red-500 rounded-full'>
-                                <UserRound className='w-10 h-10 text-white' />
-                            </div>)
-                        }
+                    <div className="sm:col-span-2 flex items-center">
+
+                        <UserImage url={overview?.patient.image!} gender={overview?.patient.gender!}
+                            width='w-fit'
+                            imageClass='w-20 h-20'
+                        />
 
                         <div className=''>
                             <p className='font-semibold text-lg text-gray-900 dark:text-white'>{overview?.patient.name}</p>
-                            <p className='text-sm text-gray-500'>ID : {overview?.patientId}</p>
+                            <p className='text-sm text-gray-500'>IPD No : {overview?.id}</p>
                         </div>
                     </div>
 
@@ -114,10 +111,6 @@ const IpdOverview = () => {
 
                 <Separator className="sm:col-span-full my-8" />
 
-
-                {/* Case Details */}
-                <CardBox borderType='solid' title='IPD No.' value={overview?.id} />
-
                 <Separator className="sm:col-span-full my-8" />
 
                 {/* Bed Details */}
@@ -134,21 +127,21 @@ const IpdOverview = () => {
 
                 {/* Can be added Vitals Here */}
 
-                {
-                    overview?.Vitals?.map((measure, i) => {
-                        return <div key={i}
-                            className='space-y-1 flex justify-between p-2  ring-1 ring-gray-200 dark:ring-zinc-800 rounded-sm'>
-                            <div>
-                                <p className='text-gray-700 dark:text-gray-300'>{measure.vital?.name}</p>
+                {groupedBYdate(overview?.Vitals || []).map((vital, i) => (
+                    <div key={i} className='space-y-1 p-2  ring-1 ring-zinc-200 dark:ring-border rounded-sm'>
+                        <div className="flex justify-between">
+                            <p className='text-gray-700 dark:text-gray-300'>Date</p>
+                            <p className="text-sm text-gray-500">{vital?.date}</p>
+                        </div>
+                        <Separator />
+                        {vital?.measure.map((measure, i) => (
+                            <div key={i} className='flex justify-between'>
+                                <p className='text-gray-700 dark:text-gray-300 text-sm'>{measure.vital?.name}</p>
                                 <p className='font-semibold'>{measure?.value}</p>
                             </div>
-                            <div>
-                                <p className='text-gray-700 dark:text-gray-300'>Date</p>
-                                <p className="text-sm text-gray-500">{measure?.date}</p>
-                            </div>
-                        </div>
-                    })
-                }
+                        ))}
+                    </div>
+                ))}
 
                 <Separator className="sm:col-span-full my-8" />
 
@@ -164,12 +157,11 @@ const IpdOverview = () => {
 
                 <h1 className="sm:col-span-full font-semibold text-zinc-800 dark:text-neutral-100">Consultant</h1>
 
-                <div className="sm:col-span-full flex space-x-2 items-center">
-                    <div className='w-16 h-16'>
-                        <img
-                            src={overview?.doctor.image ? overview?.doctor.image! : overview?.doctor.gender === 'male' ? '/user.png' : '/female_user.png'}
-                            alt="staff img" className='object-cover h-full w-full rounded-full border-2 border-border' />
-                    </div>
+                <div className="sm:col-span-full flex items-center">
+                    <UserImage url={overview?.doctor.image!} gender={overview?.doctor.gender!}
+                        width='w-fit'
+                        imageClass='w-16 h-16'
+                    />
 
                     <div className=''>
                         <p className='font-semibold text-lg text-gray-900 dark:text-white'>{overview?.doctor.name}</p>
@@ -185,49 +177,46 @@ const IpdOverview = () => {
 
                 <h1 className="sm:col-span-full font-semibold mb-2 text-gray-800 dark:text-neutral-100">Timeline</h1>
 
-                {
-                    overview?.Timeline?.length! > 0 ? (
-                        <ul className="sm:col-span-full relative before:absolute space-y-5 before:w-1 w-64 sm:w-[400px] mx-auto gap-3 before:h-full before:bg-gray-300 before:top-0 before:block">
+                {overview?.Timeline?.length! > 0 ? (<ul className="sm:col-span-full relative before:absolute space-y-5 before:w-1 w-64 sm:w-[400px] mx-auto gap-3 before:h-full before:bg-yellow-700 before:top-0 before:block">
 
-                            {overview?.Timeline?.map((timeline, i) => {
-                                return <li className="space-y-4" key={i}>
+                    {overview?.Timeline?.map((timeline, i) => {
+                        return <li className="space-y-4" key={i}>
 
-                                    {/* Time section */}
-                                    <span
-                                        className="relative  text-sm my-2 -top-1 bg-slate-500 -left-[10%] sm:-left-[8%] text-white py-1 px-3 rounded-md">{timeline.date}</span>
+                            {/* Time section */}
+                            <span className="relative  text-sm my-2 -top-1 bg-yellow-500 -left-[10%] sm:-left-[8%] text-yellow-900 py-1 px-3 rounded-md">{timeline.date}</span>
 
-                                    <div className="relative flex items-center space-x-3 -ml-3 z-10">
+                            <div className="relative flex items-center space-x-3 -ml-3 z-10">
 
-                                        {/* Calendor section */}
-                                        <div className="p-1.5 bg-slate-500 rounded-full ">
-                                            <span><Calendar className="w-4 h-4 text-white" /></span>
-                                        </div>
-
-                                        <div
-                                            className="space-y-2 flex-1 border-2 border-dashed border-gray-200 dark:border-gray-500 p-2 rounded-lg">
-
-                                            <p className=" font-semibold text-gray-800 dark:text-neutral-100">{timeline.title}</p>
-
-                                            <Separator />
-                                            {/* Description */}
-                                            <p className="text-sm text-gray-700 dark:text-neutral-400">{timeline.description}</p>
-
-                                        </div>
-                                    </div>
-                                </li>
-                            })}
-
-                            {/* Static Secttion */}
-
-                            <li className="relative flex items-center space-x-2 -ml-3 z-10">
-                                <div className="p-1.5 bg-slate-400 rounded-full">
-                                    <Clock className="w-4 h-4 text-white" />
+                                {/* Calendor section */}
+                                <div className="p-1.5 bg-yellow-500 rounded-full ">
+                                    <span ><Calendar className="w-4 h-4 text-yellow-900" /></span>
                                 </div>
-                            </li>
-                        </ul>)
-                        :
-                        // error message
-                        <h1 className="text-sm text-gray-600">No data found</h1>
+
+                                <div className="space-y-2 flex-1 border-2 border-dashed border-yellow-500 dark:border-yellow-700 p-2 rounded-lg">
+
+                                    <p className=" font-semibold text-gray-800 dark:text-neutral-100">{timeline.title}</p>
+
+                                    <Separator className="bg-yellow-500/50 dark:bg-yellow-500/20" />
+
+                                    {/* Description */}
+                                    <p className="text-sm text-gray-700 dark:text-neutral-400">{timeline.description}</p>
+
+                                </div>
+                            </div>
+                        </li>
+                    })}
+
+                    {/* Static Secttion */}
+
+                    <li className="relative flex items-center space-x-2 -ml-3 z-10">
+                        <div className="p-1.5 bg-yellow-500 rounded-full">
+                            <Clock className="w-4 h-4 text-yellow-900" />
+                        </div>
+                    </li>
+                </ul>)
+                    :
+                    // error message
+                    <h1 className="text-sm text-gray-600">No data found</h1>
                 }
 
                 <Separator className="sm:col-span-full my-8 lg:hidden" />

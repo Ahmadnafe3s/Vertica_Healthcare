@@ -80,9 +80,20 @@ const RadiologyApi = {
         }
     },
 
-    getRadioSampleCollectionDetails: async (id: number): Promise<RadiologySampleCollectionDet> => {
+    getRadioSampleCollectionById: async (id: number): Promise<RadiologySampleCollectionDet> => {
         try {
             const res = await AxiosClient.get(`/api/radiologyBill/sample-collection/${id}`)
+            return res.data
+        }
+        catch (error: any) {
+            const err = error.response?.data?.message || "Network Error"
+            throw new Error(err)
+        }
+    },
+
+    deleteSampleCollection: async (itemId: number) => {
+        try {
+            const res = await AxiosClient.delete(`/api/radiologyBill/sample-collection/${itemId}`)
             return res.data
         }
         catch (error: any) {
@@ -125,6 +136,16 @@ const RadiologyApi = {
         }
     },
 
+    deleteRadiologyReport: async (itemId: number) => {
+        try {
+            const res = await AxiosClient.delete(`/api/radiologyBill/report/${itemId}`)
+            return res.data
+        }
+        catch (error: any) {
+            const err = error.response?.data?.message || "Network Error"
+            throw new Error(err)
+        }
+    },
 
 
 }

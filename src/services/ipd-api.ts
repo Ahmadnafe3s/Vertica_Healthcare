@@ -120,9 +120,9 @@ const IpdApi = {
     },
 
     // Lab investigations
-    getIpdRadInvestigation: async (ipdId: string, params: { search?: string }) => {
+    getIpdRadInvestigation: async (moduleId: string, params: { search?: string }) => {
         try {
-            const res = await AxiosClient.get(`/api/radiologyBill/items/${ipdId}`, { params })
+            const res = await AxiosClient.get(`/api/radiologyBill/items/${moduleId}`, { params })
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Connection Error"
@@ -130,9 +130,9 @@ const IpdApi = {
         }
     },
 
-    getIpdPatInvestigation: async (ipdId: string, params: { search?: string }) => {
+    getIpdPatInvestigation: async (moduleId: string, params: { search?: string }) => {
         try {
-            const res = await AxiosClient.get(`/api/pathologyBill/items/${ipdId}`, { params })
+            const res = await AxiosClient.get(`/api/pathologyBill/items/${moduleId}`, { params })
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Connection Error"

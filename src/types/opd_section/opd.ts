@@ -15,9 +15,9 @@ interface opdData {  // it will be Array of objects
 
     appointment: {
         appointment_date: string,
-        symptom_type: string,
         previous_medical_issue: string,
         reference: string,
+        specialist: { name: string },
     },
     patient: {
         name: string,
@@ -26,9 +26,8 @@ interface opdData {  // it will be Array of objects
     },
     doctor: {
         name: string
-        specialist: string
         gender: string,
-        image: string
+        image: string,
     },
     prescriptions: {
         id: number

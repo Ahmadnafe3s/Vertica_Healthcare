@@ -77,7 +77,7 @@ const CancelledAppointments = () => {
 
             <div className="flex flex-col mb-16 min-h-[75vh] mt-5">
                 <div className="flex-1">
-                    <ProtectedTable module='Appointment' renderTable={(__, canUpdate, _) => (
+                    <ProtectedTable module='Appointment Status' renderTable={(__, canUpdate, _) => (
                         <Table>
                             <TableHeader>
                                 <TableRow>

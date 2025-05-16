@@ -58,7 +58,7 @@ const multiSelectVariants = cva(
  */
 interface MultiSelectProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof multiSelectVariants> {
+  VariantProps<typeof multiSelectVariants> {
   /**
    * An array of option objects to be displayed in the multi-select component.
    * Each option object has a label, value, and an optional icon.
@@ -139,8 +139,7 @@ export const MultiSelect = React.forwardRef<
     },
     ref
   ) => {
-    const [selectedValues, setSelectedValues] =
-      React.useState<string[]>(defaultValue);
+    const [selectedValues, setSelectedValues] = React.useState<string[]>(defaultValue);
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
     const [isAnimating, setIsAnimating] = React.useState(false);
 
@@ -190,6 +189,17 @@ export const MultiSelect = React.forwardRef<
       }
     };
 
+    React.useEffect(() => {
+      const areEqual =
+        defaultValue.length === selectedValues.length &&
+        defaultValue.every((val, idx) => val === selectedValues[idx]);
+
+      if (!areEqual) {
+        setSelectedValues(defaultValue);
+      }
+    }, [defaultValue, selectedValues]);
+
+
     return (
       <Popover
         open={isPopoverOpen}
@@ -202,7 +212,7 @@ export const MultiSelect = React.forwardRef<
             {...props}
             onClick={handleTogglePopover}
             className={cn(
-              "flex w-full p-1 rounded-md border min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit [&_svg]:pointer-events-auto",
+              "flex w-full p-1 rounded-md border border-border min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit [&_svg]:pointer-events-auto",
               className
             )}
           >
@@ -300,7 +310,7 @@ export const MultiSelect = React.forwardRef<
                 >
                   <div
                     className={cn(
-                      "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                      "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-border",
                       selectedValues.length === options.length
                         ? "bg-primary text-primary-foreground"
                         : "opacity-50 [&_svg]:invisible"
@@ -320,7 +330,7 @@ export const MultiSelect = React.forwardRef<
                     >
                       <div
                         className={cn(
-                          "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                          "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-border",
                           isSelected
                             ? "bg-primary text-primary-foreground"
                             : "opacity-50 [&_svg]:invisible"

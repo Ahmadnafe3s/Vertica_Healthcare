@@ -14,7 +14,8 @@ import { useConfirmation } from '@/hooks/useConfirmation'
 
 export interface ROLE {
     "id": number,
-    "name": string
+    "name": string,
+    _count: number
 }
 
 

@@ -1,7 +1,7 @@
 import PermissionProtectedAction from '@/components/permission-protected-actions'
 import { buttonVariants } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { Banknote, BriefcaseMedical, Clock, HeartPulse, Menu, PocketKnife, ReceiptText, SquareStack } from 'lucide-react'
+import { Banknote, BriefcaseMedical, Clock, FlaskConical, HeartPulse, Menu, PocketKnife, ReceiptText, SquareStack } from 'lucide-react'
 import { Link, Outlet } from 'react-router-dom'
 
 const OpdDetailsLayout = () => {
@@ -10,7 +10,7 @@ const OpdDetailsLayout = () => {
     return (
         <div className='space-y-4 pt-4 pb-10'>
 
-            <div className="w-full h-12 ring-1 ring-gray-200 dark:ring-gray-800 rounded px-2">
+            <div className="w-full h-12 ring-1 ring-gray-200 dark:ring-border rounded px-2">
                 <ScrollArea className='h-full w-full'>
                     <div className="flex h-12 gap-x-3 items-center">
 
@@ -53,6 +53,14 @@ const OpdDetailsLayout = () => {
                                 variant: 'outline'
                             })}>
                                 <Clock /> Timeline
+                            </Link>
+                        </PermissionProtectedAction>
+
+                        <PermissionProtectedAction action='view' module='Lab Investigation'>
+                            <Link to={`lab`} className={buttonVariants({
+                                variant: 'outline'
+                            })}>
+                                <FlaskConical /> Lab Investigation
                             </Link>
                         </PermissionProtectedAction>
 

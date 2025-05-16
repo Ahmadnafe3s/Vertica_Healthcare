@@ -111,7 +111,7 @@ const PrintPathTestReport = ({ details, itemId, onPending }: PrintPathTestReport
             onPending(true)
             const [report, collectionData] = await Promise.all([
                 PathologyApi.getPathologyReportById(itemId),
-                PathologyApi.getPathSampleCollectionDetails(itemId)
+                PathologyApi.getPathSampleCollectionById(itemId)
             ])
             if (!details || !report || !collectionData) return toast.error('No data found')
             setCollection(collectionData)

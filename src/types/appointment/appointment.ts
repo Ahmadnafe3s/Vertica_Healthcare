@@ -35,17 +35,17 @@ export interface AppointmentDetails {
     id: string,
     doctorId: number,
     patientId: number,
+    specialistId: number,
     shift: string,
     appointment_date: string,
+    specialist: { name: string },
     appointment_priority: string,
-    symptom_type: string,
     symptom_description: string,
     payment_mode: string,
     status: string,
     alternative_address: string,
     reference: string,
     previous_medical_issue: string,
-    message: string,
     fees: number,
     discount: number,
     net_amount: number,
@@ -63,6 +63,5 @@ export interface AppointmentDetails {
         gender: string,
         phone: string,
         department: string,
-        specialist: string
     }
 }

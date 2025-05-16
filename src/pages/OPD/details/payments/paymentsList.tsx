@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { page_limit } from "@/globalData"
 import { currencySymbol } from "@/helpers/currencySymbol"
-import { currencyFormat } from "@/lib/utils"
+import { cn, currencyFormat } from "@/lib/utils"
 import { Plus } from "lucide-react"
 import { parseAsInteger, useQueryState } from "nuqs"
 import { useEffect } from "react"
@@ -77,8 +77,11 @@ const PaymentsList = () => {
                   <TableRow>
                     <TableHead>Transaction ID</TableHead>
                     <TableHead>Date</TableHead>
-                    <TableHead>Payment Mode</TableHead>
+                    <TableHead>Charges</TableHead>
+                    <TableHead>Net Amount {currencySymbol()}</TableHead>
                     <TableHead>Paid Amount {currencySymbol()}</TableHead>
+                    <TableHead>Balance Amount {currencySymbol()}</TableHead>
+                    <TableHead>Payment Mode</TableHead>
                     <TableHead>Note</TableHead>
                     {show && <TableHead>Action</TableHead>}
                   </TableRow>
@@ -88,8 +91,17 @@ const PaymentsList = () => {
                     return <TableRow key={i}>
                       <TableCell className="font-semibold">{payment.id}</TableCell>
                       <TableCell >{payment.date}</TableCell>
+                      <TableCell className="flex flex-col">
+                        {payment.charge.map((charge, i) => {
+                          return <span key={i} className="text-nowrap text-sm">● {charge.chargeNames.name}</span>
+                        })}
+                      </TableCell>
+                      <TableCell className="text-yellow-500">{currencyFormat(payment.amount)}</TableCell>
+                      <TableCell className="text-green-500">{currencyFormat(payment.paid_amount)}</TableCell>
+                      <TableCell className={cn("text-green-500", { "text-red-500 animate-pulse": payment.balance_amount > 0 })}>
+                        {currencyFormat(payment.balance_amount)}
+                      </TableCell>
                       <TableCell >{payment.payment_mode}</TableCell>
-                      <TableCell >{currencyFormat(payment.amount)}</TableCell>
                       <TableCell >{payment.note}</TableCell>
                       <TableActions
                         show={show}

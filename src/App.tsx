@@ -24,6 +24,7 @@ import SetupPharmacyRoutes from "./routes/AdminSetup/PharmacyRoutes";
 import SetupRadiologyRoutes from "./routes/AdminSetup/radiologyRoutes";
 import SetupVitalRoutes from "./routes/AdminSetup/vitalRoutes";
 import PatientRoutes from "./routes/PatientRoutes";
+import SetupStaffRoutes from "./routes/AdminSetup/staff";
 
 
 
@@ -93,6 +94,9 @@ function App() {
 
             {/* setup route for bed */}
             {SetupBedRoutes()}
+
+            {/* setup routes for staff */}
+            {SetupStaffRoutes()}
 
             {/* Index route */}
             {IndexRoutes()}

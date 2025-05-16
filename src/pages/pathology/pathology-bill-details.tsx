@@ -6,117 +6,39 @@ import PermissionProtectedAction from "@/components/permission-protected-actions
 import SampleCollectionForm from "@/components/sample-collection-form"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { LabReportFormSchema } from "@/formSchemas/approvedBYschema"
-import { sampleCollectionSchema } from "@/formSchemas/sampleCollectionSchema"
 import { currencySymbol } from "@/helpers/currencySymbol"
 import { currencyFormat } from "@/lib/utils"
-import PathologyApi from "@/services/pathology-api"
-import { PathologyBillDeatils, PathologySampleCollectionDet, PathTestReport } from "@/types/pathology/pathology"
 import { CalendarDays, Eye, Plus, Printer, UserRoundPlus } from "lucide-react"
-import { HTMLAttributes, useRef, useState } from "react"
-import toast from "react-hot-toast"
-import { z } from "zod"
+import { HTMLAttributes, useEffect, useRef, useState } from "react"
+import usePathology from "./handlers"
 import PathologyReportForm from "./pathology-report-from"
 import PrintPathologyInvoice from "./print/print-invoice"
 import PrintPathTestReport from "./print/print-path-test-report"
+import PathSampleCollectionInfo from "./sample-collection-info"
+import AlertModel from "@/components/alertModel"
+import PathReportInfo from "./report-info"
 
 
 
 interface PharmacyDetailsProps extends HTMLAttributes<HTMLDivElement> {
-    details: PathologyBillDeatils,
+    ID: string,
 }
 
 
-const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) => {
+const PathologyBillDetailsModal = ({ ID, ...props }: PharmacyDetailsProps) => {
 
     const itemId = useRef(0)
     const testId = useRef(0)
-    const index = useRef(0) // for updating the view of collection and report icons
-
-    const [view, setView] = useState<{ [key: number]: { collection?: boolean, report?: boolean } }>()
-
-    const [loading, setLoading] = useState({ inline: false, model: false })
-    const [collectionForm, setCollectionForm] = useState(false)
-    const [reportForm, setReportForm] = useState(false)
-    const [collectionDetails, setCollectionDetails] = useState<PathologySampleCollectionDet>()
-    const [reportDetails, setReportDetails] = useState<PathTestReport>()
     const [print, setPrint] = useState(false)
+    const [isCollectionOpen, setCollectionOpen] = useState(false)
+    const [isReportOpen, setReportOpen] = useState(false)
+
+    const { current, getPathologyBillDetails, collectionForm, setCollectionForm, onCollectionSubmit, collectionDetails, setCollectionDetails, deleteCollection, isLodaing, reportForm, setReportForm, setReportDetails, onReportSubmit, reportDetails, deletePathologyReport, setLoading, isRefresh, confirmationProps } = usePathology()
 
 
-    const onCollectionSubmit = async (formData: z.infer<typeof sampleCollectionSchema>) => {
-        try {
-            let data;
-            setLoading(prev => ({ ...prev, inline: true }))
-            collectionDetails ? (
-                data = await PathologyApi.updatePathSampleCollection(collectionDetails?.itemId, formData),
-                setCollectionDetails(undefined)
-            )
-                :
-                (
-                    data = await PathologyApi.createPathSampleCollection(formData, itemId.current),
-                    setView({ ...view, [index.current]: { collection: true } })
-                )
-            toast.success(data.message)
-            setCollectionForm(false)
-            index.current = 0
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally {
-            setLoading(prev => ({ ...prev, inline: false }))
-        }
-    }
-
-
-    const onReportSubmit = async (formData: z.infer<typeof LabReportFormSchema>) => {
-        try {
-            let data;
-            setLoading(prev => ({ ...prev, inline: true }))
-            reportDetails ? (
-                data = await PathologyApi.updatePathologyReport(reportDetails.itemId, formData),
-                setReportDetails(undefined)
-            )
-                :
-                (
-                    data = await PathologyApi.createPathologyReport(itemId.current, formData),
-                    setView({ ...view, [index.current]: { report: true } })
-                )
-            toast.success(data.message)
-            setReportForm(false)
-            index.current = 0
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally {
-            setLoading(prev => ({ ...prev, inline: false }))
-        }
-    }
-
-
-    const fetchReportDetails = async (itemId: number) => {
-        try {
-            setLoading(prev => ({ ...prev, model: true }))
-            const data = await PathologyApi.getPathologyReportById(itemId)
-            console.log(data);
-
-            setReportDetails(data)
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally {
-            setLoading(prev => ({ ...prev, model: false }))
-        }
-    }
-
-
-    const fetchCollectionDetails = async (itemId: number) => {
-        try {
-            setLoading(prev => ({ ...prev, model: true }))
-            const data = await PathologyApi.getPathSampleCollectionDetails(itemId)
-            setCollectionDetails(data)
-        } catch ({ message }: any) {
-            toast.error(message)
-        } finally {
-            setLoading(prev => ({ ...prev, model: false }))
-        }
-    }
+    useEffect(() => {
+        getPathologyBillDetails(ID)
+    }, [ID, isRefresh])
 
 
 
@@ -131,7 +53,7 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                 <CalendarDays className='w-10 h-10 text-white' />
                             </div>
                             <div className=''>
-                                <p className='font-semibold text-lg text-gray-900 dark:text-gray-100'>{details?.date}</p>
+                                <p className='font-semibold text-lg text-gray-900 dark:text-gray-100'>{current?.date}</p>
                                 <div className="flex space-x-1 items-center">
                                     <p className='text-sm text-gray-400'>Invoice Date</p>
                                     {/* printing commulative bill */}
@@ -143,29 +65,29 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                         {/* dashed cards */}
 
                         <div className="sm:col-span-2 grid grid-cols-2 gap-2">
-                            <CardBox borderType='dashed' title="Invoice No" value={details?.id} />
-                            <CardBox borderType='dashed' title="Patient Name" value={details?.patient.name} />
+                            <CardBox borderType='dashed' title="Invoice No" value={current?.id} />
+                            <CardBox borderType='dashed' title="Patient Name" value={current?.patient.name} />
                         </div>
 
                         {/* solid cards */}
 
-                        <CardBox borderType='solid' title="Invoice No" value={details?.id} />
+                        <CardBox borderType='solid' title="Invoice No" value={current?.id} />
 
-                        <CardBox borderType='solid' title="Patient ID" value={details?.patientId ?? 'N/A'} />
+                        <CardBox borderType='solid' title="Patient ID" value={current?.patientId ?? 'N/A'} />
 
-                        <CardBox borderType='solid' title="Doctor Name" value={details?.doctor ?? 'N/A'} />
+                        <CardBox borderType='solid' title="Doctor Name" value={current?.doctor ?? 'N/A'} />
 
-                        <CardBox borderType='solid' title="OPD ID" value={details?.previousReportValue ?? 'N/A'} />
+                        <CardBox borderType='solid' title="OPD ID" value={current?.previousReportValue ?? 'N/A'} />
 
-                        <CardBox borderType='solid' title="Discount %" value={details?.discount ?? 'N/A'} />
+                        <CardBox borderType='solid' title="Discount %" value={current?.discount ?? 'N/A'} />
 
-                        <CardBox borderType='solid' title="Tax %" value={details?.additionalTax ?? 'N/A'} />
+                        <CardBox borderType='solid' title="Tax %" value={current?.additionalTax ?? 'N/A'} />
 
-                        <CardBox borderType='solid' title={`Net Amount ${currencySymbol()}`} value={currencyFormat(details?.net_amount) ?? 'N/A'} />
+                        <CardBox borderType='solid' title={`Net Amount ${currencySymbol()}`} value={currencyFormat(current?.net_amount!) ?? 'N/A'} />
 
-                        <CardBox borderType='solid' title="Payment Mode" value={details?.payment_mode ?? 'N/A'} />
+                        <CardBox borderType='solid' title="Payment Mode" value={current?.payment_mode ?? 'N/A'} />
 
-                        <CardBox borderType='solid' title="Note" value={details?.note ?? 'N/A'} />
+                        <CardBox borderType='solid' title="Note" value={current?.note ?? 'N/A'} />
 
                     </div>
 
@@ -189,7 +111,7 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                             </TableHeader>
 
                             <TableBody>
-                                {details?.PathologyBillItems.map((item, i) => (
+                                {current?.PathologyBillItems.map((item, i) => (
                                     <TableRow key={i}>
                                         <TableCell>{item.testName.name}</TableCell>
                                         <TableCell>{item.reportDays}</TableCell>
@@ -197,27 +119,26 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                         {/* Collector */}
                                         <TableCell className="flex">
 
-                                            {item.PathSampleCollection?.id || view?.[i]?.collection ?
+                                            {item.PathSampleCollection?.id ?
                                                 <PermissionProtectedAction action="view" module="Sample Collection">
                                                     <CustomTooltip message="View Collector">
-                                                        <Eye className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
-                                                            onClick={async () => {
-                                                                await fetchCollectionDetails(item.id)
-                                                                setCollectionForm(true)
-                                                            }}
-                                                        />
+                                                        <div className="relative p-2 w-fit bg-pink-100 dark:bg-pink-500/10 rounded-full">
+                                                            <Eye className="w-4 h-4 text-pink-500" />
+                                                            <span className="cursor-pointer absolute inset-0"
+                                                                onClick={() => { itemId.current = item.id, setCollectionOpen(true) }}
+                                                            />
+                                                        </div>
                                                     </CustomTooltip>
                                                 </PermissionProtectedAction>
                                                 :
                                                 <PermissionProtectedAction action="create" module="Sample Collection">
                                                     <CustomTooltip message="Add User">
-                                                        <UserRoundPlus className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
-                                                            onClick={() => {
-                                                                setCollectionForm(true);
-                                                                itemId.current = item.id
-                                                                index.current = i
-                                                            }}
-                                                        />
+                                                        <div className="relative p-2 w-fit bg-green-100 dark:bg-green-500/10 rounded-full">
+                                                            <UserRoundPlus className="w-4 h-4 text-green-500 cursor-pointer" />
+                                                            <span className="cursor-pointer absolute inset-0"
+                                                                onClick={() => { setCollectionForm(true); itemId.current = item.id }}
+                                                            />
+                                                        </div>
                                                     </CustomTooltip>
                                                 </PermissionProtectedAction>
                                             }
@@ -226,27 +147,27 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
 
                                         {/* Approved By or Report */}
                                         <TableCell>
-                                            {item.PathologyReport?.id || view?.[i]?.report ?
+                                            {item.PathologyReport?.id ?
 
                                                 <PermissionProtectedAction action='view' module='Pathology Report'>
-                                                    <CustomTooltip message="View Collector">
-                                                        <Eye className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
-                                                            onClick={async () => {
-                                                                await fetchReportDetails(item.id)
-                                                                setReportForm(true)
-                                                            }}
-                                                        />
+                                                    <CustomTooltip message="View Report">
+                                                        <div className="relative p-2 w-fit bg-pink-100 dark:bg-pink-500/10 rounded-full">
+                                                            <Eye className="w-4 h-4 text-pink-500" />
+                                                            <span className="cursor-pointer absolute inset-0"
+                                                                onClick={async () => { itemId.current = item.id, setReportOpen(true) }}
+                                                            />
+                                                        </div>
                                                     </CustomTooltip>
                                                 </PermissionProtectedAction>
-
                                                 :
-
                                                 <PermissionProtectedAction action='create' module='Pathology Report'>
-                                                    < CustomTooltip message="Add Report">
-                                                        <Plus className="w-4 h-4 text-gray-700 dark:text-gray-100 cursor-pointer"
-                                                            // testId for getting testName parameters && itemId for REREFERENCE
-                                                            onClick={() => { setReportForm(true); testId.current = item.testNameId, itemId.current = item.id, index.current = i }}
-                                                        />
+                                                    <CustomTooltip message="Add Report">
+                                                        <div className="relative p-2 w-fit bg-green-100 dark:bg-green-500/10 rounded-full">
+                                                            <Plus className="w-4 h-4 text-green-500" />
+                                                            <span className="cursor-pointer absolute inset-0"
+                                                                onClick={() => { setReportForm(true); testId.current = item.testNameId, itemId.current = item.id }}
+                                                            />
+                                                        </div>
                                                     </CustomTooltip>
                                                 </PermissionProtectedAction>
                                             }
@@ -254,7 +175,9 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                                         </TableCell>
                                         <TableCell>{item.tax} %</TableCell>
                                         <TableCell>{currencyFormat(item.amount)}</TableCell>
-                                        <TableCell><PrintPathTestReport details={details!} itemId={item.id} onPending={(v) => setLoading({ ...loading, model: v })} /></TableCell>
+                                        <TableCell>
+                                            <PrintPathTestReport details={current!} itemId={item.id} onPending={setLoading} />
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -270,9 +193,9 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
             {collectionForm && (
                 <SampleCollectionForm
                     editDetails={collectionDetails!}
-                    isPending={loading.inline}
+                    isPending={isLodaing}
                     Role="pathologist"
-                    Submit={onCollectionSubmit}
+                    Submit={(formData) => onCollectionSubmit(formData, itemId.current)}
                     onClick={() => { setCollectionForm(false); setCollectionDetails(undefined) }}
                 />
             )}
@@ -282,17 +205,38 @@ const PathologyBillDetailsModal = ({ details, ...props }: PharmacyDetailsProps) 
                 <PathologyReportForm
                     editDetails={reportDetails!}
                     testNameId={testId.current}
-                    isPending={loading.inline}
-                    Submit={onReportSubmit}
+                    isPending={isLodaing}
+                    Submit={(formData) => onReportSubmit(formData, itemId.current)}
                     onClick={() => { setReportForm(false); setReportDetails(undefined) }}
                 />
             )}
 
+            <PathSampleCollectionInfo
+                ID={itemId.current}
+                isOpen={isCollectionOpen}
+                onClose={setCollectionOpen}
+                onDelete={deleteCollection}
+            />
 
-            {loading.model && <LoaderModel />}
+
+            <PathReportInfo
+                ID={itemId.current}
+                isOpen={isReportOpen}
+                onClose={setReportOpen}
+                onDelete={deletePathologyReport}
+            />
+
+
+            {confirmationProps.isOpen && <AlertModel
+                continue={() => confirmationProps.onConfirm()}
+                cancel={() => confirmationProps.onCancel()}
+            />}
+
+
+            {isLodaing && <LoaderModel />}
 
             {/* printing invoice */}
-            {print && <PrintPathologyInvoice Info={details!} afterPrint={() => setPrint(false)} />}
+            {print && <PrintPathologyInvoice Info={current!} afterPrint={() => setPrint(false)} />}
 
         </>
     )

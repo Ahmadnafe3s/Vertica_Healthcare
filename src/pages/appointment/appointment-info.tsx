@@ -52,13 +52,11 @@ const AppointmentDetailsModel = ({ appointmentDetails, ...props }: AppointmentDe
                         <div className="col-span-full grid sm:grid-cols-3 gap-2">
                             <CardBox borderType='solid' title="Shift" value={appointmentDetails?.shift} />
                             <CardBox borderType='solid' title="Priority" value={appointmentDetails?.appointment_priority} />
-                            <CardBox borderType='solid' title="Symptom Type" value={appointmentDetails?.symptom_type} />
                             <CardBox borderType='solid' title="Description" value={appointmentDetails?.symptom_description} />
                             <CardBox borderType='solid' title="Reference" value={appointmentDetails?.reference} />
                             <CardBox borderType='solid' title="Previous Issue" value={appointmentDetails?.previous_medical_issue} />
                             <CardBox borderType='solid' title="Payment Mode" value={appointmentDetails?.payment_mode} />
                             <CardBox borderType='solid' title="Alternative Address" value={appointmentDetails?.alternative_address} />
-                            <CardBox borderType='solid' title="Message" value={appointmentDetails?.message} />
                             <CardBox borderType='solid' title="Fees" value={currencyFormat(Number(appointmentDetails?.fees))} />
                             <CardBox borderType='solid' title="Discount" value={appointmentDetails?.discount} />
                             <CardBox borderType='solid' title="Net Amount" value={currencyFormat(appointmentDetails?.net_amount)} />
@@ -116,7 +114,7 @@ const AppointmentDetailsModel = ({ appointmentDetails, ...props }: AppointmentDe
 
                             <CardBox borderType='solid' title="Doctor ID" value={appointmentDetails?.doctorId} />
                             <CardBox borderType='solid' title="Department" value={appointmentDetails?.doctor.department} />
-                            <CardBox borderType='solid' title="specialist" value={appointmentDetails?.doctor.specialist} />
+                            <CardBox borderType='solid' title="specialist" value={appointmentDetails?.specialist.name} />
                             <CardBox borderType='solid' title="Gender" value={appointmentDetails?.doctor.gender} />
                             <CardBox borderType='solid' title="Phone" value={appointmentDetails?.doctor.phone} />
                         </div>

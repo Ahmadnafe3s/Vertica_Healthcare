@@ -8,16 +8,19 @@ import { Textarea } from "@/components/ui/textarea"
 import { paymentFormSchema } from "@/formSchemas/paymentFormSchema"
 import { currencySymbol } from "@/helpers/currencySymbol"
 import { PaymentOptions } from "@/helpers/formSelectOptions"
+import useChargeHandlers from "@/pages/OPD/details/charges/charge-handlers"
 import { paymentData } from "@/types/opd_section/payment"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
-import { HTMLAttributes } from "react"
+import { HTMLAttributes, useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { z } from "zod"
+import RequiredLabel from "../required-label"
+import { MultiSelect } from "../ui/multi-select"
 
 
 interface PaymentFormModelProps extends HTMLAttributes<HTMLDivElement> {
-    Submit: (formData: z.infer<typeof paymentFormSchema>) => void;
+    Submit: (formData: any) => void;
     isPending: boolean,
     paymentDetails: paymentData
 }
@@ -25,10 +28,32 @@ interface PaymentFormModelProps extends HTMLAttributes<HTMLDivElement> {
 
 const PaymentFormModel = ({ Submit, isPending, paymentDetails, ...props }: PaymentFormModelProps) => {
 
-    const { control, register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof paymentFormSchema>>({
+    const { control, register, watch, handleSubmit, setValue, formState: { errors } } = useForm<z.infer<typeof paymentFormSchema>>({
         resolver: zodResolver(paymentFormSchema),
-        defaultValues: paymentDetails
+        defaultValues: {
+            ...paymentDetails,
+            chargeId: paymentDetails?.charge.map(c => c.id) // eg: [1,2,3]
+        }
     })
+
+    // payment id is here to fetch charges that are paid for that payment
+    const { charges, getCharges } = useChargeHandlers({ search: 'Unpaid', paymentId: paymentDetails?.id })
+
+    // calculate amount
+    useEffect(() => {
+        const selectedIds = watch('chargeId') || []; // will return array of strings
+        const selectedCharge = selectedIds.map((id) => charges.data.find((c) => c.id === +id));
+        const total = selectedCharge.reduce((acc, curr) => acc + curr?.net_amount!, 0);
+        setValue('amount', total)
+        const balance = (total - watch('paid_amount'))
+        setValue('balance_amount', balance)
+    }, [watch('chargeId'), watch('paid_amount')])
+
+
+    useEffect(() => {
+        getCharges()
+    }, [])
+
 
     return (
         <Dialog pageTitle='Add Payment' {...props} className='sm:w-[400px] mx-auto'>
@@ -39,9 +64,24 @@ const PaymentFormModel = ({ Submit, isPending, paymentDetails, ...props }: Payme
                         {/* Date */}
 
                         <div className="w-full flex flex-col gap-y-2">
-                            <Label>Date</Label>
-                            <Input type='date' {...register('date')} />
+                            <RequiredLabel label='Date' />
+                            <Input type='date' {...register('date')} defaultValue={new Date().toISOString().split('T')[0]} />
                             {errors.date && <p className='text-sm text-red-500'>{errors.date.message}</p>}
+                        </div>
+
+                        {/* Charge */}
+                        <div className="w-full flex flex-col gap-y-2">
+                            <RequiredLabel label='Charge' />
+                            <Controller name="chargeId" control={control} render={({ field }) => {
+                                return <MultiSelect
+                                    className="shadow-none"
+                                    defaultValue={field?.value?.map(id => id.toString())}
+                                    options={charges.data.map((charge) => ({ label: charge.chargeNames.name, value: String(charge.id) }))}
+                                    placeholder='Select Charge'
+                                    onValueChange={(value) => { field.onChange(value) }}
+                                />
+                            }} />
+                            {errors.chargeId && <p className='text-sm text-red-500'>{errors.chargeId.message}</p>}
                         </div>
 
 
@@ -49,8 +89,25 @@ const PaymentFormModel = ({ Submit, isPending, paymentDetails, ...props }: Payme
 
                         <div className="w-full flex flex-col gap-y-2 ">
                             <Label>Amount {currencySymbol()}</Label>
-                            <Input type='number' {...register('amount')} placeholder="Enter Amount" />
+                            <Input type='number' {...register('amount')} placeholder="Enter Amount" disabled />
                             {errors.amount && <p className='text-sm text-red-500'>{errors.amount.message}</p>}
+                        </div>
+
+
+                        {/* Paid */}
+
+                        <div className="w-full flex flex-col gap-y-2 ">
+                            <Label>Paid {currencySymbol()}</Label>
+                            <Input type='number' {...register('paid_amount')} placeholder="Enter Paid Amount" />
+                            {errors.paid_amount && <p className='text-sm text-red-500'>{errors.paid_amount.message}</p>}
+                        </div>
+
+                        {/* Balance */}
+
+                        <div className="w-full flex flex-col gap-y-2 ">
+                            <Label>Balance {currencySymbol()}</Label>
+                            <Input type='number' {...register('balance_amount')} disabled />
+                            {errors.balance_amount && <p className='text-sm text-red-500'>{errors.balance_amount.message}</p>}
                         </div>
 
                         {/* Payment Mode */}

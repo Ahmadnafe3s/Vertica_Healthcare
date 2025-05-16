@@ -2,11 +2,13 @@ import CardBox from "@/components/card-box";
 import PermissionProtectedAction from "@/components/permission-protected-actions";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import UserImage from "@/components/user-image";
 import { currencySymbol } from "@/helpers/currencySymbol";
+import groupedBYdate from "@/helpers/groupVitals";
 import { currencyFormat } from "@/lib/utils";
 import OpdApi from "@/services/opd-api";
 import { opdDetails } from "@/types/opd_section/opd";
-import { Calendar, Clock, UserRound } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
@@ -47,21 +49,18 @@ const VisitDetails = () => {
 
                 {/* patient name / image */}
 
-                <div className="sm:col-span-2 flex space-x-2 items-center mb-3">
+                <div className="sm:col-span-2 flex items-center mb-3">
 
-                    {current?.appointment?.patient?.image ?
-                        (<div className='w-20 h-20'>
-                            <img src={current.appointment.patient.image!} alt="staff img" className='object-cover h-full w-full rounded-full' />
-                        </div>)
-                        :
-                        (<div className='p-3 bg-red-500 rounded-full'>
-                            <UserRound className='w-10 h-10 text-white' />
-                        </div>)
-                    }
+                    <UserImage
+                        width='w-fit'
+                        imageClass='w-20 h-20'
+                        url={current?.appointment?.patient?.image!}
+                        gender={current?.appointment?.patient?.gender!}
+                    />
 
                     <div className=''>
                         <p className='font-semibold text-lg text-gray-900 dark:text-white'>{current?.appointment?.patient.name}</p>
-                        <p className='text-sm text-gray-500'>ID : {current?.appointment?.patient.id}</p>
+                        <p className='text-sm text-gray-500'>OPD No : {current?.id}</p>
                     </div>
                 </div>
 
@@ -79,30 +78,27 @@ const VisitDetails = () => {
 
                 <Separator className="sm:col-span-full my-8" />
 
-                {/* Case Details */}
-                <CardBox borderType="solid" title="OPD No." value={current?.id} />
-
-                <Separator className="sm:col-span-full my-8" />
-
-
                 {/* Vital section */}
 
                 <h1 className="sm:col-span-full font-semibold text-gray-800 dark:text-neutral-100">Vitals</h1>
 
                 {/* Can be add Vitals Here */}
 
-                {current?.Vitals?.map((measure, i) => {
-                    return <div key={i} className='space-y-1 flex justify-between p-2  ring-1 ring-zinc-200 dark:ring-border rounded-sm'>
-                        <div>
-                            <p className='text-gray-700 dark:text-gray-300'>{measure.vital?.name}</p>
-                            <p className='font-semibold'>{measure?.value}</p>
-                        </div>
-                        <div>
+                {groupedBYdate(current?.Vitals ?? []).map((vital, i) => (
+                    <div key={i} className='space-y-1 p-2  ring-1 ring-zinc-200 dark:ring-border rounded-sm'>
+                        <div className="flex justify-between">
                             <p className='text-gray-700 dark:text-gray-300'>Date</p>
-                            <p className="text-sm text-gray-500">{measure?.date}</p>
+                            <p className="text-sm text-gray-500">{vital?.date}</p>
                         </div>
+                        <Separator />
+                        {vital?.measure.map((measure, i) => (
+                            <div key={i} className='flex justify-between'>
+                                <p className='text-gray-700 dark:text-gray-300 text-sm'>{measure.vital?.name}</p>
+                                <p className='font-semibold'>{measure?.value}</p>
+                            </div>
+                        ))}
                     </div>
-                })}
+                ))}
 
 
                 <Separator className="sm:col-span-full my-8" />
@@ -118,10 +114,11 @@ const VisitDetails = () => {
 
                 <h1 className="sm:col-span-full font-semibold text-gray-800 dark:text-neutral-100">Consultant</h1>
 
-                <div className="sm:col-span-full flex space-x-2 items-center">
-                    <div className='w-16 h-16'>
-                        <img src={current?.appointment?.doctor.image ? current?.appointment?.doctor.image : current?.appointment?.doctor.gender === 'male' ? '/user.png' : '/female_user.png'} alt="staff img" className='object-cover h-full w-full rounded-full border-2 border-border' />
-                    </div>
+                <div className="sm:col-span-full flex items-center">
+                    <UserImage url={current?.appointment?.doctor.image!} gender={current?.appointment?.doctor.gender!}
+                        width='w-fit'
+                        imageClass='w-16 h-16'
+                    />
 
                     <div className=''>
                         <p className='font-semibold text-lg text-gray-900 dark:text-white'>{current?.appointment?.doctor.name}</p>
@@ -137,27 +134,27 @@ const VisitDetails = () => {
 
                 <h1 className="sm:col-span-full font-semibold mb-2 text-gray-800 dark:text-neutral-100">Timeline</h1>
 
-                {current?.timelines?.length! > 0 ? (<ul className="sm:col-span-full relative before:absolute space-y-5 before:w-1 w-64 sm:w-[400px] mx-auto gap-3 before:h-full before:bg-gray-300 before:top-0 before:block">
-
+                {current?.timelines?.length! > 0 ? (<ul className="sm:col-span-full relative before:absolute space-y-5 before:w-1 w-64 sm:w-[400px] mx-auto gap-3 before:h-full before:bg-yellow-700 before:top-0 before:block">
 
                     {current?.timelines?.map((timeline, i) => {
                         return <li className="space-y-4" key={i}>
 
                             {/* Time section */}
-                            <span className="relative  text-sm my-2 -top-1 bg-slate-500 -left-[10%] sm:-left-[8%] text-white py-1 px-3 rounded-md">{timeline.date}</span>
+                            <span className="relative  text-sm my-2 -top-1 bg-yellow-500 -left-[10%] sm:-left-[8%] text-yellow-900 py-1 px-3 rounded-md">{timeline.date}</span>
 
                             <div className="relative flex items-center space-x-3 -ml-3 z-10">
 
                                 {/* Calendor section */}
-                                <div className="p-1.5 bg-slate-500 rounded-full ">
-                                    <span ><Calendar className="w-4 h-4 text-white" /></span>
+                                <div className="p-1.5 bg-yellow-500 rounded-full ">
+                                    <span ><Calendar className="w-4 h-4 text-yellow-900" /></span>
                                 </div>
 
-                                <div className="space-y-2 flex-1 border-2 border-dashed border-gray-200 dark:border-gray-500 p-2 rounded-lg">
+                                <div className="space-y-2 flex-1 border-2 border-dashed border-yellow-500 dark:border-yellow-700 p-2 rounded-lg">
 
                                     <p className=" font-semibold text-gray-800 dark:text-neutral-100">{timeline.title}</p>
 
-                                    <Separator />
+                                    <Separator className="bg-yellow-500/50 dark:bg-yellow-500/20" />
+
                                     {/* Description */}
                                     <p className="text-sm text-gray-700 dark:text-neutral-400">{timeline.description}</p>
 
@@ -169,8 +166,8 @@ const VisitDetails = () => {
                     {/* Static Secttion */}
 
                     <li className="relative flex items-center space-x-2 -ml-3 z-10">
-                        <div className="p-1.5 bg-slate-400 rounded-full">
-                            <Clock className="w-4 h-4 text-white" />
+                        <div className="p-1.5 bg-yellow-500 rounded-full">
+                            <Clock className="w-4 h-4 text-yellow-900" />
                         </div>
                     </li>
                 </ul>)

@@ -11,7 +11,7 @@ const TestNames = z.object({
 
 
 export const createRadiologyBillSchema = z.object({
-    ipdId: z.string().optional(),
+    moduleId: z.string().optional().default(''),
     doctor: z.string().min(1, { message: 'Doctor is required' }),
     patientId: z.coerce.number().min(1, { message: 'Patient is required' }).default(0),
     date: z.string().min(1, { message: 'Date is required' }),

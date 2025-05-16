@@ -56,7 +56,7 @@ export type PathologyBillDeatils = {
 type PathologyBillData = {
     id: string;
     doctor: string;
-    ipdId: string;
+    moduleId: string;
     patientId: number;
     patient: { name: string, gender: string, image: string };
     date: string;

@@ -6,10 +6,10 @@ import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { operationFormSchema } from "@/formSchemas/addOperationFormSchema"
-import { OtherApi } from "@/services/other-api"
+import StaffApi from "@/services/staff-api"
 import { operationDetailsType } from "@/types/opd_section/operationType"
 import { operationCategoryType, operationNameType } from "@/types/setupTypes/setupOpeartion"
-import { Doctors } from "@/types/type"
+import { staffs } from "@/types/staff/staff"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
 import { HTMLAttributes, useEffect, useState } from "react"
@@ -27,7 +27,7 @@ interface OperationFormProps extends HTMLAttributes<HTMLDivElement> {
 const OperationForm = ({ Submit, isPending, operationDetails: details, ...props }: OperationFormProps) => {
 
     // API State
-    const [doctors, setDoctors] = useState<Doctors[]>([]);
+    const [doctors, setDoctors] = useState<staffs['data']>([]);
     const [categories, setCategories] = useState<operationCategoryType[]>([]);
     const [operationNames, setOperationNames] = useState<operationNameType[]>([]);
 
@@ -64,8 +64,8 @@ const OperationForm = ({ Submit, isPending, operationDetails: details, ...props 
 
     const fetchDoctorsList = async () => {
         try {
-            const data = await OtherApi.getDoctors()
-            setDoctors(data)
+            const data = await StaffApi.getStaffs({ search: 'doctor' })
+            setDoctors(data.data)
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -156,7 +156,7 @@ const OperationForm = ({ Submit, isPending, operationDetails: details, ...props 
 
                                         <SelectContent className='z-[200]'>
                                             {doctors.map((doctor, i) => {
-                                                return <SelectItem key={i} value={String(doctor.staff.id)}>{doctor.staff.name}</SelectItem>
+                                                return <SelectItem key={i} value={String(doctor.id)}>{doctor.name}</SelectItem>
                                             })}
                                         </SelectContent>
                                     </Select>

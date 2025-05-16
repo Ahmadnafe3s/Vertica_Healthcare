@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import RegisterPatient from '../register/patient-signup';
 import usePatient from './handlers';
+import UserImage from '@/components/user-image';
 
 
 
@@ -34,13 +35,18 @@ const PatientProfile = () => {
         <section className='flex flex-col pt-5 pb-10'>
 
             <div className="grid lg:grid-cols-4 gap-y-10">
+
                 {/* image , name , action*/}
-                <div className='flex items-center gap-x-3 lg:col-span-2'>
-                    <div className='w-20 h-20'>
-                        <img src={current?.image ? current?.image : current?.gender === 'male' ? '/user.png' : '/female_user.png'} alt="staff img" className='object-cover h-full w-full rounded-full border-2 border-border' />
-                    </div>
+                <div className='flex items-center lg:col-span-2 '>
+
+                    <UserImage url={current?.image!} gender={current?.gender!}
+                        width='w-fit'
+                        imageClass='w-20 h-20'
+                        textClass='text-gray-900 dark:text-gray-100 text-2xl font-bold'
+                    />
+
                     <div className='space-y-2'>
-                        <h1 className='text-gray-900 dark:text-gray-100 text-2xl font-bold'>{current?.name}</h1>
+                        <h1 className='text-gray-900 dark:text-gray-100 text-2xl font-bold'>{current?.name || ''}</h1>
                         {(['admin'].includes(session.user?.role!) || (session.user?.id === +id!)) && <div className='flex gap-x-2'>
                             {/* reset */}
                             <CustomTooltip message='Reset Password'>
@@ -56,6 +62,7 @@ const PatientProfile = () => {
                             </CustomTooltip>
                         </div>}
                     </div>
+
                 </div>
 
 

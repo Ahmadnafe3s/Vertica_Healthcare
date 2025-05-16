@@ -58,7 +58,8 @@ const SignIn = () => {
       router(`/${route}/dashboard`)
 
     } catch (error: any) {
-      toast.error(error.response.data.message)
+      const message = error.response?.data?.message || 'Connection Error'
+      toast.error(message)
     } finally {
       setPending(false)
     }

@@ -65,8 +65,8 @@ const TreatmentsList = () => {
                 <TableHead>OPD ID</TableHead>
                 <TableHead>Appointment Date</TableHead>
                 <TableHead>Consultant</TableHead>
+                <TableHead>Specialist</TableHead>
                 <TableHead>Reference</TableHead>
-                <TableHead>Symptom Type</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -77,8 +77,8 @@ const TreatmentsList = () => {
                   </TableCell>
                   <TableCell>{opd.appointment.appointment_date}</TableCell>
                   <TableCell>{opd.doctor.name}</TableCell>
+                  <TableCell>{opd.appointment.specialist.name}</TableCell>
                   <TableCell>{opd.appointment.reference}</TableCell>
-                  <TableCell>{opd.appointment.symptom_type}</TableCell>
                 </TableRow>
               })}
             </TableBody>

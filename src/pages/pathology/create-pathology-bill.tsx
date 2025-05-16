@@ -315,9 +315,9 @@ const CreatePathologyBill = ({ Submit, isPending, editDetails, ...props }: Creat
                             {/* opdId */}
 
                             <div className="w-full flex flex-col gap-y-2">
-                                <Label>IPD ID</Label>
-                                <Input type='text' {...register('ipdId')} />
-                                {errors.ipdId && <p className='text-sm text-red-500'>{errors.ipdId.message}</p>}
+                                <Label>IPD/OPD</Label>
+                                <Input type='text' {...register('moduleId')} />
+                                {errors.moduleId && <p className='text-sm text-red-500'>{errors.moduleId.message}</p>}
                             </div>
 
                             {/* Discount */}

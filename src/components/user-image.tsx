@@ -1,17 +1,27 @@
+import { cn } from "@/lib/utils"
 
-const userImage = ({ url, name, gender }: { url: string, name: string, gender: string }) => {
+interface Props {
+    url: string
+    name?: string
+    gender: string
+    imageClass?: string
+    textClass?: string
+    width?: `${string}`
+}
+
+const UserImage = ({ url, name, gender, imageClass, textClass, width }: Props) => {
     return (
-        <div className="w-40">
+        <div className={cn("w-40", width)}>
             <div className="flex items-center gap-2">
                 <img
-                    src={url ? url : gender === 'male' ? '/user.png' : '/female_user.png'}
+                    src={url ? `${import.meta.env.VITE_APP_API_URL}/images/${url}` : gender === 'male' ? '/user.png' : '/female_user.png'}
                     alt="user"
-                    className="object-cover w-9 h-9 rounded-full border-2 dark:border-border" />
-
-                <p>{name}</p>
+                    className={cn("object-cover w-9 h-9 rounded-full border-2 dark:border-border", imageClass)}
+                />
+                <p className={textClass}>{name}</p>
             </div>
         </div>
     )
 }
 
-export default userImage
+export default UserImage

@@ -7,6 +7,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import MaxWidthWrapper from "./MaxWidthWrapper"
 import { buttonVariants } from "./ui/button"
 import UserModel from "./userModel"
+import UserImage from "./user-image"
 
 
 
@@ -64,15 +65,17 @@ const Navbar = () => {
                             <div className="p-1 bg-black dark:bg-white rounded-full cursor-pointer active:scale-90 transition-all"
                                 onClick={handleDark}
                             >
-                                {isDark ? <SunMedium className="size-4 text-black" /> : <Moon className="size-4 text-white" />}
+                                {isDark ? <SunMedium className="size-5 text-black" /> : <Moon className="size-4 text-white" />}
                             </div>
 
+                            {/* user */}
                             {session.user ?
                                 <>
-                                    < div
-                                        onClick={() => { setUserModel(!isUserModel) }}
-                                        className="h-8 w-8 leading-none cursor-pointer rounded-full border-2 border-gray-300 active:scale-95 transition-all">
-                                        <img src="/user.png" alt="" className="object-cover" srcSet="" />
+                                    < div onClick={() => { setUserModel(!isUserModel) }} className="active:scale-90 transition-all cursor-pointer" >
+                                        <UserImage url={session.user?.image!} gender={session.user?.gender!}
+                                            width='w-fit'
+                                            imageClass='w-8 h-8'
+                                        />
                                     </div>
 
                                     {/* Hamburger menu for mobile */}
@@ -102,20 +105,22 @@ const Navbar = () => {
 
             {/* user model */}
 
-            {isUserModel && <UserModel onClick={() => setUserModel(false)} onLogout={onLogout}
-                onProfile={() => {
+            {
+                isUserModel && <UserModel onClick={() => setUserModel(false)} onLogout={onLogout}
+                    onProfile={() => {
 
-                    session.user?.role !== "patient" ? router(`/staff/${session.user?.id}`)
-                        :
-                        session.user?.role === "patient" ? router(`/patient/profile/${session.user.id}`) : alert('Invalid user')
-                    setUserModel(false)
-                }}
+                        session.user?.role !== "patient" ? router(`/staff/${session.user?.id}`)
+                            :
+                            session.user?.role === "patient" ? router(`/patient/profile/${session.user.id}`) : alert('Invalid user')
+                        setUserModel(false)
+                    }}
 
-                onDashboard={() => {
-                    const Routes = (session.user?.role === 'patient') ? session.user?.role : 'admin'
-                    router(`/${Routes}/dashboard`), setUserModel(false)
-                }}
-            />}
+                    onDashboard={() => {
+                        const Routes = (session.user?.role === 'patient') ? session.user?.role : 'admin'
+                        router(`/${Routes}/dashboard`), setUserModel(false)
+                    }}
+                />
+            }
 
         </>
 

@@ -1,6 +1,6 @@
 import AxiosClient from "@/api/apiClient"
-import { staffs } from "@/types/staff/staff"
-import { Params, StaffProfile } from "@/types/type"
+import { StaffProfile, staffs } from "@/types/staff/staff"
+import { Params } from "@/types/type"
 import { z, ZodType } from "zod"
 
 
@@ -9,7 +9,7 @@ const StaffApi = {
 
     createStaff: async <F extends ZodType<any>>(formData: z.infer<F>) => {
         try {
-            const res = await AxiosClient.post(`/api/staff`, formData)
+            const res = await AxiosClient.post(`/api/staff`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Network Error"
@@ -39,7 +39,7 @@ const StaffApi = {
 
     updateStaff: async <F extends ZodType<any>>(id: number, formData: z.infer<F>) => {
         try {
-            const res = await AxiosClient.put(`/api/staff/${id}`, formData)
+            const res = await AxiosClient.put(`/api/staff/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Network Error"

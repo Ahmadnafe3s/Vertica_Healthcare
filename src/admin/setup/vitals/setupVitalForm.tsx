@@ -61,7 +61,7 @@ const SetupVitalForm = ({ setupVitalDetails: details, Submit, isPending, ...prop
                 </div>
 
                 <div className="text-end">
-                    <Button>{details ? 'Update' : "Save Duration"} {isPending && <Loader className="animate-spin" />}</Button>
+                    <Button>{details ? 'Update' : "Save Vital"} {isPending && <Loader className="animate-spin" />}</Button>
                 </div>
 
             </form>

@@ -1,5 +1,6 @@
 import ProtectRoutes from "@/guard/protectRoutes"
 import CahrgesList from "@/pages/OPD/details/charges/chargesList"
+import OpdLabInvestigations from "@/pages/OPD/details/lab-investigation/lab-investigations"
 import Medication from "@/pages/OPD/details/medication/medication"
 import OpdDetailsLayout from "@/pages/OPD/details/opdDetailsLayout"
 import OperationList from "@/pages/OPD/details/operation/operationList"
@@ -28,6 +29,7 @@ const OpdRoutes = () => {
                     <Route path="charges" element={<CahrgesList />} />
                     <Route path="treatmenthistory" element={<TreatmentsList />} />
                     <Route path="payment" element={<PaymentsList />} />
+                    <Route path="lab" element={<OpdLabInvestigations />} />
                 </Route>
             </Route>
         </Route>

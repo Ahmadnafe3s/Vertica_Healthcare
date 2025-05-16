@@ -3,8 +3,11 @@ export interface paymentData {
     caseId: number,
     date: string,
     amount: number,
+    paid_amount: number,
+    balance_amount: number,
     payment_mode: string,
     note: string,
+    charge: { id: number, chargeNames: { name: string } }[]
 }
 
 

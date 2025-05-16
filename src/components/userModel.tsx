@@ -3,6 +3,7 @@ import { useAppSelector } from '@/hooks'
 import { HTMLAttributes } from 'react'
 import { Button } from './ui/button'
 import { Airplay, Settings } from 'lucide-react';
+import UserImage from './user-image';
 
 interface userModelProps extends HTMLAttributes<HTMLDivElement> {
     onLogout: () => void;
@@ -19,8 +20,11 @@ const UserModel = ({ onLogout, onProfile, onDashboard, ...props }: userModelProp
         <>
             <div {...props} className='fixed top-0 left-0 h-screen w-full transition-all z-[120] bg-[#0000009c]'></div>
             <div className="bg-white dark:bg-background w-[300px] p-2.5 z-[150] flex flex-col ring-1 shadow rounded-xl fixed top-16 right-2 sm:right-5 ring-gray-200 dark:ring-border">
-                <div className="flex items-center gap-x-3 my-2">
-                    <img src="/user.png" alt="" className="w-12 border-2 border-gray-300 rounded-full" />
+                <div className="flex items-center my-2">
+                    <UserImage url={session.user?.image!} gender={session.user?.gender!}
+                        width='w-fit'
+                        imageClass='w-14 h-14'
+                    />
                     <div className="text-sm tracking-tight leading-tight">
                         <p className="font-semibold">{session.user?.name}</p>
                         <p>{session.user?.email}</p>

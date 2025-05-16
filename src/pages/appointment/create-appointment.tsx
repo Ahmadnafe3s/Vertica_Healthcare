@@ -1,18 +1,20 @@
+import useSpecialization from '@/admin/setup/staff/specialization/handlers'
 import Dialog from '@/components/Dialog'
+import RequiredLabel from '@/components/required-label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { authSelector } from '@/features/auth/authSlice'
 import { appointmentFormSchema, patientAppointmentSchema } from '@/formSchemas/AppointmentFormSchema'
 import { calculateAmount } from '@/helpers/calculateAmount'
 import { currencySymbol } from '@/helpers/currencySymbol'
-import { filterDoctors } from '@/helpers/filterDoctors'
 import { PaymentOptions } from '@/helpers/formSelectOptions'
 import { useAppSelector } from '@/hooks'
 import { cn } from '@/lib/utils'
 import usePatient from '@/patient/profile/handlers'
 import RegisterPatient from '@/patient/register/patient-signup'
-import { AppointmentApi } from '@/services/appointment-api'
+import DutyRosterApi from '@/services/dutyroster-api'
 import { OtherApi } from '@/services/other-api'
+import { AppointmentDetails } from '@/types/appointment/appointment'
 import { Doctors, Patients } from '@/types/type'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, UserRound } from 'lucide-react'
@@ -33,10 +35,11 @@ interface AddAppointmentProps extends HTMLAttributes<HTMLDivElement> {
     Submit: (formData: any) => void
     isPending: boolean
     onNewPatient?: () => void
+    defaultValues: AppointmentDetails
 }
 
 
-function AddAppointment({ Submit, isPending, onNewPatient, ...props }: AddAppointmentProps) {
+function AddAppointment({ Submit, isPending, onNewPatient, defaultValues, ...props }: AddAppointmentProps) {
 
     const [patients, setPatients] = useState<Patients[]>([])
     const [doctors, setDoctors] = useState<Doctors[]>([])
@@ -46,9 +49,11 @@ function AddAppointment({ Submit, isPending, onNewPatient, ...props }: AddAppoin
     const SCHEMA = user?.role === 'patient' ? patientAppointmentSchema : appointmentFormSchema
 
     const { control, register, reset, setValue, watch, handleSubmit, formState: { errors } } = useForm<z.infer<typeof SCHEMA>>({
-        resolver: zodResolver(SCHEMA)
+        resolver: zodResolver(SCHEMA),
+        defaultValues
     })
 
+    const { specializations, getSpecializations } = useSpecialization()
 
     const onSearch = useDebouncedCallback(async (value: string) => {
         try {
@@ -58,12 +63,33 @@ function AddAppointment({ Submit, isPending, onNewPatient, ...props }: AddAppoin
     }, 400)
 
 
-    const setValues = (doctorId: string) => {
-        const data = filterDoctors(doctors, +doctorId)
-        if (!data) return null
-        setValue('fees', data.staff.fees)
+    const handleFeesANDShift = () => {
+        const id = +watch('doctorId')
+        const priority = watch('appointment_priority')
+        const data = doctors.find((doctor) => (doctor.staff.id === id))
+        if (!data || !priority) return null
         setValue('shift', data.shift)
+        if (priority === 'Emergency') {
+            setValue('fees', data.staff.emergency_fees)
+        } else {
+            setValue('fees', data.staff.normal_fees)
+        }
     }
+
+
+
+    const handleAppnDate_Specialist = async () => {
+        const appointmentDate = watch('appointment_date')
+        const specialistId = +watch('specialistId')
+        if ((!appointmentDate || !specialistId)) return null
+        const data = await DutyRosterApi.getDoctors({ appointmentDate, specialistId })
+        setDoctors(data)
+    }
+
+
+    useEffect(() => {
+        handleFeesANDShift()
+    }, [watch('doctorId'), watch('appointment_priority')])
 
 
     // for calculating price
@@ -76,24 +102,16 @@ function AddAppointment({ Submit, isPending, onNewPatient, ...props }: AddAppoin
 
 
     useEffect(() => {
-        try {
-            (async function () {
-                const appointmentDate = watch('appointment_date') as string
-                if (appointmentDate) {
-                    const data = await AppointmentApi.getDoctors(appointmentDate)
-                    setDoctors(data)
-                }
-            })() //IIFE
-
-        } catch ({ message }: any) {
-            toast.error(message)
-        }
-    }, [watch('appointment_date')])
+        handleAppnDate_Specialist()
+    }, [watch('appointment_date'), watch('specialistId')])
 
 
     useEffect(() => {
+        getSpecializations()
         if (user?.role === 'patient') {
             setValue('patientId', user?.id)
+        } else if (defaultValues) {
+            onSearch(String(defaultValues.patientId))
         }
     }, [])
 
@@ -105,7 +123,7 @@ function AddAppointment({ Submit, isPending, onNewPatient, ...props }: AddAppoin
                 <form onSubmit={handleSubmit(Submit)}>
                     {user?.role !== 'patient' && (
                         <>
-                            <div className='flex items-center gap-2 px-2.5'>
+                            <div className='flex  gap-2 px-2.5'>
                                 {/* Patient Section */}
                                 <div>
                                     <Controller name='patientId' control={control} render={({ field }) => {
@@ -140,14 +158,37 @@ function AddAppointment({ Submit, isPending, onNewPatient, ...props }: AddAppoin
 
                     <ScrollArea className='h-[60vh] sm:h-[55vh]'>
 
-                        <div className="grid lg:grid-cols-4 md:grid-cols-3 gap-5 px-2.5">
+                        <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-5 px-2.5">
 
                             {/* Appointment date */}
 
                             <div className="w-full flex flex-col gap-y-2">
-                                <Label>Appointment Date</Label>
-                                <Input type='date' {...register('appointment_date')} />
+                                <RequiredLabel label='Appointment Date' />
+                                <Input type='date' {...register('appointment_date')} disabled={defaultValues?.status === 'Approved'} />
                                 {errors.appointment_date && <p className='text-sm text-red-500'>{errors.appointment_date.message}</p>}
+                            </div>
+
+
+                            {/* Specialist */}
+
+                            <div className="w-full flex flex-col gap-y-2">
+                                <Controller control={control} name='specialistId' render={({ field }) => {
+                                    return <>
+                                        <RequiredLabel label='Specialist' />
+                                        <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(value) }}>
+                                            <SelectTrigger >
+                                                <SelectValue placeholder="Select" />
+                                            </SelectTrigger>
+
+                                            <SelectContent className='z-[200]'>
+                                                {specializations?.map((item, index) => {
+                                                    return <SelectItem key={index} value={String(item.id)}>{item.name}</SelectItem>
+                                                })}
+                                            </SelectContent>
+                                        </Select>
+                                    </>
+                                }} />
+                                {errors.specialistId && <p className='text-sm text-red-500'>{errors.specialistId.message}</p>}
                             </div>
 
 
@@ -156,8 +197,8 @@ function AddAppointment({ Submit, isPending, onNewPatient, ...props }: AddAppoin
                             <div className="w-full flex flex-col gap-y-2">
                                 <Controller control={control} name='doctorId' render={({ field }) => {
                                     return <>
-                                        <Label>Doctor</Label>
-                                        <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { setValues(value); field.onChange(value) }}>
+                                        <RequiredLabel label='Doctor' />
+                                        <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { field.onChange(value) }}>
                                             <SelectTrigger >
                                                 <SelectValue placeholder="Select" />
                                             </SelectTrigger>
@@ -165,7 +206,7 @@ function AddAppointment({ Submit, isPending, onNewPatient, ...props }: AddAppoin
                                             <SelectContent className='z-[200]'>
                                                 {doctors?.map((doctor, index) => {
                                                     return <SelectItem key={index} value={String(doctor.staff.id)}>
-                                                        {doctor.staff.name} <span className='text-sm text-gray-600'>{`(${doctor.staff.specialist})`}</span>
+                                                        {doctor.staff.name}
                                                     </SelectItem>
                                                 })}
                                             </SelectContent>
@@ -176,39 +217,20 @@ function AddAppointment({ Submit, isPending, onNewPatient, ...props }: AddAppoin
                             </div>
 
 
-                            {/* fees */}
-
-                            <div className="w-full flex flex-col gap-y-2">
-                                <Label>Doctor Fees {currencySymbol()}</Label>
-                                <Input type='number' {...register('fees')} defaultValue={0} />
-                                {errors.fees && <p className='text-sm text-red-500'>{errors.fees.message}</p>}
-                            </div>
-
-
-                            {/* shift */}
-
-                            <div className="w-full flex flex-col gap-y-2">
-                                <Label>Shift</Label>
-                                <Input {...register('shift')} disabled />
-                                {errors.shift && <p className='text-sm text-red-500'>{errors.shift.message}</p>}
-                            </div>
-
-
                             {/* Appointment priority */}
 
                             <div className="w-full flex flex-col gap-y-2">
                                 <Controller control={control} name='appointment_priority' render={({ field }) => {
                                     return <>
-                                        <Label>Appointment priority</Label>
+                                        <RequiredLabel label='Appointment priority' />
                                         <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
                                             <SelectTrigger >
                                                 <SelectValue placeholder="Select" />
                                             </SelectTrigger>
 
                                             <SelectContent className='z-[200]'>
-                                                <SelectItem value="Urgent">Urgent</SelectItem>
-                                                <SelectItem value="Very Urgent">Very Urgent</SelectItem>
-                                                <SelectItem value="Low">Low</SelectItem>
+                                                <SelectItem value="Normal">Normal</SelectItem>
+                                                <SelectItem value="Emergency">Emergency</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </>
@@ -216,13 +238,24 @@ function AddAppointment({ Submit, isPending, onNewPatient, ...props }: AddAppoin
                                 {errors.appointment_priority && <p className='text-sm text-red-500'>{errors.appointment_priority.message}</p>}
                             </div>
 
-                            {/* symptom type */}
+
+                            {/* fees */}
 
                             <div className="w-full flex flex-col gap-y-2">
-                                <Label>Symptom Type</Label>
-                                <Input type='text' {...register('symptom_type')} />
-                                {errors.symptom_type && <p className='text-sm text-red-500'>{errors.symptom_type.message}</p>}
+                                <RequiredLabel label={`Doctor Fees ${currencySymbol()}`} />
+                                <Input type='number' {...register('fees')} defaultValue={0} disabled />
+                                {errors.fees && <p className='text-sm text-red-500'>{errors.fees.message}</p>}
                             </div>
+
+
+                            {/* shift */}
+
+                            <div className="w-full flex flex-col gap-y-2">
+                                <RequiredLabel label='Shift' />
+                                <Input {...register('shift')} disabled />
+                                {errors.shift && <p className='text-sm text-red-500'>{errors.shift.message}</p>}
+                            </div>
+
 
                             {/* Description */}
 
@@ -231,62 +264,6 @@ function AddAppointment({ Submit, isPending, onNewPatient, ...props }: AddAppoin
                                 <Textarea placeholder='write your symptoms here' {...register('symptom_description')} />
                                 {errors.symptom_description && <p className='text-sm text-red-500'>{errors.symptom_description.message}</p>}
                             </div>
-
-                            {user?.role !== 'patient' && (
-                                <>
-                                    {/* Payment mode */}
-
-                                    <div className="w-full flex flex-col gap-y-2">
-                                        <Controller control={control} name='payment_mode' render={({ field }) => {
-                                            return <>
-                                                <Label>Payment mode</Label>
-                                                <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
-                                                    <SelectTrigger >
-                                                        <SelectValue placeholder="Select" />
-                                                    </SelectTrigger>
-
-                                                    <SelectContent className='z-[200]'>
-                                                        {PaymentOptions.map((payment, i) => {
-                                                            return <SelectItem key={i} value={payment.value}>{payment.label}</SelectItem>
-                                                        })}
-                                                    </SelectContent>
-                                                </Select>
-                                            </>
-                                        }} />
-                                        {errors.payment_mode && <p className='text-sm text-red-500'>{errors.payment_mode.message}</p>}
-                                    </div >
-
-                                    {/* Status */}
-
-                                    <div className={cn('w-full flex flex-col gap-y-2')}>
-                                        <Controller control={control} name='status' render={({ field }) => {
-                                            return <>
-                                                <Label>Status</Label>
-                                                <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }} >
-                                                    <SelectTrigger >
-                                                        <SelectValue placeholder="Select" />
-                                                    </SelectTrigger>
-
-                                                    <SelectContent className='z-[200]'>
-                                                        <SelectItem value="Approved">Approved</SelectItem>
-                                                        <SelectItem value="Pending">Pending</SelectItem>
-                                                        <SelectItem value="Cancelled">Cancel</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </>
-                                        }} />
-                                        {errors.status && <p className='text-sm text-red-500'>{errors.status.message}</p>}
-                                    </div >
-
-                                    {/* Discount */}
-
-                                    <div className="w-full flex flex-col gap-y-2">
-                                        <Label>Discount %</Label>
-                                        <Input type='number' {...register('discount')} />
-                                        {errors.discount && <p className='text-sm text-red-500'>{errors.discount.message}</p>}
-                                    </div>
-                                </>
-                            )}
 
                             {/* Alternative Address */}
 
@@ -312,18 +289,66 @@ function AddAppointment({ Submit, isPending, onNewPatient, ...props }: AddAppoin
                                 {errors.previous_medical_issue && <p className='text-sm text-red-500'>{errors.previous_medical_issue.message}</p>}
                             </div>
 
-                            {/* message */}
+                            {user?.role !== 'patient' && (
+                                <>
+                                    {/* Status */}
 
-                            <div className="w-full flex flex-col gap-y-2">
-                                <Label>Message</Label>
-                                <Input type='text' placeholder='write your messsage here' {...register('message')} />
-                                {errors.message && <p className='text-sm text-red-500'>{errors.message.message}</p>}
-                            </div>
+                                    <div className={cn('w-full flex flex-col gap-y-2')}>
+                                        <Controller control={control} name='status' render={({ field }) => {
+                                            return <>
+                                                <RequiredLabel label='Status' />
+                                                <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }} >
+                                                    <SelectTrigger >
+                                                        <SelectValue placeholder="Select" />
+                                                    </SelectTrigger>
+
+                                                    <SelectContent className='z-[200]'>
+                                                        <SelectItem value="Approved">Approved</SelectItem>
+                                                        <SelectItem value="Pending">Pending</SelectItem>
+                                                        <SelectItem value="Cancelled">Cancel</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </>
+                                        }} />
+                                        {errors.status && <p className='text-sm text-red-500'>{errors.status.message}</p>}
+                                    </div >
+
+                                    {/* Discount */}
+
+                                    <div className="w-full flex flex-col gap-y-2">
+                                        <Label>Discount %</Label>
+                                        <Input type='number' {...register('discount')} />
+                                        {errors.discount && <p className='text-sm text-red-500'>{errors.discount.message}</p>}
+                                    </div>
+
+                                    {/* Payment mode */}
+
+                                    <div className="w-full flex flex-col gap-y-2">
+                                        <Controller control={control} name='payment_mode' render={({ field }) => {
+                                            return <>
+                                                <RequiredLabel label='Payment mode' />
+                                                <Select value={field.value || ''} onValueChange={(value) => { field.onChange(value) }}>
+                                                    <SelectTrigger >
+                                                        <SelectValue placeholder="Select" />
+                                                    </SelectTrigger>
+
+                                                    <SelectContent className='z-[200]'>
+                                                        {PaymentOptions.map((payment, i) => {
+                                                            return <SelectItem key={i} value={payment.value}>{payment.label}</SelectItem>
+                                                        })}
+                                                    </SelectContent>
+                                                </Select>
+                                            </>
+                                        }} />
+                                        {errors.payment_mode && <p className='text-sm text-red-500'>{errors.payment_mode.message}</p>}
+                                    </div >
+                                </>
+                            )}
 
                             {/* net amount */}
 
                             <div className="w-full flex flex-col gap-y-2">
-                                <Label>Net Amount {currencySymbol()}</Label>
+                                <RequiredLabel label={`Net Amount ${currencySymbol()}`} />
                                 <Input type='number' {...register('net_amount')} defaultValue={0} disabled />
                                 {errors.net_amount && <p className='text-sm text-red-500'>{errors.net_amount.message}</p>}
                             </div>
@@ -333,7 +358,7 @@ function AddAppointment({ Submit, isPending, onNewPatient, ...props }: AddAppoin
 
                     <div className="flex mt-5 mb-2 gap-x-2 sm:justify-end px-2.5">
                         <Button type='button' variant={'ghost'} onClick={() => reset()} >Reset</Button>
-                        <Button type='submit' className='flex-1 sm:flex-none' >Save Appointment {isPending && <Loader className='animate-spin' />}</Button>
+                        <Button type='submit' className='flex-1 sm:flex-none' >Book Appointment {isPending && <Loader className='animate-spin' />}</Button>
                     </div>
 
                 </form>

@@ -147,14 +147,14 @@ function CreateIpdModal({ editDetails, Submit, isPending, ...props }: CreateIpdM
 
                             <div className="w-full flex flex-col gap-y-2">
                                 <Label>Admission Date</Label>
-                                <Input type='date' {...register('date')} />
+                                <Input type='date' {...register('date')} defaultValue={new Date().toISOString().split('T')[0]} />
                                 {errors.date && <p className='text-sm text-red-500'>{errors.date.message}</p>}
                             </div>
 
                             {/* Opd id */}
 
                             <div className="w-full flex flex-col gap-y-2">
-                                <Label>Opd ID</Label>
+                                <Label>OPD ID</Label>
                                 <Input type='text' {...register('opdId')} />
                                 {errors.opdId && <p className='text-sm text-red-500'>{errors.opdId.message}</p>}
                             </div>
@@ -235,8 +235,7 @@ function CreateIpdModal({ editDetails, Submit, isPending, ...props }: CreateIpdM
                                             <SelectContent className='z-[200]'>
                                                 {doctors?.map((doctor, index) => {
                                                     return <SelectItem key={index} value={String(doctor.id)}>
-                                                        {doctor.name} <span
-                                                            className='text-sm text-gray-600'>{`(${doctor.specialist})`}</span>
+                                                        {doctor.name}
                                                     </SelectItem>
                                                 })}
                                             </SelectContent>

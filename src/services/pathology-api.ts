@@ -1,5 +1,6 @@
 import AxiosClient from "@/api/apiClient"
 import { RadiologySampleCollectionDet, RadioTestReport } from "@/types/radiology/radiology"
+import { Params } from "@/types/type"
 import { z, ZodType } from "zod"
 
 
@@ -26,7 +27,7 @@ const PathologyApi = {
         }
     },
 
-    getPathologyBills: async (params: { page?: number, limit?: number, search?: string }) => {
+    getPathologyBills: async (params: Params) => {
         try {
             const res = await AxiosClient.get(`/api/pathologyBill`, { params })
             return res.data
@@ -79,9 +80,20 @@ const PathologyApi = {
         }
     },
 
-    getPathSampleCollectionDetails: async (id: number): Promise<RadiologySampleCollectionDet> => {
+    getPathSampleCollectionById: async (id: number): Promise<RadiologySampleCollectionDet> => {
         try {
             const res = await AxiosClient.get(`/api/pathologyBill/sample-collection/${id}`)
+            return res.data
+        }
+        catch (error: any) {
+            const err = error.response.data.message || "Network Error"
+            throw new Error(err)
+        }
+    },
+
+    deletePathSampleCollection: async (itemId: number) => {
+        try {
+            const res = await AxiosClient.delete(`/api/pathologyBill/sample-collection/${itemId}`)
             return res.data
         }
         catch (error: any) {
@@ -123,7 +135,18 @@ const PathologyApi = {
             const err = error.response.data.message || "Network Error"
             throw new Error(err)
         }
-    }
+    },
+
+    deletePathologyReport: async (itemId: number) => {
+        try {
+            const res = await AxiosClient.delete(`/api/pathologyBill/report/${itemId}`)
+            return res.data
+        }
+        catch (error: any) {
+            const err = error.response.data.message || "Network Error"
+            throw new Error(err)
+        }
+    },
 
 }
 

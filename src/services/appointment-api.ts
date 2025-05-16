@@ -28,16 +28,6 @@ export const AppointmentApi = {
         }
     },
 
-    async updateStatus(id: string, status: string) {
-        try {
-            const res = await AxiosClient.put(`/api/appointment/status/${id}`, { status })
-            return res.data
-        } catch (error: any) {
-            const err = error.response?.data?.message || 'Error in updating appointment status'
-            throw new Error(err)
-        }
-    },
-
     async getAppointmentById(id: string): Promise<AppointmentDetails> {
         try {
             const res = await AxiosClient.get(`/api/appointment/${id}`)
@@ -58,14 +48,22 @@ export const AppointmentApi = {
         }
     },
 
-    // fetching doctors according to appointment date coming from roster model
-    async getDoctors(appointmentDate: string) {
+    async updateAppointment<T extends ZodType<any>>(id: string, formData: z.infer<T>) {
         try {
-            const params = { appointmentDate }
-            const res = await AxiosClient.get(`/api/staff/doctor/list`, { params })
+            const res = await AxiosClient.put(`/api/appointment/${id}`, formData)
             return res.data
         } catch (error: any) {
-            const err = error.response?.data?.message || "Error in fetching doctors"
+            const err = error.response?.data?.message || 'Error in updating appointment'
+            throw new Error(err)
+        }
+    },
+
+    async updateStatus(id: string, status: string) {
+        try {
+            const res = await AxiosClient.put(`/api/appointment/${id}/status`, { status })
+            return res.data
+        } catch (error: any) {
+            const err = error.response?.data?.message || 'Error in updating appointment'
             throw new Error(err)
         }
     },

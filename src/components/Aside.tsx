@@ -284,6 +284,16 @@ const Aside = () => {
                                         </AccordionContent>
                                     </PermissionProtectedAction>
 
+                                    {/* setup STaff */}
+                                    <PermissionProtectedAction action='view' module='Setup Staff'>
+                                        <AccordionContent className='py-1'>
+                                            <div className="pl-5">
+                                                <Link to={{ pathname: '/admin/setupStaff/designation' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <ChevronRight className='h-4 w-4' />Staff</Link>
+                                            </div>
+                                        </AccordionContent>
+                                    </PermissionProtectedAction>
+
                                 </AccordionItem>
                             </Accordion>
                         </li>

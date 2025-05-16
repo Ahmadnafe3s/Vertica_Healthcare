@@ -1,55 +1,3 @@
-
-export const designations = [
-  { label: 'Admin', value: 'admin' },
-  { label: 'Doctor', value: 'doctor' },
-  { label: 'Nurse', value: 'nurse' },
-  { label: 'Receptionist', value: 'receptionist' },
-  { label: 'Lab Technician', value: 'lab_technician' },
-  { label: 'Pharmacist', value: 'pharmacist' },
-  { label: 'Medical Assistant', value: 'medical_assistant' },
-  { label: 'Surgeon', value: 'surgeon' },
-  { label: 'Radiologist', value: 'radiologist' },
-  { label: 'Pathologist', value: 'pathologist' },
-  { label: 'Physiotherapist', value: 'physiotherapist' },
-  { label: 'Dietitian', value: 'dietitian' },
-  { label: 'Manager', value: 'manager' },
-  { label: 'IT Staff', value: 'it_staff' },
-  { label: 'Researcher', value: 'researcher' }
-];
-
-
-export const departments = [
-  { label: 'Admin', value: 'admin' },
-  { label: 'OT', value: 'OT' },
-  { label: 'Doctor Department', value: 'doctor department' },
-  { label: 'OPD Department', value: 'OPD department' },
-  { label: 'Pharmacy', value: 'pharmacy' },
-  { label: 'Finance', value: 'finance' },
-  { label: 'Reception', value: 'reception' },
-
-  // New medical departments
-  { label: 'Emergency Room', value: 'emergency' },
-  { label: 'Intensive Care Unit', value: 'icu' },
-  { label: 'Cardiology', value: 'cardiology' },
-  { label: 'Pediatrics', value: 'pediatrics' },
-  { label: 'Orthopedics', value: 'orthopedics' },
-  { label: 'Radiology', value: 'radiology' },
-  { label: 'Pathology', value: 'pathology' },
-  { label: 'Laboratory', value: 'laboratory' },
-  { label: 'Physiotherapy', value: 'physiotherapy' },
-  { label: 'Dental', value: 'dental' },
-  { label: 'Oncology', value: 'oncology' },
-  { label: 'Neurology', value: 'neurology' },
-  { label: 'Maternity', value: 'maternity' },
-
-  // Support departments
-  { label: 'Human Resources', value: 'hr' },
-  { label: 'IT Services', value: 'it' },
-  { label: 'Maintenance', value: 'maintenance' },
-  { label: 'Medical Records', value: 'medical_records' },
-]
-
-
 export const maritalStatus = [
   { label: "Single", value: "single" },
   { label: "Married", value: "married" },
@@ -116,4 +64,21 @@ export const bloodComponents = [
   { label: "Hormones", value: "Hormones" },
   { label: "Cytokines", value: "Cytokines" },
   { label: "Electrolytes & Metabolites", value: "Electrolytes & Metabolites" }
+];
+
+
+
+export const nomineeRelationOptions = [
+  { label: "Spouse", value: "Spouse" },
+  { label: "Child", value: "Child" },
+  { label: "Parent", value: "Parent" },
+  { label: "Sibling", value: "Sibling" },
+  { label: "Grandparent", value: "Grandparent" },
+  { label: "Grandchild", value: "Grandchild" },
+  { label: "Aunt/Uncle", value: "Aunt/Uncle" },
+  { label: "Niece/Nephew", value: "Niece/Nephew" },
+  { label: "Cousin", value: "Cousin" },
+  { label: "Friend", value: "Friend" },
+  { label: "Legal Guardian", value: "Legal Guardian" },
+  { label: "Other", value: "Other" }
 ];

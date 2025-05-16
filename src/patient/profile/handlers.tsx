@@ -1,7 +1,7 @@
-import { logout } from "@/features/auth/authSlice"
+import { authSelector, logout } from "@/features/auth/authSlice"
 import { patientRegistrationSchema } from "@/formSchemas/patientRegisterFormSchema"
 import { ResetPasswordForm } from "@/formSchemas/resetPasswordFormSchema"
-import { useAppDispatch } from "@/hooks"
+import { useAppDispatch, useAppSelector } from "@/hooks"
 import { useConfirmation } from "@/hooks/useConfirmation"
 import PatientApi from "@/services/patient-api"
 import { PatientDetails } from "@/types/patient/patient"
@@ -14,6 +14,7 @@ import { z } from "zod"
 
 const usePatient = () => {
 
+    const { user } = useAppSelector(authSelector)
     const { confirm, confirmationProps } = useConfirmation()
     const [form, setForm] = useState(false)
     const [isPending, setPending] = useState(false)
@@ -22,8 +23,21 @@ const usePatient = () => {
     const router = useNavigate()
 
 
-    const handlePatient = async (formData: z.infer<typeof patientRegistrationSchema>, afterSubmit?: () => void) => {
+    const handlePatient = async (patientData: z.infer<typeof patientRegistrationSchema>, afterSubmit?: () => void) => {
         try {
+
+            const formData = new FormData()
+
+            for (const key in patientData) {
+                if (key === 'image') {
+                    if (patientData.image) formData.append(key, patientData.image)
+                } else {
+                    const value = patientData[key as keyof typeof data]
+                    formData.append(key, value!)
+                }
+            }
+
+
             let data; setPending(true)
             current ? (
                 data = await PatientApi.updatePatient(current.id, formData)
@@ -59,7 +73,7 @@ const usePatient = () => {
             if (!isConfirm) return null
             const data = await PatientApi.deletePatient(id)
             toast.success(data.message)
-            dispatch(logout())
+            if (user?.role === 'patient') dispatch(logout())
         } catch ({ message }: any) {
             toast.error(message)
         }

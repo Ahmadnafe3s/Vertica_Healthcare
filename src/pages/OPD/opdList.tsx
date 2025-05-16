@@ -7,13 +7,14 @@ import PermissionProtectedAction from '@/components/permission-protected-actions
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import UserImage from '@/components/user-image'
 import { page_limit } from '@/globalData'
 import CreateIpdFormModal from "@/pages/ipd/ipds/create-ipd-form-modal.tsx"
 import useIpdHandlers from "@/pages/ipd/ipds/ipd-handlers.tsx"
 import OpdApi from '@/services/opd-api'
 import { IpdInfo } from "@/types/IPD/ipd.ts"
 import { OPDs, } from '@/types/opd_section/opd'
-import { ClipboardPlus, MoveUpRight, Syringe, User } from 'lucide-react'
+import { ClipboardPlus, MoveUpRight, Syringe } from 'lucide-react'
 import { parseAsInteger, useQueryState } from 'nuqs'
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -24,7 +25,6 @@ import PrintOpdBill from './pdf/bill'
 import OpdsPdf from './pdf/opds'
 import usePrescription from './prescription/prescription-handlers'
 import PrescriptionDetailsModel from './prescription/prescriptionDetailsModel'
-import UserImage from '@/components/user-image'
 
 
 
@@ -36,7 +36,6 @@ const OPDLIST = () => {
     // because we cant get here params
     const opdId = useRef('')
     const [move, setMove] = useState<{
-        date: string,
         opdId: string,
         doctorId: number,
         patientId: number,
@@ -144,8 +143,8 @@ const OPDLIST = () => {
                                 <TableHead>Patient Name</TableHead>
                                 <TableHead>Appointment Date</TableHead>
                                 <TableHead>Consultant</TableHead>
+                                <TableHead>Specialist</TableHead>
                                 <TableHead>Reference</TableHead>
-                                <TableHead>Symptom Type</TableHead>
                                 <TableHead>Previous medical Issue</TableHead>
                                 <TableHead className='print:hidden'>Action</TableHead>
                             </TableRow>
@@ -169,9 +168,9 @@ const OPDLIST = () => {
                                     <TableCell>
                                         <UserImage url={opd.doctor.image} name={opd.doctor.name} gender={opd.doctor.gender} />
                                     </TableCell>
+                                    <TableCell>{opd.appointment.specialist.name}</TableCell>
                                     <TableCell>{opd.appointment.reference}</TableCell>
-                                    <TableCell>{opd.appointment.symptom_type}</TableCell>
-                                    <TableCell>{opd.appointment.previous_medical_issue}</TableCell>
+                                    <TableCell className='text-center'>{opd.appointment.previous_medical_issue}</TableCell>
 
                                     <TableCell className='flex gap-x-2 items-center print:hidden'>
 
@@ -208,7 +207,6 @@ const OPDLIST = () => {
                                                     className='cursor-pointer text-gray-600 dark:text-neutral-300 w-5 h-5'
                                                     onClick={() => {
                                                         setMove({
-                                                            date: opd.appointment.appointment_date,
                                                             opdId: opd.id,
                                                             doctorId: opd.doctorId,
                                                             patientId: opd.patientId,

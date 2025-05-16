@@ -10,7 +10,7 @@ import { z } from "zod"
 
 
 
-const useChargeHandlers = (params: Params) => {
+const useChargeHandlers = (params: Params & {paymentId? : string}) => {
 
     const { opdId, ipdId } = useParams()
     const { confirm, confirmationProps } = useConfirmation()
