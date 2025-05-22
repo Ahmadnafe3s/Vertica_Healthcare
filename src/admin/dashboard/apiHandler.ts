@@ -13,9 +13,8 @@ export const getAdminDashIncExp = async (): Promise<AdminDashTotalCount> => {
     }
 }
 
-export const getAdminDash_MM_IncExp = async (year?: number): Promise<AdminDash_MM_IncExp[]> => {
+export const getAdminDash_MM_IncExp = async (params?: { year?: number, month?: string, date?: string }): Promise<AdminDash_MM_IncExp[]> => {
     try {
-        const params = { year }
         const res = await AxiosClient.get(`/api/dashboard/admin/monthly`, { params })
         return res.data
     } catch (error: any) {
@@ -25,9 +24,9 @@ export const getAdminDash_MM_IncExp = async (year?: number): Promise<AdminDash_M
 }
 
 
-export const getAdminDashVisitors = async ():Promise<AdminDashVisitors[]> => {
+export const getAdminDashVisitors = async (params?: { year?: number, month?: string, date?: string }): Promise<AdminDashVisitors[]> => {
     try {
-        const res = await AxiosClient.get(`/api/dashboard/admin/visitors`)
+        const res = await AxiosClient.get(`/api/dashboard/admin/visitors`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -35,9 +34,9 @@ export const getAdminDashVisitors = async ():Promise<AdminDashVisitors[]> => {
 }
 
 
-export const getAdminDashAppointmentReport = async ():Promise<AdminDashAppmtReport> => {
+export const getAdminDashAppointmentReport = async (params?: { year?: number, month?: string, date?: string }): Promise<AdminDashAppmtReport> => {
     try {
-        const res = await AxiosClient.get(`/api/dashboard/admin/appointmentReport`)
+        const res = await AxiosClient.get(`/api/dashboard/admin/appointmentReport`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

@@ -1,4 +1,4 @@
-import { getRadiologyTestDetails, getRadiologyTests } from "@/admin/setup/radiology/ApiHandlers"
+import { getRadiologyTestDetails, getRadiologyTests } from "@/admin/setup/radiology/service"
 import CustomTooltip from "@/components/customTooltip"
 import Dialog from "@/components/Dialog"
 import RequiredLabel from "@/components/required-label"

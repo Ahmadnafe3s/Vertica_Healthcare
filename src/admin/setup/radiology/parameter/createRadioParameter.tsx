@@ -11,7 +11,7 @@ import toast from "react-hot-toast"
 import { z } from "zod"
 import { RadiologyUnitType } from "../units/units"
 import { RadioParametersType } from "@/types/setupTypes/radiology"
-import { getRadiologytUnits } from "../ApiHandlers"
+import { getRadiologytUnits } from "../service"
 
 
 interface Props extends HTMLAttributes<HTMLDivElement> {

@@ -65,7 +65,7 @@ export const chartConfig = {
 
 
 
-export const singleLineAreaChartConfig = {
+export const patientChartConfig = {
   desktop: {
     label: "Desktop",
     color: "hsl(var(--chart-1))",

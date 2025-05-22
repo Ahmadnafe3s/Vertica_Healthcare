@@ -1,19 +1,19 @@
 import { SidebarContext } from "@/contexts/sidebar-provider"
 import { authSelector, logout } from "@/features/auth/authSlice"
 import { useAppDispatch, useAppSelector } from "@/hooks"
-import { Moon, SunMedium, User } from "lucide-react"
-import { useContext, useEffect, useState } from "react"
+import { User } from "lucide-react"
+import { useContext, useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import MaxWidthWrapper from "./MaxWidthWrapper"
+import { ModeToggle } from "./mode-toggle"
 import { buttonVariants } from "./ui/button"
-import UserModel from "./userModel"
 import UserImage from "./user-image"
+import UserModel from "./userModel"
 
 
 
 const Navbar = () => {
 
-    const [isDark, setDark] = useState(false)
     const { toggleSidebar } = useContext(SidebarContext)
     const path = useLocation().pathname
 
@@ -30,20 +30,6 @@ const Navbar = () => {
     }
 
 
-    const handleDark = () => {
-        const toggle = !isDark
-        document.body.classList.toggle('dark')
-        localStorage.setItem('dark', JSON.stringify(toggle))
-        setDark(toggle)
-    }
-
-
-    useEffect(() => {
-        const isDark = JSON.parse(localStorage.getItem('dark') || 'false')
-        document.body.classList.toggle('dark', isDark) //  dependency
-        setDark(isDark) // if exists then add
-    }, [])
-
 
     return (
         <>
@@ -51,22 +37,21 @@ const Navbar = () => {
                 <MaxWidthWrapper >
                     <header className="h-full flex justify-between items-center">
 
-                        <Link to={{ pathname: '/' }} className="tracking-tight cursor-pointer z-[100] select-none">
-                            <span className="text-primary font-semibold">V</span>ertica
-                            {' '}
-                            <span className="text-primary font-semibold">H</span>ealtcare
-                        </Link>
+                        <div className="flex items-center gap-x-1">
+                            <img src="/logo.png" alt="logo" className="w-10 h-10 rounded-full object-cover" />
+                            <div>
+                                <Link to={{ pathname: '/' }} className="tracking-tight cursor-pointer z-[100] select-none">
+                                    Vertica Healthcare
+                                </Link>
+                            </div>
+                        </div>
 
                         <div className="flex h-full items-center gap-x-3">
 
 
                             {/* Dark mode */}
 
-                            <div className="p-1 bg-black dark:bg-white rounded-full cursor-pointer active:scale-90 transition-all"
-                                onClick={handleDark}
-                            >
-                                {isDark ? <SunMedium className="size-5 text-black" /> : <Moon className="size-4 text-white" />}
-                            </div>
+                            <ModeToggle />
 
                             {/* user */}
                             {session.user ?

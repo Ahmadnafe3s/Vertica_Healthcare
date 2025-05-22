@@ -21,7 +21,7 @@ import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { useDebouncedCallback } from "use-debounce"
 import { z } from "zod"
-import { createPathologytTest, deletePathologyTest, getPathologyTestDetails, getPathologyTests, updatePathologyTest } from "../api-handler"
+import { createPathologytTest, deletePathologyTest, getPathologyTestDetails, getPathologyTests, updatePathologyTest } from "../service"
 import CreatePathTest from "./create-path-testname"
 
 

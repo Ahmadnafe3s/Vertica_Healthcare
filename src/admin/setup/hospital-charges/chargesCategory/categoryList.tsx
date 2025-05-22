@@ -12,7 +12,7 @@ import { Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { createChargeCategory, deleteChargeCategory, getChargeCategories, getChargeCategoryDetails, updateChargeCategory } from '../chargesAPIhandlers'
+import hospitalChargeApi from '../../services/charge'
 import AddChargeCategoryFormModel, { ChargeCategoryFormSchema } from './addChargeCategoryFormModel'
 
 
@@ -48,10 +48,10 @@ const CategoryList = () => {
             setPending(true)
             let data;
             if (categoryDetails) {
-                (data = await updateChargeCategory(categoryDetails.id, formData),
+                (data = await hospitalChargeApi.updateChargeCategory(categoryDetails.id, formData),
                     setCategoryeDetails(undefined))
             } else {
-                data = await createChargeCategory(formData)
+                data = await hospitalChargeApi.createChargeCategory(formData)
             }
             setPending(false)
             toast.success(data.message)
@@ -67,7 +67,7 @@ const CategoryList = () => {
     // Fetching list
     const fetchChargeCategories = async () => {
         try {
-            const data = await getChargeCategories()
+            const data = await hospitalChargeApi.getChargeCategories()
             setchargeCategories(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -78,7 +78,7 @@ const CategoryList = () => {
     const fetchChargeCategoryDetails = async (id: number) => {
         try {
             setLoaderModel(true)
-            const data = await getChargeCategoryDetails(id)
+            const data = await hospitalChargeApi.getChargeCategoryDetails(id)
             setCategoryeDetails(data)
             setLoaderModel(false)
             setCategroyFormVisible(false)
@@ -94,7 +94,7 @@ const CategoryList = () => {
         try {
             const isConfirmed = await confirm()
             if (!isConfirmed) return null
-            const data = await deleteChargeCategory(id);
+            const data = await hospitalChargeApi.deleteChargeCategory(id);
             toast.success(data.message)
             fetchChargeCategories()
         } catch ({ message }: any) {

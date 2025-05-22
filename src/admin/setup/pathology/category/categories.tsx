@@ -12,7 +12,7 @@ import { Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import { createPathologytCategory, deletePathologyCategory, getPathologyCategories } from "../api-handler"
+import { createPathologytCategory, deletePathologyCategory, getPathologyCategories } from "../service"
 import CreatePathCategory, { CreatePathCategorySchema } from "./create-path-category"
 
 

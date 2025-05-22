@@ -1,14 +1,8 @@
-export const lineCharDefaultData = [
-    { month: "January", appointments: 0 },
-    { month: "February", appointments: 0 },
-    { month: "March", appointments: 0 },
-    { month: "April", appointments: 0 },
-    { month: "May", appointments: 0 },
-    { month: "June", appointments: 0 },
-    { month: "July", appointments: 0 },
-    { month: "August", appointments: 0 },
-    { month: "September", appointments: 0 },
-    { month: "October", appointments: 0 },
-    { month: "November", appointments: 0 },
-    { month: "December", appointments: 0 }
-];
+export const chartData = [
+  { month: "January", Expense: 186 },
+  { month: "February", Expense: 305 },
+  { month: "March", Expense: 237 },
+  { month: "April", Expense: 73 },
+  { month: "May", Expense: 209 },
+  { month: "June", Expense: 214 },
+]

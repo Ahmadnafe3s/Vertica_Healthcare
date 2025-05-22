@@ -13,7 +13,7 @@ import { Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import { createPathologyParameter, deletePathologytParameter, getPathologytParameterDetails, getPathologytParameters, updatePathologytParameter } from "../api-handler"
+import { createPathologyParameter, deletePathologytParameter, getPathologytParameterDetails, getPathologytParameters, updatePathologytParameter } from "../service"
 import CreatePathParameter, { CreatPathParameterSchema } from "./create-path-parameter"
 
 

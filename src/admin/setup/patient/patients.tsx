@@ -9,7 +9,8 @@ import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Link } from "react-router-dom"
 import { useDebouncedCallback } from "use-debounce"
-import { getSetupPatinets } from "./APIHandlers"
+import { getSetupPatinets } from "./service"
+import UserImage from "@/components/user-image"
 
 
 
@@ -86,13 +87,18 @@ const Patients = () => {
                                 <TableHead>Blood Group</TableHead>
                                 <TableHead>Phone</TableHead>
                                 <TableHead>Email</TableHead>
+                                <TableHead>Alive</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {patients?.data.map((patient) => {
                                 return <TableRow key={patient.id}>
                                     <TableCell>
-                                        <Link to={{ pathname: `/patient/profile/${patient.id}` }} className="text-blue-500 hover:text-blue-400 font-medium">{patient.name}</Link>
+                                        <UserImage
+                                            gender={patient.gender}
+                                            url={patient.image}
+                                            name={<Link to={{ pathname: `/patient/profile/${patient.id}` }} className="text-blue-500 hover:text-blue-400 font-medium">{patient.name}</Link>}
+                                        />
                                     </TableCell>
                                     <TableCell>{patient.guardian_name}</TableCell>
                                     <TableCell>{patient.dob}</TableCell>
@@ -101,6 +107,7 @@ const Patients = () => {
                                     <TableCell>{patient.blood_group}</TableCell>
                                     <TableCell>{patient.phone}</TableCell>
                                     <TableCell>{patient.email}</TableCell>
+                                    <TableCell>{patient.isAlive ? 'Yes' : 'No'}</TableCell>
                                 </TableRow>
                             })}
                         </TableBody>

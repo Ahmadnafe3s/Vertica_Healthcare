@@ -1,4 +1,4 @@
-import { getPermissions } from "@/admin/setup/Authorization/APIHandler";
+import AuthzApi from "@/admin/setup/services/authorization";
 import { authSelector } from "@/features/auth/authSlice";
 import { useAppSelector } from "@/hooks";
 import { createContext, ReactNode, useEffect, useMemo, useState } from "react";
@@ -35,7 +35,7 @@ export const PermissionProvider = ({ children }: { children: ReactNode }) => {
         }
 
         try {
-            const data = await getPermissions({ role: user.role });
+            const data = await AuthzApi.getPermissions({ role: user.role });
             sessionStorage.setItem('permissions', JSON.stringify(data.map(p => p.name)));
             setPermission(data.map(p => p.name));
         } catch {

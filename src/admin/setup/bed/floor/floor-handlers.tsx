@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { createBedFloor, deleteBedFloor, getBedFloors } from '../api-handler'
 import { SetupFloorSchema } from './bed-floors'
 import { useConfirmation } from '@/hooks/useConfirmation'
+import bedApi from '../../services/bed'
 
 export interface FloorType {
     "id": number,
@@ -14,7 +14,7 @@ export interface FloorType {
 
 const useFloorHandlers = () => {
 
-    const { confirm , confirmationProps} = useConfirmation()
+    const { confirm, confirmationProps } = useConfirmation()
 
     const [floors, setFloors] = useState<FloorType[]>([])
     const [isPending, setPending] = useState(false)
@@ -26,7 +26,7 @@ const useFloorHandlers = () => {
     const handleSubmit = async <T extends z.infer<typeof SetupFloorSchema>>(formData: T) => {
         try {
             setPending(true)
-            const data = await createBedFloor(formData)
+            const data = await bedApi.createFloor(formData)
             toast.success(data.message)
             setForm(false)
             fetchFloors()
@@ -40,7 +40,7 @@ const useFloorHandlers = () => {
 
     const fetchFloors = async () => {
         try {
-            const data = await getBedFloors()
+            const data = await bedApi.getFloors()
             setFloors(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -52,7 +52,7 @@ const useFloorHandlers = () => {
         try {
             const isConfirm = await confirm()
             if (!isConfirm) return null
-            const data = await deleteBedFloor(id)
+            const data = await bedApi.deleteFloor(id)
             toast.success(data.message)
             fetchFloors()
         } catch ({ message }: any) {

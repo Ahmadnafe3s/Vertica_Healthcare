@@ -1,6 +1,6 @@
-import { getBedGroups } from '@/admin/setup/bed/api-handler'
 import useBedHandlers from '@/admin/setup/bed/bed-name/bed-handlers'
 import { BedGroupType } from '@/admin/setup/bed/group/bed-group-handlers'
+import bedApi from '@/admin/setup/services/bed'
 import Dialog from '@/components/Dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -62,7 +62,7 @@ function CreateIpdModal({ editDetails, Submit, isPending, ...props }: CreateIpdM
 
     const fetchBedGroups = async () => {
         try {
-            const data = await getBedGroups()
+            const data = await bedApi.getGroups()
             setBedGroups(data)
         } catch (error) {
             toast.error(errorHandler(error))

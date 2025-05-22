@@ -8,6 +8,8 @@ export interface AppointmentData {
     fees: number,
     discount: number,
     net_amount: number,
+    payment_mode: string,
+    appointment_priority: string,
     doctor: {
         name: string
         gender: string

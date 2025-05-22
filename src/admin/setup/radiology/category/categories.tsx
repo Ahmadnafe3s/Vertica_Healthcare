@@ -12,7 +12,7 @@ import { Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import { createRadiologytCategory, deleteRadiologyCategory, getRadiologyCategories } from "../ApiHandlers"
+import { createRadiologytCategory, deleteRadiologyCategory, getRadiologyCategories } from "../service"
 import CreateRadioCategory, { CreateRadioCategorySchema } from "./createRadioCategory"
 
 

@@ -10,7 +10,7 @@ import { Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { createRadiologytUnit, deleteRadiologytUnit, getRadiologytUnits } from '../ApiHandlers'
+import { createRadiologytUnit, deleteRadiologytUnit, getRadiologytUnits } from '../service'
 import CreateRadiologyUnit, { RadioUnitSchema } from './createRadioUnit'
 
 

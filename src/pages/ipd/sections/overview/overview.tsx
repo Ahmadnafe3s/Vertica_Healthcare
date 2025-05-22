@@ -2,25 +2,24 @@ import AlertModel from "@/components/alertModel";
 import CardBox from "@/components/card-box.tsx";
 import CustomTooltip from "@/components/customTooltip.tsx";
 import FormModal from "@/components/form-modals/form-modal";
-import LoaderModel from "@/components/loader";
 import PermissionProtectedAction from "@/components/permission-protected-actions";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import UserImage from "@/components/user-image";
 import { dischargeFormSchema } from "@/formSchemas/discharge";
 import { currencySymbol } from "@/helpers/currencySymbol";
+import groupedBYdate from "@/helpers/groupVitals";
 import { currencyFormat } from "@/lib/utils";
 import useDischarge from "@/pages/discharge/discharge-handlers";
 import DischargeInfoModal from "@/pages/discharge/discharge-info-modal";
 import { dischargeFormFields } from "@/pages/discharge/form-fields";
 import StaffApi from "@/services/staff-api";
 import { staffs } from "@/types/staff/staff";
-import { Calendar, Clock, RotateCcw, UserRound } from "lucide-react";
+import { Calendar, Clock, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useIpdHandlers from "../../ipds/ipd-handlers";
-import UserImage from "@/components/user-image";
-import groupedBYdate from "@/helpers/groupVitals";
 
 
 
@@ -381,9 +380,6 @@ const IpdOverview = () => {
                     onClick={() => setForm(false)}
                 />
             )}
-
-
-            {isPending && <LoaderModel />}
 
             {current && <DischargeInfoModal
                 infos={current}

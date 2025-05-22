@@ -11,7 +11,7 @@ import toast from "react-hot-toast"
 import { z } from "zod"
 import { RadioParametersType } from "@/types/setupTypes/radiology"
 import { PathologyUnitType } from "../units/units"
-import { getPathologytUnits } from "../api-handler"
+import { getPathologytUnits } from "../service"
 
 
 

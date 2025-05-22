@@ -13,10 +13,12 @@ import { currencySymbol } from "@/helpers/currencySymbol"
 import { cn, currencyFormat } from "@/lib/utils"
 import { Plus } from "lucide-react"
 import { parseAsInteger, useQueryState } from "nuqs"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useDebouncedCallback } from 'use-debounce'
 import usePaymentHandlers from "./payment-handlers"
 import PaymentFormModel from "../../../../components/form-modals/payment-form-modal"
+import PaymentInvoice from "../../pdf/payment"
+import PrintPayment from "../../pdf/payment"
 
 
 
@@ -27,7 +29,7 @@ const PaymentsList = () => {
   // Query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [search, setSearch] = useQueryState('search')
-
+  const [print, setPrint] = useState(false)
   const { payments, getPayments, current, setCurrent, onDelete, isPending, form, setForm, handleSubmit, confirmationProps } = usePaymentHandlers({ page, search, limit: page_limit })
 
 
@@ -109,6 +111,10 @@ const PaymentsList = () => {
                         canDelete={canDelete}
                         onEdit={() => { setCurrent(payment); setForm(true) }}
                         onDelete={() => onDelete(payment.id)}
+                        incluePrint={{
+                          include: true,
+                          print: () => { setPrint(true); setCurrent(payment) }
+                        }}
                       />
                     </TableRow>
                   })}
@@ -152,6 +158,13 @@ const PaymentsList = () => {
           continue={() => confirmationProps.onConfirm()}
         />
       )}
+
+      {print &&
+        <PrintPayment
+          payment={current!}
+          afterPrint={() => { setPrint(false), setCurrent(null) }}
+        />
+      }
     </section>
   )
 }

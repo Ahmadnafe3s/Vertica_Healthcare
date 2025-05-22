@@ -1,4 +1,4 @@
-import { geteMedicineGroups, getMedicineCategories, getMedicineCompanies, getMedicineUnits } from '@/admin/setup/pharmacy/apiHandler'
+import { geteMedicineGroups, getMedicineCategories, getMedicineCompanies, getMedicineUnits } from '@/admin/setup/pharmacy/service'
 import Dialog from '@/components/Dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

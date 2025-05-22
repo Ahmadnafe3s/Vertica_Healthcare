@@ -68,10 +68,11 @@ const PharmacyApi = {
         }
     },
 
+
     // API handlers for purchase medicine
     createPurchase: async <F extends ZodType<any>>(formData: z.infer<F>) => {
         try {
-            const res = await AxiosClient.post(`/api/purchaseMedicine`, formData)
+            const res = await AxiosClient.post(`/api/pharmacy/purchase`, formData)
             return res.data
         } catch (error: any) {
             const err = error.response?.data?.message || "Connection Failed"
@@ -83,7 +84,7 @@ const PharmacyApi = {
         try {
             console.log(params);
 
-            const res = await AxiosClient.get(`/api/purchaseMedicine`, { params })
+            const res = await AxiosClient.get(`/api/pharmacy/purchase`, { params })
             return res.data
         } catch (error: any) {
             const err = error.response?.data?.message || "Connection Failed"
@@ -93,7 +94,7 @@ const PharmacyApi = {
 
     getMedicinePurchaseById: async (id: string): Promise<medicinePurchaseDetails> => {
         try {
-            const res = await AxiosClient.get(`/api/purchaseMedicine/${id}`)
+            const res = await AxiosClient.get(`/api/pharmacy/purchase/${id}`)
             return res.data
         } catch (error: any) {
             const err = error.response?.data?.message || "Connection Failed"
@@ -103,7 +104,7 @@ const PharmacyApi = {
 
     deletePurchaseMedicine: async (id: string) => {
         try {
-            const res = await AxiosClient.delete(`/api/purchaseMedicine/${id}`)
+            const res = await AxiosClient.delete(`/api/pharmacy/purchase/${id}`)
             return res.data
         } catch (error: any) {
             const err = error.response?.data?.message || "Connection Failed"
@@ -145,7 +146,7 @@ const PharmacyApi = {
 
     getPharmacyBills: async (params: Params) => {
         try {
-            const res = await AxiosClient.get(`/api/pharmacy/bill/list`, { params })
+            const res = await AxiosClient.get(`/api/pharmacy/bill`, { params })
             return res.data
         } catch (error: any) {
             const err = error.response?.data?.message || "Connection Failed"
@@ -155,7 +156,7 @@ const PharmacyApi = {
 
     getPharmacyBillById: async (id: string) => {
         try {
-            const res = await AxiosClient.get(`/api/pharmacy/bill/details/${id}`)
+            const res = await AxiosClient.get(`/api/pharmacy/bill/${id}`)
             return res.data
         } catch (error: any) {
             const err = error.response?.data?.message || "Connection Failed"

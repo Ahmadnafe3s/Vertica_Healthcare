@@ -41,8 +41,8 @@ const AppointmentDetailsModel = ({ appointmentDetails, ...props }: AppointmentDe
                         <div className="sm:col-span-2 grid grid-cols-2 gap-2">
                             <CardBox borderType='dashed' title="Appointment No." value={appointmentDetails?.id} />
                             <CardBox borderType='dashed' title="Status" value={
-                                <span className={cn('text-white rounded-md bg-green-600 w-fit px-2 py-0.5 font-semibold',
-                                    { 'bg-red-500': appointmentDetails?.status === 'Cancelled', 'bg-yellow-500': appointmentDetails?.status === 'Pending' })}>
+                                <span className={cn('text-green-600 rounded-md bg-green-600/15 w-fit px-2 py-0.5 font-semibold',
+                                    { 'bg-red-500/15 text-red-500': appointmentDetails?.status === 'Cancelled', 'bg-yellow-500/15 text-yellow-500': appointmentDetails?.status === 'Pending' })}>
                                     {appointmentDetails?.status}
                                 </span> as any
                             } />

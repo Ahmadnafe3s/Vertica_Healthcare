@@ -3,14 +3,14 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { findingCategory, findingName } from "@/types/setupTypes/finding"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
 import { HTMLAttributes, useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import { getFindingCategories } from "../apiHandler"
-import { findingCategory, findingName } from "@/types/setupTypes/finding"
+import findingApi from "../../services/finding"
 
 
 
@@ -35,7 +35,7 @@ export const FindingNameFormSchema = z.object({
 
 const FindingNameForm = ({ nameDetails, Submit, isPending, ...props }: FindingNameFormProps) => {
 
-  // API State 
+  // API State
   const [findingCategories, setFindingCategories] = useState<findingCategory[]>([])
 
   const { control, register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof FindingNameFormSchema>>({
@@ -50,7 +50,7 @@ const FindingNameForm = ({ nameDetails, Submit, isPending, ...props }: FindingNa
 
   const fetchFindingCategories = async () => {
     try {
-      const data = await getFindingCategories()
+      const data = await findingApi.getCategories()
       setFindingCategories(data)
     } catch ({ message }: any) {
       toast.error(message)

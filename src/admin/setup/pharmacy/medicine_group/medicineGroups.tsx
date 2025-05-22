@@ -12,7 +12,7 @@ import { Plus, } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { createMedicineGroup, deleteMedicineGroup, geteMedicineGroups } from '../apiHandler'
+import { createMedicineGroup, deleteMedicineGroup, geteMedicineGroups } from '../service'
 import MedicineGroupFrom, { MedicineGroupFromSchema } from './medicineGroupFrom'
 
 

@@ -12,7 +12,7 @@ import { Plus, } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { createOperationName, deleteOperationName, getOperationNameDetails, getOperationNames, updateOperationName } from '../operationsAPIhandlers'
+import { createOperationName, deleteOperationName, getOperationNameDetails, getOperationNames, updateOperationName } from '../service'
 import AddOperationNameModel, { AddOperationNameFormSchema } from './addOperationNameModel'
 
 const OperationNames = () => {

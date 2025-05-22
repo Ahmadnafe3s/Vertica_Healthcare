@@ -1,4 +1,4 @@
-import { address, hospital_contact, hospital_name } from "@/globalData"
+import { address, hospital_contact, hospital_name, hospital_website } from "@/globalData"
 import { currencyFormat } from "@/lib/utils"
 
 interface headerProps {
@@ -9,13 +9,20 @@ interface headerProps {
 
 export const PdfHeader = ({ id, title, date }: headerProps) => {
     return (
-        <div className="flex justify-between items-center mb-8">
-            <div>
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">{title}</h1>
-                <p className="text-gray-600 dark:text-gray-300">#{id}</p>
+        <div className="flex justify-between gap-5 mb-4 items-center border-b-2 border-dashed dark:border-gray-500 pb-2">
+            <div >
+                <div className="flex items-center">
+                    <img src="/logo.png" alt="Logo" className="w-20 h-20 object-cover" />
+                    <div>
+                        <h1 className="text-xl font-bold text-gray-800 dark:text-white">{hospital_name}</h1>
+                        <p className="text-xs text-gray-600 dark:text-gray-300">{hospital_website}</p>
+                    </div>
+                </div>
             </div>
-            <div className="text-right">
-                <p className="text-gray-600 dark:text-gray-300">Date: {date}</p>
+            <div>
+                <h1 className="text-xl font-bold text-gray-800 dark:text-white">{title}</h1>
+                <p className="text-xs text-gray-600 dark:text-gray-300">#{id}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-300">Date: {date}</p>
             </div>
         </div>
     )
@@ -28,10 +35,10 @@ export const From = ({ title }: { title?: string }) => {
         <div>
             <h2 className="text-sm font-semibold text-gray-800 dark:text-white mb-2">{title || 'From:'}</h2>
             <p className="whitespace-pre-line text-gray-600 dark:text-gray-300">{hospital_name}</p>
-            <p className="whitespace-pre-line text-gray-600 dark:text-gray-300">{address.street}</p>
-            <p className="whitespace-pre-line text-gray-600 dark:text-gray-300">{address.city}</p>
-            <p className="whitespace-pre-line text-gray-600 dark:text-gray-300">{hospital_contact.email}</p>
-            <p className="whitespace-pre-line text-gray-600 dark:text-gray-300">{hospital_contact.phone}</p>
+            <p className="whitespace-pre-line text-xs text-gray-600 dark:text-gray-300">{address.street}</p>
+            <p className="whitespace-pre-line text-xs text-gray-600 dark:text-gray-300">{address.city}</p>
+            <p className="whitespace-pre-line text-xs text-gray-600 dark:text-gray-300">{hospital_contact.email}</p>
+            <p className="whitespace-pre-line text-xs text-gray-600 dark:text-gray-300">{hospital_contact.phone}</p>
         </div>
     )
 }
@@ -61,9 +68,9 @@ export const To = ({ id, name, address, phone, email }: ToProps) => {
         <div>
             <h2 className="text-sm font-semibold text-gray-800 dark:text-white mb-2">To:</h2>
             <p className="whitespace-pre-line text-gray-600 dark:text-gray-300">{name} ({id})</p>
-            <p className="whitespace-pre-line text-gray-600 dark:text-gray-300">{address}</p>
-            <p className="text-gray-600 dark:text-gray-300">{email}</p>
-            <p className="text-gray-600 dark:text-gray-300">{phone}</p>
+            <p className="whitespace-pre-line text-xs text-gray-600 dark:text-gray-300">{address}</p>
+            <p className="text-gray-600 text-xs dark:text-gray-300">{email}</p>
+            <p className="text-gray-600 text-xs dark:text-gray-300">{phone}</p>
         </div>
     )
 }

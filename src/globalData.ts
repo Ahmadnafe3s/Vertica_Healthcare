@@ -13,5 +13,6 @@ export const hospital_contact = {
     email: 'info@example.com',
 }
 
+export const hospital_website = 'https://example.com'
 
 export const page_limit = 10

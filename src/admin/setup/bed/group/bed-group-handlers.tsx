@@ -2,13 +2,7 @@ import { useConfirmation } from "@/hooks/useConfirmation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { z } from "zod";
-import {
-  createBedGroup,
-  deleteBedGroup,
-  getBedGroupDetails,
-  getBedGroups,
-  updateBedGroup,
-} from "../api-handler";
+import bedApi from "../../services/bed";
 import { FloorType } from "../floor/floor-handlers";
 import { SetupBedGroupsSchema } from "./bed-groups";
 
@@ -38,10 +32,10 @@ const useBedGroupHandlers = () => {
       setPending(true);
       let data;
       bedGroupDet ? (
-        data = await updateBedGroup(bedGroupDet.id, formData),
+        data = await bedApi.updateGroup(bedGroupDet.id, formData),
         setBedGroupDet(null)
       ) : (
-        data = await createBedGroup(formData)
+        data = await bedApi.createGroup(formData)
       );
       toast.success(data.message);
       setForm(false);
@@ -57,7 +51,7 @@ const useBedGroupHandlers = () => {
 
   const fetchBedGroups = async () => {
     try {
-      const data = await getBedGroups();
+      const data = await bedApi.getGroups();
       setBedGroups(data);
     } catch ({ message }: any) {
       toast.error(message);
@@ -67,7 +61,7 @@ const useBedGroupHandlers = () => {
   const fetchBedGroupDetails = async (id: number) => {
     try {
       setLoaderModal(true);
-      const data = await getBedGroupDetails(id);
+      const data = await bedApi.getGroupDetails(id);
       setBedGroupDet(data);
     } catch ({ message }: any) {
       toast.error(message);
@@ -80,7 +74,7 @@ const useBedGroupHandlers = () => {
     try {
       const isConfirm = await confirm();
       if (!isConfirm) return null;
-      const data = await deleteBedGroup(id);
+      const data = await bedApi.deleteGroup(id);
       toast.success(data.message);
       fetchBedGroups();
     } catch ({ message }: any) {

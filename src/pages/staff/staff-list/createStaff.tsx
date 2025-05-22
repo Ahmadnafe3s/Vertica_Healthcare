@@ -1,5 +1,5 @@
-import { getRoles } from '@/admin/setup/Authorization/APIHandler'
 import { ROLE } from '@/admin/setup/Authorization/role/role'
+import AuthzApi from '@/admin/setup/services/authorization'
 import useStaffDepartment from '@/admin/setup/staff/department/handlers'
 import useStaffDesignation from '@/admin/setup/staff/designation/handlers'
 import useSpecialization from '@/admin/setup/staff/specialization/handlers'
@@ -51,6 +51,9 @@ const CreateStaff = () => {
 
       const formData = new FormData()
 
+      console.log(staffData);
+
+
       for (const key in staffData) {
         if (key === 'image') {
           if (staffData.image) formData.append(key, staffData.image)
@@ -94,7 +97,7 @@ const CreateStaff = () => {
 
   const fetchRoles = async () => {
     try {
-      const data = await getRoles()
+      const data = await AuthzApi.getRoles()
       setRole(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -406,7 +409,7 @@ const CreateStaff = () => {
           <Controller control={control} name='specializationId' render={({ field }) => {
             console.log(field.value?.map(item => item.toString()))
             return <MultiSelect
-              defaultValue={field.value?.map(item => item.toString())}
+              defaultValue={field.value?.map(item => item.toString()) || []}
               options={specializations.map(item => ({ label: item.name, value: String(item.id) }))}
               onValueChange={(value) => { field.onChange(value) }}
               placeholder='Select Specializations'

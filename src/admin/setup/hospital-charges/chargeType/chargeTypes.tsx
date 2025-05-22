@@ -11,7 +11,7 @@ import { Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { createChargeType, deleteChargeType, getChargeTypes, updateChargeTypeModule } from '../chargesAPIhandlers'
+import hospitalChargeApi from '../../services/charge'
 import AddChargeTypeformModel, { ChargeTypeformModelSchema } from './addChargeTypeformModel'
 
 
@@ -46,7 +46,7 @@ const ChargeTypes = () => {
   const handleSubmit = async (formData: z.infer<typeof ChargeTypeformModelSchema>) => {
     try {
       setPending(true)
-      const data = await createChargeType(formData)
+      const data = await hospitalChargeApi.createChargeType(formData)
       toast.success(data.message)
       setPending(false)
       fetchChargeTypes();
@@ -60,7 +60,7 @@ const ChargeTypes = () => {
 
   const fetchChargeTypes = async () => {
     try {
-      const data = await getChargeTypes()
+      const data = await hospitalChargeApi.getChargeTypes()
       setChargeTypesList(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -71,7 +71,7 @@ const ChargeTypes = () => {
   // this will ensure where where respected charge type will be display
   const updateModule = async (id: number, module: any) => {
     try {
-      const data = await updateChargeTypeModule(id, module)
+      const data = await hospitalChargeApi.updateChargeTypeModule(id, module)
       toast.success(data.message)
       fetchChargeTypes()
     } catch ({ message }: any) {
@@ -85,7 +85,7 @@ const ChargeTypes = () => {
     try {
       const isConfirmed = await confirm()
       if (!isConfirmed) return null
-      const data = await deleteChargeType(id)
+      const data = await hospitalChargeApi.deleteChargeType(id)
       toast.success(data.message)
       fetchChargeTypes()
       setPending(false)

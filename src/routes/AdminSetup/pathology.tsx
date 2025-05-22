@@ -1,6 +1,6 @@
 import SetupPathCategories from '@/admin/setup/pathology/category/categories'
 import SetupPathParameters from '@/admin/setup/pathology/parameter/parameters'
-import SetupPathologyLayout from '@/admin/setup/pathology/pathology-layout'
+import SetupPathologyLayout from '@/admin/setup/pathology/layout'
 import SetupPathologyTestNames from '@/admin/setup/pathology/test/test-names'
 import PathologyUnit from '@/admin/setup/pathology/units/units'
 import ProtectRoutes from '@/guard/protectRoutes'

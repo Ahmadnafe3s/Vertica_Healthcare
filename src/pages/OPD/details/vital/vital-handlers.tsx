@@ -1,4 +1,4 @@
-import { getSetupVitals } from '@/admin/setup/vitals/apiHandler'
+import { getSetupVitals } from '@/admin/setup/vitals/service'
 import { vitalFormSchema } from '@/formSchemas/vitalFormSchema'
 import { useConfirmation } from '@/hooks/useConfirmation'
 import VitalApi from '@/services/vital-api'

@@ -10,7 +10,7 @@ import { Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { createChargeUnit, deleteChargeUnit, getChargeUnitDetails, getChargeUnitList, updateChargeUnit } from '../chargesAPIhandlers'
+import hospitalChargeApi from '../../services/charge'
 import AddUnitFormModel, { unitFormSchema } from './addUnitFormModel'
 
 
@@ -42,10 +42,10 @@ const ChargeUnitList = () => {
       let data;
       setPending(true)
       if (unitDetails) {
-        data = await updateChargeUnit(unitDetails.id, formData)
+        data = await hospitalChargeApi.updateUnit(unitDetails.id, formData)
         setUnitdetails(undefined)
       } else {
-        data = await createChargeUnit(formData)
+        data = await hospitalChargeApi.createUnit(formData)
       }
       toast.success(data.message)
       setAddUnitFormVisible(false)
@@ -61,7 +61,7 @@ const ChargeUnitList = () => {
   // fetching list
   const fetchUnitsList = async () => {
     try {
-      const data = await getChargeUnitList()
+      const data = await hospitalChargeApi.getUnitList()
       setUnitsList(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -72,7 +72,7 @@ const ChargeUnitList = () => {
   // fetching details for update mode
   const fetchUnitdetails = async (id: number) => {
     try {
-      const data = await getChargeUnitDetails(id)
+      const data = await hospitalChargeApi.getUnitDetails(id)
       setUnitdetails(data)
       setAddUnitFormVisible(true)
     } catch ({ message }: any) {
@@ -86,7 +86,7 @@ const ChargeUnitList = () => {
     try {
       const isConfirmed = await confirm()
       if (!isConfirmed) return null
-      const data = await deleteChargeUnit(id)
+      const data = await hospitalChargeApi.deleteUnit(id)
       toast.success(data.message)
       fetchUnitsList()
     } catch ({ message }: any) {

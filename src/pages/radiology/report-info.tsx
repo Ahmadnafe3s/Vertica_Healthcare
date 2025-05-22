@@ -6,6 +6,7 @@ import { CalendarDays, Pencil, Radiation, Trash, User } from "lucide-react"
 import { useEffect } from "react"
 import useRadiology from "./handler"
 import RadiologyReportForm from "./radiology-report-form"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
 
 type Props = {
     ID: number
@@ -31,17 +32,18 @@ const RadioReportInfo = ({ excludeActions = false, isOpen, onClose, onDelete, ID
                         <DialogTitle className="flex justify-between">
                             <p>Report Details</p>
                             {!excludeActions && <div className="flex gap-2 mr-10">
-                                <div className="p-2 bg-yellow-100 dark:bg-yellow-500/10 rounded-full">
-                                    <Pencil className="w-4 h-4 cursor-pointer text-yellow-500" onClick={() => {
-                                        setReportForm(true),
-                                            onClose(false)
-                                    }} />
-                                </div>
-                                <div className="p-2 bg-red-100 dark:bg-red-500/10 rounded-full">
-                                    <Trash className="w-4 h-4 cursor-pointer text-red-500"
-                                        onClick={() => { onDelete && onDelete(ID), onClose(false) }} // here ID is the itemId
-                                    />
-                                </div>
+                                <PermissionProtectedAction action='update' module='Radiology Report'>
+                                    <div className="relative p-2 bg-yellow-100 dark:bg-yellow-500/10 rounded-full">
+                                        <Pencil className="w-4 h-4 text-yellow-500" />
+                                        <span className="absolute inset-0 cursor-pointer" onClick={() => { setReportForm(true), onClose(false) }} />
+                                    </div>
+                                </PermissionProtectedAction>
+                                <PermissionProtectedAction action='delete' module='Radiology Report'>
+                                    <div className="relative p-2 bg-red-100 dark:bg-red-500/10 rounded-full">
+                                        <Trash className="w-4 h-4 text-red-500" />
+                                        <span className="absolute inset-0 cursor-pointer" onClick={() => { onDelete && onDelete(ID), onClose(false) }} />
+                                    </div>
+                                </PermissionProtectedAction>
                             </div>}
                         </DialogTitle>
                         <DialogDescription>This is the radiology report details</DialogDescription>

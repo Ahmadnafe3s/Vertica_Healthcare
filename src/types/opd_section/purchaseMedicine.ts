@@ -1,6 +1,6 @@
 interface Purchases {
     id: string,
-    purchase_date: string,
+    date: string,
     expiry_date: string,
     amount: number,
     supplier_name: string,
@@ -29,7 +29,7 @@ export interface medicinePurchaseDetails {
     medicineId: number,
     supplier_name: string,
     batch_no: string,
-    purchase_date: string,
+    date: string,
     expiry_date: string,
     MRP: 200,
     sale_price: string,

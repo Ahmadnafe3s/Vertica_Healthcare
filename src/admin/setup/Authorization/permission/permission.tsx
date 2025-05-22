@@ -6,7 +6,7 @@ import { dashboardPermissions, Module, setupPermissions } from "@/lib/modules"
 import { parseAsInteger, useQueryState } from "nuqs"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { createPermission, deletePermission, getPermissions, getRoles } from "../APIHandler"
+import AuthzApi from "../../services/authorization"
 import { ROLE } from "../role/role"
 
 
@@ -22,7 +22,7 @@ const Permission = () => {
 
     const fetchRoles = async () => {
         try {
-            const data = await getRoles()
+            const data = await AuthzApi.getRoles()
             setRoles(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -36,9 +36,9 @@ const Permission = () => {
             if (!roleId) return toast.error('Please select role')
             let data
             isAllow ?
-                (data = await createPermission(permission, roleId)) // updating current set
+                (data = await AuthzApi.createPermission(permission, roleId)) // updating current set
                 :
-                (PID && (data = await deletePermission(permission, PID))) // if permission id will present then it will work
+                (PID && (data = await AuthzApi.deletePermission(permission, PID))) // if permission id will present then it will work
 
             // both time updating
             fetchPermissions()
@@ -51,7 +51,7 @@ const Permission = () => {
 
     const fetchPermissions = async () => {
         try {
-            const data = await getPermissions({ roleId: Number(roleId) })
+            const data = await AuthzApi.getPermissions({ roleId: Number(roleId) })
             setPermissions(new Map(data.map((p) => [p.name, p]))); // setting map
         } catch ({ message }: any) {
             toast.error(message)

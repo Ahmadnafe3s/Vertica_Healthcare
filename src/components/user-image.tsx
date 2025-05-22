@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils"
+import { ReactNode } from "react"
 
 interface Props {
     url: string
-    name?: string
+    name?: string | ReactNode
     gender: string
     imageClass?: string
     textClass?: string

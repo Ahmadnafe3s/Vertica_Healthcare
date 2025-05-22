@@ -1,5 +1,5 @@
-import { getFindingCategories, getFindingNameDetails, getFindingNames } from "@/admin/setup/findings/apiHandler"
-import { getDoseDurations, getDoseIntervals, getMedicineCategories } from "@/admin/setup/pharmacy/apiHandler"
+import { getDoseDurations, getDoseIntervals, getMedicineCategories } from "@/admin/setup/pharmacy/service"
+import findingApi from "@/admin/setup/services/finding"
 import Dialog from "@/components/Dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,7 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { createPrescriptionFormSchema, valuesASdefault } from "@/formSchemas/createPrescriptionFormSchema"
 import PharmacyApi from "@/services/pharmacy-api"
 import { prescriptionDetail } from "@/types/opd_section/prescription"
-import {  medicinesBYcategory } from "@/types/pharmacy/pharmacy"
+import { medicinesBYcategory } from "@/types/pharmacy/pharmacy"
 import { findingCategory, findingName } from "@/types/setupTypes/finding"
 import { doseDuration, doseInterval, medicineCategory } from "@/types/setupTypes/pharmacy"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -92,7 +92,7 @@ const PrescriptionFormModal = ({ prescDetails: details, isPending, Submit, ...pr
     // fetch finding categories
     const fetchFindinCategories = async () => {
         try {
-            const data = await getFindingCategories()
+            const data = await findingApi.getCategories()
             setFindingCategories(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -103,7 +103,7 @@ const PrescriptionFormModal = ({ prescDetails: details, isPending, Submit, ...pr
     // handling finding category change or binding Finding names
     const handleFindingCategoryChange = async (categoryId: string, index: number) => {
         try {
-            const data = await getFindingNames(categoryId)
+            const data = await findingApi.getNames(categoryId)
             setFindingNames(rest => ({ ...rest, [index]: data }))
         } catch ({ message }: any) {
             toast.error(message)
@@ -113,7 +113,7 @@ const PrescriptionFormModal = ({ prescDetails: details, isPending, Submit, ...pr
     // setting description
     const handleFindingNameChange = async (id: number, index: number) => {
         try {
-            const data = await getFindingNameDetails(id)
+            const data = await findingApi.getNameDetails(id)
             // setFindingDescription(rest => ({ ...rest, [index]: data.description }))
             setValue(`finding.${index}.description`, data.description)
         } catch ({ message }: any) {

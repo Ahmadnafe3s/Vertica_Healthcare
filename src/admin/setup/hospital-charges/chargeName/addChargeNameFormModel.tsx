@@ -1,23 +1,23 @@
 import Dialog from '@/components/Dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { chargeNameFormSchema } from '@/formSchemas/setupSectionSchemas/ChargeNameFormSchema'
+import { currencySymbol } from '@/helpers/currencySymbol'
+import { chargeNameDetailsType } from '@/types/setupTypes/chargeName'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader } from 'lucide-react'
 import { HTMLAttributes, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { getChargeCategories, getChargeTypes, getChargeUnitList, getTaxDetails, getTaxesList } from '../chargesAPIhandlers'
-import { Charge_Type_Interface } from '../chargeType/chargeTypes'
 import toast from 'react-hot-toast'
-import { categoryType } from '../chargesCategory/categoryList'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import hospitalChargeApi from '../../services/charge'
+import { categoryType } from '../chargesCategory/categoryList'
+import { Charge_Type_Interface } from '../chargeType/chargeTypes'
 import { unitType } from '../chargeUnit/chargeUnitList'
-import { Input } from '@/components/ui/input'
 import { TaxType } from '../taxes/taxList'
-import { currencySymbol } from '@/helpers/currencySymbol'
-import { Button } from '@/components/ui/button'
-import { Loader } from 'lucide-react'
-import { chargeNameFormSchema } from '@/formSchemas/setupSectionSchemas/ChargeNameFormSchema'
-import { chargeNameDetailsType } from '@/types/setupTypes/chargeName'
 
 
 
@@ -45,7 +45,7 @@ const AddChargesFormModel = ({ chargeNameDetails, Submit, isPending, ...props }:
 
   const fetchChargeCategories = async (chargeTypeId?: number) => {
     try {
-      const data = await getChargeCategories(chargeTypeId)
+      const data = await hospitalChargeApi.getChargeCategories(chargeTypeId)
       console.log(data);
       setCategories(data)
     } catch ({ message }: any) {
@@ -55,7 +55,7 @@ const AddChargesFormModel = ({ chargeNameDetails, Submit, isPending, ...props }:
 
   const fetchChargeTypes = async () => {
     try {
-      const data = await getChargeTypes()
+      const data = await hospitalChargeApi.getChargeTypes()
       setChargeTypes(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -64,7 +64,7 @@ const AddChargesFormModel = ({ chargeNameDetails, Submit, isPending, ...props }:
 
   const fetchChargeUnits = async () => {
     try {
-      const data = await getChargeUnitList()
+      const data = await hospitalChargeApi.getUnitList()
       setUnit(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -74,7 +74,7 @@ const AddChargesFormModel = ({ chargeNameDetails, Submit, isPending, ...props }:
 
   const fetchTaxesList = async () => {
     try {
-      const data = await getTaxesList()
+      const data = await hospitalChargeApi.getTaxesList()
       setTaxes(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -84,7 +84,7 @@ const AddChargesFormModel = ({ chargeNameDetails, Submit, isPending, ...props }:
 
   const fetchTaxDetails = async (taxId: number) => {
     try {
-      const data = await getTaxDetails(taxId)
+      const data = await hospitalChargeApi.getTaxDetails(taxId)
       setValue('tax_percentage', data.percentage)
     } catch ({ message }: any) {
       toast.error(message)

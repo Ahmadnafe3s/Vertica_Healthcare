@@ -12,7 +12,7 @@ import { Plus, } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import { createOperationCategory, deleteOperationCategory, getOperationCategories, getOperationCategoryDetails, updateOperationCategory } from "../operationsAPIhandlers"
+import { createOperationCategory, deleteOperationCategory, getOperationCategories, getOperationCategoryDetails, updateOperationCategory } from "../service"
 import AddOperationCategoryForm, { AddOperationCategoryFormSchema } from "./addOperationCategoryForm"
 
 const OperationCategories = () => {

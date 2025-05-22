@@ -1,24 +1,24 @@
 import Dialog from '@/components/Dialog'
+import CustomTooltip from '@/components/customTooltip'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
+import { ParameterDefaultValue, TestNameFormSchema } from '@/formSchemas/setupSectionSchemas/CreateTestNameSchema'
+import { chargeNamesType } from '@/types/setupTypes/chargeName'
+import { RadioCategoryType, RadiologyTestNameDetailsType, RadioParametersType } from '@/types/setupTypes/radiology'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader, Plus, X } from 'lucide-react'
 import { HTMLAttributes, useEffect, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Loader, Plus, X } from 'lucide-react'
-import { ParameterDefaultValue, TestNameFormSchema } from '@/formSchemas/setupSectionSchemas/CreateTestNameSchema'
-import { RadioCategoryType, RadiologyTestNameDetailsType, RadioParametersType } from '@/types/setupTypes/radiology'
 import { Charge_Type_Interface } from '../../hospital-charges/chargeType/chargeTypes'
-import { getChargeCategories, getChargeNameDetails, getChargeNames, getChargeTypes } from '../../hospital-charges/chargesAPIhandlers'
 import { categoryType } from '../../hospital-charges/chargesCategory/categoryList'
-import { chargeNamesType } from '@/types/setupTypes/chargeName'
-import CustomTooltip from '@/components/customTooltip'
-import { Separator } from '@/components/ui/separator'
-import { getRadiologyCategories, getRadiologytParameterDetails, getRadiologytParameters } from '../ApiHandlers'
+import hospitalChargeApi from '../../services/charge'
+import { getRadiologyCategories, getRadiologytParameterDetails, getRadiologytParameters } from '../service'
 
 
 
@@ -54,7 +54,7 @@ const CreateRadioTest = ({ editDetails, Submit, isPending, ...props }: AddCharge
 
     const fetchChargeTypes = async () => {
         try {
-            const data = await getChargeTypes('radiology')
+            const data = await hospitalChargeApi.getChargeTypes('radiology')
             setChargeTypes(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -64,7 +64,7 @@ const CreateRadioTest = ({ editDetails, Submit, isPending, ...props }: AddCharge
 
     const handleChargeTypeChange = async (chargeTypeId: number) => {
         try {
-            const data = await getChargeCategories(chargeTypeId)
+            const data = await hospitalChargeApi.getChargeCategories(chargeTypeId)
             setChargeCategories(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -75,7 +75,7 @@ const CreateRadioTest = ({ editDetails, Submit, isPending, ...props }: AddCharge
 
     const handleChargeCategoryChange = async (chargeCategoryId: number) => {
         try {
-            const data = await getChargeNames({search: String(chargeCategoryId) })
+            const data = await hospitalChargeApi.getChargeNames({search: String(chargeCategoryId) })
             setChargeNames(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -85,7 +85,7 @@ const CreateRadioTest = ({ editDetails, Submit, isPending, ...props }: AddCharge
 
     const handleChargeNameChange = async (chargeNameId: number) => {
         try {
-            const data = await getChargeNameDetails(chargeNameId)
+            const data = await hospitalChargeApi.getChargeNameDetails(chargeNameId)
             setValue('standardCharge', data.standard_charge)
             setValue('tax', data.tax_percentage)
             const amount = data.standard_charge + (data.standard_charge * data.tax_percentage / 100)

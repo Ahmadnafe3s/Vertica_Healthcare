@@ -20,7 +20,7 @@ import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { useDebouncedCallback } from "use-debounce"
 import { z } from "zod"
-import { createChargeName, deleteChargeName, getChargeNameDetails, getChargeNames, updateChargeName } from "../chargesAPIhandlers"
+import hospitalChargeApi from "../../services/charge"
 import AddChargesFormModel from "./addChargeNameFormModel"
 
 
@@ -56,10 +56,10 @@ const ChargesList = () => {
       setPending(true);
       let data;
       if (chargeNameDetails) {
-        data = await updateChargeName(chargeNameDetails.id, formData)
+        data = await hospitalChargeApi.updateChargeName(chargeNameDetails.id, formData)
         setChargeNameDetails(undefined)
       } else {
-        data = await createChargeName(formData)
+        data = await hospitalChargeApi.createChargeName(formData)
       }
       setChargeNameFormVisible(false)
       fetChargeNames()
@@ -75,7 +75,7 @@ const ChargesList = () => {
   const fetchChargeNameDetails = async (id: number) => {
     try {
       setLoaderModel(true)
-      const data = await getChargeNameDetails(id)
+      const data = await hospitalChargeApi.getChargeNameDetails(id)
       setChargeNameDetails(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -87,7 +87,7 @@ const ChargesList = () => {
 
   const fetChargeNames = async () => {
     try {
-      const data = await getChargeNames({ page, limit: search ? 100 : 10, search: search! })
+      const data = await hospitalChargeApi.getChargeNames({ page, limit: search ? 100 : 10, search: search! })
       setchargeNames(data)
 
     } catch ({ message }: any) {
@@ -100,7 +100,7 @@ const ChargesList = () => {
     try {
       const isConfirmed = await confirm()
       if (!isConfirmed) return null
-      const data = await deleteChargeName(id)
+      const data = await hospitalChargeApi.deleteChargeName(id)
       toast.success(data.message)
       fetChargeNames()
     } catch ({ message }: any) {

@@ -1,9 +1,14 @@
 import AxiosClient from "@/api/apiClient"
 
+type searchParams = {
+    year?: number
+    month?: string
+    date?: string
+}
 
-export const getPatientDashTotalCount = async (patientId: number) => {
+export const getPatientDashTotalCount = async () => {
     try {
-        const res = await AxiosClient.get(`/api/dashboard/patient/totalCount/${patientId}`)
+        const res = await AxiosClient.get(`/api/dashboard/patient/totalCount`)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -12,9 +17,9 @@ export const getPatientDashTotalCount = async (patientId: number) => {
 
 
 
-export const getYearlyApppointmentsReport = async (patientId: number, params?: { year?: number },) => {
+export const getPatientExpenseReport = async (params?: searchParams) => {
     try {
-        const res = await AxiosClient.get(`/api/dashboard/patient/yearlyAppointments/${patientId}`, { params })
+        const res = await AxiosClient.get(`/api/dashboard/patient/expenseReport`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -22,9 +27,9 @@ export const getYearlyApppointmentsReport = async (patientId: number, params?: {
 }
 
 
-export const getApppointmentStatusCount = async (patientId: number, params?: { year?: number },) => {
+export const getApppointmentStatusCount = async (params?: searchParams) => {
     try {
-        const res = await AxiosClient.get(`/api/dashboard/patient/statusCount/${patientId}`, { params })
+        const res = await AxiosClient.get(`/api/dashboard/patient/appointmentReport`, { params })
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)
@@ -32,9 +37,9 @@ export const getApppointmentStatusCount = async (patientId: number, params?: { y
 }
 
 
-export const getPatientTotalExpenses = async (patientId: number) => {
+export const getPatientTotalExpenses = async () => {
     try {
-        const res = await AxiosClient.get(`/api/dashboard/patient/totalExpenses/${patientId}`,)
+        const res = await AxiosClient.get(`/api/dashboard/patient/totalExpenses`,)
         return res.data
     } catch (error: any) {
         throw new Error(error.response?.data?.message)

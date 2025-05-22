@@ -84,12 +84,14 @@ export const setupPermissions = [
 
 export const dashboardPermissions = [
     'Opd Income',
+    'Ipd Income',
     'Pharmacy Income',
     'Radiology Income',
     'Pathology Income',
     'Ambulance Income',
     'Blood Bank Income',
     'Opds',
+    'Ipds',
     'Appointments',
     'Appmnt Income',
     'Medicines',

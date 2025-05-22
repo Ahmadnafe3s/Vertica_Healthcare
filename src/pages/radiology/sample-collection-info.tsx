@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator"
 import { CalendarDays, Hospital, Pencil, Trash, User } from "lucide-react"
 import { useEffect } from "react"
 import useRadiology from "./handler"
+import PermissionProtectedAction from "@/components/permission-protected-actions"
 
 type Props = {
     ID: number
@@ -30,17 +31,18 @@ const RadioSampleCollectionInfo = ({ excludeActions = false, isOpen, onClose, on
                         <DialogTitle className="flex justify-between">
                             <p>Collector Details</p>
                             {!excludeActions && <div className="flex gap-2 mr-10">
-                                <div className="p-2 bg-yellow-100 dark:bg-yellow-500/10 rounded-full">
-                                    <Pencil className="w-4 h-4 cursor-pointer text-yellow-500" onClick={() => {
-                                        setCollectionForm(true),
-                                            onClose(false)
-                                    }} />
-                                </div>
-                                <div className="p-2 bg-red-100 dark:bg-red-500/10 rounded-full">
-                                    <Trash className="w-4 h-4 cursor-pointer text-red-500"
-                                        onClick={() => { onDelete && onDelete(ID), onClose(false) }} // here ID is the itemId
-                                    />
-                                </div>
+                                <PermissionProtectedAction action='update' module='Sample Collection'>
+                                    <div className="relative p-2 bg-yellow-100 dark:bg-yellow-500/10 rounded-full">
+                                        <Pencil className="w-4 h-4 text-yellow-500" />
+                                        <span className="absolute inset-0 cursor-pointer" onClick={() => { setCollectionForm(true), onClose(false) }} />
+                                    </div>
+                                </PermissionProtectedAction>
+                                <PermissionProtectedAction action='delete' module='Sample Collection'>
+                                    <div className="relative p-2 bg-red-100 dark:bg-red-500/10 rounded-full">
+                                        <Trash className="w-4 h-4 text-red-500" />
+                                        <span className="absolute inset-0 cursor-pointer" onClick={() => { onDelete && onDelete(ID), onClose(false) }} />
+                                    </div>
+                                </PermissionProtectedAction>
                             </div>}
                         </DialogTitle>
                         <DialogDescription>This is the sample collection details</DialogDescription>

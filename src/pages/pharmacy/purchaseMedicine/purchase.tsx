@@ -190,7 +190,7 @@ const Purchase = () => {
                         {purchase.id}
                       </TableCell>
                       <TableCell>{purchase.medicine.name}</TableCell>
-                      <TableCell>{purchase.purchase_date}</TableCell>
+                      <TableCell>{purchase.date}</TableCell>
                       <TableCell>{purchase.expiry_date}</TableCell>
                       <TableCell>
                         {purchase.supplier_name}

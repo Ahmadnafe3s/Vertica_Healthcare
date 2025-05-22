@@ -1,4 +1,4 @@
-import SetupBedLayout from "@/admin/setup/bed/bed-layout"
+import SetupBedLayout from "@/admin/setup/bed/layout"
 import SetupBed from "@/admin/setup/bed/bed-name/bed"
 import SetupBedFloors from "@/admin/setup/bed/floor/bed-floors"
 import SetupBedGroups from "@/admin/setup/bed/group/bed-groups"

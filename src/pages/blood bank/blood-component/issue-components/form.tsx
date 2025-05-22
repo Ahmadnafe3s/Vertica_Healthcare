@@ -1,6 +1,6 @@
 import { Charge_Type_Interface } from '@/admin/setup/hospital-charges/chargeType/chargeTypes'
-import { getChargeCategories, getChargeNameDetails, getChargeNames, getChargeTypes } from '@/admin/setup/hospital-charges/chargesAPIhandlers'
 import { categoryType } from '@/admin/setup/hospital-charges/chargesCategory/categoryList'
+import hospitalChargeApi from '@/admin/setup/services/charge'
 import Dialog from '@/components/Dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -82,28 +82,28 @@ function IssueBloodComponent({ Submit, isPending, defaultValues, ...props }: Iss
 
     const fetchChargeTypes = async () => {
         try {
-            const data = await getChargeTypes('blood_bank')
+            const data = await hospitalChargeApi.getChargeTypes('blood_bank')
             setChargeTypes(data)
         } catch ({ message }: any) { toast.error(message) }
     }
 
     const handleChargeTypeChange = async (id: number) => {
         try {
-            const data = await getChargeCategories(id)
+            const data = await hospitalChargeApi.getChargeCategories(id)
             setChargeCategories(data)
         } catch ({ message }: any) { toast.error(message) }
     }
 
     const handleChargeCategoryChange = async (id: number) => {
         try {
-            const data = await getChargeNames({ search: String(id) })
+            const data = await hospitalChargeApi.getChargeNames({ search: String(id) })
             setChargeNames(data.data)
         } catch ({ message }: any) { toast.error(message) }
     }
 
     const handleChargeNameChange = async (id: number) => {
         try {
-            const data = await getChargeNameDetails(id)
+            const data = await hospitalChargeApi.getChargeNameDetails(id)
             setValue('standard_charge', data.standard_charge)
             setValue('tax', data.tax_percentage)
         } catch ({ message }: any) { toast.error(message) }

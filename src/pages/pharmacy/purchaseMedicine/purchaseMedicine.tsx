@@ -1,4 +1,4 @@
-import { getMedicineCategories } from '@/admin/setup/pharmacy/apiHandler'
+import { getMedicineCategories } from '@/admin/setup/pharmacy/service'
 import Dialog from '@/components/Dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

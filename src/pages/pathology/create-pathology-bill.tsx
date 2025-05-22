@@ -26,7 +26,7 @@ import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import toast from "react-hot-toast"
 import { useDebouncedCallback } from "use-debounce"
 import { z } from "zod"
-import { getPathologyTestDetails, getPathologyTests } from "../../admin/setup/pathology/api-handler"
+import { getPathologyTestDetails, getPathologyTests } from "../../admin/setup/pathology/service"
 
 
 

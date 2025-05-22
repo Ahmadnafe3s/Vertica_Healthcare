@@ -1,6 +1,6 @@
 import RadioCategories from '@/admin/setup/radiology/category/categories'
 import SetupRadioParameters from '@/admin/setup/radiology/parameter/parameters'
-import SetupRadiologyLayout from '@/admin/setup/radiology/RadiologyLayout'
+import SetupRadiologyLayout from '@/admin/setup/radiology/layout'
 import RadiologyTests from '@/admin/setup/radiology/test/tests'
 import RadiologyUnits from '@/admin/setup/radiology/units/units'
 import ProtectRoutes from '@/guard/protectRoutes'

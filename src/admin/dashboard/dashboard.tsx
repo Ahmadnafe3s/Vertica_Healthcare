@@ -6,14 +6,22 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AdminDash_MM_IncExp, AdminDashAppmtReport, AdminDashTotalCount, AdminDashVisitors } from '@/types/dashboard/adminDashboard'
-import { Activity, Ambulance, CalendarClock, DollarSign, Droplets, HandCoins, HeartPulse, Package, Pill, Radiation, ShoppingCart, TestTube2 } from 'lucide-react'
+import { Activity, Ambulance, CalendarClock, ClipboardPlus, DollarSign, Droplets, HandCoins, HeartPulse, ListFilter, Package, Pill, Radiation, Search, ShoppingCart, Stethoscope, TestTube2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Area, AreaChart, CartesianGrid, Label, Pie, PieChart, XAxis } from 'recharts'
 import { getAdminDash_MM_IncExp, getAdminDashAppointmentReport, getAdminDashIncExp, getAdminDashVisitors } from './apiHandler'
 import { Default_MM_Inc_Exp_Data } from './defaultChartdata'
+import { DropdownMenu } from '@radix-ui/react-dropdown-menu'
+import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import CustomTooltip from '@/components/customTooltip'
+import { Input } from '@/components/ui/input'
 
-
+type SearchParams = {
+    year?: number
+    month?: string
+    date?: string
+}
 
 
 const AdminDashboard = () => {
@@ -24,6 +32,9 @@ const AdminDashboard = () => {
     const [MonthlyIncExp, setMonthlyIncExp] = useState<AdminDash_MM_IncExp[]>([])
     const [visitors, setVisitors] = useState<AdminDashVisitors[]>([])
     const [appmtReport, setAppmtReport] = useState<AdminDashAppmtReport>()
+    const [searchIEby, setSearchIEby] = useState<'date' | 'year' | 'month'>('year')
+    const [searchAPNTby, setSearchAPNTby] = useState<'date' | 'year' | 'month'>('year')
+    const [searchVTby, setSearchVTby] = useState<'date' | 'year' | 'month'>('year')
 
 
     const fetchAdminDashStats = async () => {
@@ -47,15 +58,33 @@ const AdminDashboard = () => {
 
 
 
-    const onYearChnage = async (value: number) => {
+    const onIESearch = async ({ date, month, year }: SearchParams) => {
         try {
-            const data = await getAdminDash_MM_IncExp(value)
+            const data = await getAdminDash_MM_IncExp({ year, month, date })
             setMonthlyIncExp(data)
         } catch ({ message }: any) {
             toast.error(message)
         }
     }
 
+    const onAppointmentSearch = async ({ date, month, year }: SearchParams) => {
+        try {
+            const data = await getAdminDashAppointmentReport({ year, month, date })
+            setAppmtReport(data)
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
+
+
+    const onVisitSearch = async ({ date, month, year }: SearchParams) => {
+        try {
+            const data = await getAdminDashVisitors({ year, month, date })
+            setVisitors(data)
+        } catch ({ message }: any) {
+            toast.error(message)
+        }
+    }
 
 
     useEffect(() => {
@@ -71,87 +100,101 @@ const AdminDashboard = () => {
 
                 {/* opd income */}
                 <PermissionProtectedAction action='Opd Income' module='dashboard'>
-                    <RectCard name='OPD Income' path={'/opd'} amount={total?.opdIncome ?? 0}>
-                        <HeartPulse className='h-8 w-8 text-red-500' />
+                    <RectCard name='OPD Income' path={'/opd'} amount={total?.opdIncome ?? 0} iconBg='bg-red-100 dark:bg-red-500/10'>
+                        <HeartPulse className='h-7 w-7 text-red-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* opds */}
                 <PermissionProtectedAction action='Opds' module='dashboard'>
-                    <RectCard name='Total OPDs' path={'/opd'} visits={total?.opds ?? 0}>
-                        <Activity className='h-8 w-8 text-amber-500' />
+                    <RectCard name='Total OPD' path={'/opd'} visits={total?.opds ?? 0} iconBg='bg-amber-100 dark:bg-amber-500/10'>
+                        <Activity className='h-7 w-7 text-amber-500' />
+                    </RectCard>
+                </PermissionProtectedAction>
+
+                {/* Ipd income */}
+                <PermissionProtectedAction action='Ipd Income' module='dashboard'>
+                    <RectCard name='Ipd Income' path={'/ipd'} amount={total?.ipdIncome ?? 0} iconBg='bg-rose-100 dark:bg-rose-700/10'>
+                        <Stethoscope className='h-7 w-7 text-rose-700' />
+                    </RectCard>
+                </PermissionProtectedAction>
+
+                {/* ipds */}
+                <PermissionProtectedAction action='Opds' module='dashboard'>
+                    <RectCard name='Total IPD' path={'/ipd'} visits={total?.ipds ?? 0} iconBg='bg-green-100 dark:bg-green-700/10'>
+                        <ClipboardPlus className='h-7 w-7 text-green-700' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* appmnt income */}
                 <PermissionProtectedAction action='Appmnt Income' module='dashboard'>
-                    <RectCard name='Appointment Income' path={'/appointment'} amount={total?.appointmentIncome ?? 0}>
-                        <CalendarClock className='h-8 w-8 text-slate-500' />
+                    <RectCard name='Appointment Income' path={'/appointment'} amount={total?.appointmentIncome ?? 0} iconBg='bg-slate-100 dark:bg-slate-700/10'>
+                        <CalendarClock className='h-7 w-7 text-slate-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* pharmacy income */}
                 <PermissionProtectedAction action='Pharmacy Income' module='dashboard'>
-                    <RectCard name='Pharmacy Income' path={'/pharmacy'} amount={total?.pharmacyIncome ?? 0}>
-                        <Pill className='h-8 w-8 text-green-500' />
+                    <RectCard name='Pharmacy Income' path={'/pharmacy'} amount={total?.pharmacyIncome ?? 0} iconBg='bg-green-100 dark:bg-green-700/10'>
+                        <Pill className='h-7 w-7 text-green-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* medicines */}
                 <PermissionProtectedAction action='Medicines' module='dashboard'>
-                    <RectCard name='Total Medicines' path={'/pharmacy/medicines'} visits={total?.medicines ?? 0}>
-                        <Package className='h-8 w-8 text-teal-500' />
+                    <RectCard name='Total Medicines' path={'/pharmacy/medicines'} visits={total?.medicines ?? 0} iconBg='bg-teal-100 dark:bg-teal-700/10'>
+                        <Package className='h-7 w-7 text-teal-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* pharmacy expenses */}
                 <PermissionProtectedAction action='Pharmacy Expenses' module='dashboard'>
-                    <RectCard name='Pharmacy Expenses' path={'/pharmacy'} amount={total?.pharmacyExpenses ?? 0}>
-                        <HandCoins className='h-8 w-8 text-yellow-500' />
+                    <RectCard name='Pharmacy Expenses' path={'/pharmacy'} amount={total?.pharmacyExpenses ?? 0} iconBg='bg-yellow-100 dark:bg-yellow-700/10'>
+                        <HandCoins className='h-7 w-7 text-yellow-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* medicine purchases */}
                 <PermissionProtectedAction action='Medicine Purchases' module='dashboard'>
-                    <RectCard name='Medicine Purchases' path={'/pharmacy/medicines'} visits={total?.purchases ?? 0}>
-                        <ShoppingCart className='h-8 w-8 text-violet-500' />
+                    <RectCard name='Medicine Purchases' path={'/pharmacy/medicines'} visits={total?.purchases ?? 0} iconBg='bg-violet-100 dark:bg-violet-700/10'>
+                        <ShoppingCart className='h-7 w-7 text-violet-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* radiology income */}
                 <PermissionProtectedAction action='Radiology Income' module='dashboard'>
-                    <RectCard name='Radiology Income' path={'/radiology'} amount={total?.radiologyIncome ?? 0}>
-                        <Radiation className='h-8 w-8 text-yellow-500' />
+                    <RectCard name='Radiology Income' path={'/radiology'} amount={total?.radiologyIncome ?? 0} iconBg='bg-yellow-100 dark:bg-yellow-700/10'>
+                        <Radiation className='h-7 w-7 text-yellow-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
 
                 {/* pathology income */}
                 <PermissionProtectedAction action='Pathology Income' module='dashboard'>
-                    <RectCard name='Pathology Income' path={'/pathology'} amount={total?.pathologyIncome ?? 0}>
-                        <TestTube2 className='h-8 w-8 text-gray-500' />
+                    <RectCard name='Pathology Income' path={'/pathology'} amount={total?.pathologyIncome ?? 0} iconBg='bg-gray-100 dark:bg-gray-700/10'>
+                        <TestTube2 className='h-7 w-7 text-gray-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
 
                 {/* Amnulance Imcome */}
                 <PermissionProtectedAction action='Ambulance Income' module='dashboard'>
-                    <RectCard name='Ambulance Income' path={'/ambulance'} amount={total?.ambulanceIncome ?? 0}>
-                        <Ambulance className='h-8 w-8 text-orange-500' />
+                    <RectCard name='Ambulance Income' path={'/ambulance'} amount={total?.ambulanceIncome ?? 0} iconBg='bg-orange-100 dark:bg-orange-700/10'>
+                        <Ambulance className='h-7 w-7 text-orange-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* Blood Income */}
                 <PermissionProtectedAction action='Blood Bank Income' module='dashboard'>
-                    <RectCard name='Blood Bank Income' path={'/blood-bank/issue-blood'} amount={total?.bloodBankIncome ?? 0}>
-                        <Droplets className='h-8 w-8 text-red-600' />
+                    <RectCard name='Blood Bank Income' path={'/blood-bank/issue-blood'} amount={total?.bloodBankIncome ?? 0} iconBg='bg-red-100 dark:bg-red-700/10'>
+                        <Droplets className='h-7 w-7 text-red-600' />
                     </RectCard>
                 </PermissionProtectedAction>
 
                 {/* expenses */}
                 <PermissionProtectedAction action='Expenses' module='dashboard'>
-                    <RectCard name='Expenses' path={''} amount={total?.expenses! ?? 0}>
-                        <DollarSign className='h-8 w-8 text-pink-500' />
+                    <RectCard name='Expenses' path={''} amount={total?.expenses! ?? 0} iconBg='bg-pink-100 dark:bg-pink-700/10'>
+                        <DollarSign className='h-7 w-7 text-pink-500' />
                     </RectCard>
                 </PermissionProtectedAction>
 
@@ -169,27 +212,54 @@ const AdminDashboard = () => {
                         <div className="w-full">
                             <Card  >
                                 <CardHeader>
-
                                     <div className="flex justify-between items-center mb-2">
                                         <p className='text-gray-500'>Search</p>
-                                        <div className="w-40">
-                                            <Select onValueChange={(v) => onYearChnage(Number(v))}>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value={String(new Date().getFullYear())}>{new Date().getFullYear()}</SelectItem>
-                                                    <SelectItem value={String(new Date().getFullYear() - 1)}>{new Date().getFullYear() - 1}</SelectItem>
-                                                    <SelectItem value={String(new Date().getFullYear() - 2)}>{new Date().getFullYear() - 2}</SelectItem>
-                                                    <SelectItem value={String(new Date().getFullYear() - 3)}>{new Date().getFullYear() - 3}</SelectItem>
-                                                </SelectContent>
-                                            </Select>
+                                        <div className="flex w-56 gap-2">
+                                            {/* dropdown menu */}
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger>
+                                                    <CustomTooltip message="Search by">
+                                                        <div className='p-2 bg-rose-100 dark:bg-rose-500/10 rounded-full'>
+                                                            <ListFilter className='w-5 h-5 text-rose-600' />
+                                                        </div>
+                                                    </CustomTooltip>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align='end'>
+                                                    <DropdownMenuItem onSelect={() => setSearchIEby('date')}>Date</DropdownMenuItem>
+                                                    <DropdownMenuItem onSelect={() => setSearchIEby('year')}>Year</DropdownMenuItem>
+                                                    <DropdownMenuItem onSelect={() => setSearchIEby('month')}>Month</DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+
+                                            {/* search types input */}
+                                            {searchIEby === 'year' &&
+                                                <Select onValueChange={(v) => onIESearch({ month: v })}>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select Year" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value={String(new Date().getFullYear())}>{new Date().getFullYear()}</SelectItem>
+                                                        <SelectItem value={String(new Date().getFullYear() - 1)}>{new Date().getFullYear() - 1}</SelectItem>
+                                                        <SelectItem value={String(new Date().getFullYear() - 2)}>{new Date().getFullYear() - 2}</SelectItem>
+                                                        <SelectItem value={String(new Date().getFullYear() - 3)}>{new Date().getFullYear() - 3}</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            }
+
+                                            {searchIEby === 'month' &&
+                                                <Input type='month' onChange={(e) => onIESearch({ month: e.target.value })} />
+                                            }
+
+                                            {searchIEby === 'date' &&
+                                                <Input type='date' onChange={(e) => onIESearch({ date: e.target.value })} />
+                                            }
+
                                         </div>
                                     </div>
 
-                                    <CardTitle>Monthly Income & Expense</CardTitle>
+                                    <CardTitle>Income & Expense</CardTitle>
                                     <CardDescription>
-                                        Showing total Income & Expenses for the 12 months
+                                        Showing total Income & Expenses based on the search
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -238,8 +308,7 @@ const AdminDashboard = () => {
                                     {MonthlyIncExp.length < 1 && <p className='text-red-600 italic'>No data found</p>}
                                 </CardContent>
                                 <CardFooter className='space-x-2'>
-                                    <p className='text-sm text-gray-500'>Income & Expenses From</p>
-                                    <p className='text-sm font-semibold text-gray-500'>January - Dec</p>
+                                    <p className='text-sm text-gray-500'>Income & Expenses For All Modules</p>
                                 </CardFooter>
                             </Card>
                         </div>
@@ -251,9 +320,54 @@ const AdminDashboard = () => {
                     <PermissionProtectedAction action='Appointments' module='dashboard'>
                         <div >
                             <Card className="flex flex-col mx-auto">
-                                <CardHeader className="items-center pb-0">
-                                    <CardTitle>Appointments - Status</CardTitle>
-                                    <CardDescription>January - Dec {new Date().getFullYear()}</CardDescription>
+                                <CardHeader>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <p className='text-gray-500'>Search</p>
+                                        <div className="flex w-56 gap-2">
+                                            {/* dropdown menu */}
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger>
+                                                    <CustomTooltip message="Search by">
+                                                        <div className='p-2 bg-rose-100 dark:bg-rose-500/10 rounded-full'>
+                                                            <ListFilter className='w-5 h-5 text-rose-600' />
+                                                        </div>
+                                                    </CustomTooltip>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align='end'>
+                                                    <DropdownMenuItem onSelect={() => setSearchAPNTby('date')}>Date</DropdownMenuItem>
+                                                    <DropdownMenuItem onSelect={() => setSearchAPNTby('year')}>Year</DropdownMenuItem>
+                                                    <DropdownMenuItem onSelect={() => setSearchAPNTby('month')}>Month</DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+
+                                            {/* search types input */}
+                                            {searchAPNTby === 'year' &&
+                                                <Select onValueChange={(v) => onAppointmentSearch({ year: Number(v) })}>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select Year" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value={String(new Date().getFullYear())}>{new Date().getFullYear()}</SelectItem>
+                                                        <SelectItem value={String(new Date().getFullYear() - 1)}>{new Date().getFullYear() - 1}</SelectItem>
+                                                        <SelectItem value={String(new Date().getFullYear() - 2)}>{new Date().getFullYear() - 2}</SelectItem>
+                                                        <SelectItem value={String(new Date().getFullYear() - 3)}>{new Date().getFullYear() - 3}</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            }
+
+                                            {searchAPNTby === 'month' &&
+                                                <Input type='month' onChange={(e) => onAppointmentSearch({ month: e.target.value })} />
+                                            }
+
+                                            {searchAPNTby === 'date' &&
+                                                <Input type='date' onChange={(e) => onAppointmentSearch({ date: e.target.value })} />
+                                            }
+
+                                        </div>
+                                    </div>
+
+                                    <CardTitle>Appointments Status</CardTitle>
+                                    <CardDescription>Showing total Appointments based on the search</CardDescription>
                                 </CardHeader>
                                 <CardContent className="flex-1 pb-0">
                                     <ChartContainer
@@ -305,9 +419,11 @@ const AdminDashboard = () => {
                                         </PieChart>
                                     </ChartContainer>
                                 </CardContent>
-                                <CardFooter className="flex-col gap-2 text-sm">
-                                    <div className="leading-none text-muted-foreground">
-                                        Showing Appointment Report for 12 months
+                                <CardFooter>
+                                    <div className="flex gap-2 font-medium leading-none">
+                                        {appmtReport?.status.length! < 1 && <div className="flex items-center space-x-2 leading-none text-red-600">
+                                            <p>No data found</p> <Search className='h-4 w-4' />
+                                        </div>}
                                     </div>
                                 </CardFooter>
                             </Card>
@@ -321,9 +437,54 @@ const AdminDashboard = () => {
                     <PermissionProtectedAction action='Visitors' module='dashboard'>
                         <div className="lg:col-span-1">
                             <Card className="flex flex-col">
-                                <CardHeader className="items-center pb-0">
-                                    <CardTitle>Visitors</CardTitle>
-                                    <CardDescription>January - Dec {new Date().getFullYear()}</CardDescription>
+                                <CardHeader>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <p className='text-gray-500'>Search</p>
+                                        <div className="flex w-56 gap-2">
+                                            {/* dropdown menu */}
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger>
+                                                    <CustomTooltip message="Search by">
+                                                        <div className='p-2 bg-rose-100 dark:bg-rose-500/10 rounded-full'>
+                                                            <ListFilter className='w-5 h-5 text-rose-600' />
+                                                        </div>
+                                                    </CustomTooltip>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align='end'>
+                                                    <DropdownMenuItem onSelect={() => setSearchVTby('date')}>Date</DropdownMenuItem>
+                                                    <DropdownMenuItem onSelect={() => setSearchVTby('year')}>Year</DropdownMenuItem>
+                                                    <DropdownMenuItem onSelect={() => setSearchVTby('month')}>Month</DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+
+                                            {/* search types input */}
+                                            {searchVTby === 'year' &&
+                                                <Select onValueChange={(v) => onVisitSearch({ year: Number(v) })}>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select Year" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value={String(new Date().getFullYear())}>{new Date().getFullYear()}</SelectItem>
+                                                        <SelectItem value={String(new Date().getFullYear() - 1)}>{new Date().getFullYear() - 1}</SelectItem>
+                                                        <SelectItem value={String(new Date().getFullYear() - 2)}>{new Date().getFullYear() - 2}</SelectItem>
+                                                        <SelectItem value={String(new Date().getFullYear() - 3)}>{new Date().getFullYear() - 3}</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            }
+
+                                            {searchVTby === 'month' &&
+                                                <Input type='month' onChange={(e) => onVisitSearch({ month: e.target.value })} />
+                                            }
+
+                                            {searchVTby === 'date' &&
+                                                <Input type='date' onChange={(e) => onVisitSearch({ date: e.target.value })} />
+                                            }
+
+                                        </div>
+                                    </div>
+
+                                    <CardTitle>Visitors Status</CardTitle>
+                                    <CardDescription>Showing total Visitors based on the search</CardDescription>
                                 </CardHeader>
                                 <CardContent className="flex-1 pb-0">
                                     <ChartContainer
@@ -336,11 +497,7 @@ const AdminDashboard = () => {
                                         </PieChart>
                                     </ChartContainer>
                                 </CardContent>
-                                <CardFooter className="flex-col gap-2 text-sm">
-                                    <div className="leading-none text-muted-foreground">
-                                        Showing Total Visitors for 12 months
-                                    </div>
-                                </CardFooter>
+
                             </Card>
 
                         </div>

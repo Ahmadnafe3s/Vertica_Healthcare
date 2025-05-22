@@ -1,5 +1,5 @@
-import { getRoles } from '@/admin/setup/Authorization/APIHandler'
 import { ROLE } from '@/admin/setup/Authorization/role/role'
+import AuthzApi from '@/admin/setup/services/authorization'
 import CustomPagination from '@/components/customPagination'
 import EmptyList from '@/components/emptyList'
 import PermissionProtectedAction from '@/components/permission-protected-actions'
@@ -36,7 +36,7 @@ const Staff = () => {
 
   const fetchRoles = async () => {
     try {
-      const data = await getRoles()
+      const data = await AuthzApi.getRoles()
       setRoles(data)
     } catch ({ message }: any) {
       toast.error(message)

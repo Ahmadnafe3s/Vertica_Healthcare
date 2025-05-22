@@ -1,4 +1,4 @@
-import { getOperationCategories, getOperationNames } from "@/admin/setup/operation/operationsAPIhandlers"
+import { getOperationCategories, getOperationNames } from "@/admin/setup/operation/service"
 import Dialog from "@/components/Dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

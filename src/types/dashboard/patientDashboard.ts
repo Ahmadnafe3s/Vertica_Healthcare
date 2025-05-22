@@ -2,6 +2,7 @@
 export type PatientDashTotalCount = {
     appointments: number,
     opds: number,
+    ipds: number,
     pharmacies: number,
     radiology: number
     pathology: number
@@ -12,18 +13,21 @@ export type PatientDashTotalCount = {
 
 
 
-export type YearlyAppointments = {
-    "month": string
-    "appointments": number
+export type ExpenseReportType = {
+    month: string
+    Expense: number
 }[]
 
 
 
-export type StatusCount = {
-    "status": string,
-    "count": number,
-    "fill": string,
-}[]
+export type AppointmentReportType = {
+    appointments: {
+        "status": string,
+        "count": number,
+        "fill": string,
+    }[],
+    total: number
+}
 
 
 export type Expenses = {

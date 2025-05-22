@@ -11,7 +11,7 @@ import { doseDuration } from "@/types/setupTypes/pharmacy"
 import { Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { createDoseDuration, deleteDoseDuration, getDoseDurations } from "../apiHandler"
+import { createDoseDuration, deleteDoseDuration, getDoseDurations } from "../service"
 import DoseDurationForm from "./doseDurationForm"
 
 

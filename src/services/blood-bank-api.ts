@@ -94,7 +94,7 @@ const bloodBankApi = {
 
     getBloodBags: async (group: string) => {
         try {
-            const res = await AxiosClient.get(`/api/blood-bank/bags/${group}`)
+            const res = await AxiosClient.get(`/api/blood-bank/donation/bags/${group}`)
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || 'Something went wrong'
@@ -192,7 +192,7 @@ const bloodBankApi = {
 
     getBloodComponentBags: async (component: string) => {
         try {
-            const res = await AxiosClient.get(`/api/blood-bank/componentBags/${component}`)
+            const res = await AxiosClient.get(`/api/blood-bank/component/bags/${component}`)
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || 'Something went wrong'

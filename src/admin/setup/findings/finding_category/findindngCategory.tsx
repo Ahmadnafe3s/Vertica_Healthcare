@@ -12,7 +12,7 @@ import { Plus, } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import { createFindingCategory, deleteFindingCategory, getFindingCategories, getFindingCategoryDetails, updateFindingCategory } from "../apiHandler"
+import findingApi from "../../services/finding"
 import FindingCategoryForm, { FindingCategoryFormSchema } from "./findingCategoryForm"
 
 
@@ -38,9 +38,9 @@ const FindindngCategories = () => {
       let data;
       setPending(true)
       if (findingDetails) {
-        data = await updateFindingCategory(findingDetails.id, formData)
+        data = await findingApi.updateCategory(findingDetails.id, formData)
       } else {
-        data = await createFindingCategory(formData)
+        data = await findingApi.createCategory(formData)
       }
       toast.success(data.message)
       setPending(false)
@@ -55,7 +55,7 @@ const FindindngCategories = () => {
 
   const fetchFindingCategories = async () => {
     try {
-      const data = await getFindingCategories()
+      const data = await findingApi.getCategories()
       setFindings(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -67,7 +67,7 @@ const FindindngCategories = () => {
   const fetchFindingCategoryDetails = async (id: number) => {
     try {
       setLoaderModel(true)
-      const data = await getFindingCategoryDetails(id)
+      const data = await findingApi.getCategoryDetails(id)
       setfindingDetails(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -82,7 +82,7 @@ const FindindngCategories = () => {
     try {
       const isConfirmed = await confirm()
       if (!isConfirmed) return null
-      const data = await deleteFindingCategory(id)
+      const data = await findingApi.deleteCategory(id)
       toast.success(data.message)
       fetchFindingCategories()
     } catch ({ message }: any) {

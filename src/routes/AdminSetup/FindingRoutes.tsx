@@ -1,6 +1,6 @@
 import FindindngCategories from '@/admin/setup/findings/finding_category/findindngCategory'
 import FindingNames from '@/admin/setup/findings/finding_name/findingNames'
-import FindingsLayout from '@/admin/setup/findings/findingsLayout'
+import FindingsLayout from '@/admin/setup/findings/layout'
 import ProtectRoutes from '@/guard/protectRoutes'
 import { Route } from 'react-router-dom'
 

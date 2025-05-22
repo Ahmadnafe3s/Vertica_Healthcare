@@ -1,6 +1,6 @@
 import OperationCategories from '@/admin/setup/operation/operation_category/operationCategories'
 import OperationNames from '@/admin/setup/operation/operation_name/operationNames'
-import OperationLayout from '@/admin/setup/operation/operationLayout'
+import OperationLayout from '@/admin/setup/operation/layout'
 import ProtectRoutes from '@/guard/protectRoutes'
 import { Route } from 'react-router-dom'
 

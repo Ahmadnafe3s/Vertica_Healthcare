@@ -28,16 +28,18 @@ const Dialog = ({ children, pageTitle, className, ...props }: DialogProps) => {
 
                             {/* hearder */}
 
-                            <div className='flex justify-between items-center p-3 border-b border-zinc-200 dark:border-zinc-800'>
-
-                                <h1 className=' text-sm sm:text-lg font-semibold text-zinc-800 dark:text-neutral-300 py-1 px-4 rounded-xl'>{pageTitle}</h1>
+                            <div className='relative overflow-hidden rounded-t-lg bg-gradient-to-l to-violet-500/40 flex justify-between items-center p-3 border-b border-zinc-200 dark:border-zinc-800'>
+                                <div className="absolute -bottom-[16px] h-16 w-16 dark:bg-white/5 bg-rose-100 rounded-full" />
+                                <h1 className='z-10 text-sm sm:text-lg font-semibold py-1 px-4 rounded-xl'>{pageTitle}</h1>
 
                                 <div className='flex gap-x-4'>
-                                    <div {...props}>
+                                    <div {...props} className="cursor-pointer">
                                         <TooltipProvider delayDuration={200}>
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
-                                                    <X className='cursor-pointer' />
+                                                    <div className="p-2 bg-rose-100 rounded-full dark:bg-rose-600/15">
+                                                        <X className="h-5 w-5 text-rose-600" />
+                                                    </div>
                                                 </TooltipTrigger>
                                                 <TooltipContent className="z-[200]">Close popup</TooltipContent>
                                             </Tooltip>

@@ -4,7 +4,7 @@ import { Params } from '@/types/type';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
-import { createBed, deleteBed, getBeds, updateBed } from '../api-handler';
+import bedApi from '../../services/bed';
 import { SetupBedSchema } from './bed';
 
 
@@ -29,10 +29,10 @@ const useBedHandlers = () => {
             setPending(true);
             let data;
             current ? (
-                data = await updateBed(current.id, formData),
+                data = await bedApi.updateBed(current.id, formData),
                 setCurrent(null)
             ) : (
-                data = await createBed(formData)
+                data = await bedApi.createBed(formData)
             );
             toast.success(data.message);
             setForm(false);
@@ -50,7 +50,7 @@ const useBedHandlers = () => {
         try {
             const isConfirm = await confirm();
             if (!isConfirm) return null;
-            const data = await deleteBed(id);
+            const data = await bedApi.deleteBed(id);
             toast.success(data.message);
         } catch ({ message }: any) {
             toast.error(message);
@@ -61,7 +61,7 @@ const useBedHandlers = () => {
 
     const fetchBeds = async (params?: Params) => {
         try {
-            const data = await getBeds(params);
+            const data = await bedApi.getBeds(params);
             setBeds(data);
         } catch ({ message }: any) {
             toast.error(message);

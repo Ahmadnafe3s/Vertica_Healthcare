@@ -1,3 +1,7 @@
+import { Charge_Type_Interface } from "@/admin/setup/hospital-charges/chargeType/chargeTypes"
+import { categoryType } from "@/admin/setup/hospital-charges/chargesCategory/categoryList"
+import hospitalChargeApi, { chargeModuleType } from "@/admin/setup/services/charge"
+import Dialog from "@/components/Dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -7,18 +11,14 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { chargeFormSchema, valuesASdefault } from "@/formSchemas/chargeFormSchema"
 import { calculateAmount } from "@/helpers/calculateAmount"
 import { currencySymbol } from "@/helpers/currencySymbol"
+import { ChargeDetailsType } from "@/types/opd_section/charges"
+import { chargeNamesType } from "@/types/setupTypes/chargeName"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader, Plus, X } from "lucide-react"
 import { HTMLAttributes, useEffect, useState } from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
-import { z } from "zod"
 import toast from "react-hot-toast"
-import { chargeModuleType, getChargeCategories, getChargeNameDetails, getChargeNames, getChargeTypes } from "@/admin/setup/hospital-charges/chargesAPIhandlers"
-import { Charge_Type_Interface } from "@/admin/setup/hospital-charges/chargeType/chargeTypes"
-import { categoryType } from "@/admin/setup/hospital-charges/chargesCategory/categoryList"
-import { chargeNamesType } from "@/types/setupTypes/chargeName"
-import { ChargeDetailsType } from "@/types/opd_section/charges"
-import Dialog from "@/components/Dialog"
+import { z } from "zod"
 
 
 interface ChargeFormModelProps extends HTMLAttributes<HTMLDivElement> {
@@ -61,7 +61,7 @@ const ChargeFormModel = ({ Submit, module, isPending, chargeDetails, ...props }:
 
     const fetchChargeTypes = async () => {
         try {
-            const data = await getChargeTypes(module)
+            const data = await hospitalChargeApi.getChargeTypes(module)
             setTypes(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -72,7 +72,7 @@ const ChargeFormModel = ({ Submit, module, isPending, chargeDetails, ...props }:
     // getting category options based upon chargeType
     const handleTypeChange = async (index: number, chargeTypeId: number) => {
         try {
-            const data = await getChargeCategories(Number(chargeTypeId))
+            const data = await hospitalChargeApi.getChargeCategories(Number(chargeTypeId))
             setCategories((rest) => {
                 return {
                     ...rest,
@@ -88,7 +88,7 @@ const ChargeFormModel = ({ Submit, module, isPending, chargeDetails, ...props }:
     // getting charge Names options based upon chargeCategory
     const handleCategoryChange = async (index: number, categoryId: string) => {
         try {
-            const data = await getChargeNames({ page: 1, limit: 100, search: categoryId })
+            const data = await hospitalChargeApi.getChargeNames({ page: 1, limit: 100, search: categoryId })
             setNames((rest) => {
                 return {
                     ...rest,
@@ -104,7 +104,7 @@ const ChargeFormModel = ({ Submit, module, isPending, chargeDetails, ...props }:
     // fetching chargeName details and binding into form
     const handleChargeNameChange = async (index: number, id: number) => {
         try {
-            const data = await getChargeNameDetails(id)
+            const data = await hospitalChargeApi.getChargeNameDetails(id)
             setValue(`charge.${index}.standard_charge`, Number(data?.standard_charge))
             setValue(`charge.${index}.tpa`, Number(data?.tpa))
             setValue(`charge.${index}.tax`, Number(data?.tax_percentage))

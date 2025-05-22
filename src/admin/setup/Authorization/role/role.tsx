@@ -1,15 +1,15 @@
+import AlertModel from '@/components/alertModel'
+import CustomTooltip from '@/components/customTooltip'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { useConfirmation } from '@/hooks/useConfirmation'
 import { Pencil, Plus, Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { z } from 'zod'
 import toast from 'react-hot-toast'
-import AlertModel from '@/components/alertModel'
-import CustomTooltip from '@/components/customTooltip'
+import { z } from 'zod'
+import AuthzApi from '../../services/authorization'
 import CreateRole, { roleFormSchema } from './createRole'
-import { createRole, deleteRole, getRoleDetails, getRoles, updateRole } from '../APIHandler'
-import { useConfirmation } from '@/hooks/useConfirmation'
 
 
 export interface ROLE {
@@ -42,10 +42,10 @@ const Role = () => {
             let data;
             setPending(true)
             roleDts ? (
-                data = await updateRole(formData, roleDts.id),
+                data = await AuthzApi.updateRole(formData, roleDts.id),
                 setRoleDts(undefined)
             ) :
-                (data = await createRole(formData))
+                (data = await AuthzApi.createRole(formData))
             toast.success(data.message)
             setRoleForm(false)
             fetchRoles()
@@ -60,7 +60,7 @@ const Role = () => {
     // fetching list
     const fetchRoles = async () => {
         try {
-            const data = await getRoles()
+            const data = await AuthzApi.getRoles()
             setRoles(data)
         } catch ({ message }: any) {
             toast.error(message)
@@ -72,7 +72,7 @@ const Role = () => {
 
     const fetchRoleDetails = async (id: number) => {
         try {
-            const data = await getRoleDetails(id)
+            const data = await AuthzApi.getRoleDetails(id)
             setRoleDts(data)
             setRoleForm(true)
         } catch ({ message }: any) {
@@ -87,7 +87,7 @@ const Role = () => {
         try {
             const isConfirm = await confirm()
             if (!isConfirm) return null
-            const data = await deleteRole(id)
+            const data = await AuthzApi.deleteRole(id)
             toast.success(data.message)
             fetchRoles()
         } catch ({ message }: any) {

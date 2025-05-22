@@ -4,7 +4,7 @@ import DoseDuration from '@/admin/setup/pharmacy/medicine_dose_duration/doseDura
 import DoseIntervals from '@/admin/setup/pharmacy/medicine_dose_interval/doseIntervals'
 import MedicineGroups from '@/admin/setup/pharmacy/medicine_group/medicineGroups'
 import MedicineUnits from '@/admin/setup/pharmacy/medicine_unit/medicineUnits'
-import PharmacyLayout from '@/admin/setup/pharmacy/pharmacyLayout'
+import PharmacyLayout from '@/admin/setup/pharmacy/layout'
 import ProtectRoutes from '@/guard/protectRoutes'
 import { Route } from 'react-router-dom'
 

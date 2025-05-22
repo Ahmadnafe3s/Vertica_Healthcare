@@ -12,7 +12,7 @@ import { Plus, } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { createDoseInterval, deleteDoseInterval, getDoseIntervals } from '../apiHandler'
+import { createDoseInterval, deleteDoseInterval, getDoseIntervals } from '../service'
 import DoseIntervalForm, { DoseIntervalFormSchema } from './doseIntervalForm'
 
 

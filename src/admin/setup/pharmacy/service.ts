@@ -11,29 +11,32 @@ import AxiosClient from "@/api/apiClient";
 
 export const createMedicineGroup = async (formData: z.infer<typeof MedicineGroupFromSchema>) => {
     try {
-        const res = await AxiosClient.post(`/api/setupPharmacy/group`, formData)
+        const res = await AxiosClient.post(`/api/setup/pharmacy/group`, formData)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
 export const deleteMedicineGroup = async (id: number) => {
     try {
-        const res = await AxiosClient.delete(`/api/setupPharmacy/group/${id}`)
+        const res = await AxiosClient.delete(`/api/setup/pharmacy/group/${id}`)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
 
 export const geteMedicineGroups = async () => {
     try {
-        const res = await AxiosClient.get(`/api/setupPharmacy/group`)
+        const res = await AxiosClient.get(`/api/setup/pharmacy/group`)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
@@ -44,30 +47,33 @@ export const geteMedicineGroups = async () => {
 
 export const createMedicineCompany = async (formData: z.infer<typeof MedicineCompanyFormSchema>) => {
     try {
-        const res = await AxiosClient.post(`/api/setupPharmacy/company`, formData)
+        const res = await AxiosClient.post(`/api/setup/pharmacy/company`, formData)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
 
 export const deleteMedicineCompany = async (id: number) => {
     try {
-        const res = await AxiosClient.delete(`/api/setupPharmacy/company/${id}`)
+        const res = await AxiosClient.delete(`/api/setup/pharmacy/company/${id}`)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
 
 export const getMedicineCompanies = async () => {
     try {
-        const res = await AxiosClient.get(`/api/setupPharmacy/company`)
+        const res = await AxiosClient.get(`/api/setup/pharmacy/company`)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
@@ -78,30 +84,33 @@ export const getMedicineCompanies = async () => {
 
 export const createMedicineUnit = async (formData: z.infer<typeof MedicineUnitFormSchema>) => {
     try {
-        const res = await AxiosClient.post(`/api/setupPharmacy/unit`, formData)
+        const res = await AxiosClient.post(`/api/setup/pharmacy/unit`, formData)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
 
 export const deleteMedicineUnit = async (id: number) => {
     try {
-        const res = await AxiosClient.delete(`/api/setupPharmacy/unit/${id}`)
+        const res = await AxiosClient.delete(`/api/setup/pharmacy/unit/${id}`)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
 
 export const getMedicineUnits = async () => {
     try {
-        const res = await AxiosClient.get(`/api/setupPharmacy/unit`)
+        const res = await AxiosClient.get(`/api/setup/pharmacy/unit`)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
@@ -112,30 +121,33 @@ export const getMedicineUnits = async () => {
 
 export const createDoseDuration = async (formData: z.infer<typeof DoseDurationFormSchema>) => {
     try {
-        const res = await AxiosClient.post(`/api/setupPharmacy/duration`, formData)
+        const res = await AxiosClient.post(`/api/setup/pharmacy/duration`, formData)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
 
 export const deleteDoseDuration = async (id: number) => {
     try {
-        const res = await AxiosClient.delete(`/api/setupPharmacy/duration/${id}`)
+        const res = await AxiosClient.delete(`/api/setup/pharmacy/duration/${id}`)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
 
 export const getDoseDurations = async () => {
     try {
-        const res = await AxiosClient.get(`/api/setupPharmacy/duration`)
+        const res = await AxiosClient.get(`/api/setup/pharmacy/duration`)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
@@ -146,30 +158,33 @@ export const getDoseDurations = async () => {
 
 export const createDoseInterval = async (formData: z.infer<typeof DoseIntervalFormSchema>) => {
     try {
-        const res = await AxiosClient.post(`/api/setupPharmacy/interval`, formData)
+        const res = await AxiosClient.post(`/api/setup/pharmacy/interval`, formData)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
 
 export const deleteDoseInterval = async (id: number) => {
     try {
-        const res = await AxiosClient.delete(`/api/setupPharmacy/interval/${id}`)
+        const res = await AxiosClient.delete(`/api/setup/pharmacy/interval/${id}`)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
 
 export const getDoseIntervals = async () => {
     try {
-        const res = await AxiosClient.get(`/api/setupPharmacy/interval`)
+        const res = await AxiosClient.get(`/api/setup/pharmacy/interval`)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
@@ -180,29 +195,32 @@ export const getDoseIntervals = async () => {
 
 export const createMedicineCategory = async (formData: z.infer<typeof MedicineCategoryFormSchema>) => {
     try {
-        const res = await AxiosClient.post(`/api/setupPharmacy/category`, formData)
+        const res = await AxiosClient.post(`/api/setup/pharmacy/category`, formData)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
 
 export const deleteMedicineCategory = async (id: number) => {
     try {
-        const res = await AxiosClient.delete(`/api/setupPharmacy/category/${id}`)
+        const res = await AxiosClient.delete(`/api/setup/pharmacy/category/${id}`)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }
 
 
 export const getMedicineCategories = async () => {
     try {
-        const res = await AxiosClient.get(`/api/setupPharmacy/category`)
+        const res = await AxiosClient.get(`/api/setup/pharmacy/category`)
         return res.data
     } catch (error: any) {
-        throw new Error(error.response?.data?.message)
+        const err = error.response?.data?.message || 'Connection Error'
+        throw new Error(err)
     }
 }

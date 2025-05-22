@@ -29,7 +29,7 @@ const PurchaseMedicineDetailsModel = ({ purchaseDetails, ...props }: PurchaseMed
                             <Receipt className='w-10 h-10 text-white' />
                         </div>
                         <div>
-                            <h1 className='font-semibold text-lg text-gray-900 dark:text-white'>{purchaseDetails?.purchase_date}</h1>
+                            <h1 className='font-semibold text-lg text-gray-900 dark:text-white'>{purchaseDetails?.date}</h1>
                             <p className='text-sm text-gray-500'>Purchase Date</p>
                         </div>
                     </div>

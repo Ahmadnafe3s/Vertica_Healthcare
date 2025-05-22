@@ -3,16 +3,16 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
 import { HTMLAttributes, useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
+import hospitalChargeApi from "../../services/charge"
 import { Charge_Type_Interface } from "../chargeType/chargeTypes"
-import { getChargeTypes } from "../chargesAPIhandlers"
 import { categoryType } from "./categoryList"
-import { Textarea } from "@/components/ui/textarea"
 
 
 interface ChargeCategoryFormModelProps extends HTMLAttributes<HTMLDivElement> {
@@ -53,7 +53,7 @@ const AddChargeCategoryFormModel = ({ Submit, categoryDetails, isPending, ...pro
 
   const fetchChargeTypes = async () => {
     try {
-      const data = await getChargeTypes()
+      const data = await hospitalChargeApi.getChargeTypes()
       setChargeTypes(data)
     } catch ({ message }: any) {
       toast.error(message)

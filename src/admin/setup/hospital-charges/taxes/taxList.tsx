@@ -11,7 +11,7 @@ import { Plus, } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import { createTax, deleteTax, getTaxDetails, getTaxesList, updateTax } from "../chargesAPIhandlers"
+import hospitalChargeApi from "../../services/charge"
 import AddTaxformModel, { taxFormSchema } from "./addTaxformModel"
 
 export interface TaxType {
@@ -44,10 +44,10 @@ const TaxList = () => {
       setPending(true);
 
       if (taxDetails) {
-        data = await updateTax(taxDetails.id, formData);
+        data = await hospitalChargeApi.updateTax(taxDetails.id, formData);
         setTaxDetails(undefined);
       } else {
-        data = await createTax(formData);
+        data = await hospitalChargeApi.createTax(formData);
       }
 
       fetchTaxesList();
@@ -64,7 +64,7 @@ const TaxList = () => {
   const fetchTaxdetails = async (id: number) => {
     try {
       setLoader(true)
-      const data = await getTaxDetails(id)
+      const data = await hospitalChargeApi.getTaxDetails(id)
       setTaxDetails(data)
       setLoader(false)
     } catch ({ message }: any) {
@@ -76,7 +76,7 @@ const TaxList = () => {
 
   const fetchTaxesList = async () => {
     try {
-      const data = await getTaxesList()
+      const data = await hospitalChargeApi.getTaxesList()
       setTaxlist(data)
     } catch ({ message }: any) {
       toast.error(message)
@@ -88,7 +88,7 @@ const TaxList = () => {
     try {
       const isConfirmed = await confirm()
       if (!isConfirmed) return null
-      const data = await deleteTax(id)
+      const data = await hospitalChargeApi.deleteTax(id)
       fetchTaxesList();
       toast.success(data.message);
     } catch ({ message }: any) {

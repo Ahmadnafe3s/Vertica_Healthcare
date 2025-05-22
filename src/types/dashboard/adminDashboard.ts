@@ -1,11 +1,13 @@
 export type AdminDashTotalCount = {
     opdIncome: number,
+    ipdIncome: number,
     appointmentIncome: number,
     pharmacyIncome: number,
     radiologyIncome: number,
     pathologyIncome: number,
     expenses: number,
     opds: number,
+    ipds: number,
     purchases: number,
     pharmacyExpenses: number,
     medicines: number,

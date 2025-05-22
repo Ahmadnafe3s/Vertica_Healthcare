@@ -18,8 +18,8 @@ import useBedGroupHandlers from "../group/bed-group-handlers";
 import useBedHandlers from "./bed-handlers";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import TableActions from "@/components/table-actions";
-import { updateBed } from "../api-handler";
 import toast from "react-hot-toast";
+import bedApi from "../../services/bed";
 
 
 
@@ -108,7 +108,7 @@ const SetupBed = () => {
                                             <TableCell>{item.group.floor.name}</TableCell>
                                             <TableCell>
                                                 <UpdateStatus status={item.status} click={async (v) => {
-                                                    await updateBed(item.id, { status: v }).then(async () => {
+                                                    await bedApi.updateBed(item.id, { status: v }).then(async () => {
                                                         toast.success('Status updated successfully')
                                                         await getBeds({ page: 1, limit: page_limit, search: search })
                                                     }).catch(({ message }: any) => { toast.error(message) })

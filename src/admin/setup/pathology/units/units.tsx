@@ -11,7 +11,7 @@ import { Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { createPathologyUnit, deletePathologytUnit, getPathologytUnits } from '../api-handler'
+import { createPathologyUnit, deletePathologytUnit, getPathologytUnits } from '../service'
 import CreatePathologyUnit, { PathUnitSchema } from './create-unit'
 
 

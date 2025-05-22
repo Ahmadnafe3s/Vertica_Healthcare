@@ -1,5 +1,5 @@
 import ChargesList from '@/admin/setup/hospital-charges/chargeName/chargesNameList'
-import ChargesLayout from '@/admin/setup/hospital-charges/charges-layout'
+import ChargesLayout from '@/admin/setup/hospital-charges/layout'
 import CategoryList from '@/admin/setup/hospital-charges/chargesCategory/categoryList'
 import ChargeTypes from '@/admin/setup/hospital-charges/chargeType/chargeTypes'
 import ChargeUnitList from '@/admin/setup/hospital-charges/chargeUnit/chargeUnitList'

@@ -8,6 +8,8 @@ export type PatientsData = {
     age: string,
     guardian_name: string,
     blood_group: string,
+    image: string,
+    isAlive: boolean,
 }
 
 

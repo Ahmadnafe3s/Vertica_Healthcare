@@ -1,4 +1,4 @@
-import { getRadioTestNameParameters } from '@/admin/setup/radiology/ApiHandlers'
+import { getRadioTestNameParameters } from '@/admin/setup/radiology/service'
 import Dialog from '@/components/Dialog'
 import PermissionProtectedAction from '@/components/permission-protected-actions'
 import { Button } from '@/components/ui/button'

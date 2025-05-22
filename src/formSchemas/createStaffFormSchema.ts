@@ -5,7 +5,7 @@ export const createStaffFormSchema = z.object({
     roleId: z.number().min(1, { message: "Role is required" }).default(0),
     designation: z.string().min(1, { message: "Designation is required" }).default(''),
     department: z.string().min(1, { message: "Department is required" }).default(''),
-    specializationId: z.array(z.coerce.number()).optional(),
+    specializationId: z.array(z.coerce.number().default(0)).optional(),
     emergency_fees: z.coerce.number().optional().default(0),
     normal_fees: z.coerce.number().optional().default(0),
     salary: z.coerce.number().optional().default(0),

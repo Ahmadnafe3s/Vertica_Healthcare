@@ -20,7 +20,7 @@ import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { useDebouncedCallback } from "use-debounce"
 import { z } from "zod"
-import { createRadiologytTest, deleteRadiologyTest, getRadiologyTestDetails, getRadiologyTests, updateRadiologyTest } from "../ApiHandlers"
+import { createRadiologytTest, deleteRadiologyTest, getRadiologyTestDetails, getRadiologyTests, updateRadiologyTest } from "../service"
 import CreateRadioTest from "./createRadioTest"
 
 

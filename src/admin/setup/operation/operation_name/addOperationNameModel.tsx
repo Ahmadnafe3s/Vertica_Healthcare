@@ -10,7 +10,7 @@ import React, { HTMLAttributes, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
-import { getOperationCategories } from '../operationsAPIhandlers'
+import { getOperationCategories } from '../service'
 
 interface OperationNameModelProps extends HTMLAttributes<HTMLDivElement> {
   Submit: (formData: any) => void,

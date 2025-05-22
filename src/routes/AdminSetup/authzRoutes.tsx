@@ -1,4 +1,4 @@
-import PermissionLayout from '@/admin/setup/Authorization/authorizationLayout'
+import PermissionLayout from '@/admin/setup/Authorization/layout'
 import Permission from '@/admin/setup/Authorization/permission/permission'
 import Role from '@/admin/setup/Authorization/role/role'
 import ProtectRoutes from '@/guard/protectRoutes'

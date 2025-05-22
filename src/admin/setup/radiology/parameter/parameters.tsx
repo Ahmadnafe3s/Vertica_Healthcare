@@ -13,7 +13,7 @@ import { Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import { createRadiologytParameter, deleteRadiologytParameter, getRadiologytParameterDetails, getRadiologytParameters, updateRadiologytParameter } from "../ApiHandlers"
+import { createRadiologytParameter, deleteRadiologytParameter, getRadiologytParameterDetails, getRadiologytParameters, updateRadiologytParameter } from "../service"
 import { CreateRadioCategorySchema } from "../category/createRadioCategory"
 import CreateTestParameter from "./createRadioParameter"
 
