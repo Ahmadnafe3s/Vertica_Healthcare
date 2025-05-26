@@ -1,25 +1,22 @@
 import SetupPathCategories from '@/admin/setup/pathology/category/categories'
-import SetupPathParameters from '@/admin/setup/pathology/parameter/parameters'
 import SetupPathologyLayout from '@/admin/setup/pathology/layout'
+import SetupPathParameters from '@/admin/setup/pathology/parameter/parameters'
 import SetupPathologyTestNames from '@/admin/setup/pathology/test/test-names'
 import PathologyUnit from '@/admin/setup/pathology/units/units'
-import ProtectRoutes from '@/guard/protectRoutes'
 import { Route } from 'react-router-dom'
 
 
 
-const SetupPathologyRoutes = () => {
+const PathologyRoutes = () => {
     return (
-        <Route element={<ProtectRoutes />}>
-            <Route path='admin/setup/pathology' element={<SetupPathologyLayout />}>
-                <Route path='' element={<SetupPathologyTestNames />} />
-                <Route path='category' element={<SetupPathCategories />} />
-                <Route path='test' element={<div>PathologyTest</div>} />
-                <Route path='units' element={<PathologyUnit />} />
-                <Route path='parameter' element={<SetupPathParameters />} />
-            </Route>
+        <Route path='admin/setup/pathology' element={<SetupPathologyLayout />}>
+            <Route path='' element={<SetupPathologyTestNames />} />
+            <Route path='category' element={<SetupPathCategories />} />
+            <Route path='test' element={<div>PathologyTest</div>} />
+            <Route path='units' element={<PathologyUnit />} />
+            <Route path='parameter' element={<SetupPathParameters />} />
         </Route>
     )
 }
 
-export default SetupPathologyRoutes
+export default PathologyRoutes

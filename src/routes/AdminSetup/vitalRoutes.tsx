@@ -1,13 +1,10 @@
 import SetupVitals from '@/admin/setup/vitals/setupVitals'
-import ProtectRoutes from '@/guard/protectRoutes'
 import { Route } from 'react-router-dom'
 
-const SetupVitalRoutes = () => {
+const VitalRoutes = () => {
     return (
-        <Route element={<ProtectRoutes />}>
-            <Route path="admin/setup/vital" element={<SetupVitals />} />
-        </Route>
+        <Route path="admin/setup/vital" element={<SetupVitals />} />
     )
 }
 
-export default SetupVitalRoutes
+export default VitalRoutes

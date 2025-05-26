@@ -1,21 +1,18 @@
+import OperationLayout from '@/admin/setup/operation/layout'
 import OperationCategories from '@/admin/setup/operation/operation_category/operationCategories'
 import OperationNames from '@/admin/setup/operation/operation_name/operationNames'
-import OperationLayout from '@/admin/setup/operation/layout'
-import ProtectRoutes from '@/guard/protectRoutes'
 import { Route } from 'react-router-dom'
 
 
 
-const SetupOperationRoutes = () => {
+const OperationRoutes = () => {
     return (
-        <Route element={<ProtectRoutes />}>
-            <Route path="admin/setup/operation" element={<OperationLayout />}>
-                <Route path="" element={<OperationNames />} />
-                <Route path="category" element={<OperationCategories />} />
-            </Route>
+        <Route path="admin/setup/operation" element={<OperationLayout />}>
+            <Route path="" element={<OperationNames />} />
+            <Route path="category" element={<OperationCategories />} />
         </Route>
     )
 }
 
 
-export default SetupOperationRoutes
+export default OperationRoutes

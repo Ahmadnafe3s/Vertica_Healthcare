@@ -1,14 +1,11 @@
 import EventCalendar from '@/admin/setup/events/EventCalendar'
-import ProtectRoutes from '@/guard/protectRoutes'
 import { Route } from 'react-router-dom'
 
 
-const SetupEventRoutes = () => {
+const EventRoutes = () => {
   return (
-    <Route element={<ProtectRoutes />}>
-      <Route path="admin/setup/event" element={<EventCalendar />} />
-    </Route>
+    <Route path="admin/setup/event" element={<EventCalendar />} />
   )
 }
 
-export default SetupEventRoutes
+export default EventRoutes

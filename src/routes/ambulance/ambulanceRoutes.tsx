@@ -8,7 +8,7 @@ import { Route } from "react-router-dom"
 
 const AmbulanceRoutes = () => {
     return (
-        <Route element={<ProtectRoutes />}>
+        <Route element={<ProtectRoutes action="view" module="Ambulance" />}>
             <Route path="ambulance" element={<AmbulanceLayout />}>
                 <Route path="" element={<AssignedAmbulances />} />
                 <Route element={<ProtectRoutes restrictedTo='patient' />}>

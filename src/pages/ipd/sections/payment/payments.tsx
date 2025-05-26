@@ -13,10 +13,11 @@ import { currencySymbol } from "@/helpers/currencySymbol"
 import { cn, currencyFormat } from "@/lib/utils"
 import { Plus } from "lucide-react"
 import { parseAsInteger, useQueryState } from "nuqs"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useDebouncedCallback } from 'use-debounce'
 import PaymentFormModel from "../../../../components/form-modals/payment-form-modal"
 import usePaymentHandlers from "@/pages/OPD/details/payments/payment-handlers"
+import PrintIpdPayment from "../../invoice/payment"
 
 
 
@@ -27,6 +28,7 @@ const IpdPayments = () => {
   // Query params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [search, setSearch] = useQueryState('search')
+  const [print, setPrint] = useState(false)
 
   const { payments, getPayments, current, setCurrent, onDelete, isPending, form, setForm, handleSubmit, confirmationProps } = usePaymentHandlers({ page, search, limit: page_limit })
 
@@ -83,7 +85,7 @@ const IpdPayments = () => {
                     <TableHead>Balance Amount {currencySymbol()}</TableHead>
                     <TableHead>Payment Mode</TableHead>
                     <TableHead>Note</TableHead>
-                    {show && <TableHead>Action</TableHead>}
+                    <TableHead>Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -109,6 +111,10 @@ const IpdPayments = () => {
                         canDelete={canDelete}
                         onEdit={() => { setCurrent(payment); setForm(true) }}
                         onDelete={() => onDelete(payment.id)}
+                        incluePrint={{
+                          include: true,
+                          print: () => { setPrint(true); setCurrent(payment) }
+                        }}
                       />
                     </TableRow>
                   })}
@@ -152,6 +158,9 @@ const IpdPayments = () => {
           continue={() => confirmationProps.onConfirm()}
         />
       )}
+
+
+      {print && <PrintIpdPayment payment={current!} afterPrint={() => { setPrint(false), setCurrent(null) }} />}
     </section>
   )
 }

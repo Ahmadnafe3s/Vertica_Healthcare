@@ -18,7 +18,7 @@ import { Route } from 'react-router-dom'
 
 const IpdRoutes = () => {
     return (
-        <Route element={<ProtectRoutes />}>
+        <Route element={<ProtectRoutes action='view' module='Ipd' />}>
             <Route path='ipd' element={<IpdLayout />}>
                 <Route path='' element={<Ipds />} />
                 <Route path=':ipdId' element={<IpdSectionsLayout />}>

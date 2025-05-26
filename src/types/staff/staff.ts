@@ -53,6 +53,7 @@ export interface StaffProfile {
     PAN: string;
     national_identification_number: string;
     local_identification_number: string;
+    license_number: string;
 
     // Bank Account
     nominee_name: string;
@@ -62,4 +63,12 @@ export interface StaffProfile {
     bank_name: string;
     branch: string;
     ifsc_code: string;
+
+    // documents
+    aadhar_image: string,
+    pan_image: string,
+    diploma_image: string,
+    graduation_image: string,
+    masters_image: string,
+    license_image: string,
 }

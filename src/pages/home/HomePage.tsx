@@ -2,9 +2,8 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { buttonVariants } from '@/components/ui/button'
 import Lottie from 'lottie-react'
 import { Star } from 'lucide-react'
-import { useRef } from 'react'
 import { Fade } from 'react-awesome-reveal'
-import animationData from '../assets/animation/hospital.json'
+import animationData from '../../assets/animation/hospital.json'
 
 
 const doctors = [

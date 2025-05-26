@@ -35,6 +35,7 @@ export const createStaffFormSchema = z.object({
     PAN: z.string().optional(),
     national_identification_number: z.string().optional(),
     local_identification_number: z.string().optional(),
+    license_number: z.string().optional(),
 
     // Bank Account
     nominee_name: z.string().optional().default(''),
@@ -44,4 +45,60 @@ export const createStaffFormSchema = z.object({
     bank_name: z.string().optional(),
     branch: z.string().optional(),
     ifsc_code: z.string().optional(),
+
+    // documents
+    aadhar_image: z.instanceof(File)
+        .optional()
+        .refine((file) => file === undefined || file.size < 4 * 1024 * 1024, {
+            message: 'File size should be less than 4MB',
+        })
+        .refine((file) => file === undefined || ['image/jpeg', 'image/png'].includes(file.type), {
+            message: 'Only JPEG and PNG images are allowed',
+        }),
+
+    pan_image: z.instanceof(File)
+        .optional()
+        .refine((file) => file === undefined || file.size < 4 * 1024 * 1024, {
+            message: 'File size should be less than 4MB',
+        })
+        .refine((file) => file === undefined || ['image/jpeg', 'image/png'].includes(file.type), {
+            message: 'Only JPEG and PNG images are allowed',
+        }),
+
+    diploma_image: z.instanceof(File)
+        .optional()
+        .refine((file) => file === undefined || file.size < 4 * 1024 * 1024, {
+            message: 'File size should be less than 4MB',
+        })
+        .refine((file) => file === undefined || ['image/jpeg', 'image/png'].includes(file.type), {
+            message: 'Only JPEG and PNG images are allowed',
+        }),
+
+    graduation_image: z.instanceof(File)
+        .optional()
+        .refine((file) => file === undefined || file.size < 4 * 1024 * 1024, {
+            message: 'File size should be less than 4MB',
+        })
+        .refine((file) => file === undefined || ['image/jpeg', 'image/png'].includes(file.type), {
+            message: 'Only JPEG and PNG images are allowed',
+        }),
+
+    masters_image: z.instanceof(File)
+        .optional()
+        .refine((file) => file === undefined || file.size < 4 * 1024 * 1024, {
+            message: 'File size should be less than 4MB',
+        })
+        .refine((file) => file === undefined || ['image/jpeg', 'image/png'].includes(file.type), {
+            message: 'Only JPEG and PNG images are allowed',
+        }),
+
+    license_image: z.instanceof(File)
+        .optional()
+        .refine((file) => file === undefined || file.size < 4 * 1024 * 1024, {
+            message: 'File size should be less than 4MB',
+        })
+        .refine((file) => file === undefined || ['image/jpeg', 'image/png'].includes(file.type), {
+            message: 'Only JPEG and PNG images are allowed',
+        }),
+
 })

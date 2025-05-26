@@ -15,10 +15,9 @@ import { Plus } from "lucide-react"
 import { parseAsInteger, useQueryState } from "nuqs"
 import { useEffect, useState } from "react"
 import { useDebouncedCallback } from 'use-debounce'
-import usePaymentHandlers from "./payment-handlers"
 import PaymentFormModel from "../../../../components/form-modals/payment-form-modal"
-import PaymentInvoice from "../../pdf/payment"
 import PrintPayment from "../../pdf/payment"
+import usePaymentHandlers from "./payment-handlers"
 
 
 
@@ -85,7 +84,7 @@ const PaymentsList = () => {
                     <TableHead>Balance Amount {currencySymbol()}</TableHead>
                     <TableHead>Payment Mode</TableHead>
                     <TableHead>Note</TableHead>
-                    {show && <TableHead>Action</TableHead>}
+                    <TableHead>Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

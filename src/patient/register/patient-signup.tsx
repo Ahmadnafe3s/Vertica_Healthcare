@@ -7,7 +7,6 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { patientRegistrationSchema, patientUpdateSchema } from '@/formSchemas/patientRegisterFormSchema'
 import { bloodGroups, maritalStatus } from '@/helpers/formSelectOptions'
-import { genUrl } from '@/helpers/url-genrator'
 import { PatientDetails } from '@/types/patient/patient'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from 'lucide-react'
@@ -166,10 +165,11 @@ const RegisterPatient = ({ editDetails, isPending, Submit, ...props }: Props) =>
                                 return <FormItem className="flex flex-col gap-3">
                                     <FormLabel>Image</FormLabel>
                                     <FormControl>
-                                       <ImageInput
-                                        selected={field.value ? genUrl(field.value) : ''}
-                                        onChange={(e)=>{field.onChange(e.target.files?.[0])}}
-                                       />
+                                        <ImageInput
+                                            title='Upload Image'
+                                            message='PNG, JPG up to 4MB'
+                                            onChange={(e) => { field.onChange(e) }}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

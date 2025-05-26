@@ -1,5 +1,7 @@
 import AlertModel from '@/components/alertModel';
+import Backdrop from '@/components/backdrop';
 import CardBox from '@/components/card-box';
+import { Button } from '@/components/ui/button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import UserImage from '@/components/user-image';
@@ -30,7 +32,7 @@ const Staffprofile = () => {
         try {
             const data = await StaffApi.deleteStaffProfile(Number(id))
             toast.success(data.message)
-            router('/admin/humanresource/staff')
+            router('..')
         } catch ({ message }: any) {
             toast.error(message)
         }
@@ -206,6 +208,11 @@ const Staffprofile = () => {
                         <p className='text-gray-900 dark:text-gray-100 text-sm'>{profile?.local_identification_number}</p>
                     </div>
 
+                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 dark:hover:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
+                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>License Number</p>
+                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{profile?.license_number}</p>
+                    </div>
+
                     {
                         (session.user?.role === 'admin' || session.user?.id === profile?.id) &&
                         <>
@@ -239,9 +246,99 @@ const Staffprofile = () => {
                                 <p className='text-gray-900 dark:text-gray-100 text-sm'>{profile?.branch}</p>
                             </div>
 
-                            <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 dark:hover:bg-zinc-900">
+                            <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-gray-100 dark:hover:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
                                 <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Ifsc Code</p>
                                 <p className='text-gray-900 dark:text-gray-100 text-sm'>{profile?.ifsc_code}</p>
+                            </div>
+
+                            <div className="grid grid-cols-2 py-2 items-center gap-x-3 hover:bg-gray-100 dark:hover:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
+                                <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Aadhar Image</p>
+                                <div>
+                                    {profile?.aadhar_image ?
+                                        <Button onClick={() => viewDocument(profile?.aadhar_image!)} size={'sm'} >
+                                            View Document
+                                        </Button>
+                                        :
+                                        <p className='text-red-500 w-fit py-1 px-2 rounded-lg bg-red-100 dark:bg-red-500/10 animate-pulse text-sm'>
+                                            Not Uploaded
+                                        </p>
+                                    }
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 py-2 items-center gap-x-3 hover:bg-gray-100 dark:hover:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
+                                <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>PAN Image</p>
+                                <div>
+                                    {profile?.pan_image ?
+                                        <Button onClick={() => viewDocument(profile?.pan_image!)} size={'sm'} >
+                                            View Document
+                                        </Button>
+                                        :
+                                        <p className='text-red-500 w-fit py-1 px-2 rounded-lg bg-red-100 dark:bg-red-500/10 animate-pulse text-sm'>
+                                            Not Uploaded
+                                        </p>
+                                    }
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 py-2 items-center gap-x-3 hover:bg-gray-100 dark:hover:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
+                                <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>License Image</p>
+                                <div>
+                                    {profile?.license_image ?
+                                        <Button onClick={() => viewDocument(profile?.license_image!)} size={'sm'} >
+                                            View Document
+                                        </Button>
+                                        :
+                                        <p className='text-red-500 w-fit py-1 px-2 rounded-lg bg-red-100 dark:bg-red-500/10 animate-pulse text-sm'>
+                                            Not Uploaded
+                                        </p>
+                                    }
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 py-2 items-center gap-x-3 hover:bg-gray-100 dark:hover:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
+                                <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Diploma Certificate</p>
+                                <div>
+                                    {profile?.diploma_image ?
+                                        <Button onClick={() => viewDocument(profile?.diploma_image!)} size={'sm'} >
+                                            View Document
+                                        </Button>
+                                        :
+                                        <p className='text-red-500 w-fit py-1 px-2 rounded-lg bg-red-100 dark:bg-red-500/10 animate-pulse text-sm'>
+                                            Not Uploaded
+                                        </p>
+                                    }
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 py-2 items-center gap-x-3 hover:bg-gray-100 dark:hover:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
+                                <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Graduation Certificate</p>
+                                <div>
+                                    {profile?.graduation_image ?
+                                        <Button onClick={() => viewDocument(profile?.graduation_image!)} size={'sm'} >
+                                            View Document
+                                        </Button>
+                                        :
+                                        <p className='text-red-500 w-fit py-1 px-2 rounded-lg bg-red-100 dark:bg-red-500/10 animate-pulse text-sm'>
+                                            Not Uploaded
+                                        </p>
+                                    }
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 py-2 items-center gap-x-3 hover:bg-gray-100 dark:hover:bg-zinc-900">
+                                <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Masters Certificate</p>
+                                <div>
+                                    {profile?.masters_image ?
+                                        <Button onClick={() => viewDocument(profile?.masters_image!)} size={'sm'} >
+                                            View Document
+                                        </Button>
+                                        :
+                                        <p className='text-red-500 w-fit py-1 px-2 rounded-lg bg-red-100 dark:bg-red-500/10 animate-pulse text-sm'>
+                                            Not Uploaded
+                                        </p>
+                                    }
+                                </div>
                             </div>
                         </>
                     }
@@ -256,3 +353,13 @@ const Staffprofile = () => {
 }
 
 export default Staffprofile
+
+
+
+
+
+
+
+const viewDocument = (image: string) => {
+    window.open(`${import.meta.env.VITE_APP_API_URL}/images/${image}`, '_blank')
+}

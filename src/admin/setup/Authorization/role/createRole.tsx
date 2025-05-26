@@ -19,7 +19,7 @@ interface CreateRoleProps extends HTMLAttributes<HTMLDivElement> {
 
 export const roleFormSchema = z.object({
     name: z.string()
-        .min(1, { message: 'Role name is required' })
+        .min(1, { message: 'Role name is required' }).toLowerCase()
 })
 
 

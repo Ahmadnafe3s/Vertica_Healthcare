@@ -7,7 +7,7 @@ import { Route } from 'react-router-dom'
 
 const AppointmentRoutes = () => {
     return (
-        <Route element={<ProtectRoutes />}>
+        <Route element={<ProtectRoutes action='view' module='Appointment' />}>
             <Route path="appointment" element={<AppointmentLayout />}>
                 <Route path="" element={<AdminAppointment />} />
                 <Route path="queue" element={<QueueAppointment />} />

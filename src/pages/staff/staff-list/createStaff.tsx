@@ -4,6 +4,7 @@ import useStaffDepartment from '@/admin/setup/staff/department/handlers'
 import useStaffDesignation from '@/admin/setup/staff/designation/handlers'
 import useSpecialization from '@/admin/setup/staff/specialization/handlers'
 import RequiredLabel from '@/components/required-label'
+import TextLabel from '@/components/text-label'
 import { Button } from '@/components/ui/button'
 import ImageInput from '@/components/ui/image-input'
 import { Input } from '@/components/ui/input'
@@ -14,10 +15,9 @@ import { Separator } from '@/components/ui/separator'
 import { createStaffFormSchema } from '@/formSchemas/createStaffFormSchema'
 import { currencySymbol } from '@/helpers/currencySymbol'
 import { bloodGroups, maritalStatus, nomineeRelationOptions } from '@/helpers/formSelectOptions'
-import { genUrl } from '@/helpers/url-genrator'
 import StaffApi from '@/services/staff-api'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader } from 'lucide-react'
+import { BriefcaseBusiness, Landmark, Loader, Paperclip, User } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -25,6 +25,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 
+
+const docs = ['image', 'aadhar_image', 'pan_image', 'diploma_image', 'graduation_image', 'masters_image', 'license_image']
 
 
 const CreateStaff = () => {
@@ -46,31 +48,33 @@ const CreateStaff = () => {
   const { getDepartments, departments } = useStaffDepartment()
   const { getSpecializations, specializations } = useSpecialization()
 
+
   async function onSubmit(staffData: z.infer<typeof createStaffFormSchema>) {
     try {
 
+      let data; setPending(true)
       const formData = new FormData()
 
-      console.log(staffData);
-
-
-      for (const key in staffData) {
-        if (key === 'image') {
-          if (staffData.image) formData.append(key, staffData.image)
+      // coverting all the data to form data
+      for (const [key, value] of Object.entries(staffData)) {
+        if (!value) continue
+        if (docs.includes(key)) {
+          formData.append(key, value as any);
         } else {
-          const value = staffData[key as keyof typeof staffData]
           formData.append(key, JSON.stringify(value))
         }
       }
 
-      let data; setPending(true)
       id ?
         (data = await StaffApi.updateStaff(Number(id), formData),
           router(`..`))
         :
         (data = await StaffApi.createStaff(formData),
-          router(`/staff`))
+          router(`/staff`)
+        )
+
       toast.success(data.message)
+
     } catch ({ message }: any) {
       toast.error(message)
     }
@@ -85,7 +89,13 @@ const CreateStaff = () => {
       const mapped = {
         ...data,
         specializationId: data.specialist.map(item => item.id) || [],
-        image: undefined
+        image: undefined,
+        aadhar_image: undefined,
+        pan_image: undefined,
+        diploma_image: undefined,
+        graduation_image: undefined,
+        masters_image: undefined,
+        license_image: undefined
       }
 
       reset(mapped)
@@ -130,13 +140,10 @@ const CreateStaff = () => {
         <Separator className='mt-4 mb-2 col-span-full' />
 
         {/* Text Label */}
-        <div className="col-span-full mb-2">
-          <div className='w-48 bg-primary dark:bg-[#1e1e1e] py-1 px-2 rounded-r-full shadow-md dark:shadow-[#000000]'>
-            <p>
-              Personal information
-            </p>
-          </div>
-        </div>
+        <TextLabel
+          title='Personal information'
+          icon={<User className='h-5 w-5' />}
+        />
 
         {/* name */}
 
@@ -281,10 +288,11 @@ const CreateStaff = () => {
         <div className="w-full flex flex-col gap-y-2">
           <Controller control={control} name='image' render={({ field }) => (
             <>
-              <Label>Image</Label>
+              {/* <Label>Image</Label> */}
               <ImageInput
-                selected={field.value ? genUrl(field.value) : ''}
-                onChange={(e) => { field.onChange(e.target.files?.[0]) }}
+                title='Upload Image'
+                message='PNG, JPG up to 4MB'
+                onChange={(image) => { field.onChange(image) }}
               />
             </>
           )} />
@@ -297,6 +305,14 @@ const CreateStaff = () => {
           <Label>Pan Number</Label>
           <Input type='text' {...register('PAN')} placeholder='Enter Pan Number' />
           {errors.PAN && <p className='text-sm text-red-500'>{errors.PAN.message}</p>}
+        </div>
+
+        {/* Licence Number */}
+
+        <div className="w-full flex flex-col gap-y-2 ">
+          <Label>Licence Number</Label>
+          <Input type='text' {...register('license_number')} placeholder='Enter Licence Number' />
+          {errors.license_number && <p className='text-sm text-red-500'>{errors.license_number.message}</p>}
         </div>
 
         {/* National Identification Number */}
@@ -317,13 +333,10 @@ const CreateStaff = () => {
 
 
         {/* Text Label */}
-        <div className="col-span-full my-2">
-          <div className='w-48 bg-primary dark:bg-[#1e1e1e] py-1 px-2 rounded-r-full shadow-md dark:shadow-[#000000]'>
-            <p>
-              Professional information
-            </p>
-          </div>
-        </div>
+        <TextLabel
+          title='Professional information'
+          icon={<BriefcaseBusiness className='h-5 w-5' />}
+        />
 
 
         {/* role */}
@@ -407,7 +420,6 @@ const CreateStaff = () => {
         <div className="w-full flex flex-col gap-y-2">
           <Label>Specialist</Label>
           <Controller control={control} name='specializationId' render={({ field }) => {
-            console.log(field.value?.map(item => item.toString()))
             return <MultiSelect
               defaultValue={field.value?.map(item => item.toString()) || []}
               options={specializations.map(item => ({ label: item.name, value: String(item.id) }))}
@@ -435,7 +447,7 @@ const CreateStaff = () => {
           {errors.normal_fees && <p className='text-sm text-red-500'>{errors.normal_fees.message}</p>}
         </div>
 
-        {/* Fees */}
+        {/*Emergency Fees */}
 
         <div className="w-full flex flex-col gap-y-2">
           <Label>Emergency Fees {currencySymbol()}</Label>
@@ -461,13 +473,10 @@ const CreateStaff = () => {
 
 
         {/* Text Label */}
-        <div className="col-span-full my-2">
-          <div className='w-48 bg-primary dark:bg-[#1e1e1e] py-1 px-2 rounded-r-full shadow-md dark:shadow-[#000000]'>
-            <p>
-              Bank information
-            </p>
-          </div>
-        </div>
+        <TextLabel
+          title='Bank information'
+          icon={<Landmark className='h-5 w-5' />}
+        />
 
 
         {/*Nominee Name */}
@@ -534,7 +543,85 @@ const CreateStaff = () => {
           {errors.ifsc_code && <p className='text-sm text-red-500'>{errors.ifsc_code.message}</p>}
         </div>
 
+        <TextLabel
+          title='Attach Documents'
+          icon={<Paperclip className='h-5 w-5' />}
+        />
 
+        {/* Aadhar */}
+        <div className="w-full flex flex-col gap-y-2">
+          <Controller control={control} name='aadhar_image' render={({ field }) => (
+            <ImageInput
+              title='Aadhar'
+              message='PNG, JPG up to 4MB'
+              onChange={(image) => { field.onChange(image) }}
+            />
+          )} />
+          {errors.aadhar_image && <p className='text-sm text-red-500'>{errors.aadhar_image.message}</p>}
+        </div>
+
+        {/* PAN */}
+        <div className="w-full flex flex-col gap-y-2">
+          <Controller control={control} name='pan_image' render={({ field }) => (
+            <ImageInput
+              title='PAN'
+              message='PNG, JPG up to 4MB'
+              onChange={(image) => { field.onChange(image) }}
+            />
+          )} />
+          {errors.pan_image && <p className='text-sm text-red-500'>{errors.pan_image.message}</p>}
+        </div>
+
+        {/* Licence */}
+        <div className="w-full flex flex-col gap-y-2">
+          <Controller control={control} name='license_image' render={({ field }) => (
+            <ImageInput
+              title='Licence'
+              message='PNG, JPG up to 4MB'
+              onChange={(image) => { field.onChange(image) }}
+            />
+          )} />
+          {errors.license_image && <p className='text-sm text-red-500'>{errors.license_image.message}</p>}
+        </div>
+
+        {/* Diploma Certificate */}
+        <div className="w-full flex flex-col gap-y-2">
+          <Controller control={control} name='diploma_image' render={({ field }) => (
+            <ImageInput
+              title='Diploma Certificate'
+              message='PNG, JPG up to 4MB'
+              onChange={(image) => { field.onChange(image) }}
+            />
+          )} />
+          {errors.diploma_image && <p className='text-sm text-red-500'>{errors.diploma_image.message}</p>}
+        </div>
+
+        {/* Graduation Certificate */}
+        <div className="w-full flex flex-col gap-y-2">
+          <Controller control={control} name='graduation_image' render={({ field }) => (
+            <ImageInput
+              title='Graduation Certificate'
+              message='PNG, JPG up to 4MB'
+              onChange={(image) => { field.onChange(image) }}
+            />
+          )} />
+          {errors.graduation_image && <p className='text-sm text-red-500'>{errors.graduation_image.message}</p>}
+        </div>
+
+        {/* Masters Degree */}
+        <div className="w-full flex flex-col gap-y-2">
+          <Controller control={control} name='masters_image' render={({ field }) => (
+            <ImageInput
+              title='Masters Certificate'
+              message='PNG, JPG up to 4MB'
+              onChange={(image) => { field.onChange(image) }}
+            />
+          )} />
+          {errors.masters_image && <p className='text-sm text-red-500'>{errors.masters_image.message}</p>}
+        </div>
+
+
+        {/* Button */}
         <div className="col-span-full justify-end flex gap-3 flex-col sm:flex-row">
           {!id &&
             (<div className='order-2 sm:order-1'>

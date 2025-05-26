@@ -17,7 +17,7 @@ import { Route } from "react-router-dom"
 
 const OpdRoutes = () => {
     return (
-        <Route element={<ProtectRoutes />}>
+        <Route element={<ProtectRoutes action='view' module='Opd' />}>
             <Route path="opd" element={<AdminOPDlayout />}>
                 <Route path="" element={<OPDLIST />} />
                 <Route path=":opdId" element={<OpdDetailsLayout />}>

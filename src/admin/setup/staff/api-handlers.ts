@@ -6,7 +6,7 @@ const SetupStaffApi = {
 
     createDepartment: async <T extends ZodType<any>>(formData: z.infer<T>) => {
         try {
-            const res = await AxiosClient.post('/api/setupStaff/department', formData)
+            const res = await AxiosClient.post('/api/setup/staff/department', formData)
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Something went wrong"
@@ -16,7 +16,7 @@ const SetupStaffApi = {
 
     updateDepartment: async <T extends ZodType<any>>(id: number, formData: z.infer<T>) => {
         try {
-            const res = await AxiosClient.put(`/api/setupStaff/department/${id}`, formData)
+            const res = await AxiosClient.put(`/api/setup/staff/department/${id}`, formData)
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Something went wrong"
@@ -26,7 +26,7 @@ const SetupStaffApi = {
 
     deleteDepartment: async (id: number) => {
         try {
-            const res = await AxiosClient.delete(`/api/setupStaff/department/${id}`)
+            const res = await AxiosClient.delete(`/api/setup/staff/department/${id}`)
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Something went wrong"
@@ -36,7 +36,7 @@ const SetupStaffApi = {
 
     getDepartments: async () => {
         try {
-            const res = await AxiosClient.get(`/api/setupStaff/department`)
+            const res = await AxiosClient.get(`/api/setup/staff/department`)
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Something went wrong"
@@ -46,7 +46,7 @@ const SetupStaffApi = {
 
     createDesignation: async <T extends ZodType<any>>(formData: z.infer<T>) => {
         try {
-            const res = await AxiosClient.post('/api/setupStaff/designation', formData)
+            const res = await AxiosClient.post('/api/setup/staff/designation', formData)
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Something went wrong"
@@ -56,7 +56,7 @@ const SetupStaffApi = {
 
     updateDesignation: async <T extends ZodType<any>>(id: number, formData: z.infer<T>) => {
         try {
-            const res = await AxiosClient.put(`/api/setupStaff/designation/${id}`, formData)
+            const res = await AxiosClient.put(`/api/setup/staff/designation/${id}`, formData)
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Something went wrong"
@@ -66,7 +66,7 @@ const SetupStaffApi = {
 
     deleteDesignation: async (id: number) => {
         try {
-            const res = await AxiosClient.delete(`/api/setupStaff/designation/${id}`)
+            const res = await AxiosClient.delete(`/api/setup/staff/designation/${id}`)
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Something went wrong"
@@ -76,7 +76,7 @@ const SetupStaffApi = {
 
     getDesignations: async () => {
         try {
-            const res = await AxiosClient.get(`/api/setupStaff/designation`)
+            const res = await AxiosClient.get(`/api/setup/staff/designation`)
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Something went wrong"
@@ -86,7 +86,7 @@ const SetupStaffApi = {
 
     createSpecialization: async <T extends ZodType<any>>(formData: z.infer<T>) => {
         try {
-            const res = await AxiosClient.post('/api/setupStaff/specialization', formData)
+            const res = await AxiosClient.post('/api/setup/staff/specialization', formData)
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Something went wrong"
@@ -96,7 +96,7 @@ const SetupStaffApi = {
 
     updateSpecialization: async <T extends ZodType<any>>(id: number, formData: z.infer<T>) => {
         try {
-            const res = await AxiosClient.put(`/api/setupStaff/specialization/${id}`, formData)
+            const res = await AxiosClient.put(`/api/setup/staff/specialization/${id}`, formData)
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Something went wrong"
@@ -106,7 +106,7 @@ const SetupStaffApi = {
 
     deleteSpecialization: async (id: number) => {
         try {
-            const res = await AxiosClient.delete(`/api/setupStaff/specialization/${id}`)
+            const res = await AxiosClient.delete(`/api/setup/staff/specialization/${id}`)
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Something went wrong"
@@ -116,7 +116,7 @@ const SetupStaffApi = {
 
     getSpecializations: async () => {
         try {
-            const res = await AxiosClient.get(`/api/setupStaff/specialization`)
+            const res = await AxiosClient.get(`/api/setup/staff/specialization`)
             return res.data
         } catch (error: any) {
             const err = error.response.data.message || "Something went wrong"

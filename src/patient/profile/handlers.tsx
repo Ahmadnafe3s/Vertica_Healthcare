@@ -28,12 +28,12 @@ const usePatient = () => {
 
             const formData = new FormData()
 
-            for (const key in patientData) {
+            for (const [key, value] of Object.entries(patientData)) {
+                if (!value) continue
                 if (key === 'image') {
-                    if (patientData.image) formData.append(key, patientData.image)
+                    formData.append('image', value as any)
                 } else {
-                    const value = patientData[key as keyof typeof data]
-                    formData.append(key, value!)
+                    formData.append(key, JSON.stringify(value))
                 }
             }
 

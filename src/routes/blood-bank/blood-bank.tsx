@@ -13,7 +13,7 @@ import { Route } from "react-router-dom"
 
 const BloodBankRoutes = () => {
     return (
-        <Route element={<ProtectRoutes />}>
+        <Route element={<ProtectRoutes action="view" module="Issue Blood" />}>
             <Route path='blood-bank' element={<BloodBankLayout />}>
                 <Route path='issue-blood' element={<BloodIssues />} />
                 <Route path='doner' element={<DonorLayouts />}>

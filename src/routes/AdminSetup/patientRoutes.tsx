@@ -1,15 +1,12 @@
 import Patients from '@/admin/setup/patient/patients'
-import ProtectRoutes from '@/guard/protectRoutes'
 import { Route } from 'react-router-dom'
 
-const SetupPatientRoutes = () => {
+const PatientRoutes = () => {
     return (
         <>
-            <Route element={<ProtectRoutes />}>
-                <Route path='admin/setup/patient' element={<Patients />} />
-            </Route>
+            <Route path='admin/setup/patient' element={<Patients />} />
         </>
     )
 }
 
-export default SetupPatientRoutes
+export default PatientRoutes

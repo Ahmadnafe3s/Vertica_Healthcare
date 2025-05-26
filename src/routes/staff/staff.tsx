@@ -11,7 +11,7 @@ import { Route } from "react-router-dom"
 
 const StaffRoutes = () => {
     return (
-        <Route element={<ProtectRoutes />}>
+        <Route element={<ProtectRoutes action="view" module="Human Resource" />}>
             <Route path="staff" element={<StaffLayout />}>
                 <Route path="" element={<Staff />} />
                 <Route path="create" element={<CreateStaff />} />

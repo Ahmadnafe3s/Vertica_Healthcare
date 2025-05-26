@@ -207,7 +207,7 @@ function IssueBloodComponent({ Submit, isPending, defaultValues, ...props }: Iss
                             <div className="w-full flex flex-col gap-y-2">
                                 <Controller control={control} name='component' render={({ field }) => {
                                     return <>
-                                        <Label>Blood Group</Label>
+                                        <Label>Blood Component</Label>
                                         <Select value={field.value ? String(field.value) : undefined} onValueChange={(value) => { HandleBloodComponentChange(value), field.onChange(value) }} disabled={defaultValues as any}>
                                             <SelectTrigger >
                                                 <SelectValue placeholder="Select" />

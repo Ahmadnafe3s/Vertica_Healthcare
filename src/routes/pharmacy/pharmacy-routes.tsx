@@ -8,7 +8,7 @@ import { Route } from "react-router-dom"
 
 const PharmacyRoutes = () => {
     return (
-        <Route element={<ProtectRoutes />}>
+        <Route element={<ProtectRoutes action="view" module="Pharmacy Bill" />}>
             <Route path="pharmacy" element={<Pharmacy />} >
                 <Route path="" element={<Bill />} />
                 <Route path="medicines" element={<Medicines />} />

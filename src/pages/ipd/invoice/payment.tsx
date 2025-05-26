@@ -17,7 +17,7 @@ export interface Props extends HTMLAttributes<HTMLDivElement> {
 
 
 
-const PrintPayment = ({ payment, afterPrint }: Props) => {
+const PrintIpdPayment = ({ payment, afterPrint }: Props) => {
 
     const contentRef = useRef(null)
 
@@ -40,7 +40,7 @@ const PrintPayment = ({ payment, afterPrint }: Props) => {
             <div className="scale-75 lg:scale-100" onClick={(e) => e.stopPropagation()}>
                 <div className="max-w-4xl mx-auto p-6 bg-white flex flex-col gap-y-5 dark:bg-[#1e1e1e] border-b-2 border-dashed dark:border-gray-500" ref={contentRef}>
                     {/* Header */}
-                    <PdfHeader title="OPD Payment" id={payment.id} date={new Date().toLocaleDateString()} />
+                    <PdfHeader title="IPD Payment" id={payment.id} date={new Date().toLocaleDateString()} />
 
                     {/* Items Table */}
                     <Table>
@@ -96,4 +96,4 @@ const PrintPayment = ({ payment, afterPrint }: Props) => {
 
 
 
-export default PrintPayment
+export default PrintIpdPayment
