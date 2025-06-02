@@ -5,10 +5,9 @@ const AsideLayout = () => {
     return (
         <div className='flex'>
             <Aside />
-            <div className="flex-1 min-h-[calc(100vh-56px)] px-2.5 overflow-hidden"> {/* overflow is important here */}
+            <div className="flex-1 min-h-[calc(100vh-64px-1)] px-2.5 overflow-hidden"> {/* overflow is important here */}
                 <Outlet></Outlet>
             </div>
-
         </div>
     )
 }

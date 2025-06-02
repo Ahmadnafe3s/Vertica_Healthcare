@@ -99,23 +99,22 @@ const IpdOverview = () => {
 
                 {/* patient Details */}
 
-                <CardBox borderType='solid' title='Gender' value={overview?.patient.gender} />
-                <CardBox borderType='solid' title='Guardian Name' value={overview?.patient.guardian_name} />
-                <CardBox borderType='solid' title='Age' value={overview?.patient.age} />
-                <CardBox borderType='solid' title='Blood Group' value={overview?.patient.blood_group} />
-                <CardBox borderType='solid' title='Aadhar' value={overview?.patient.aadhar} />
-                <CardBox borderType='solid' title='Phone' value={overview?.patient.phone} />
-                <CardBox borderType='solid' title='Address' value={overview?.patient.address} />
-                <CardBox borderType='solid' title='Alergies' value={overview?.patient.alergies} />
+                <CardBox className="dark:bg-background dark:border-border" borderType='solid' title='Gender' value={overview?.patient.gender} />
+                <CardBox className="dark:bg-background dark:border-border" borderType='solid' title='Guardian Name' value={overview?.patient.guardian_name} />
+                <CardBox className="dark:bg-background dark:border-border" borderType='solid' title='Age' value={overview?.patient.age} />
+                <CardBox className="dark:bg-background dark:border-border" borderType='solid' title='Blood Group' value={overview?.patient.blood_group} />
+                <CardBox className="dark:bg-background dark:border-border" borderType='solid' title='Aadhar' value={overview?.patient.aadhar} />
+                <CardBox className="dark:bg-background dark:border-border" borderType='solid' title='Phone' value={overview?.patient.phone} />
+                <CardBox className="dark:bg-background dark:border-border" borderType='solid' title='Address' value={overview?.patient.address} />
+                <CardBox className="dark:bg-background dark:border-border" borderType='solid' title='Alergies' value={overview?.patient.alergies} />
 
                 <Separator className="sm:col-span-full my-8" />
 
-                <Separator className="sm:col-span-full my-8" />
 
                 {/* Bed Details */}
-                <CardBox borderType='solid' title='Bed No.' value={overview?.bed.name} />
-                <CardBox borderType='solid' title='Bed Group' value={overview?.bed.group.name} />
-                <CardBox borderType='solid' title='Floor' value={overview?.bed.group.floor.name} />
+                <CardBox className="dark:bg-background dark:border-border" borderType='solid' title='Bed No.' value={overview?.bed.name} />
+                <CardBox className="dark:bg-background dark:border-border" borderType='solid' title='Bed Group' value={overview?.bed.group.name} />
+                <CardBox className="dark:bg-background dark:border-border" borderType='solid' title='Floor' value={overview?.bed.group.floor.name} />
 
                 <Separator className="sm:col-span-full my-8" />
 

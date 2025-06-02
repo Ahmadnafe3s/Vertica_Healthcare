@@ -67,14 +67,14 @@ const VisitDetails = () => {
 
                 {/* patient Details */}
 
-                <CardBox borderType="solid" title="Gender" value={current?.appointment?.patient.gender} />
-                <CardBox borderType="solid" title="Guardian Name" value={current?.appointment?.patient.guardian_name} />
-                <CardBox borderType="solid" title="Age" value={current?.appointment?.patient.age} />
-                <CardBox borderType="solid" title="Blood Group" value={current?.appointment?.patient.blood_group} />
-                <CardBox borderType="solid" title="Aadhar" value={current?.appointment?.patient.aadhar} />
-                <CardBox borderType="solid" title="Phone" value={current?.appointment?.patient.phone} />
-                <CardBox borderType="solid" title="Address" value={current?.appointment?.patient.address} />
-                <CardBox borderType="solid" title="Alergies" value={current?.appointment?.patient.alergies} />
+                <CardBox className="dark:bg-background dark:border-border" borderType="solid" title="Gender" value={current?.appointment?.patient.gender} />
+                <CardBox className="dark:bg-background dark:border-border" borderType="solid" title="Guardian Name" value={current?.appointment?.patient.guardian_name} />
+                <CardBox className="dark:bg-background dark:border-border" borderType="solid" title="Age" value={current?.appointment?.patient.age} />
+                <CardBox className="dark:bg-background dark:border-border" borderType="solid" title="Blood Group" value={current?.appointment?.patient.blood_group} />
+                <CardBox className="dark:bg-background dark:border-border" borderType="solid" title="Aadhar" value={current?.appointment?.patient.aadhar} />
+                <CardBox className="dark:bg-background dark:border-border" borderType="solid" title="Phone" value={current?.appointment?.patient.phone} />
+                <CardBox className="dark:bg-background dark:border-border" borderType="solid" title="Address" value={current?.appointment?.patient.address} />
+                <CardBox className="dark:bg-background dark:border-border" borderType="solid" title="Alergies" value={current?.appointment?.patient.alergies} />
 
                 <Separator className="sm:col-span-full my-8" />
 

@@ -5,55 +5,73 @@ import React, { HTMLAttributes } from "react"
 import Backdrop from "./backdrop"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip"
 
-
 interface DialogProps extends HTMLAttributes<HTMLDivElement> {
     pageTitle: string
     className?: string
     children: React.ReactNode
 }
 
-
-
 const Dialog = ({ children, pageTitle, className, ...props }: DialogProps) => {
     return (
         <AnimatePresence>
             <Backdrop {...props}>
-                <motion.div className="flex-1"
+                <motion.div
+                    className="flex-1"
                     initial={{ opacity: 0.3 }}
                     animate={{ opacity: 1 }}
                 >
-                    {/* // prevents modal to click backdrop */}
-                    <div className={cn('px-3 mx-auto max-w-screen-lg', className)} onClick={(e) => e.stopPropagation()}>
-                        <div className={cn('rounded-lg pb-2 bg-white dark:bg-background border dark:border-zinc-800')}>
+                    {/* Prevents modal from closing when clicking inside */}
+                    <div
+                        className={cn('px-3 mx-auto max-w-screen-lg', className)}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className={cn(
+                            'rounded-2xl pb-2 overflow-hidden',
+                            'bg-white dark:bg-gray-900',
+                            'border border-gray-200 dark:border-gray-700',
+                            'shadow-2xl shadow-black/5 dark:shadow-black/20'
+                        )}>
+                            {/* Enhanced header */}
+                            <div className='relative overflow-hidden bg-gradient-to-r from-violet-500/10 via-rose-400/10 to-amber-400/10 dark:from-violet-600/20 dark:via-rose-500/20 dark:to-amber-500/20'>
+                                {/* Subtle background overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent dark:from-white/5 dark:to-transparent" />
 
-                            {/* hearder */}
+                                <div className='relative flex justify-between items-center p-4 border-b border-gray-200/60 dark:border-gray-700/60'>
+                                    {/* Decorative element */}
+                                    <div className="absolute -bottom-3 left-4 h-8 w-8 bg-gradient-to-br from-violet-400/20 to-rose-400/20 dark:from-violet-600/30 dark:to-rose-600/30 rounded-full" />
 
-                            <div className='relative overflow-hidden rounded-t-lg bg-gradient-to-l to-violet-500/40 flex justify-between items-center p-3 border-b border-zinc-200 dark:border-zinc-800'>
-                                <div className="absolute -bottom-[16px] h-16 w-16 dark:bg-white/5 bg-rose-100 rounded-full" />
-                                <h1 className='z-10 text-sm sm:text-lg font-semibold py-1 px-4 rounded-xl'>{pageTitle}</h1>
+                                    <h1 className='relative z-10 text-sm sm:text-lg font-semibold text-gray-800 dark:text-gray-100 py-1 px-4 rounded-xl'>
+                                        {pageTitle}
+                                    </h1>
 
-                                <div className='flex gap-x-4'>
-                                    <div {...props} className="cursor-pointer">
-                                        <TooltipProvider delayDuration={200}>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <div className="p-2 bg-rose-100 rounded-full dark:bg-rose-600/15">
-                                                        <X className="h-5 w-5 text-rose-600" />
-                                                    </div>
-                                                </TooltipTrigger>
-                                                <TooltipContent className="z-[200]">Close popup</TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
+                                    <div className='relative z-10'>
+                                        <div {...props} className="cursor-pointer group">
+                                            <TooltipProvider delayDuration={200}>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <div className="p-2.5 bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-600/15 dark:to-rose-700/20 rounded-xl border border-rose-200/40 dark:border-rose-600/20 hover:shadow-sm hover:shadow-rose-500/10 dark:hover:shadow-rose-600/20 transition-all duration-200">
+                                                            <X className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+                                                        </div>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className="z-[200]">
+                                                        Close dialog
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            {/* children of modal */}
-                            <div className="pt-3">{children}</div>
+
+                            {/* Content area */}
+                            <div className="pt-3 bg-gradient-to-b from-gray-50/30 to-white dark:from-gray-800/20 dark:to-gray-900">
+                                {children}
+                            </div>
                         </div>
                     </div>
                 </motion.div>
             </Backdrop>
-        </AnimatePresence >
+        </AnimatePresence>
     )
 }
 

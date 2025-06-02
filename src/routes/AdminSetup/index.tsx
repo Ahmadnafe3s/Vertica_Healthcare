@@ -2,16 +2,20 @@ import ProtectRoutes from '@/guard/protectRoutes'
 import { Route } from 'react-router-dom'
 import AuthzRoutes from './authzRoutes'
 import BedRoutes from './bed-routes'
-import EventRoutes from './EventRoutes'
 import ChargesRoutes from './ChargesRoutes'
+import EventRoutes from './EventRoutes'
 import FindingRoutes from './FindingRoutes'
+import SetupHomepageRoutes from './homepage'
 import OperationRoutes from './OperationRoutes'
 import PathologyRoutes from './pathology'
-import RadiologyRoutes from './radiologyRoutes'
 import PatientRoutes from './patientRoutes'
 import PharmacyRoutes from './PharmacyRoutes'
-import VitalRoutes from './vitalRoutes'
+import RadiologyRoutes from './radiologyRoutes'
 import SetupStaffRoutes from './staff'
+import VitalRoutes from './vitalRoutes'
+
+
+
 
 const SetupIndexRoutes = () => {
     return (
@@ -28,6 +32,7 @@ const SetupIndexRoutes = () => {
             {PharmacyRoutes()}
             {VitalRoutes()}
             {SetupStaffRoutes()}
+            {SetupHomepageRoutes()}
         </Route>
     )
 }

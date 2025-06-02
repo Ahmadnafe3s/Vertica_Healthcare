@@ -17,6 +17,8 @@ const Navbar = () => {
     const { toggleSidebar } = useContext(SidebarContext)
     const path = useLocation().pathname
 
+    if (path === '/' || path.startsWith('/home')) return null
+
     const router = useNavigate()
 
     const dispatch = useAppDispatch()
@@ -30,15 +32,14 @@ const Navbar = () => {
     }
 
 
-
     return (
         <>
-            <section className="h-14 bg-gradient-to-r from-purple-50 to-violet-100 dark:from-zinc-900 backdrop-blur shadow w-full z-[100] sticky inset-x-0 top-0">
-                <MaxWidthWrapper >
+            <section className="h-16 bg-gradient-to-r from-purple-50 to-violet-100 dark:from-zinc-900 backdrop-blur shadow w-full z-[100] sticky inset-x-0 top-0">
+                <MaxWidthWrapper className="lg:px-10">
                     <header className="h-full flex justify-between items-center">
 
                         <div className="flex items-center gap-x-1">
-                            <img src="/logo.png" alt="logo" className="w-10 h-10 rounded-full object-cover" />
+                            <img src="/logo.png" alt="logo" className="w-14 h-14 rounded-full object-cover" />
                             <div>
                                 <Link to={{ pathname: '/' }} className="tracking-tight cursor-pointer z-[100] select-none">
                                     Vertica Healthcare
@@ -59,23 +60,21 @@ const Navbar = () => {
                                     < div onClick={() => { setUserModel(!isUserModel) }} className="active:scale-90 transition-all cursor-pointer" >
                                         <UserImage url={session.user?.image!} gender={session.user?.gender!}
                                             width='w-fit'
-                                            imageClass='w-8 h-8'
+                                            imageClass='w-10 h-10'
                                         />
                                     </div>
 
                                     {/* Hamburger menu for mobile */}
-                                    {path !== '/' && (
-                                        <div onClick={toggleSidebar}
-                                            className="w-10 rounded-md flex flex-col gap-2 p-2 shadow ring-1 ring-gray-200 bg-gray-100 transition-all active:scale-95 cursor-pointer sm:hidden">
-                                            <div className="h-px bg-gray-700 w-full"></div>
-                                            <div className="h-px bg-gray-700 w-full"></div>
-                                            <div className="h-px bg-gray-700 w-full"></div>
-                                        </div>
-                                    )}
+
+                                    <div onClick={toggleSidebar}
+                                        className="w-10 rounded-md flex flex-col gap-2 p-2 shadow ring-1 ring-gray-200 bg-gray-100 transition-all active:scale-95 cursor-pointer sm:hidden">
+                                        <div className="h-px bg-gray-700 w-full"></div>
+                                        <div className="h-px bg-gray-700 w-full"></div>
+                                        <div className="h-px bg-gray-700 w-full"></div>
+                                    </div>
 
                                 </>
                                 :
-
                                 <Link to={{ pathname: '/signin' }} className={buttonVariants({
                                     variant: "default",
                                     size: 'sm'

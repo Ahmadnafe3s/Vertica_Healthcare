@@ -110,7 +110,7 @@ const PrintRadioTestReport = ({ details, itemId, onPending }: PrintRadioTestRepo
             onPending(true)
             const [report, collectionData] = await Promise.all([
                 RadiologyApi.getRadiologyReportById(itemId),
-                RadiologyApi.getRadioSampleCollectionDetails(itemId)
+                RadiologyApi.getRadioSampleCollectionById(itemId)
             ])
             if (!details || !report || !collectionData) return toast.error('No data found')
             setCollection(collectionData)

@@ -5,7 +5,7 @@ type Props = {
     icon: ReactNode
     iconBg?: `${string}`
     title?: string
-    value?: string
+    value?: string | number
 }
 
 const IconMenu = ({ icon, iconBg, title, value }: Props) => {

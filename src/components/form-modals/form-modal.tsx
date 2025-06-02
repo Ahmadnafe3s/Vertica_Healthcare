@@ -11,13 +11,16 @@ import { Fragment, HTMLAttributes, useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { z, ZodType } from "zod"
 import { ScrollArea } from "../ui/scroll-area"
+import RequiredLabel from "../required-label"
 
 
 
 export interface FormField {
     name: string
-    type: 'text' | 'number' | 'email' | 'password' | 'date' | 'select' | 'textarea'
+    type: 'text' | 'number' | 'email' | 'password' | 'date' | 'select' | 'textarea' | 'file'
+    accecpt?: 'image/*' | 'application/pdf'
     label?: string
+    requiredLabel?: string
     placeholder?: string
     change?: (value: string) => void
     isDisabled?: boolean
@@ -82,7 +85,10 @@ const FormModal = <T extends ZodType<any>>({
                             <Fragment key={Formfield.name}>
                                 {['select'].includes(Formfield.type) ? (
                                     <div className="space-y-2">
-                                        <Label>{Formfield.label}</Label>
+
+                                        {Formfield.label && <Label>{Formfield.label}</Label>}
+                                        {Formfield.requiredLabel && <RequiredLabel label={Formfield.requiredLabel} />}
+
                                         <Controller control={control} name={Formfield.name as any} render={({ field }) => {
 
                                             return <Select value={field.value || ''} onValueChange={(value) => {
@@ -105,9 +111,10 @@ const FormModal = <T extends ZodType<any>>({
                                     </div>
                                 ) : ['textarea'].includes(Formfield.type) ?
                                     <div className="space-y-2" key={Formfield.name}>
-                                        <Label htmlFor={Formfield.name}>
-                                            {Formfield.label || Formfield.name.charAt(0).toUpperCase() + Formfield.name.slice(1)}
-                                        </Label>
+
+                                        {Formfield.label && <Label>{Formfield.label}</Label>}
+                                        {Formfield.requiredLabel && <RequiredLabel label={Formfield.requiredLabel} />}
+
                                         <Textarea
                                             id={Formfield.name}
                                             {...register(Formfield.name as any)}
@@ -119,11 +126,34 @@ const FormModal = <T extends ZodType<any>>({
                                             </p>
                                         )}
                                     </div>
-                                    : (
+                                    : Formfield.type === 'file' ? (
                                         <div className="space-y-2" key={Formfield.name}>
-                                            <Label htmlFor={Formfield.name}>
-                                                {Formfield.label || Formfield.name.charAt(0).toUpperCase() + Formfield.name.slice(1)}
-                                            </Label>
+                                            {Formfield.label && <Label>{Formfield.label}</Label>}
+                                            {Formfield.requiredLabel && <RequiredLabel label={Formfield.requiredLabel} />}
+                                            <Controller control={control} name={Formfield.name as any} render={({ field }) => (
+                                                <Input
+                                                    id={Formfield.name}
+                                                    type={Formfield.type}
+                                                    accept={Formfield.accecpt}
+                                                    onChange={(e) => {
+                                                        if (e.target?.files) {
+                                                            field.onChange(e.target?.files[0]!)
+                                                        }
+                                                    }}
+                                                    defaultValue={Formfield.defaultValue}
+                                                    disabled={Formfield.isDisabled}
+                                                />
+                                            )} />
+                                            {errors[Formfield.name] && (
+                                                <p className='text-sm text-red-500'>
+                                                    {String(errors[Formfield.name]?.message)}
+                                                </p>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2" key={Formfield.name}>
+                                            {Formfield.label && <Label>{Formfield.label}</Label>}
+                                            {Formfield.requiredLabel && <RequiredLabel label={Formfield.requiredLabel} />}
                                             <Input
                                                 id={Formfield.name}
                                                 type={Formfield.type}

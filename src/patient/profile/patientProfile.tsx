@@ -1,16 +1,14 @@
 import AlertModel from '@/components/alertModel';
-import CardBox from '@/components/card-box';
-import CustomTooltip from '@/components/customTooltip';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
+import IconMenu from '@/components/icon-menu';
+import UserImage from '@/components/user-image';
 import { authSelector } from '@/features/auth/authSlice';
 import { useAppSelector } from '@/hooks';
-import { Key, Pencil, Trash } from 'lucide-react';
-import { useEffect } from 'react';
+import { cn } from '@/lib/utils';
+import { Calendar, Circle, Droplets, Guitar, IdCard, IdCardIcon, Key, Mail, MapPin, NutOff, Pencil, Phone, Trash, User } from 'lucide-react';
+import { ReactNode, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import RegisterPatient from '../register/patient-signup';
 import usePatient from './handlers';
-import UserImage from '@/components/user-image';
 
 
 
@@ -32,115 +30,138 @@ const PatientProfile = () => {
 
 
     return (
-        <section className='flex flex-col pt-5 pb-10'>
+        <section className='flex flex-col gap-10 pt-5 pb-20'>
 
-            <div className="grid lg:grid-cols-4 gap-y-10">
+            {/* Top section */}
+            <div className='relative p-10 rounded-3xl shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'>
 
-                {/* image , name , action*/}
-                <div className='flex items-center lg:col-span-2 '>
-
-                    <UserImage url={current?.image!} gender={current?.gender!}
-                        width='w-fit'
-                        imageClass='w-20 h-20'
-                        textClass='text-gray-900 dark:text-gray-100 text-2xl font-bold'
-                    />
-
-                    <div className='space-y-2'>
-                        <h1 className='text-gray-900 dark:text-gray-100 text-2xl font-bold'>{current?.name || ''}</h1>
-                        {(['admin'].includes(session.user?.role!) || (session.user?.id === +id!)) && <div className='flex gap-x-2'>
-                            {/* reset */}
-                            <CustomTooltip message='Reset Password'>
-                                <Key className='text-green-600 w-4 h-4 cursor-pointer active:scale-95' onClick={() => { router(`../resetpassword/${id}`) }} />
-                            </CustomTooltip>
-                            {/* Edit */}
-                            <CustomTooltip message='Edit Profile'>
-                                <Pencil className='text-yellow-600 w-4 h-4 cursor-pointer active:scale-95' onClick={() => setForm(true)} />
-                            </CustomTooltip>
-                            {/* Delete Acccount */}
-                            <CustomTooltip message='Delete Account'>
-                                <Trash className='text-red-600 w-4 h-4 cursor-pointer active:scale-95' onClick={() => onDelete(current?.id!)} />
-                            </CustomTooltip>
-                        </div>}
+                {/* Main content */}
+                <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6">
+                    <div className="relative group">
+                        <UserImage
+                            url={current?.image!}
+                            gender={current?.gender!}
+                            width='w-fit'
+                            imageClass='w-40 h-40 border-4 border-gray-200 transition-all duration-300 group-hover:scale-105 group-hover:border-gray-300'
+                        />
                     </div>
 
-                </div>
+                    <div className='flex flex-col gap-y-4 text-center sm:text-left'>
+                        <div>
+                            <h1 className='font-bold text-3xl md:text-5xl text-gray-800 dark:text-white mb-2 drop-shadow-sm'>
+                                {current?.name}
+                            </h1>
+                            <div className="h-1 w-20 bg-gradient-to-r from-gray-400 to-transparent rounded-full mx-auto sm:mx-0"></div>
+                        </div>
 
+                        <div className='flex gap-x-3 justify-center sm:justify-start'>
+                            {(session.user?.role === 'admin' || session.user?.id === current?.id) &&
+                                <>
+                                    <div className="group p-3 bg-gray-100/80 dark:bg-gray-800/50 backdrop-blur-sm rounded-full border border-gray-200 dark:border-gray-600 hover:bg-gray-200/80 dark:hover:bg-gray-700/60 transition-all duration-300 hover:scale-110 hover:shadow-lg dark:hover:shadow-gray-900/50">
+                                        <Key className='text-gray-600 dark:text-gray-300 w-5 h-5 cursor-pointer transition-transform duration-200 group-active:scale-90'
+                                            onClick={() => { router(`../resetpassword/${id}`) }} />
+                                    </div>
 
-
-                {/* highlights (Inside parent grid)*/}
-
-                <div className="col-span-full grid sm:grid-cols-2 lg:grid-cols-4  p-0.5 gap-2">
-                    <CardBox borderType='dashed' title="ID" value={current?.id} />
-                    <CardBox borderType='dashed' title="Role" value={current?.role} />
-                    <CardBox borderType='dashed' title="Age" value={current?.age} />
-                    <CardBox borderType='dashed' title="DOB" value={current?.dob} />
-                    <CardBox borderType='dashed' title="Gender" value={current?.gender} />
-                    <CardBox borderType='dashed' title="Email" value={current?.email} />
-                    <CardBox borderType='dashed' title="Alergies" value={current?.alergies} />
-                    <CardBox borderType='dashed' title="Joined with us" value={current?.createdAt} />
+                                    <div className="group p-3 bg-emerald-100/80 dark:bg-emerald-900/30 backdrop-blur-sm rounded-full border border-emerald-200 dark:border-emerald-700 hover:bg-emerald-200/80 dark:hover:bg-emerald-800/40 transition-all duration-300 hover:scale-110 hover:shadow-lg dark:hover:shadow-emerald-900/50">
+                                        <Pencil className='text-emerald-600 dark:text-emerald-400 w-5 h-5 cursor-pointer transition-transform duration-200 group-active:scale-90'
+                                            onClick={() => setForm(true)} />
+                                    </div>
+                                    <div className="group p-3 bg-red-100/80 dark:bg-red-900/30 backdrop-blur-sm rounded-full border border-red-200 dark:border-red-700 hover:bg-red-200/80 dark:hover:bg-red-800/40 transition-all duration-300 hover:scale-110 hover:shadow-lg dark:hover:shadow-red-900/50">
+                                        <Trash className='text-red-600 dark:text-red-400 w-5 h-5 cursor-pointer transition-transform duration-200 group-active:scale-90'
+                                            onClick={() => onDelete(current?.id!)} />
+                                    </div>
+                                </>
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
 
-
-
-            {/* profile section */}
-
-            <div className='my-5'>
-                <h1 className='text-lg font-bold'>Profile</h1>  {/*Can be make navigator*/}
-
-                <Separator className='my-3' />
-
-                {/* profile data */}
-
-                <ScrollArea className='w-full ring-1 ring-zinc-200 dark:ring-border p-2 rounded-md'>
-
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-zinc-100 dark:hover:bg-zinc-900 border-b border-zinc-200 dark:border-border">
-                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Phone</p>
-                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{current?.phone}</p>
+            {/* Heading */}
+            <div className='space-y-3'>
+                <div className="flex space-x-1">
+                    <div className='p-2 bg-gradient-to-r from-violet-500 to-rose-500 rounded-md shadow-lg'>
+                        <User className='text-white' />
                     </div>
+                    <h1 className='font-semibold text-2xl'>Profile Information</h1>
+                </div>
 
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-zinc-100 dark:hover:bg-zinc-900 border-b border-zinc-200 dark:border-border">
-                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Email</p>
-                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{current?.email}</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-zinc-100 dark:hover:bg-zinc-900 border-b border-zinc-200 dark:border-border">
-                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Gender</p>
-                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{current?.gender}</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-zinc-100 dark:hover:bg-zinc-900 border-b border-zinc-200 dark:border-border">
-                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Blood Group</p>
-                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{current?.blood_group}</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-zinc-100 dark:hover:bg-zinc-900 border-b border-zinc-200 dark:border-border">
-                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>DOB</p>
-                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{current?.dob}</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-zinc-100 dark:hover:bg-zinc-900 border-b border-zinc-200 dark:border-border">
-                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Marital Status</p>
-                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{current?.marital_status}</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-zinc-100 dark:hover:bg-zinc-900 border-b border-zinc-200 dark:border-border">
-                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Guardian Name</p>
-                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{current?.guardian_name}</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-zinc-100 dark:hover:bg-zinc-900 border-b border-zinc-200 dark:border-border">
-                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Address</p>
-                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{current?.address}</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 py-2 gap-x-3 hover:bg-zinc-100 dark:hover:bg-zinc-900 border-b border-zinc-200 dark:border-border">
-                        <p className='font-semibold text-sm text-gray-900 dark:text-gray-100'>Aadhar</p>
-                        <p className='text-gray-900 dark:text-gray-100 text-sm'>{current?.aadhar}</p>
-                    </div>
-                    <ScrollBar orientation="horizontal" />
-                </ScrollArea>
+                <div className='h-0.5 w-full bg-gradient-to-r from-violet-500 to-blue-500' />
             </div>
+
+            {/* personal information */}
+            <InformationCard
+                title='Personal Information'
+                icon={<User className='text-white' />}>
+
+                <IconMenu
+                    iconBg='bg-blue-100 dark:bg-blue-500/10'
+                    icon={<IdCard className='text-blue-500' />}
+                    title='ID'
+                    value={current?.id!}
+                />
+                <IconMenu
+                    iconBg='bg-rose-100 dark:bg-rose-500/10'
+                    icon={<Phone className='text-rose-500' />}
+                    title='Phone'
+                    value={current?.phone!}
+                />
+                <IconMenu
+                    iconBg='bg-red-100 dark:bg-red-500/10'
+                    icon={<Mail className='text-red-500' />}
+                    title='Email'
+                    value={current?.email!}
+                />
+                <IconMenu
+                    iconBg='bg-teal-100 dark:bg-teal-500/10'
+                    icon={<Circle className='text-teal-500' />}
+                    title='Gender'
+                    value={current?.gender!}
+                />
+                <IconMenu
+                    iconBg='bg-red-100 dark:bg-red-600/10'
+                    icon={<Droplets className='text-red-600' />}
+                    title='Blood Group'
+                    value={current?.blood_group!}
+                />
+                <IconMenu
+                    iconBg='bg-orange-100 dark:bg-orange-600/10'
+                    icon={<Calendar className='text-orange-600' />}
+                    title='DOB'
+                    value={current?.dob!}
+                />
+                <IconMenu
+                    iconBg='bg-pink-100 dark:bg-pink-600/10'
+                    icon={<Guitar className='text-pink-600' />}
+                    title='Marital Status'
+                    value={current?.marital_status!}
+                />
+                <IconMenu
+                    iconBg='bg-green-100 dark:bg-green-600/10'
+                    icon={<User className='text-green-600' />}
+                    title='Guardian'
+                    value={current?.guardian_name!}
+                />
+                <IconMenu
+                    iconBg='bg-amber-100 dark:bg-amber-600/10'
+                    icon={<MapPin className='text-amber-600' />}
+                    title='Current Address'
+                    value={current?.address!}
+                />
+                <IconMenu
+                    iconBg='bg-yellow-100 dark:bg-yellow-500/10'
+                    icon={<NutOff className='text-yellow-500' />}
+                    title='Alergies'
+                    value={current?.alergies!}
+                />
+                <IconMenu
+                    iconBg='bg-violet-100 dark:bg-violet-500/10'
+                    icon={<IdCardIcon className='text-violet-500' />}
+                    title='Aadhar'
+                    value={current?.aadhar!}
+                />
+            </InformationCard>
+
 
             {/* alert model */}
 
@@ -170,3 +191,28 @@ const PatientProfile = () => {
 
 
 export default PatientProfile
+
+
+
+
+
+
+
+const InformationCard = ({ children, title, icon, className }: { children: ReactNode, title: string, icon: ReactNode, className?: string }) => {
+
+    return (
+        <div className='flex flex-col shadow-lg dark:shadow-white/5 rounded-b-lg'>
+            <div className={cn('flex gap-2 items-center p-5 rounded-t-lg bg-gradient-to-r from-violet-300 to-rose-300 dark:from-violet-800/50 dark:to-rose-300/50', className)}>
+                <div className='p-2 bg-white/20 backdrop-blur-sm shadow-md rounded-md'>
+                    {icon}
+                </div>
+                <h1 className='font-semibold text-xl text-white'>{title}</h1>
+            </div>
+
+            <div className="flex flex-col gap-5 p-5">
+                {children}
+            </div>
+
+        </div>
+    )
+}

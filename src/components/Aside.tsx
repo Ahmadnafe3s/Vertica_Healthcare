@@ -2,7 +2,7 @@ import { SidebarContext } from '@/contexts/sidebar-provider'
 import { authSelector, logout } from '@/features/auth/authSlice'
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import { cn } from '@/lib/utils'
-import { Airplay, Ambulance, BriefcaseMedical, CalendarClock, ChevronRight, Droplets, HeartPulse, Network, Radiation, Settings, Stethoscope, TestTube, UserRound, Watch } from 'lucide-react'
+import { Airplay, Ambulance, BriefcaseMedical, CalendarClock, ChevronRight, Droplets, HeartPulse, Radiation, Settings, Stethoscope, TestTube, UserRound, Watch } from 'lucide-react'
 import { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AlertModel from './alertModel'
@@ -34,7 +34,7 @@ const Aside = () => {
 
     return (
         <>
-            <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all sm:border-r border-dashed border-zinc-200 dark:border-zinc-800 h-[calc(100vh-56px-35px)] top-14', { 'border-r w-52 p-2.5': isSidebarOpen })}>
+            <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all sm:border-r border-dashed border-zinc-200 dark:border-zinc-800 h-[calc(100vh-64px-35px)] top-16', { 'border-r w-52 p-2.5': isSidebarOpen })}>
 
                 <ScrollArea className='h-full '>
 
@@ -290,6 +290,16 @@ const Aside = () => {
                                             <div className="pl-5">
                                                 <Link to={{ pathname: '/admin/setupStaff/designation' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
                                                     <ChevronRight className='h-4 w-4' />Staff</Link>
+                                            </div>
+                                        </AccordionContent>
+                                    </PermissionProtectedAction>
+
+                                    {/* setup Homapage */}
+                                    <PermissionProtectedAction action='view' module='Setup Staff'>
+                                        <AccordionContent className='py-1'>
+                                            <div className="pl-5">
+                                                <Link to={{ pathname: '/admin/setup/homepage' }} onClick={onNavigate} className='flex hover:bg-slate-100 dark:hover:text-black rounded-md py-1 items-center gap-x-1 justify-start text-[13px]'>
+                                                    <ChevronRight className='h-4 w-4' />Homepage</Link>
                                             </div>
                                         </AccordionContent>
                                     </PermissionProtectedAction>
