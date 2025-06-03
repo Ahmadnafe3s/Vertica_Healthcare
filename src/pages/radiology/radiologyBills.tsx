@@ -50,7 +50,7 @@ const RadiologyBills = () => {
 
   return (
     <>
-      <div className='my-2 flex flex-col'>
+      <div className='my-2 flex flex-col px-2.5'>
 
         {/* top bar */}
         <div className='flex py-3 flex-col md:flex-row gap-y-2 md:items-center md:justify-between'>

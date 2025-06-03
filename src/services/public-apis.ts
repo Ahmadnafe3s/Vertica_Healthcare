@@ -28,7 +28,17 @@ const pulicApi = {
             const err = error.response?.data.message || 'Connection error'
             throw new Error(err)
         }
-    }
+    },
+    async getDoctors(params: Params) {
+        try {
+            params.search = 'doctor'
+            const res = await AxiosClient.get('/api/public/doctors', { params })
+            return res.data
+        } catch (error: any) {
+            const err = error.response?.data.message || 'Connection error'
+            throw new Error(err)
+        }
+    },
 }
 
 

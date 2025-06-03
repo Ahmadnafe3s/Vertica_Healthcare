@@ -99,7 +99,7 @@ const EventCalendar = () => {
 
     return (
 
-        <div className='lg:p-10  py-5'>
+        <div className='lg:p-10  py-5 px-2.5'>
             <div className="p-2.5 border rounded-lg shadow-lg">
                 <FullCalendar
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}

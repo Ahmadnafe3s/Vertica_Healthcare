@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom"
 
 const BloodBankLayout = () => {
     return (
-        <Outlet></Outlet>
+           <main className="px-2.5"><Outlet></Outlet></main>
     )
 }
 

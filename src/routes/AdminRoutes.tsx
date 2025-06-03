@@ -13,14 +13,12 @@ const AdminRoutes = () => {
 
         // protected route only handling authentication
         <Route element={<ProtectRoutes restrictedTo="patient" />}>
-
             <Route path="admin" element={<AdminLayout />}>
                 {/* Dashboard */}
                 <Route
                     path="dashboard"
                     element={<AdminDashboard />}
                 />
-
             </Route>
         </Route>
 

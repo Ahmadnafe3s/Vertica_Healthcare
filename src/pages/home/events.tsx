@@ -44,7 +44,7 @@ const HomePageEvents = () => {
                     <div className="flex-1">
                         <div className='dark:bg-gray-900 rounded-xl transition-all duration-300 shadow-xl hover:shadow-xl border dark:border-gray-700'>
                             {/* Headers */}
-                            <div className="flex items-center space-x-2  bg-gradient-to-br from-pink-300 to-violet-300 dark:from-pink-500 dark:to-violet-500 p-5 rounded-t-xl">
+                            <div className="flex items-center space-x-2  bg-gradient-to-br from-pink-400 to-violet-400 dark:from-pink-500 dark:to-violet-500 p-5 rounded-t-xl">
                                 <div className="relative p-3 bg-white/20 dark:bg-white/15 backdrop-blur-sm rounded-xl shadow-lg">
                                     <Calendar1Icon className="text-white" />
                                 </div>

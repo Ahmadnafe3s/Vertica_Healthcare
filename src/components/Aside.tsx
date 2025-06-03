@@ -34,11 +34,18 @@ const Aside = () => {
 
     return (
         <>
-            <div className={cn('sticky w-0 sm:w-52 p-0 sm:p-2.5 transition-all sm:border-r border-dashed border-zinc-200 dark:border-zinc-800 h-[calc(100vh-64px-35px)] top-16', { 'border-r w-52 p-2.5': isSidebarOpen })}>
+            {/* backdrop */}
+            {isSidebarOpen && (
+                <div
+                    onClick={() => onNavigate()}
+                    className={cn("fixed top-16 left-0 right-0 bottom-0 bg-black/80 z-[120] sm:hidden")} />
+            )}
 
+            {/* sidebar */}
+            <div className={cn('fixed sm:z-0 z-[120] -left-[100%] sm:sticky w-52 p-2.5 transition-all duration-200 border-r border-dashed bg-background border-zinc-200 dark:border-zinc-800 h-[calc(100vh-64px)] top-16', { 'left-0': isSidebarOpen })}>
                 <ScrollArea className='h-full '>
 
-                    <ul className='flex flex-col gap-y-2 pb-10'>
+                    <ul className='flex flex-col gap-y-2 pb-20'>
 
                         <li><Link to={{ pathname: `/${Routes}/dashboard` }} onClick={onNavigate} className={
                             buttonVariants({
@@ -153,7 +160,6 @@ const Aside = () => {
 
 
                         {/* Tree View Links setup links */}
-
                         <li>
                             <Accordion type="single" collapsible >
                                 <AccordionItem value="item-1" className='border-none'>
@@ -310,11 +316,10 @@ const Aside = () => {
 
 
                     </ul>
-                    <div className="h-14 bg-gradient-to-t from-white dark:from-background z-30 w-full absolute bottom-0" />
+                    <div className="h-24 bg-gradient-to-t from-background z-30 w-full absolute bottom-0" />
                 </ScrollArea>
-
                 {/* logout button */}
-                <div className={cn('sm:flex gap-2 items-center transition-all', isSidebarOpen ? 'flex' : 'hidden')}>
+                <div className='absolute bottom-2 z-50 sm:flex gap-2 items-center transition-all flex w-44'>
                     <img src="/user.png" alt="" className="w-9 border-2 border-gray-300 rounded-full" />
                     <Button variant={'destructive'} size='sm' className='flex-1' onClick={() => setAlert(true)}>Logout</Button>
                 </div >

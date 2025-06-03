@@ -91,7 +91,7 @@ const SetupVitals = () => {
 
 
     return (
-        <section className="flex flex-col gap-y-5 pb-16 pt-5">
+        <section className="flex flex-col gap-y-5 pb-16 pt-5 px-2.5">
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Vitals</h1>

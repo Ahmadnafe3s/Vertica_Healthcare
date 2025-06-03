@@ -3,7 +3,7 @@ import { authSelector, logout } from "@/features/auth/authSlice"
 import { useAppDispatch, useAppSelector } from "@/hooks"
 import { User } from "lucide-react"
 import { useContext, useState } from "react"
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import MaxWidthWrapper from "./MaxWidthWrapper"
 import { ModeToggle } from "./mode-toggle"
 import { buttonVariants } from "./ui/button"
@@ -15,9 +15,6 @@ import UserModel from "./userModel"
 const Navbar = () => {
 
     const { toggleSidebar } = useContext(SidebarContext)
-    const path = useLocation().pathname
-
-    if (path === '/' || path.startsWith('/home')) return null
 
     const router = useNavigate()
 
@@ -34,12 +31,12 @@ const Navbar = () => {
 
     return (
         <>
-            <section className="h-16 bg-gradient-to-r from-purple-50 to-violet-100 dark:from-zinc-900 backdrop-blur shadow w-full z-[100] sticky inset-x-0 top-0">
+            <section className="h-16 backdrop-blur w-full z-[100] sticky inset-x-0 top-0 border-b border-border">
                 <MaxWidthWrapper className="lg:px-10">
                     <header className="h-full flex justify-between items-center">
 
                         <div className="flex items-center gap-x-1">
-                            <img src="/logo.png" alt="logo" className="w-14 h-14 rounded-full object-cover" />
+                            <img src="/logo.png" alt="logo" className="w-12 h-12 rounded-full object-cover" />
                             <div>
                                 <Link to={{ pathname: '/' }} className="tracking-tight cursor-pointer z-[100] select-none">
                                     Vertica Healthcare

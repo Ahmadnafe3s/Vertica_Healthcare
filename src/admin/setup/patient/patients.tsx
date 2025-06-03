@@ -55,7 +55,7 @@ const Patients = () => {
 
     return (
 
-        <section className="flex flex-col gap-y-5 pt-5 pb-16">
+        <section className="flex flex-col gap-y-5 pt-5 pb-16 px-2.5">
 
             <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">Patients</h1>

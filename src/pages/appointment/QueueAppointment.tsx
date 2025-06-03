@@ -69,8 +69,8 @@ const QueueAppointment = () => {
     }, [page, search])
 
     return (
-        <>
-            <div className='flex flex-col py-3 gap-y-3'>
+        <div className="px-2 5">
+            <div className='flex flex-col py-3 gap-y-3 '>
                 <h1 className='text-xl text-gray-900 dark:text-white font-semibold'>Queue Appointments</h1>
                 <Separator />
                 <div className='flex gap-x-2 w-[180px]'>
@@ -155,7 +155,7 @@ const QueueAppointment = () => {
                     />
                 </section>
             </div>
-        </>
+        </div>
     )
 }
 

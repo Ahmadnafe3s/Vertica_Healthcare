@@ -69,7 +69,7 @@ const RosterReport = () => {
 
 
     return (
-        <div className='my-2 flex flex-col'>
+        <div className='my-2 flex flex-col px-2.5'>
 
             {/* top bar */}
             <div className='flex py-3 flex-row gap-y-2 items-center justify-between'>

@@ -94,7 +94,7 @@ const AdminDashboard = () => {
 
     return (
 
-        <div className='pt-4 pb-20'>
+        <div className='pt-4 pb-20 px-2.5'>
 
             {/* Charts section */}
 
