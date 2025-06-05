@@ -3,7 +3,7 @@ import { useState } from "react"
 import SetupStaffApi from "../api-handlers"
 import toast from "react-hot-toast"
 
-interface Specialization {
+export interface Specialization {
     id: number,
     name: string
 }

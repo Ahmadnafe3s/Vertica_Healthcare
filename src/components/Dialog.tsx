@@ -64,7 +64,7 @@ const Dialog = ({ children, pageTitle, className, ...props }: DialogProps) => {
                             </div>
 
                             {/* Content area */}
-                            <div className="pt-3 bg-gradient-to-b from-gray-50/30 to-white dark:from-gray-800/20 dark:to-gray-900">
+                            <div className="pt-3 ">
                                 {children}
                             </div>
                         </div>

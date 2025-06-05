@@ -16,6 +16,7 @@ const useMedicationHandlers = (params?: Params) => {
     const { opdId, ipdId } = useParams()
     const { confirm, confirmationProps } = useConfirmation()
     const [isPending, setPending] = useState(false)
+    const [modalLoading, setModalLoading] = useState(false)
     const [form, setForm] = useState(false)
     const [medications, setMedications] = useState<opdMedications>({ data: [], total_pages: 1 })
     const [current, setCurrent] = useState<medicationDetail | undefined>(undefined)
@@ -52,12 +53,12 @@ const useMedicationHandlers = (params?: Params) => {
 
     const getMedicationDetails = async (id: number) => {
         try {
-            setPending(true)
+            setModalLoading(true)
             const data = await medicationApi.getMedicationById(id)
             setCurrent(data)
         } catch ({ message }: any) {
             toast.error(message)
-        } finally { setPending(false) }
+        } finally { setModalLoading(false) }
     }
 
 
@@ -81,6 +82,7 @@ const useMedicationHandlers = (params?: Params) => {
         setCurrent,
         getMedicationDetails,
         isPending,
+        modalLoading,
         form,
         setForm,
         handleSubmit,

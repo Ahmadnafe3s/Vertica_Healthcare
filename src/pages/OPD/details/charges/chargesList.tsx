@@ -29,7 +29,7 @@ const CahrgesList = () => {
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [search, setSearch] = useQueryState('search')
 
-  const { charges, getCharges, current, setCurrent, getDetails, isPending, form, setForm, handleSubmit, onDelete, confirmationProps } = useChargeHandlers({ page, search, limit: page_limit })
+  const { charges, getCharges, current, setCurrent, getDetails, isPending, modalLoading, form, setForm, handleSubmit, onDelete, confirmationProps } = useChargeHandlers({ page, search, limit: page_limit })
 
 
 
@@ -152,7 +152,7 @@ const CahrgesList = () => {
       />}
 
       {/* loader */}
-      {isPending && <LoaderModel />}
+      {modalLoading && <LoaderModel />}
 
     </section>
   )

@@ -14,7 +14,6 @@ function App() {
   const dispatch = useAppDispatch()
   const { removePermissions } = useContext(PermissionContext)
 
-
   useEffect(() => {
     removePermissions()
     dispatch(checkSession())

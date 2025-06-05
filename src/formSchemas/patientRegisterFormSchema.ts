@@ -107,3 +107,23 @@ export const DefaultValues = {
 };
 
 
+
+
+
+export const homepagePatientRegisterSchema = z.object({
+    name: z.string()
+        .min(1, { message: 'Patient name is required' })
+        .max(25, { message: 'Patient name must be less than 25 characters' }),
+    gender: z.string()
+        .min(1, { message: "Please select valid gender" })
+        .default(''),
+    dob: z.string()
+        .min(1, { message: 'Date of birth is required' })
+    ,
+
+    email: z.string()
+        .min(1, { message: 'Email is required' })
+        .email({ message: 'Enter valid email' }),
+
+    password: createPasswordSchema(true),
+})

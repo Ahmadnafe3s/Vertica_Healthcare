@@ -1,18 +1,42 @@
-
-import { Loader } from "lucide-react"
+import { Activity } from 'lucide-react';
 
 const LoaderModel = () => {
     return (
-        <>
-            <div className='fixed -top-4 left-0 h-screen w-full transition-all z-[120]' style={{ background: '#0000009c' }}></div>
-            <div className="z-[200] fixed top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] ">
-                <div className="flex gap-y-1 flex-col items-center justify-center h-20 w-20 rounded-lg border dark:border-gray-700 bg-white dark:bg-gray-950">
-                    <Loader className="w-7 h-7 animate-spin" />
-                    <p className="text-gray-500 text-sm dark:text-white">loading...</p>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-green-50 dark:bg-background p-8 z-[200] fixed inset-0">
+            {/* Pulsing circle with medical icon */}
+            <div className="relative mb-8">
+                <div className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center animate-ping opacity-75 absolute"></div>
+                <div className="w-24 h-24 bg-emerald-600 rounded-full flex items-center justify-center relative">
+                    <Activity className="w-10 h-10 text-white" />
                 </div>
             </div>
-        </>
-    )
-}
+
+            {/* EKG line */}
+            <div className="w-48 h-1 bg-gray-200 rounded-full mb-6 overflow-hidden">
+                <div
+                    className="h-full bg-emerald-500 rounded-full"
+                    style={{
+                        animation: 'progressFill 2s ease-in-out infinite'
+                    }}
+                ></div>
+            </div>
+
+            <style>{`
+        @keyframes progressFill {
+          0% { width: 0%; }
+          50% { width: 70%; }
+          100% { width: 0%; }
+        }
+      `}</style>
+
+            {/* Loading text */}
+            <div className="text-center">
+                <h3 className="text-xl font-medium text-gray-700 dark:text-neutral-100 mb-2">Processing</h3>
+                <p className="text-gray-500 dark:text-neutral-300">Please wait...</p>
+            </div>
+        </div>
+    );
+};
+
 
 export default LoaderModel

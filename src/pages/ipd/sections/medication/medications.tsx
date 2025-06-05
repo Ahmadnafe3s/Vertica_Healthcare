@@ -25,7 +25,7 @@ const IpdMedications = () => {
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [search, setSearch] = useQueryState('search')
 
-  const { medications, isPending, form, getMedications, getMedicationDetails, handleSubmit, setForm, onDelete, current, setCurrent, confirmationProps } = useMedicationHandlers({ page, search, limit: page_limit })
+  const { medications, isPending,modalLoading, form, getMedications, getMedicationDetails, handleSubmit, setForm, onDelete, current, setCurrent, confirmationProps } = useMedicationHandlers({ page, search, limit: page_limit })
 
 
   const onSearch = (date: string) => {
@@ -151,7 +151,7 @@ const IpdMedications = () => {
 
       {/* Loader model */}
 
-      {isPending && (<LoaderModel />)}
+      {modalLoading && (<LoaderModel />)}
 
     </>
   )

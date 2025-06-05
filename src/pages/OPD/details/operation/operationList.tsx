@@ -24,7 +24,7 @@ const OperationList = () => {
   // search params
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
 
-  const { operations, getOperations, current, setCurrent, getDetails, isPending, form, setForm, handleSubmit, onDelete, confirmationProps } = useOperationHandlers({ page, limit: page_limit })
+  const { operations, getOperations, current, setCurrent, getDetails, isPending, modalLoading, form, setForm, handleSubmit, onDelete, confirmationProps } = useOperationHandlers({ page, limit: page_limit })
 
 
   useEffect(() => {
@@ -144,7 +144,7 @@ const OperationList = () => {
 
       {/* loader */}
 
-      {isPending && <LoaderModel />}
+      {modalLoading && <LoaderModel />}
     </>
   )
 }

@@ -10,11 +10,12 @@ import { z } from "zod"
 
 
 
-const useChargeHandlers = (params: Params & {paymentId? : string}) => {
+const useChargeHandlers = (params: Params & { paymentId?: string }) => {
 
     const { opdId, ipdId } = useParams()
     const { confirm, confirmationProps } = useConfirmation()
     const [isPending, setPending] = useState(false)
+    const [modalLoading, setModalLoading] = useState(false)
     const [form, setForm] = useState(false)
     const [charges, setCharges] = useState<ChargeListType>({ data: [], total_pages: 1 })
     const [current, setCurrent] = useState<ChargeDetailsType | null>(null)
@@ -54,12 +55,12 @@ const useChargeHandlers = (params: Params & {paymentId? : string}) => {
     // Fetching details for Details model and form on edit mode
     const getDetails = async (id: number) => {
         try {
-            setPending(true)
+            setModalLoading(true)
             const data = await ChargeApi.getChargeById(id)
             setCurrent(data)
         } catch ({ message }: any) {
             toast.error(message)
-        } finally { setPending(false) }
+        } finally { setModalLoading(false) }
     }
 
 
@@ -84,6 +85,7 @@ const useChargeHandlers = (params: Params & {paymentId? : string}) => {
         setCurrent,
         getDetails,
         isPending,
+        modalLoading,
         form,
         setForm,
         handleSubmit,

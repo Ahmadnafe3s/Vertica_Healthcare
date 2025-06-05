@@ -31,6 +31,7 @@ export const appointmentFormSchema = z.object({
 
 
 export const patientAppointmentSchema = appointmentFormSchema.extend({
+    patientId: z.coerce.number().optional(),
     payment_mode: z.string().optional(),
     status: z.string().optional(),
 })

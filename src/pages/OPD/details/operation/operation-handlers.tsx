@@ -15,6 +15,7 @@ const useOperationHandlers = (params: Params) => {
     const { opdId, ipdId } = useParams()
     const { confirm, confirmationProps } = useConfirmation()
     const [isPending, setPending] = useState(false)
+    const [modalLoading, setModalLoading] = useState(false)
     const [form, setForm] = useState(false)
     const [operations, setOperations] = useState<PaginatedOperations>({ data: [], total_pages: 1 })
     const [current, setCurrent] = useState<operationDetailsType | undefined>(undefined)
@@ -65,12 +66,12 @@ const useOperationHandlers = (params: Params) => {
 
     const getDetails = async (id: string) => {
         try {
-            setPending(true)
+            setModalLoading(true)
             const data = await OperationApi.getOperationById(id)
             setCurrent(data)
         } catch ({ message }: any) {
             toast.error(message)
-        } finally { setPending(false) }
+        } finally { setModalLoading(false) }
     }
 
 
@@ -81,6 +82,7 @@ const useOperationHandlers = (params: Params) => {
         setCurrent,
         getDetails,
         isPending,
+        modalLoading,
         form,
         setForm,
         handleSubmit,

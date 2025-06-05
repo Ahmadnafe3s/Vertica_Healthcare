@@ -1,13 +1,13 @@
 import { authSelector } from "@/features/auth/authSlice"
 import { useAppSelector } from "@/hooks"
 import { cn } from "@/lib/utils"
-import { Separator } from "@radix-ui/react-separator"
-import { Calendar, CalendarCheck2, ChevronDownIcon, CircleAlert, ClipboardPlus, Home, Hospital, Menu, Send, User } from "lucide-react"
+import { Calendar, CalendarCheck2, ChevronDownIcon, Home, Hospital, LinkIcon, Menu, Send, Stethoscope, User } from "lucide-react"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { ModeToggle } from "./mode-toggle"
 import { Button, buttonVariants } from "./ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import { Separator } from "./ui/separator"
 
 
 
@@ -23,9 +23,12 @@ const HomepageNavbar = () => {
     return (
         <>
             {/* backdrop */}
-            <div
-                onClick={() => closeMenu()}
-                className={cn("fixed top-16 left-0 right-0 bottom-0 bg-black/80 z-40 hidden", { 'block': isOpen })} />
+            {isOpen && (
+                <div
+                    onClick={() => closeMenu()}
+                    className={cn("fixed top-16 left-0 right-0 bottom-0 bg-black/80 z-40 sm:hidden")} />
+            )}
+
 
             {/* Header */}
             <div className="sticky top-0 z-40 px-2.5 lg:px-10 border-b border-border h-16 flex items-center justify-between backdrop-blur-lg overflow-none">
@@ -46,27 +49,32 @@ const HomepageNavbar = () => {
                         <Home /> Home
                     </Link>
 
-                    <Link to={{ pathname: '/home/annual-calendar' }} onClick={closeMenu} className={buttonVariants({
+                    <Link to={{ pathname: '/home/book-appointment' }} onClick={closeMenu} className={buttonVariants({
                         variant: "ghost",
                     })}>
-                        <Calendar /> Annual Calendar
+                        <CalendarCheck2 /> Book Appointment
                     </Link>
 
-                    <Link to={{ pathname: '/home/event' }} onClick={closeMenu} className={buttonVariants({
+                    <Link to={{ pathname: '/home/doctors' }} onClick={closeMenu} className={buttonVariants({
                         variant: "ghost",
                     })}>
-                        <CalendarCheck2 /> Event
+                        <Stethoscope className="w-5 h-5" /> Find A Doctor
                     </Link>
 
+                    <Link to={{ pathname: '/home/contact' }} onClick={closeMenu} className={buttonVariants({
+                        variant: "ghost",
+                    })}>
+                        < Send /> Contact
+                    </Link>
 
                     <div>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost">
-                                    <CircleAlert /> About Us <ChevronDownIcon />
+                                <Button variant="ghost" className="flex space-x-2">
+                                    <LinkIcon /> Quick Links <ChevronDownIcon />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="space-y-1">
+                            <DropdownMenuContent className="space-y-1" align="end">
                                 <DropdownMenuItem asChild>
                                     <Link to={{ pathname: '/home/about' }} onClick={closeMenu} className="flex space-x-2 p-1 cursor-pointer">
                                         <Hospital className="w-5 h-5" /> <p className="text-sm">About Hospital</p>
@@ -74,21 +82,19 @@ const HomepageNavbar = () => {
                                 </DropdownMenuItem>
                                 <Separator />
                                 <DropdownMenuItem asChild>
-                                    <Link to={{ pathname: '/home/doctors' }} onClick={closeMenu} className="flex space-x-2 p-1 cursor-pointer">
-                                        <ClipboardPlus className="w-5 h-5" /> <p className="text-sm">Meet Our Doctors</p>
+                                    <Link to={{ pathname: '/home/annual-calendar' }} onClick={closeMenu} className="flex space-x-2 p-1 cursor-pointer">
+                                        <Calendar className="w-5 h-5" /> <p className="text-sm">Annual Calendar</p>
                                     </Link>
                                 </DropdownMenuItem>
                                 <Separator />
+                                <DropdownMenuItem asChild>
+                                    <Link to={{ pathname: '/home/event' }} onClick={closeMenu} className="flex space-x-2 p-1 cursor-pointer">
+                                        <CalendarCheck2 className="w-5 h-5" /> <p className="text-sm">Event</p>
+                                    </Link>
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
-
-
-                    <Link to={{ pathname: '/home/contact' }} onClick={closeMenu} className={buttonVariants({
-                        variant: "ghost",
-                    })}>
-                        < Send /> Contact
-                    </Link>
 
                     {user ?
                         <Link to={{ pathname: `/${Routes}/dashboard` }} onClick={closeMenu} className={buttonVariants({

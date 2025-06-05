@@ -23,7 +23,7 @@ const usePatient = () => {
     const router = useNavigate()
 
 
-    const handlePatient = async (patientData: z.infer<typeof patientRegistrationSchema>, afterSubmit?: () => void) => {
+    const handlePatient = async (patientData: z.infer<typeof patientRegistrationSchema>, afterSubmit?: (id: number) => void) => {
         try {
 
             const formData = new FormData()
@@ -46,7 +46,7 @@ const usePatient = () => {
             )
             toast.success(data.message)
             setForm(false)
-            afterSubmit && afterSubmit()
+            afterSubmit && afterSubmit(data.id)
         } catch ({ message }: any) {
             toast.error(message)
         } finally {
@@ -73,7 +73,8 @@ const usePatient = () => {
             if (!isConfirm) return null
             const data = await PatientApi.deletePatient(id)
             toast.success(data.message)
-            if (user?.role === 'patient') dispatch(logout())
+            if (user?.role === 'patient') return dispatch(logout())
+            router(`/admin/setup/patient`)
         } catch ({ message }: any) {
             toast.error(message)
         }

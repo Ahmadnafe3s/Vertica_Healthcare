@@ -15,6 +15,7 @@ import { motion } from 'motion/react'
 import { CSSProperties, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import heroAnimation from '@/assets/animation/hero.json'
+import { Link } from 'react-router-dom'
 
 
 const doctors = [
@@ -114,10 +115,10 @@ const HomePage = () => {
                                             Emergency: +91-1234567890
                                         </a>
                                     </div>
-                                    <button className='flex gap-1 items-center justify-center h-16 font-bold rounded-3xl border-blue-500 border-2 text-xl text-blue-500 hover:shadow-xl hover:scale-105 transition-all duration-300'>
+                                    <Link to={{pathname : '/home/book-appointment'}} className='flex gap-1 items-center justify-center h-16 font-bold rounded-3xl border-blue-500 border-2 text-xl text-blue-500 hover:shadow-xl hover:scale-105 transition-all duration-300'>
                                         <NotepadText />
                                         Book Appointment
-                                    </button>
+                                    </Link>
                                 </motion.div>
                             </motion.div>
                         </div>
@@ -283,7 +284,7 @@ const HomePage = () => {
                 <MaxWidthWrapper className='pt-14 md:pt-20 lg:pt-32 pb-20 lg:pb-32'>
 
                     <h1 className='text-3xl md:text-4xl lg:text-5xl text-center font-bold mb-12 text-gray-900 dark:text-neutral-100'>
-                        Our doctors
+                        Our Doctors
                     </h1>
 
                     <div className='grid sm:grid-cols-2 lg:grid-cols-4 justify-center gap-6'>
